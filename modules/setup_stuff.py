@@ -1,6 +1,8 @@
 """general and page header setup"""
 
+import datetime as dt
 import locale
+import os
 import sys
 from typing import Any, Callable
 
@@ -8,11 +10,47 @@ import plotly.io as pio
 import sentry_sdk
 import streamlit as st
 from dotenv import load_dotenv
+from github import Github
 from loguru import logger
+from pytz import BaseTzInfo, timezone
 
 from modules import constants as cont
-from modules.general_functions import func_timer, get_com_date, render_svg
+from modules.general_functions import func_timer, render_svg
 from modules.user_authentication import get_all_user_data
+
+
+@func_timer()
+def get_commit_message_date() -> dict[str, dt.datetime | str]:
+    """Commit message and date from GitHub to show in the header.
+
+    pat = personal access token (loaded from secrets)
+    To create a new one:
+    in github.com click on the profile and go into
+    settings -> developer settings -> personal access tokens
+
+    Returns:
+        - dict[str, dt.datetime | str]:
+            - "com_date" (dt.datetime): date of commit
+            - "com_mst" (str): commit message
+    """
+
+    utc: BaseTzInfo = timezone("UTC")
+    eur: BaseTzInfo = timezone("Europe/Berlin")
+    date_now: dt.datetime = dt.datetime.now()
+    tz_diff: float = (
+        utc.localize(date_now) - eur.localize(date_now).astimezone(utc)
+    ).seconds / 3600
+
+    pat: str | None = os.getenv("GITHUB_PAT")
+    gith: Github = Github(pat)
+    repo: Any = gith.get_user().get_repo("UTEC-Tools")
+    branch: Any = repo.get_branch("main")
+    sha: Any = branch.commit.sha
+    commit: Any = repo.get_commit(sha).commit
+    return {
+        "com_date": commit.author.date + dt.timedelta(hours=tz_diff),
+        "com_msg": commit.message.split("\n")[-1],
+    }
 
 
 def initial_setup() -> None:
@@ -28,16 +66,17 @@ def initial_setup() -> None:
     - get user data from database
     """
 
-    sentry_sdk.init(
-        dsn="https://273efaa76e074599b496947d33907e59@o4504852467810304.ingest.sentry.io/4504852472659968",
-        # Set traces_sample_rate to 1.0 to capture 100%
-        # of transactions for performance monitoring.
-        # We recommend adjusting this value in production.
-        traces_sample_rate=1.0,
-    )
-
     if st.session_state.get("initial_setup"):
         return
+
+    # language, secrets, templates, etc.
+    locale.setlocale(locale.LC_ALL, "")
+    load_dotenv(".streamlit/secrets.toml")
+    pio.templates.default = "plotly"
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_DSN"),
+        traces_sample_rate=1.0,
+    )
 
     logger_setup()
 
@@ -52,28 +91,18 @@ def initial_setup() -> None:
         st.session_state["dic_exe_time"] = {}
 
     # UTEC Logo
-    st.session_state["UTEC_logo"] = render_svg()
-
-    # language, secrets, templates, etc.
-    locale.setlocale(locale.LC_ALL, "")
-    load_dotenv(".streamlit/secrets.toml")
-    pio.templates.default = "plotly"
+    if "UTEC_logo" not in st.session_state:
+        st.session_state["UTEC_logo"] = render_svg()
 
     # CSS hacks for section / widget labels
     st.markdown(
-        f"""
-            <style>
-                div.row-widget.stSelectbox > label {cont.CSS_LABEL_1}
-                div.row-widget.stMultiSelect > label {cont.CSS_LABEL_1}
-                [data-testid='stFileUploader'] > label {cont.CSS_LABEL_1}
-                div.streamlit-expanderHeader {cont.CSS_LABEL_2}
-            </style>
-        """,
+        cont.CSS_LABELS,
         unsafe_allow_html=True,
     )
 
     # latest changes from GitHub
-    get_com_date()
+    st.session_state["com_date"] = get_commit_message_date()["com_date"]
+    st.session_state["com_msg"] = get_commit_message_date()["com_msg"]
 
     # all user data from database
     st.session_state["all_user_data"] = get_all_user_data()

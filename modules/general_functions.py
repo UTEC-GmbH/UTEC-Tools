@@ -5,16 +5,13 @@ General Purpose Functions
 import base64
 import datetime as dt
 import json
-import os
 import time
 from collections import Counter
 from typing import Any, Callable
 import pandas as pd
 
 import streamlit as st
-from github import Github
 from loguru import logger
-from pytz import BaseTzInfo, timezone
 
 from modules import constants as cont
 
@@ -102,34 +99,6 @@ def sort_list_by_occurance(list_of_stuff: list[Any]) -> list[Any]:
 
 
 @func_timer()
-def get_com_date() -> None:
-    """commit message and date from GitHub"""
-    utc: BaseTzInfo = timezone("UTC")
-    eur: BaseTzInfo = timezone("Europe/Berlin")
-    date_now: dt.datetime = dt.datetime.now()
-    tz_diff: float = (
-        utc.localize(date_now) - eur.localize(date_now).astimezone(utc)
-    ).seconds / 3600
-
-    # pat = personal access token
-    # -> in github click on your profile and go into
-    # settings -> developer settings -> personal access tokens
-    pat: str | None = os.getenv("GITHUB_PAT")
-    gith: Github = Github(pat)
-    repo: Any = gith.get_user().get_repo("grafische_Datenauswertung")
-    branch: Any = repo.get_branch("main_311")
-    sha: Any = branch.commit.sha
-    commit: Any = repo.get_commit(sha).commit
-    st.session_state["com_date"] = commit.author.date + dt.timedelta(hours=tz_diff)
-    st.session_state["com_msg"] = commit.message.split("\n")[-1]
-
-    logger.log(
-        "ONCE_per_SESSION", "Beschreibung der letzten Änderungen von GitHub geholt"
-    )
-
-
-# svg in streamlit app darstellen (z.B. UTEC-Logo)
-@func_timer()
 def render_svg(svg_path: str = "logo/UTEC_logo_text.svg") -> str:
     """Renders the given svg string."""
     logger.success(f"svg-Datei '{svg_path}' codiert")
@@ -196,7 +165,7 @@ def trans_obis(code: str) -> dict:
     code_messart: str | None = lis_code[3] if len(lis_code) >= 4 else None
 
     if code_medium == "1" and code_messgr:
-        obis: dict = cont.OBIS_ELECTRICAL
+        obis: cont.ObisDic = cont.OBIS_ELECTRICAL
         dic_obis["name_kurz"] = obis["Messgröße"][code_messgr]["alt_bez"]
         dic_obis["name"] = f'{obis["Messgröße"][code_messgr]["alt_bez"]} ({code})'
         dic_obis["name_lang"] = (

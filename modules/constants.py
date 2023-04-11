@@ -21,6 +21,16 @@ DicStrNest: TypeAlias = dict[str, dict[str, str]]
 CSS_LABEL_1: str = "{font-size:1rem; font-weight:600;}"
 CSS_LABEL_2: str = "{font-size:0.95rem; font-weight:600;}"
 
+# CSS hacks for section / widget labels
+CSS_LABELS: str = f"""
+    <style>
+        div.row-widget.stSelectbox > label {CSS_LABEL_1}
+        div.row-widget.stMultiSelect > label {CSS_LABEL_1}
+        [data-testid='stFileUploader'] > label {CSS_LABEL_1}
+        div.streamlit-expanderHeader {CSS_LABEL_2}
+    </style>
+"""
+
 # Spalte zur Speicherung der Datumswerte vor Sortierung für JDL
 COL_ORG_DATE: str = "cutomdata"
 

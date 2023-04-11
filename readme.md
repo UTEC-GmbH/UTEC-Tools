@@ -8,8 +8,7 @@ Grafische Datenauswertung der UTEC GmbH
 App Accesss
 -----------
 
-Streamlit
-https://share.streamlit.io/lasinludwig/grafische_datenauswertung/slit.py
+https://rebrand.ly/utec-tools
   
 
 

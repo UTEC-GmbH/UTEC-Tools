@@ -1,0 +1,84 @@
+...just some notes for me...
+
+
+App Accesss
+-----------
+https://rebrand.ly/utec-tools
+  
+
+Run the App
+-----------
+streamlit run login.py
+
+
+
+pip
+---
+
+# install package (e.g. plotly)
+pip install plotly
+
+# update package xyz to latest version
+pip install plotly -U
+
+# reinstall package with specific version
+pip install --force-reinstall -v "plotly==5.11.0"
+  
+
+# list all installed packages and their version
+pip list
+
+# show information about specific package
+pip show plotly
+
+
+Virtual Environments and Requirements
+-------------------------------------
+
+# Create a virtual environment:
+py -m venv .venv
+
+# Activate virtual environment
+.venv\Scripts\activate
+
+
+
+# upgrading pip:
+py -m pip install --upgrade pip
+
+# install everything from requirements.txt:     
+pip install -r requirements.txt
+
+# install all the latest versions -> requirements_latest_versions.txt:
+pip install -r requirements_latest_versions.txt
+
+
+
+Create requirements.txt:     
+------------------------
+pip install pipreqs
+pipreqs --force --ignore .venv ./
+
+
+
+
+Git
+---
+"rebase"
+z.B. um eine Branch auf den aktuellen Stand des Masters zu bringen
+
+master: commit_m1 → commit_m2 → commit_m3 →   ...          
+                ↓                       ↓ rebase bringt Änderungen von m2 und m3 in branch
+branch:         → commit_b1 → commit_b2 → commit_b3 ...
+  
+
+GitHub
+------
+To close a GitHub issue, you can use any of the following keywords in the commit message, followed by '#' and the number of the issue:
+
+- Close / Closes / Closed
+- Fix / Fixes / Fixed
+- Resolve / Resolves / Resolved
+
+Example commit message to close issue number 7:
+> "new way of importing files - closes #7"

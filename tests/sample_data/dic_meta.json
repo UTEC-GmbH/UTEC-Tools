@@ -1,0 +1,52 @@
+{
+    "Strombedarf": {
+        "orig_tit": "Strombedarf",
+        "tit": "Strombedarf",
+        "unit": " kWh"
+    },
+    "BHKW Strom": {
+        "orig_tit": "BHKW Strom",
+        "tit": "BHKW Strom",
+        "unit": " kWh"
+    },
+    "Strombezug (1-1:1.29.0)": {
+        "orig_tit": "Strombezug (1-1:1.29.0)",
+        "tit": "Bezug",
+        "code": "1-1:1.29.0",
+        "messgr_c": "1",
+        "messar_c": "29",
+        "messgr_n": "Bezug",
+        "messar_n": "Lastprofil",
+        "unit": " kW"
+    },
+    "Stromeinsp. (1-1:2.29.0)": {
+        "orig_tit": "Stromeinsp. (1-1:2.29.0)",
+        "tit": "Lieferung",
+        "code": "1-1:2.29.0",
+        "messgr_c": "2",
+        "messar_c": "29",
+        "messgr_n": "Lieferung",
+        "messar_n": "Lastprofil",
+        "unit": " kW"
+    },
+    "W\u00e4rmebedarf": {
+        "orig_tit": "W\u00e4rmebedarf",
+        "tit": "W\u00e4rmebedarf",
+        "unit": " kWh"
+    },
+    "Kessel": {
+        "orig_tit": "Kessel",
+        "tit": "Kessel",
+        "unit": " kWh"
+    },
+    "BHKW W\u00e4rme": {
+        "orig_tit": "BHKW W\u00e4rme",
+        "tit": "BHKW W\u00e4rme",
+        "unit": " kWh"
+    },
+    "Temperatur": {
+        "orig_tit": "Temperatur",
+        "tit": "Temperatur",
+        "unit": " \u00b0C"
+    }
+}

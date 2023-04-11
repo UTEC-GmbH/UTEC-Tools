@@ -1,0 +1,28 @@
+metrics:
+  quality_threshold: 20.0
+
+rule_settings:
+  enable:
+    - default  # Continue to enable the default rules enabled
+    - gpsg
+    - no-debug
+    
+rules:
+  - id: raise-not-implemented
+    description: NotImplemented is not an Exception, raise NotImplementedError instead
+    pattern: raise NotImplemented
+    replacement: raise NotImplementedError
+    tags: 
+      - tutorial
+
+  - id: remove-open-r
+    description: Files are opened in read mode `r` by default
+    pattern: open(${file}, "r")
+    replacement: open(${file})
+    tags: 
+      - tutorial
+  
+
+
+  
+

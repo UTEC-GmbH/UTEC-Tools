@@ -1,0 +1,11 @@
+{
+    "python.formatting.provider": "black",
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "autoDocstring.customTemplatePath": ".vscode\\autoDocstring_google_modified.mustache",
+    "ruff.organizeImports": false,
+    "ruff.logLevel": "warn"
+}

@@ -97,7 +97,7 @@ def logger_setup() -> None:
         "CRITICAL": "{time:HH:mm:ss} | ☠️ | {module} -> {function} -> line: {line} | {message} | ☠️ |",
         "TIMER": "{time:HH:mm:ss} | ⏱  | {message} | ⏱  |",
         "ONCE_per_RUN": "{time:HH:mm:ss} | 👟 | {module} -> {function} -> line: {line} | {message} | 👟 |",
-        "ONCE_per_SESSION": "\n\n\n{time:HH:mm:ss} | 🔥 | {module} -> {function} -> line: {line} | {message} | 🔥 |\n",
+        "ONCE_per_SESSION": "\n\n{time:HH:mm:ss} | 🔥 | {module} -> {function} -> line: {line} | {message} | 🔥 |\n\n",
     }
     custom_levels: list[str] = [
         "TIMER",

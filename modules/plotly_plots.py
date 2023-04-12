@@ -9,23 +9,23 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from geopy import distance
-from loguru import logger
 
 from modules import constants as cont
 from modules import meteorolog as meteo
 from modules.general_functions import func_timer, sort_list_by_occurance
 
 
-@func_timer()
-def line_plot(
-    df: pd.DataFrame,
-    meta: dict,
-    **kwargs,
-) -> go.Figure:
-    """Liniengrafik
-    lines: list[str] | None = None,
-    title: str = "",
-    var_name: str = "",
+@func_timer
+def line_plot(df: pd.DataFrame, meta: dict, **kwargs) -> go.Figure:
+    """Liniengrafik für Daten eines einzelnen Jahres
+
+
+    Args:
+        - df (pd.DataFrame): Daten
+        - meta (dict): Metadaten
+
+    Returns:
+        - go.Figure: Linengrafik
     """
 
     lines: list[str] = kwargs.get("lines") or [str(col) for col in df.columns]
@@ -40,7 +40,6 @@ def line_plot(
         for line in lines
         if all(ex not in line for ex in cont.EXCLUDE)
     ]
-    sorted_units: list[str] = sort_list_by_occurance(all_units)
 
     fig: go.Figure = go.Figure()
     fig = fig.update_layout(
@@ -48,7 +47,7 @@ def line_plot(
             "meta": {
                 "title": title,
                 "var_name": kwargs.get("var_name"),
-                "units": sorted_units,
+                "units": sort_list_by_occurance(all_units),
                 "metadata": meta,
             }
         }
@@ -61,7 +60,7 @@ def line_plot(
         )
         trace_unit: str | None = meta[line].get("unit")
         hovtemp: str = f"{trace_unit} {cusd_format}"
-        fig.add_trace(
+        fig = fig.add_trace(
             go.Scatter(
                 x=df.index,
                 y=df[line] * manip,
@@ -88,7 +87,7 @@ def line_plot(
 
 
 # Lastgang mehrerer Jahre übereinander darstellen
-@func_timer()
+@func_timer
 def line_plot_y_overlay(
     dic_df: dict,
     meta: dict,
@@ -97,7 +96,21 @@ def line_plot_y_overlay(
     title: str = "",
     var_name: str = "",
 ) -> go.Figure:
-    """Liniengrafik mit mehreren Jahren übereinander (Jahreszahlen werden ausgetauscht)"""
+    """Liniengrafik mit mehreren Jahren übereinander
+    (Jahreszahlen werden ausgetauscht)
+
+
+    Args:
+        - dic_df (dict): Dictionary mit df für jedes Jahr
+        - meta (dict): Dictionary mit Metadaten für jedes Jahr
+        - years (list): Liste der Jahre
+        - lines (list | None, optional): Liste der Linien - wenn None, werden alle Linien der df verwendet. Defaults to None.
+        - title (str, optional): Titel der Grafik. Defaults to "".
+        - var_name (str, optional): Variablenname für Metadaten. Defaults to "".
+
+    Returns:
+        - go.Figure: Liniengrafik mit mehreren Jahren übereinander
+    """
 
     if lines is None:
         lines = [
@@ -106,13 +119,11 @@ def line_plot_y_overlay(
             for col in list
             if all(ex not in col for ex in cont.EXCLUDE)
         ]
-    sorted_units: list[str] = sort_list_by_occurance(
-        [
-            meta[line].get("unit")
-            for line in lines
-            if all(excl not in line for excl in cont.EXCLUDE)
-        ]
-    )
+    all_units: list[str] = [
+        meta[line].get("unit")
+        for line in lines
+        if all(excl not in line for excl in cont.EXCLUDE)
+    ]
 
     cusd_format: str = (
         "(%{customdata|%a %d. %b %Y %H:%M})"
@@ -127,7 +138,7 @@ def line_plot_y_overlay(
                 "title": title,
                 "var_name": var_name,
                 "multi_y": True,
-                "units": sorted_units,
+                "units": sort_list_by_occurance(all_units),
                 "metadata": meta,
             }
         }
@@ -139,12 +150,12 @@ def line_plot_y_overlay(
         hovtemp: str = f"{trace_unit} {cusd_format}"
         year: int = [year for year in years if str(year) in line][0]
 
-        cusd = (
+        cusd: pd.Series = (
             dic_df[year][f"{line}_orgidx"]
             if f"{line}_orgidx" in list(dic_df[year].columns)
             else dic_df[year]["orgidx"]
         )
-        fig.add_trace(
+        fig = fig.add_trace(
             go.Scatter(
                 x=dic_df[year].index,
                 y=dic_df[year][line] * manip,
@@ -175,32 +186,51 @@ def line_plot_y_overlay(
     return fig
 
 
-# @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer()
+@func_timer
 def line_plot_day_overlay(
-    dic_days: dict, dic_meta: dict, title: str = "", var_name: str = ""
+    dic_days: dict, meta: dict, title: str = "", var_name: str = ""
 ) -> go.Figure:
-    """Liniengrafik für Tagesvergleich"""
+    """Liniengrafik für Tagesvergleich
+    Jeder Tag bekommt eine Linie. Die Linien werden übereinander gelegt.
 
-    fig = go.Figure()
-    fig.layout.meta = {
-        "title": title,
-        "var_name": var_name,
-        "metadata": dic_meta,
-    }
 
-    lis_units = []
+    Args:
+        - dic_days (dict): Dictionary mit Daten der Tage
+        - meta (dict): Dictionary mit Metadaten
+        - title (str, optional): Titel der Grafik. Defaults to "".
+        - var_name (str, optional): Variablenname für Metadaten. Defaults to "".
+
+    Returns:
+        - go.Figure: _description_
+    """
+
+    fig: go.Figure = go.Figure()
+    fig = fig.update_layout(
+        {
+            "meta": {
+                "title": title,
+                "var_name": var_name,
+                "metadata": meta,
+            }
+        }
+    )
+    cusd_format: str = "(%{customdata|%a %e. %b %Y %H:%M})"
+
+    lis_units: list[str] = []
     for date in dic_days:
         for line in [lin for lin in dic_days[date].columns if "orgidx" not in lin]:
-            lis_units.append(dic_meta[line].get("unit"))
-            manip = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
-            cusd = (
+            lis_units.append(meta[line].get("unit"))
+            manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
+            cusd: pd.Series = (
                 dic_days[f"{line}_orgidx"]
                 if f"{line}_orgidx" in dic_days[date].columns
                 else dic_days[date]["orgidx"]
             )
 
-            fig.add_trace(
+            trace_unit: str | None = meta[line].get("unit")
+            hovtemp: str = f"{trace_unit} {cusd_format} <extra>{line}</extra>"
+
+            fig = fig.add_trace(
                 go.Scatter(
                     x=dic_days[date].index,
                     y=dic_days[date][line] * manip,
@@ -214,37 +244,24 @@ def line_plot_day_overlay(
                                 abs(dic_days[date][line]) < 100,
                             ],
                             [
-                                "%{y:,.2f}"
-                                + dic_meta[line].get("unit")
-                                + " (%{customdata|%a %e. %b %Y %H:%M})<extra>"
-                                + line
-                                + "</extra>",
-                                "%{y:,.1f}"
-                                + dic_meta[line].get("unit")
-                                + " (%{customdata|%a %e. %b %Y %H:%M})<extra>"
-                                + line
-                                + "</extra>",
+                                "%{y:,.2f}" + hovtemp,
+                                "%{y:,.1f}" + hovtemp,
                             ],
-                            "%{y:,.0f}"
-                            + dic_meta[line].get("unit")
-                            + " (%{customdata|%a %e. %b %Y %H:%M})<extra>"
-                            + line
-                            + "</extra>",
+                            "%{y:,.0f}" + hovtemp,
                         )
                     ),
                     legendgroup=line,
                     legendgrouptitle_text=line,
                     visible=True,
-                    yaxis=dic_meta[line]["y_axis"],
+                    yaxis=meta[line]["y_axis"],
+                    meta={"unit": trace_unit, "negativ": manip < 0, "df_col": line},
                 )
             )
-
-    fig.layout.meta["units"] = sort_list_by_occurance(lis_units)
 
     return fig
 
 
-@func_timer()
+@func_timer
 def map_dwd_all() -> go.Figure:
     """Karte aller Wetterstationen"""
 
@@ -302,7 +319,7 @@ def map_dwd_all() -> go.Figure:
     return fig
 
 
-@func_timer()
+@func_timer
 def map_weatherstations() -> go.Figure:
     """Karte der Wetterstationen (verwendete hervorgehoben)"""
 

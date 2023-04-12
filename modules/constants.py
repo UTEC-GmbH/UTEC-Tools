@@ -1,11 +1,11 @@
-"""
-Constants
-"""
+""" Konstanten """
 
 import os
 from typing import Literal, TypeAlias, TypedDict
 
+# Current Working Directory
 CWD: str = os.getcwd()
+
 
 DURATIONS_IN_MS: dict[str, int] = {
     "half_day": 12 * 60 * 60 * 1000,  # 43.200.000
@@ -188,7 +188,7 @@ PLOTFARBE: dict[str, str] = {
 
 
 # obis Elektrizität (Medium == 1)
-OBIS_PATTERN_EL: str = r".*1-\d*:\d*\.\d*"  # fnmatch "*1-*:*.*"
+OBIS_PATTERN_EL: str = r"1-\d*:\d*\.\d*"  # fnmatch "*1-*:*.*"
 
 
 class ObisDic(TypedDict):

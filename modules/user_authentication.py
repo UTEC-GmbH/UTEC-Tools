@@ -22,39 +22,68 @@ def infos_warnings_errors(key: str) -> str:
         or f"{st.session_state['access_until']:%d.%m.%Y}"
     )
 
-    dic: dict[str, str] = {
-        "no_access": (
+    dic: dict[str, dict[str, str]] = {
+        "no_access": {
+            "message": """
+                Mit diesem Benutzerkonto haben Sie keinen Zugriff auf dieses Modul.  \n  \n
+                Bitte nehmen Sie Kontakt mit UTEC auf.
+            """,
+            "log": "no access to page (module)",
+        },
+        "no_login": {
+            "message": "Bitte anmelden! (login auf der linken Seite)",
+            "log": "not logged in",
+        },
+        "too_late": {
+            "message": f"""
+                Zugriff war nur bis {until} gestattet.  \n  \n
+                Bitte nehmen Sie Kontakt mit UTEC auf.
+            """,
+            "log": "access for user expired",
+        },
+        "access_UTEC": {
+            "message": """
+                Du bist mit dem allgemeinen UTEC-Account angemeldet.  \n  \n
+                Viel Spaß mit den Tools!
             """
-        Mit diesem Benutzerkonto haben Sie keinen Zugriff auf dieses Modul.  \n  \n
-        Bitte nehmen Sie Kontakt mit UTEC auf.
-        """
-        ),
-        "no_login": ("Bitte anmelden! (login auf der linken Seite)"),
-        "too_late": (
-            f"""
-        Zugriff war nur bis {until} gestattet.  \n  \n
-        Bitte nehmen Sie Kontakt mit UTEC auf.
-        """
-        ),
-        "access_UTEC": (
+        },
+        "access_other": {
+            "message": f"Angemeldet als '{st.session_state.get('name')}'."
+        },
+        "access_until": {
+            "message": f"""
+                Mit diesem Account kann auf folgende Module bis zum 
+                {until} zugegriffen werden:
             """
-        Du bist mit dem allgemeinen UTEC-Account angemeldet.  \n  \n
-        Viel Spaß mit den Tools!
-        """
-        ),
-        "access_other": (f"Angemeldet als '{st.session_state.get('name')}'."),
-        "access_until": (
-            f"""
-        Mit diesem Account kann auf folgende Module bis zum 
-        {until} zugegriffen werden:
-        """
-        ),
-        "access_level": "Mit diesem Account kann auf folgende Module zugegriffen werden:",
+        },
+        "access_level": {
+            "message": "Mit diesem Account kann auf folgende Module zugegriffen werden:"
+        },
     }
-    return dic[key]
+
+    if dic[key].get("log"):
+        logger.error(dic[key]["log"])
+
+    return dic[key]["message"]
 
 
-@func_timer()
+def authentication(page: str) -> bool:
+    """Authentication object"""
+
+    if not st.session_state.get("authentication_status"):
+        st.warning(infos_warnings_errors("no_login"))
+        return False
+    if page not in st.session_state["access_pages"]:
+        st.error(infos_warnings_errors("no_access"))
+        return False
+    if st.session_state["access_until"] < date.today():
+        st.error(infos_warnings_errors("too_late"))
+        return False
+
+    return True
+
+
+@func_timer
 def connect_database(database: str = "UTEC_users") -> Any:
     """Connection to a Deta database.
     The default is the "users" database, which holds the user information (like username, access level, etc.)
@@ -74,7 +103,7 @@ def connect_database(database: str = "UTEC_users") -> Any:
     return deta.Base(database)
 
 
-@func_timer()
+@func_timer
 def get_all_user_data() -> dict[str, dict[str, Any]]:
     """Liste aller gespeicherter Benutzerdaten - je Benutzer ein Dictionary
 
@@ -131,26 +160,7 @@ def format_user_credentials() -> dict[str, dict[str, Any]]:
     }
 
 
-def authentication(page: str) -> bool:
-    """Authentication object"""
-
-    if not st.session_state.get("authentication_status"):
-        st.warning(infos_warnings_errors("no_login"))
-        logger.error("not logged in")
-        return False
-    if page not in st.session_state["access_pages"]:
-        st.error(infos_warnings_errors("no_access"))
-        logger.error("no access to page (module)")
-        return False
-    if st.session_state["access_until"] < date.today():
-        st.error(infos_warnings_errors("too_late"))
-        logger.error("access for user expired")
-        return False
-
-    return True
-
-
-@func_timer()
+@func_timer
 def insert_new_user(
     username: str,
     name: str,
@@ -190,14 +200,14 @@ def insert_new_user(
     st.button("ok", key="insert_ok_butt")
 
 
-@func_timer()
+@func_timer
 def update_user(username: str, updates: dict) -> Any:
     """existierendes Benutzerkonto ändern"""
     deta_db: Any = connect_database()
     return deta_db.update(updates, username)
 
 
-@func_timer()
+@func_timer
 def delete_user(usernames: str | None = None) -> None:
     """Benutzer löschen"""
     deta_db: Any = connect_database()

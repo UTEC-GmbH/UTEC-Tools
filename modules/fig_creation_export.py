@@ -18,13 +18,12 @@ from modules.general_functions import func_timer, render_svg
 
 
 # Grund-Grafik
-@func_timer()
+@func_timer
 def cr_fig_base() -> go.Figure:
     """Lastgang erstellen"""
 
     meta: dict = st.session_state["metadata"]
 
-    
     tit_res: str = ""
     if st.session_state.get("cb_h"):
         tit_res = cont.FIG_TITLE_SUFFIXES["suffix_Stunden"]
@@ -87,7 +86,7 @@ def cr_fig_base() -> go.Figure:
     return fig
 
 
-@func_timer()
+@func_timer
 def cr_fig_jdl() -> None:
     """Jahresdauerlinie erstellen"""
 
@@ -132,7 +131,7 @@ def cr_fig_jdl() -> None:
         )
 
 
-@func_timer()
+@func_timer
 def cr_fig_mon() -> None:
     """Monatswerte erstellen"""
 
@@ -182,7 +181,7 @@ def cr_fig_mon() -> None:
     )
 
 
-@func_timer()
+@func_timer
 def cr_fig_days() -> None:
     """Tagesvergleiche"""
 
@@ -214,7 +213,7 @@ def cr_fig_days() -> None:
     )
 
 
-@func_timer()
+@func_timer
 def plot_figs() -> None:
     """Grafiken darstellen"""
 
@@ -291,14 +290,14 @@ def plot_figs() -> None:
                 )
 
 
-@func_timer()
-def html_exp(f_pn: str = "export/interaktive_grafische_Auswertung.html") -> None:
+@func_timer
+def html_exp(f_pn: str = "export\\interaktive_grafische_Auswertung.html") -> None:
     """html-Export"""
 
     if os.path.exists(f_pn):
         os.remove(f_pn)
 
-    with open(f_pn, "w") as fil:
+    with open(f_pn, "w", encoding="utf-8") as fil:
         fil.write("<!DOCTYPE html>")
         fil.write("<title>Interaktive Grafische Datenauswertung</title>")
         fil.write("<head><style>")
@@ -326,11 +325,12 @@ def html_exp(f_pn: str = "export/interaktive_grafische_Auswertung.html") -> None
         fil.write("</style>")
 
         for fig in st.session_state["lis_figs"]:
-            if "Lastgang" in st.session_state[fig].layout.meta.get("title"):
+            fig_type: str = fgf.fig_type_by_title(st.session_state[fig])
+            if "las" in fig_type:
                 fil.write('<div id="las">')
-            elif "Jahresdauerlinie" in st.session_state[fig].layout.meta.get("title"):
+            elif "jdl" in fig_type:
                 fil.write('<div id="jdl">')
-            elif "Monatswerte" in st.session_state[fig].layout.meta.get("title"):
+            elif "mon" in fig_type:
                 fil.write('<div id="mon">')
 
             fil.write(

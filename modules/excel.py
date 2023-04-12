@@ -12,6 +12,7 @@ from loguru import logger
 
 from modules import constants as cont
 from modules import meteorolog as meteo
+from modules.classes import ObisElectrical
 from modules.df_manip import clean_up_daylight_savings
 from modules.general_functions import func_timer, sort_list_by_occurance
 
@@ -20,10 +21,10 @@ pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
 
 # ? return value (maybe dict) instead of putting everything in session_state???
 # TODO: better docstring
-@func_timer()
+@func_timer
 @st.cache_data(show_spinner=False)
 def import_prefab_excel(file: Any) -> None:
-    """vordefinierte Datei (benannte Zelle für Indes) importieren"""
+    """vordefinierte Datei (benannte Zelle für Index) importieren"""
 
     df_messy: pd.DataFrame = pd.read_excel(file, sheet_name="Daten")
     df: pd.DataFrame = edit_df_after_import(df_messy)
@@ -46,17 +47,17 @@ def import_prefab_excel(file: Any) -> None:
         "all": list(units.values()),
         "set": sort_list_by_occurance(list(units.values())),
     }
-    # st.experimental_show(st.session_state["metadata"])
+
     set_y_axis_for_lines()
     st.session_state["df"] = df
     if "years" not in st.session_state:
         st.session_state["years"] = meta["index"]["years"]
 
-    logger.success("file imported as DataFrame")
-    logger.info(f"{df.info(verbose=True)}")
+    logger.success("file imported and metadata extracted")
+    logger.info(f"{df.head()}")
 
 
-@func_timer()
+@func_timer
 def units_from_messy_df(df_messy: pd.DataFrame) -> dict[str, str]:
     """Get the units of every column from the messy df right after import
 
@@ -92,7 +93,7 @@ def units_from_messy_df(df_messy: pd.DataFrame) -> dict[str, str]:
 
 
 # Einheiten
-@func_timer()
+@func_timer
 def set_y_axis_for_lines() -> None:
     """Y-Achsen der Linien"""
 
@@ -110,7 +111,7 @@ def set_y_axis_for_lines() -> None:
         )
 
 
-@func_timer()
+@func_timer
 @st.cache_data(show_spinner=False)
 def edit_df_after_import(df_messy: pd.DataFrame) -> pd.DataFrame:
     """Get the units out of the imported (messy) df and clean up the df
@@ -159,7 +160,7 @@ def edit_df_after_import(df_messy: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-@func_timer()
+@func_timer
 @st.cache_data(show_spinner=False)
 def meta_from_index(df: pd.DataFrame) -> dict[str, Any]:
     """check if index is datetime and if so, get temporal resolution
@@ -195,7 +196,7 @@ def meta_from_index(df: pd.DataFrame) -> dict[str, Any]:
     return dic_index
 
 
-@func_timer()
+@func_timer
 def meta_from_col_title(df: pd.DataFrame, units: dict[str, str]) -> cont.DicStrNest:
     """Get metadata from the column title and obis code (if available)
 
@@ -220,20 +221,24 @@ def meta_from_col_title(df: pd.DataFrame, units: dict[str, str]) -> cont.DicStrN
         meta[col] = {"orig_tit": col, "tit": col, "unit": units.get(col) or ""}
 
         # check if there is an OBIS-code in the column title
-        if re.search(cont.OBIS_PATTERN_EL, col):
-            obis_code: str = f'1-{col.split("1-")[1].replace("(", "").replace(")", "")}'
-            meta_obis: dict[str, str] = meta_from_obis_code(obis_code)
-            meta_obis["unit"] = units.get(col) or meta_obis["unit"]
-
-            meta[col].update(meta_obis)
-            meta[col]["tit"] = f'{meta_obis["messgroesse"]} ({obis_code})'
+        if match := re.search(cont.OBIS_PATTERN_EL, col):
+            obis_code = ObisElectrical(match[0])
+            meta[col].update(
+                {
+                    "unit": units.get(col) or obis_code.unit,
+                    "obis_code": obis_code.code,
+                    "messgroesse": obis_code.messgroesse,
+                    "messart": obis_code.messart,
+                    "tit": obis_code.name,
+                }
+            )
             meta[meta[col]["tit"]] = meta[col]
             df.rename(columns={col: meta[col]["tit"]}, inplace=True)
 
     return meta
 
 
-@func_timer()
+@func_timer
 def convert_15min_kwh_to_kw(
     df: pd.DataFrame, meta: cont.DicStrNest
 ) -> tuple[pd.DataFrame, cont.DicStrNest]:
@@ -331,32 +336,8 @@ def insert_column_arbeit_leistung(
     )
 
 
-def meta_from_obis_code(obis_code: str) -> dict[str, str]:
-    """Get metadata from an OBIS-code
-
-    Args:
-        - code (str): OBIS-Code (from column title)
-
-    Returns:
-        - dict[str, str]: Dictionary with the following:
-            - "obis_code" (z.B. "1-1:29.0")
-            - "messgroesse" (z.B. "Bezug", "Lieferung", "Spannung", etc.)
-            - "messart" (z.B. "min", "max", "Mittel", etc.)
-            - "unit" (z.B. " kW", " kWh", etc.)
-    """
-    messgr_code: str = obis_code.split(":")[1].split(".")[0]
-    messar_code: str = obis_code.split(":")[1].split(".")[1]
-
-    return {
-        "obis_code": obis_code,
-        "messgroesse": cont.OBIS_ELECTRICAL["messgroesse"][messgr_code]["alt_bez"],
-        "messart": cont.OBIS_ELECTRICAL["messart"][messar_code]["alt_bez"],
-        "unit": f' {cont.OBIS_ELECTRICAL["messgroesse"][messgr_code]["unit"]}',
-    }
-
-
 # TODO: rewrite, refactor, docstring
-@func_timer()
+@func_timer
 def excel_download(df: pd.DataFrame, page: str = "graph") -> Any:
     """Daten als Excel-Datei herunterladen"""
 
@@ -426,7 +407,7 @@ def edit_ws_format(
     # erste Spalte
     dic_format: dict[str, Any] = dic_format_base.copy()
     dic_format["align"] = "left"
-    cell_format = wkb.add_format(dic_format)
+    cell_format: Any = wkb.add_format(dic_format)
     wks.set_column(offset_col, offset_col, 18, cell_format)
 
     # erste Zeile
@@ -441,7 +422,7 @@ def edit_ws_format(
     for num_format in dic_num_formats.values():
         dic_format = dic_format_base.copy()
         dic_format["num_format"] = num_format
-        col_format = wkb.add_format(dic_format)
+        col_format: Any = wkb.add_format(dic_format)
 
         for cnt, col in enumerate(cols):
             if dic_num_formats[col] == num_format:

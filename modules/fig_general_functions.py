@@ -34,7 +34,7 @@ def fig_layout_as_dic(fig: go.Figure) -> dict[str, Any]:
         - layout (dict[str, Any]): layout as dictionary
     """
 
-    return {item: fig.layout[item] for item in fig.layout}
+    return {item: fig.layout[item] for item in fig.layout}  # type: ignore
 
 
 def get_colorway(fig: go.Figure, **kwargs) -> list[str]:
@@ -65,7 +65,7 @@ def fig_type_by_title(fig: go.Figure, **kwargs) -> str:
         - fig (go.Figure): Figure in question
 
     Returns:
-        - str: Figure type as key in FIG_TITLES (e.g. 'lastgang', 'jdl', etc.)
+        - str: Figure type as key in FIG_TITLES (e.g. 'lastgang', 'jdl', 'mon' etc.)
 
         (if type cannot be determined from the title, returns 'type unknown')
     """

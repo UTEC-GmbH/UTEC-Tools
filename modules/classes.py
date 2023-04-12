@@ -1,11 +1,14 @@
 """Classes and such"""
 
+import re
 from dataclasses import dataclass, field
 from math import ceil
 from typing import Any
 
 import numpy as np
 import plotly.graph_objects as go
+import streamlit as st
+from loguru import logger
 
 from modules.constants import OBIS_ELECTRICAL, ObisDic
 
@@ -19,7 +22,9 @@ class ObisElectrical:
         - ValueError: Falls der Code nicht mit '1' anfängt, ist es kein Code für eletrische Zähler.
     """
 
-    code: str
+    code_or_name: str
+    pattern: str = r"1-\d*:\d*\.\d*"
+    code: str = field(init=False)
     medium: str = "Elektrizität"
     messgroesse: str = field(init=False)
     messart: str = field(init=False)
@@ -29,18 +34,17 @@ class ObisElectrical:
     name_lang: str = field(init=False)
 
     def __post_init__(self) -> None:
-        """fill in the fields"""
+        """Check if code is valid and fill in the fields"""
+        pat_match: re.Match[str] | None = re.search(self.pattern, self.code_or_name)
+        if pat_match is None:
+            logger.critical("Kein gültiger OBIS-Code")
+            raise ValueError("Kein gültiger OBIS-Code für elektrische Zähler!")
+        self.code = pat_match[0]
         code_r: str = self.code.replace(":", "-").replace(".", "-").replace("~*", "-")
         code_l: list[str] = code_r.split("-")
-        code_medium: str = code_l[0]
         code_messgr: str = code_l[2]
         code_messart: str = code_l[3]
         dic: ObisDic = OBIS_ELECTRICAL
-
-        if code_medium != "1":
-            raise ValueError(
-                "Unzulässiger OBIS-Code - Medium nicht Elektrizität (Code muss mit 1 anfangen)"
-            )
 
         self.messgroesse = dic["messgroesse"][code_messgr]["bez"]
         self.messart = dic["messart"][code_messart]["bez"]

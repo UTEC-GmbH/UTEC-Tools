@@ -167,7 +167,7 @@ def logger_setup() -> None:
 
 @func_timer
 def page_header_setup(page: str) -> None:
-    """Seitenkopf mit Logo, Titel (je nach Seite) und letzte Änderungen"""
+    """Seitenkopf mit Logo, Titel (je nach Seite) und letzten Änderungen"""
 
     st.session_state["page"] = page
     st.session_state["title_container"] = st.container()

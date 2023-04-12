@@ -3,7 +3,6 @@ UI - Menus
 """
 
 import datetime
-import re
 import secrets
 from glob import glob
 from typing import Any
@@ -11,7 +10,6 @@ from typing import Any
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from loguru import logger
 
 from modules import constants as cont
 from modules import excel as ex
@@ -19,11 +17,7 @@ from modules import fig_creation_export as fig_cr
 from modules import fig_general_functions as fgf
 from modules import meteorolog as meteo
 from modules.fig_general_functions import get_colorway
-from modules.general_functions import (
-    del_session_state_entry,
-    func_timer,
-    text_with_hover,
-)
+from modules.general_functions import del_session_state_entry, text_with_hover
 
 
 def user_accounts() -> None:
@@ -114,8 +108,8 @@ def new_user_form() -> None:
             label="Zugriffsrechte",
             key="new_user_access",
             help=("Auswahl der Module, auf die dieser Benutzer zugreifen darf."),
-            options=[key for key in cont.PAGES.keys() if key not in ("login")],
-            default=[key for key in cont.PAGES.keys() if key not in ("login")],
+            options=[key for key in cont.PAGES if key not in ("login")],
+            default=[key for key in cont.PAGES if key not in ("login")],
         )
 
         st.markdown("###")
@@ -144,7 +138,7 @@ def sidebar_file_upload() -> Any:
             "Auszuwertende Daten", expanded=not bool(st.session_state.get("f_up"))
         ):
             # Download
-            sb_example = st.selectbox(
+            sb_example: str | None = st.selectbox(
                 "Beispieldateien",
                 options=[
                     x.replace("/", "\\").split("\\")[-1].replace(".xlsx", "")
@@ -314,7 +308,8 @@ def select_graphs() -> None:
                         label=f"Tag {str(num + 1)}",
                         min_value=st.session_state["df"].index.min(),
                         max_value=st.session_state["df"].index.max(),
-                        value=st.session_state["df"].index.min() + pd.DateOffset(num),
+                        value=st.session_state["df"].index.min()
+                        + pd.DateOffset(days=num),
                         key=f"day_{str(num)}",
                     )
 
@@ -722,31 +717,6 @@ def display_options_main() -> bool:
                                 key=f"cb_anno_{anno_name}",
                             )
 
-                    # re_patterns: list[str] = [
-                    #     f"{line_name}:",
-                    #     f"{line_without_year} [0-9][0-9][0-9][0-9]:",
-                    # ]
-
-                    # for anno in [
-                    #     anno["name"]
-                    #     for anno in fig_layout["annotations"]
-                    #     if all(string not in anno["name"] for string in cont.EXCLUDE)
-                    #     and all(string not in line_name for string in cont.EXCLUDE)
-                    # ]:
-                    #     if any(re.search(re.escape(pat), anno) for pat in re_patterns):
-                    #         anno_group: str = anno
-                    #         for suff in cont.ARBEIT_LEISTUNG["suffix"]:
-                    #             anno_group = anno_group.replace(suff, "")
-                    #         if f"cb_anno_{anno_group}" not in st.session_state:
-                    #             with cols[list(columns).index("anno")]:
-                    #                 st.checkbox(
-                    #                     label=anno_group,
-                    #                     value=False,
-                    #                     key=f"cb_anno_{anno_group}",
-                    #                 )
-
-                    #         logger.info(f"Check box for '{anno_group}' created")
-
             st.markdown("###")
             but_upd_main: bool = st.form_submit_button("Knöpfle")
 
@@ -837,12 +807,14 @@ def downloads(page: str = "graph") -> None:
     """Dateidownloads"""
     if "meteo" in page:
         if st.session_state["meteo_start_year"] == st.session_state["meteo_end_year"]:
-            xl_file_name = f"Wetterdaten {st.session_state['meteo_start_year']}.xlsx"
+            xl_file_name: str = (
+                f"Wetterdaten {st.session_state['meteo_start_year']}.xlsx"
+            )
         else:
-            start = min(
+            start: int = min(
                 st.session_state["meteo_start_year"], st.session_state["meteo_end_year"]
             )
-            end = max(
+            end: int = max(
                 st.session_state["meteo_start_year"], st.session_state["meteo_end_year"]
             )
             xl_file_name = f"Wetterdaten {start}-{end}.xlsx"
@@ -905,7 +877,7 @@ def downloads(page: str = "graph") -> None:
     ):
         with st.spinner("Momentle bitte - Excel-Datei wird erzeugt..."):
             if page in ("graph"):
-                dic_df_ex = {
+                dic_df_ex: dict = {
                     x.name: {
                         "df": pd.DataFrame(data=x.y, index=x.x, columns=[x.name]),
                         "unit": st.session_state["metadata"][x.name].get("unit"),
@@ -917,9 +889,11 @@ def downloads(page: str = "graph") -> None:
                     ]
                 }
 
-                df_ex = st.session_state["df_ex"] = pd.concat(
+                df_ex: pd.DataFrame = pd.concat(
                     [dic_df_ex[df]["df"] for df in dic_df_ex], axis=1
                 )
+                st.session_state["df_ex"] = df_ex
+
             if page in ("meteo"):
                 df_ex = st.session_state.get("meteo_data")
 

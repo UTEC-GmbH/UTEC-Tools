@@ -291,13 +291,13 @@ def plot_figs() -> None:
 
 
 @func_timer
-def html_exp(f_pn: str = "export/interaktive_grafische_Auswertung.html") -> None:
+def html_exp(f_pn: str = "export\\interaktive_grafische_Auswertung.html") -> None:
     """html-Export"""
 
     if os.path.exists(f_pn):
         os.remove(f_pn)
 
-    with open(f_pn, "w") as fil:
+    with open(f_pn, "w", encoding="utf-8") as fil:
         fil.write("<!DOCTYPE html>")
         fil.write("<title>Interaktive Grafische Datenauswertung</title>")
         fil.write("<head><style>")
@@ -325,11 +325,12 @@ def html_exp(f_pn: str = "export/interaktive_grafische_Auswertung.html") -> None
         fil.write("</style>")
 
         for fig in st.session_state["lis_figs"]:
-            if "Lastgang" in st.session_state[fig].layout.meta.get("title"):
+            fig_type: str = fgf.fig_type_by_title(st.session_state[fig])
+            if "las" in fig_type:
                 fil.write('<div id="las">')
-            elif "Jahresdauerlinie" in st.session_state[fig].layout.meta.get("title"):
+            elif "jdl" in fig_type:
                 fil.write('<div id="jdl">')
-            elif "Monatswerte" in st.session_state[fig].layout.meta.get("title"):
+            elif "mon" in fig_type:
                 fil.write('<div id="mon">')
 
             fil.write(

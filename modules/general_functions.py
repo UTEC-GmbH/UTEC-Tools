@@ -9,7 +9,6 @@ import time
 from collections import Counter
 from typing import Any, Callable
 
-import pandas as pd
 import streamlit as st
 from loguru import logger
 

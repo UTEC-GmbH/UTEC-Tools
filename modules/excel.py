@@ -24,7 +24,7 @@ pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
 @func_timer
 @st.cache_data(show_spinner=False)
 def import_prefab_excel(file: Any) -> None:
-    """vordefinierte Datei (benannte Zelle für Indes) importieren"""
+    """vordefinierte Datei (benannte Zelle für Index) importieren"""
 
     df_messy: pd.DataFrame = pd.read_excel(file, sheet_name="Daten")
     df: pd.DataFrame = edit_df_after_import(df_messy)
@@ -47,14 +47,14 @@ def import_prefab_excel(file: Any) -> None:
         "all": list(units.values()),
         "set": sort_list_by_occurance(list(units.values())),
     }
-    # st.experimental_show(st.session_state["metadata"])
+
     set_y_axis_for_lines()
     st.session_state["df"] = df
     if "years" not in st.session_state:
         st.session_state["years"] = meta["index"]["years"]
 
-    logger.success("file imported as DataFrame")
-    logger.info(f"{df.info(verbose=True)}")
+    logger.success("file imported and metadata extracted")
+    logger.info(f"{df.head()}")
 
 
 @func_timer
@@ -336,30 +336,6 @@ def insert_column_arbeit_leistung(
     )
 
 
-def meta_from_obis_code(obis_code: str) -> dict[str, str]:
-    """Get metadata from an OBIS-code
-
-    Args:
-        - code (str): OBIS-Code (from column title)
-
-    Returns:
-        - dict[str, str]: Dictionary with the following:
-            - "obis_code" (z.B. "1-1:29.0")
-            - "messgroesse" (z.B. "Bezug", "Lieferung", "Spannung", etc.)
-            - "messart" (z.B. "min", "max", "Mittel", etc.)
-            - "unit" (z.B. " kW", " kWh", etc.)
-    """
-    messgr_code: str = obis_code.split(":")[1].split(".")[0]
-    messar_code: str = obis_code.split(":")[1].split(".")[1]
-
-    return {
-        "obis_code": obis_code,
-        "messgroesse": cont.OBIS_ELECTRICAL["messgroesse"][messgr_code]["alt_bez"],
-        "messart": cont.OBIS_ELECTRICAL["messart"][messar_code]["alt_bez"],
-        "unit": f' {cont.OBIS_ELECTRICAL["messgroesse"][messgr_code]["unit"]}',
-    }
-
-
 # TODO: rewrite, refactor, docstring
 @func_timer
 def excel_download(df: pd.DataFrame, page: str = "graph") -> Any:
@@ -431,7 +407,7 @@ def edit_ws_format(
     # erste Spalte
     dic_format: dict[str, Any] = dic_format_base.copy()
     dic_format["align"] = "left"
-    cell_format = wkb.add_format(dic_format)
+    cell_format: Any = wkb.add_format(dic_format)
     wks.set_column(offset_col, offset_col, 18, cell_format)
 
     # erste Zeile
@@ -446,7 +422,7 @@ def edit_ws_format(
     for num_format in dic_num_formats.values():
         dic_format = dic_format_base.copy()
         dic_format["num_format"] = num_format
-        col_format = wkb.add_format(dic_format)
+        col_format: Any = wkb.add_format(dic_format)
 
         for cnt, col in enumerate(cols):
             if dic_num_formats[col] == num_format:

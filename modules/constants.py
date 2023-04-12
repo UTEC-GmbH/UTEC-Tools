@@ -3,7 +3,9 @@
 import os
 from typing import Literal, TypeAlias, TypedDict
 
+# Current Working Directory
 CWD: str = os.getcwd()
+
 
 DURATIONS_IN_MS: dict[str, int] = {
     "half_day": 12 * 60 * 60 * 1000,  # 43.200.000

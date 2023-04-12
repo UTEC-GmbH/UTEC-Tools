@@ -14,7 +14,7 @@ from modules import constants as cont
 from modules import setup_stuff
 from modules import streamlit_menus as sm
 from modules import user_authentication as uauth
-from modules.general_functions import load_lottie_file, func_timer
+from modules.general_functions import func_timer, load_lottie_file
 
 # page setup
 setup_stuff.initial_setup()
@@ -22,7 +22,7 @@ setup_stuff.initial_setup()
 setup_stuff.page_header_setup(page="login")
 
 
-@func_timer()
+@func_timer
 def display_login_page() -> None:
     """Login-Page with two columns
     - login with username and password
@@ -38,7 +38,7 @@ def display_login_page() -> None:
         )
 
 
-@func_timer()
+@func_timer
 def login_section() -> None:
     """user authentication part of the login page"""
 

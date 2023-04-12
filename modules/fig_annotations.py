@@ -20,7 +20,7 @@ from modules.general_functions import func_timer, nachkomma
 
 
 @st.cache_data(show_spinner=False)
-@func_timer()
+@func_timer
 def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> datetime | float:
     """Mitte der x-Achse finden
 
@@ -132,7 +132,7 @@ def add_arrow(
     return fig
 
 
-@func_timer()
+@func_timer
 def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
     """Pfeile an Maximum und Minimum aller Linien in der Grafik
 
@@ -206,7 +206,7 @@ def hovertext_from_x_val(
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer()
+@func_timer
 def vline(fig: go.Figure, x_val: float or datetime, txt: str, pos: str) -> None:
     """eine vertikale Linie einfügen"""
 
@@ -224,7 +224,7 @@ def vline(fig: go.Figure, x_val: float or datetime, txt: str, pos: str) -> None:
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer()
+@func_timer
 def hide_hlines(fig: go.Figure) -> None:
     """horizontale Linien ausblenden (ohne sie zu löschen)"""
 
@@ -245,7 +245,7 @@ def hide_hlines(fig: go.Figure) -> None:
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer()
+@func_timer
 def hline_line(
     fig: go.Figure,
     value: float,
@@ -288,7 +288,7 @@ def hline_line(
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer()
+@func_timer
 def hline_fill(fig: go.Figure, value: float, ms_hor: list) -> go.Figure:
     """Ausfüllen zwischen horizontaler Linie und Linien"""
     dic_fill = {}
@@ -329,7 +329,7 @@ def hline_fill(fig: go.Figure, value: float, ms_hor: list) -> go.Figure:
 
 
 # horizontale / vertikale Linien
-@func_timer()
+@func_timer
 def h_v_lines() -> None:
     """horizontale und vertikale Linien"""
 
@@ -354,7 +354,7 @@ def h_v_lines() -> None:
             # )
 
 
-@func_timer()
+@func_timer
 def smooth(fig: go.Figure, **kwargs) -> go.Figure:
     """geglättete Linien"""
 
@@ -409,7 +409,7 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
 
 # Ausreißer entfernen
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer()
+@func_timer
 def remove_outl(fig: go.Figure, cut_off: float) -> go.Figure:
     """Ausreißerbereinigung"""
     for trace in fig.data:
@@ -428,7 +428,7 @@ def remove_outl(fig: go.Figure, cut_off: float) -> go.Figure:
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer()
+@func_timer
 def add_points(fig: go.Figure, df: pd.DataFrame, lines: list) -> None:
     """Punkte hinzufügen"""
 
@@ -446,7 +446,7 @@ def add_points(fig: go.Figure, df: pd.DataFrame, lines: list) -> None:
 
 
 # Ausreißerbereinigung
-@func_timer()
+@func_timer
 def clean_outliers() -> None:
     """Ausreißerbereinigung"""
 
@@ -470,7 +470,7 @@ def clean_outliers() -> None:
 #     )
 
 
-@func_timer()
+@func_timer
 def update_main() -> None:
     """Darstellungseinstellungen"""
 

@@ -54,7 +54,7 @@ def infos_warnings_errors(key: str) -> str:
     return dic[key]
 
 
-@func_timer()
+@func_timer
 def connect_database(database: str = "UTEC_users") -> Any:
     """Connection to a Deta database.
     The default is the "users" database, which holds the user information (like username, access level, etc.)
@@ -74,7 +74,7 @@ def connect_database(database: str = "UTEC_users") -> Any:
     return deta.Base(database)
 
 
-@func_timer()
+@func_timer
 def get_all_user_data() -> dict[str, dict[str, Any]]:
     """Liste aller gespeicherter Benutzerdaten - je Benutzer ein Dictionary
 
@@ -150,7 +150,7 @@ def authentication(page: str) -> bool:
     return True
 
 
-@func_timer()
+@func_timer
 def insert_new_user(
     username: str,
     name: str,
@@ -190,14 +190,14 @@ def insert_new_user(
     st.button("ok", key="insert_ok_butt")
 
 
-@func_timer()
+@func_timer
 def update_user(username: str, updates: dict) -> Any:
     """existierendes Benutzerkonto ändern"""
     deta_db: Any = connect_database()
     return deta_db.update(updates, username)
 
 
-@func_timer()
+@func_timer
 def delete_user(usernames: str | None = None) -> None:
     """Benutzer löschen"""
     deta_db: Any = connect_database()

@@ -8,16 +8,16 @@ import json
 import time
 from collections import Counter
 from typing import Any, Callable
-import pandas as pd
 
+import pandas as pd
 import streamlit as st
 from loguru import logger
 
 from modules import constants as cont
 
 
-def func_timer() -> Callable:
-    """Decorator to measures the execution time of a function.
+def func_timer(func: Callable) -> Callable:
+    """Decorator for measuring the execution time of a function.
 
     The execution time is writen in the streamlit session state
     and printed in the logs.
@@ -26,38 +26,34 @@ def func_timer() -> Callable:
         - Callable: Function to be measured
     """
 
-    def decorator(func: Callable) -> Any:
-        def wrapper(*args, **kwargs) -> None:
-            start_time: float = time.perf_counter()
+    def wrapper(*args, **kwargs) -> Any:
+        start_time: float = time.perf_counter()
 
-            if "dic_exe_time" not in st.session_state:
-                st.session_state["dic_exe_time"] = {}
+        if "dic_exe_time" not in st.session_state:
+            st.session_state["dic_exe_time"] = {}
 
-            result: Any = func(*args, **kwargs)
-            exe_time: float = time.perf_counter() - start_time
+        result: Any = func(*args, **kwargs)
 
-            st.session_state["dic_exe_time"][func.__name__] = exe_time
-            logger.log(
-                "TIMER",
-                f"execution time of '{func.__name__}': {round(exe_time, 4)} s",
-            )
+        exe_time: float = time.perf_counter() - start_time
+        st.session_state["dic_exe_time"][func.__name__] = exe_time
+        logger.log(
+            "TIMER",
+            f"execution time of '{func.__name__}': {round(exe_time, 4)} s",
+        )
 
-            return result
+        return result
 
-        return wrapper
-
-    return decorator
+    return wrapper
 
 
-def load_lottie_file(path: str) -> Any:
+def load_lottie_file(path: str) -> dict:
     """Load a Lottie-animatio by providing a json-file.
-
 
     Args:
         - path (str): path to json-file
 
     Returns:
-        - Any: animation
+        - dict: animation
     """
     with open(path) as file:
         return json.load(file)
@@ -65,7 +61,6 @@ def load_lottie_file(path: str) -> Any:
 
 def del_session_state_entry(key: str) -> None:
     """Eintrag in st.session_state löschen
-
 
     Args:
         - key (str): zu löschender Eintrag
@@ -98,9 +93,17 @@ def sort_list_by_occurance(list_of_stuff: list[Any]) -> list[Any]:
     return sorted(Counter(list_of_stuff), key=list_of_stuff.count, reverse=True)
 
 
-@func_timer()
+@func_timer
 def render_svg(svg_path: str = "logo/UTEC_logo_text.svg") -> str:
-    """Renders the given svg string."""
+    """SVG-Bild wird so codiert, dass es in Streamlit und html dargestellt werden kann.
+
+    Args:
+        - svg_path (str, optional): relativer Pfad zur svg-Datei. Defaults to "logo/UTEC_logo_text.svg".
+
+    Returns:
+        - str: Bild in string-format
+    """
+
     logger.success(f"svg-Datei '{svg_path}' codiert")
     with open(svg_path) as lines:
         svg: str = "".join(lines.readlines())
@@ -109,9 +112,17 @@ def render_svg(svg_path: str = "logo/UTEC_logo_text.svg") -> str:
 
 
 def text_with_hover(text: str, hovtxt: str) -> str:
-    """
-    css-hack für Überschrift mit mouse-over-tooltip
+    """CSS-Hack für Überschrift mit mouse-over-tooltip.
+
     use like this: st.markdown(text_with_hover, unsafe_allow_html=True)
+
+
+    Args:
+        - text (str): Der Text, der Überschrift.
+        - hovtxt (str): Der Text, der bei mouse-over angezeigt werden soll.
+
+    Returns:
+        - str: Text und Hovertext in html-Format
     """
 
     return f"""
@@ -127,7 +138,23 @@ def text_with_hover(text: str, hovtxt: str) -> str:
 
 
 def nachkomma(value: float) -> str:
-    """Nachkommastellen je nach Ziffern in Zahl"""
+    """Zahl als Text mit Nachkommastellen je nach Ziffern in Zahl.
+    ...kann z.B. für Anmerkungen (Pfeile) oder Hovertexte in Plots verwendet werden.
+
+    Der Punkt als Trennzeichen wird mit Komma ersetzt und die Zahl wird
+    je nach Größe gerundet.
+    Momentane Einstellung: 3 Ziffern
+        → ab 100 keine Nachkommastellen
+        → zw. 10 und 100: 1 Nachkommastelle
+        → unter 10: 2 Nachkommastellen
+
+
+    Args:
+        - value (float): Zahl mit Nachkommastellen
+
+    Returns:
+        - str: Zahl als Text mit Nachkommastellen je nach Anzahl Ziffern
+    """
     if abs(value) >= 1000:
         return str(f"{value:,.0f}").replace(",", ".")
     if abs(value) >= 100:
@@ -153,41 +180,3 @@ def last_day_of_month(any_day: dt.datetime) -> dt.datetime:
     next_month: dt.datetime = any_day.replace(day=28) + dt.timedelta(days=4)
 
     return next_month - dt.timedelta(days=next_month.day)
-
-
-def trans_obis(code: str) -> dict:
-    """Parameter Name und Einheit aus obis-code"""
-    dic_obis: dict[str, str] = {"name": code, "name_lang": code, "unit": ""}
-    code_r: str = code.replace(":", "-").replace(".", "-").replace("~*", "-")
-    lis_code: list[str] = code_r.split("-")
-    code_medium: str | None = lis_code[0] if lis_code else None
-    code_messgr: str | None = lis_code[2] if len(lis_code) >= 3 else None
-    code_messart: str | None = lis_code[3] if len(lis_code) >= 4 else None
-
-    if code_medium == "1" and code_messgr:
-        obis: cont.ObisDic = cont.OBIS_ELECTRICAL
-        dic_obis["name_kurz"] = obis["Messgröße"][code_messgr]["alt_bez"]
-        dic_obis["name"] = f'{obis["Messgröße"][code_messgr]["alt_bez"]} ({code})'
-        dic_obis["name_lang"] = (
-            f'{obis["Messgröße"][code_messgr]["bez"]} '
-            f'[{obis["Messgröße"][code_messgr]["unit"]}] - '
-            f'{obis["Messart"][code_messart]["bez"]} ({code})'
-        )
-        dic_obis["unit"] = obis["Messgröße"][code_messgr]["unit"]
-
-    return dic_obis
-
-
-@func_timer()
-def find_unit(df: pd.DataFrame, col: str) -> str | None:
-    """Einheit für Spalte finden"""
-    unit: str | None = None
-    lis_units_low: list[str] = [u.lower() for u in cont.UNITS_GENERAL]
-
-    if any(str(x_i).lower() in lis_units_low for x_i in df.loc[:, col]):
-        for u_i in df.loc[:, col]:
-            if str(u_i).lower() in lis_units_low:
-                unit = str(u_i)
-                break
-
-    return unit

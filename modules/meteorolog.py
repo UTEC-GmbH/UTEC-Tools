@@ -33,7 +33,7 @@ STATION_ID_TEST = "05822"
 WEATHERSTATIONS_MAX_DISTANCE = 700
 
 
-@func_timer()
+@func_timer
 def start_end_time(
     page: str | None = None,
 ) -> tuple[datetime.datetime | None, datetime.datetime | None]:
@@ -99,7 +99,7 @@ if "page" in st.session_state:
     start, end = start_end_time(st.session_state.get("page"))
 
 
-@func_timer()
+@func_timer
 def geo(address: str) -> dict:
     """
     geographische daten (Längengrad, Breitengrad) aus eingegebener Adresse
@@ -116,7 +116,7 @@ def geo(address: str) -> dict:
     return dic_geo
 
 
-@func_timer()
+@func_timer
 def all_stations() -> pd.DataFrame:
     """df aller Stationen"""
     df_met = meteostat_stations()
@@ -126,7 +126,7 @@ def all_stations() -> pd.DataFrame:
     return df_all
 
 
-@func_timer()
+@func_timer
 def all_stations_without_dups() -> pd.DataFrame:
     """alle Stationen ohne Duplikate"""
     df = (
@@ -139,7 +139,7 @@ def all_stations_without_dups() -> pd.DataFrame:
     return df
 
 
-@func_timer()
+@func_timer
 def meteostat_stations(
     lat: float | None = None,
     lon: float | None = None,
@@ -174,7 +174,7 @@ def meteostat_stations(
     return df_meteostat_stations
 
 
-@func_timer()
+@func_timer
 def meteostat_stations_df_edit(df: pd.DataFrame) -> pd.DataFrame:
     """Anpassung auf Format der Meteostat-Stationen"""
     df["station_id"] = df.index
@@ -197,7 +197,7 @@ def meteostat_stations_df_edit(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-@func_timer()
+@func_timer
 def meteostat_data_by_stationid(station_id: str) -> pd.DataFrame:
     """Meteostat-Daten eine einzelnen Station"""
     if "start" not in locals():
@@ -229,7 +229,7 @@ def meteostat_data_by_stationid(station_id: str) -> pd.DataFrame:
     return df_meteostat_data
 
 
-@func_timer()
+@func_timer
 def closest_station_with_data(param: str) -> tuple[str | float]:
     """nächstgelegene Station, die Daten zum gewählten Parameter hat"""
 
@@ -254,7 +254,7 @@ def closest_station_with_data(param: str) -> tuple[str | float]:
     return station_id, distance_sta
 
 
-@func_timer()
+@func_timer
 def selected_params(page: str = "meteo") -> list:
     """ausgewählte Parameter"""
 
@@ -298,7 +298,7 @@ def selected_params(page: str = "meteo") -> list:
     return lis_sel_params
 
 
-@func_timer()
+@func_timer
 def used_stations() -> pd.DataFrame:
     """nur verwendete Stationen"""
     lis_sel_params = (
@@ -337,7 +337,7 @@ def used_stations() -> pd.DataFrame:
     return df_used_stations
 
 
-@func_timer()
+@func_timer
 def used_stations_show() -> pd.DataFrame:
     """df mit verwendeten Stationen für die Darstellung in der app"""
     df = (
@@ -350,7 +350,7 @@ def used_stations_show() -> pd.DataFrame:
     return df
 
 
-@func_timer()
+@func_timer
 def df_used_show_edit() -> pd.DataFrame:
     """Anpassen und formatieren des df der benutzten Wetterstationen"""
     df = (
@@ -397,7 +397,7 @@ def df_used_show_edit() -> pd.DataFrame:
     return df
 
 
-@func_timer()
+@func_timer
 def meteo_data() -> pd.DataFrame:
     """
     Meteorologische Daten für die ausgewählten Parameter
@@ -453,7 +453,7 @@ def meteo_data() -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 
-@func_timer()
+@func_timer
 def outside_temp_graph() -> None:
     """
     Außentemperatur in df für Grafiken eintragen
@@ -496,7 +496,7 @@ def outside_temp_graph() -> None:
     st.session_state["df"] = df
 
 
-@func_timer()
+@func_timer
 def del_meteo() -> None:
     """vorhandene meteorologische Daten löschen"""
     # Spalten in dfs löschen

@@ -16,7 +16,7 @@ from modules import meteorolog as meteo
 from modules.general_functions import func_timer, sort_list_by_occurance
 
 
-@func_timer()
+@func_timer
 def line_plot(
     df: pd.DataFrame,
     meta: dict,
@@ -88,7 +88,7 @@ def line_plot(
 
 
 # Lastgang mehrerer Jahre übereinander darstellen
-@func_timer()
+@func_timer
 def line_plot_y_overlay(
     dic_df: dict,
     meta: dict,
@@ -176,7 +176,7 @@ def line_plot_y_overlay(
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer()
+@func_timer
 def line_plot_day_overlay(
     dic_days: dict, dic_meta: dict, title: str = "", var_name: str = ""
 ) -> go.Figure:
@@ -244,7 +244,7 @@ def line_plot_day_overlay(
     return fig
 
 
-@func_timer()
+@func_timer
 def map_dwd_all() -> go.Figure:
     """Karte aller Wetterstationen"""
 
@@ -302,7 +302,7 @@ def map_dwd_all() -> go.Figure:
     return fig
 
 
-@func_timer()
+@func_timer
 def map_weatherstations() -> go.Figure:
     """Karte der Wetterstationen (verwendete hervorgehoben)"""
 

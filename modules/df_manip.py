@@ -14,7 +14,7 @@ from modules import constants as cont
 from modules.general_functions import func_timer
 
 
-@func_timer()
+@func_timer
 def combine_date_time_cols_and_set_index(
     df: pd.DataFrame, col_date: str = "Datum", col_time: str = "Uhrzeit"
 ) -> pd.DataFrame:
@@ -39,7 +39,7 @@ def combine_date_time_cols_and_set_index(
     return df.set_index(ind, drop=True)
 
 
-@func_timer()
+@func_timer
 def fix_am_pm(df: pd.DataFrame, time_column: str = "Zeitstempel") -> pd.DataFrame:
     """Zeitreihen ohne Unterscheidung zwischen vormittags und nachmittags
 
@@ -85,7 +85,7 @@ def fix_am_pm(df: pd.DataFrame, time_column: str = "Zeitstempel") -> pd.DataFram
     return df
 
 
-@func_timer()
+@func_timer
 def clean_up_daylight_savings(df: pd.DataFrame) -> dict[str, pd.DataFrame]:
     """Zeitumstellung
 
@@ -130,7 +130,7 @@ def clean_up_daylight_savings(df: pd.DataFrame) -> dict[str, pd.DataFrame]:
     return {"df_clean": df_clean, "df_deleted": df_deleted}
 
 
-@func_timer()
+@func_timer
 def interpolate_missing_data(df: pd.DataFrame, method: str = "akima") -> pd.DataFrame:
     """Findet stellen an denen sich von einer Zeile zur nächsten
     die Daten nicht ändern, löscht die Daten und interpoliert die Lücken
@@ -150,7 +150,7 @@ def interpolate_missing_data(df: pd.DataFrame, method: str = "akima") -> pd.Data
     return df
 
 
-@func_timer()
+@func_timer
 def del_smooth() -> None:
     """löscht gegelättete Linien aus den DataFrames und Grafiken im Stremalit SessionState"""
 
@@ -170,7 +170,7 @@ def del_smooth() -> None:
     st.session_state["fig_base"].data = tuple(lis_dat)
 
 
-@func_timer()
+@func_timer
 def split_up_df_multi_years(df: pd.DataFrame) -> dict[int, pd.DataFrame]:
     """Split up a DataFrame that has data for multiple years into separate
     DataFrames for each year. The columns names are suffixed with the year.
@@ -227,7 +227,7 @@ def split_up_df_multi_years(df: pd.DataFrame) -> dict[int, pd.DataFrame]:
     return df_multi
 
 
-@func_timer()
+@func_timer
 def df_multi_y(df: pd.DataFrame) -> None:
     """mehrere Jahre"""
 
@@ -252,7 +252,7 @@ def df_multi_y(df: pd.DataFrame) -> None:
         st.session_state["dic_mon"] = dic_mon
 
 
-@func_timer()
+@func_timer
 def h_from_other(df: pd.DataFrame, meta: dict[str, Any] | None = None) -> pd.DataFrame:
     """Stundenwerte aus anderer zeitlicher Auflösung"""
 
@@ -319,7 +319,7 @@ def check_if_hourly_resolution(df: pd.DataFrame) -> pd.DataFrame:
     return df_h
 
 
-@func_timer()
+@func_timer
 def jdl(df: pd.DataFrame) -> pd.DataFrame:
     """Jahresdauerlinie"""
 
@@ -348,7 +348,7 @@ def jdl(df: pd.DataFrame) -> pd.DataFrame:
     return df_jdl
 
 
-@func_timer()
+@func_timer
 def mon(df: pd.DataFrame, dic_meta: dict, year: int | None = None) -> pd.DataFrame:
     """Monatswerte"""
 
@@ -389,7 +389,7 @@ def mon(df: pd.DataFrame, dic_meta: dict, year: int | None = None) -> pd.DataFra
     return df_mon
 
 
-@func_timer()
+@func_timer
 def dic_days(df: pd.DataFrame) -> None:
     """dictionary für Tage"""
 

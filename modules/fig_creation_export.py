@@ -18,13 +18,12 @@ from modules.general_functions import func_timer, render_svg
 
 
 # Grund-Grafik
-@func_timer()
+@func_timer
 def cr_fig_base() -> go.Figure:
     """Lastgang erstellen"""
 
     meta: dict = st.session_state["metadata"]
 
-    
     tit_res: str = ""
     if st.session_state.get("cb_h"):
         tit_res = cont.FIG_TITLE_SUFFIXES["suffix_Stunden"]
@@ -87,7 +86,7 @@ def cr_fig_base() -> go.Figure:
     return fig
 
 
-@func_timer()
+@func_timer
 def cr_fig_jdl() -> None:
     """Jahresdauerlinie erstellen"""
 
@@ -132,7 +131,7 @@ def cr_fig_jdl() -> None:
         )
 
 
-@func_timer()
+@func_timer
 def cr_fig_mon() -> None:
     """Monatswerte erstellen"""
 
@@ -182,7 +181,7 @@ def cr_fig_mon() -> None:
     )
 
 
-@func_timer()
+@func_timer
 def cr_fig_days() -> None:
     """Tagesvergleiche"""
 
@@ -214,7 +213,7 @@ def cr_fig_days() -> None:
     )
 
 
-@func_timer()
+@func_timer
 def plot_figs() -> None:
     """Grafiken darstellen"""
 
@@ -291,7 +290,7 @@ def plot_figs() -> None:
                 )
 
 
-@func_timer()
+@func_timer
 def html_exp(f_pn: str = "export/interaktive_grafische_Auswertung.html") -> None:
     """html-Export"""
 

@@ -1,6 +1,4 @@
-"""
-Constants
-"""
+""" Konstanten """
 
 import os
 from typing import Literal, TypeAlias, TypedDict
@@ -188,7 +186,7 @@ PLOTFARBE: dict[str, str] = {
 
 
 # obis Elektrizität (Medium == 1)
-OBIS_PATTERN_EL: str = r".*1-\d*:\d*\.\d*"  # fnmatch "*1-*:*.*"
+OBIS_PATTERN_EL: str = r"1-\d*:\d*\.\d*"  # fnmatch "*1-*:*.*"
 
 
 class ObisDic(TypedDict):

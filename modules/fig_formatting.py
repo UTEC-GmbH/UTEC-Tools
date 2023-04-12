@@ -23,7 +23,7 @@ from modules.general_functions import (
 )
 
 
-@func_timer()
+@func_timer
 def format_tickstops(fig: go.Figure) -> list[dict[str, Any]]:
     """tickformat stops for axes
 
@@ -163,7 +163,7 @@ def add_range_slider(fig: go.Figure) -> go.Figure:
     )
 
 
-@func_timer()
+@func_timer
 def standard_axes_and_layout(
     fig: go.Figure,
     x_tickformat: str = "%b",
@@ -191,7 +191,7 @@ def standard_axes_and_layout(
     return fig
 
 
-@func_timer()
+@func_timer
 def standard_xaxis(
     fig: go.Figure,
     data: dict[str, dict[str, Any]],
@@ -236,7 +236,7 @@ def standard_xaxis(
     )
 
 
-@func_timer()
+@func_timer
 def standard_yaxis(
     fig: go.Figure,
     data: dict[str, dict[str, Any]],
@@ -272,7 +272,7 @@ def standard_yaxis(
     return fig
 
 
-@func_timer()
+@func_timer
 def standard_layout(fig: go.Figure, data: dict[str, dict[str, Any]]) -> go.Figure:
     """Standardlayout"""
 
@@ -308,7 +308,7 @@ def standard_layout(fig: go.Figure, data: dict[str, dict[str, Any]]) -> go.Figur
     )
 
 
-@func_timer()
+@func_timer
 def update_main(fig: go.Figure) -> go.Figure:
     """Darstellungseinstellungen aus dem Hauptfenster"""
 
@@ -334,7 +334,7 @@ def update_main(fig: go.Figure) -> go.Figure:
     return fig
 
 
-@func_timer()
+@func_timer
 def show_traces(fig: go.Figure) -> go.Figure:
     """Set the visibility of the traces in the figure.
 
@@ -380,7 +380,7 @@ def show_traces(fig: go.Figure) -> go.Figure:
     return fig
 
 
-@func_timer()
+@func_timer
 def format_traces(fig: go.Figure) -> go.Figure:
     """Bearbeiten der Anzeige der Linien
     in Bezug auf die Auswahl im Anzeigen-Menu.
@@ -436,7 +436,7 @@ def format_traces(fig: go.Figure) -> go.Figure:
     return fig
 
 
-@func_timer()
+@func_timer
 def show_y_axes(fig: go.Figure) -> go.Figure:
     """Y-Achsen ein- bzw. ausblenden.
     ...je nachdem, ob Linien in der Grafik angezeigt werden,

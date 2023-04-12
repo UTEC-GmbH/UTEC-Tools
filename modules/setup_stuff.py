@@ -19,7 +19,7 @@ from modules.general_functions import func_timer, render_svg
 from modules.user_authentication import get_all_user_data
 
 
-@func_timer()
+@func_timer
 def get_commit_message_date() -> dict[str, dt.datetime | str]:
     """Commit message and date from GitHub to show in the header.
 
@@ -111,7 +111,7 @@ def initial_setup() -> None:
     logger.log("ONCE_per_RUN", "initial setup done")
 
 
-@func_timer()
+@func_timer
 def logger_setup() -> None:
     """Setup the loguru Logging module"""
     logger_path: str = f"{cont.CWD}\\logs\\"
@@ -165,7 +165,7 @@ def logger_setup() -> None:
     logger.log("ONCE_per_SESSION", "🚀 Session Started, Log Initiated 🚀")
 
 
-@func_timer()
+@func_timer
 def page_header_setup(page: str) -> None:
     """Seitenkopf mit Logo, Titel (je nach Seite) und letzte Änderungen"""
 

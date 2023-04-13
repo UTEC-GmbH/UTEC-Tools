@@ -75,7 +75,7 @@ def initial_setup() -> None:
     pio.templates.default = "plotly"
     sentry_sdk.init(
         dsn=os.getenv("SENTRY_DSN"),
-        traces_sample_rate=0.1,
+        traces_sample_rate=0,
     )
 
     logger_setup()

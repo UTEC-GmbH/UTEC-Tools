@@ -126,7 +126,7 @@ def logger_setup() -> None:
         "CRITICAL": "{time:HH:mm:ss} | ☠️ | {module} -> {function} -> line: {line} | {message} | ☠️ |",
         "TIMER": "{time:HH:mm:ss} | ⏱  | {message} | ⏱  |",
         "ONCE_per_RUN": "{time:HH:mm:ss} | 👟 | {module} -> {function} -> line: {line} | {message} | 👟 |",
-        "ONCE_per_SESSION": "\n\n{time:HH:mm:ss} | 🔥 | {module} -> {function} -> line: {line} | {message} | 🔥 |\n\n",
+        "ONCE_per_SESSION": "\n\n{time:HH:mm:ss} | 🔥 | {module} -> {function} -> line: {line} | {message} | 🔥 |\n",
     }
     custom_levels: list[str] = [
         "TIMER",
@@ -142,8 +142,13 @@ def logger_setup() -> None:
         return is_level
 
     for lvl, format_of_lvl in formats_levels.items():
-        if lvl in custom_levels and lvl not in logger._core.levels:
-            logger.level(lvl, no=1)
+        if lvl in custom_levels:
+            try:
+                logger.level(lvl)
+            except ValueError:
+                pass
+            else:
+                logger.level(lvl, no=1)
 
         logger.add(
             sink=sys.stderr,

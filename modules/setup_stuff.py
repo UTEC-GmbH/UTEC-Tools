@@ -142,7 +142,7 @@ def logger_setup() -> None:
         return is_level
 
     for lvl, format_of_lvl in formats_levels.items():
-        if lvl in custom_levels:
+        if lvl in custom_levels and lvl not in logger._core.levels:
             logger.level(lvl, no=1)
 
         logger.add(
@@ -150,6 +150,7 @@ def logger_setup() -> None:
             level=1,
             filter=level_filter(lvl),
             format=format_of_lvl,
+            colorize=True,
         )
 
         logger.add(
@@ -160,6 +161,7 @@ def logger_setup() -> None:
             level=1,
             filter=level_filter(lvl),
             format=format_of_lvl,
+            colorize=True,
         )
 
     logger.log("ONCE_per_SESSION", "🚀 Session Started, Log Initiated 🚀")

@@ -75,7 +75,7 @@ def initial_setup() -> None:
     pio.templates.default = "plotly"
     sentry_sdk.init(
         dsn=os.getenv("SENTRY_DSN"),
-        traces_sample_rate=1.0,
+        traces_sample_rate=0,
     )
 
     logger_setup()
@@ -143,13 +143,19 @@ def logger_setup() -> None:
 
     for lvl, format_of_lvl in formats_levels.items():
         if lvl in custom_levels:
-            logger.level(lvl, no=1)
+            try:
+                logger.level(lvl)
+            except ValueError:
+                pass
+            else:
+                logger.level(lvl, no=1)
 
         logger.add(
             sink=sys.stderr,
             level=1,
             filter=level_filter(lvl),
             format=format_of_lvl,
+            colorize=True,
         )
 
         logger.add(
@@ -160,6 +166,7 @@ def logger_setup() -> None:
             level=1,
             filter=level_filter(lvl),
             format=format_of_lvl,
+            colorize=True,
         )
 
     logger.log("ONCE_per_SESSION", "\n\n\n🚀 Session Started, Log Initiated 🚀\n\n")

@@ -118,7 +118,7 @@ def logger_setup() -> None:
     logger_file: str = "log_{time:YYYY-MM-DD}.log"
 
     formats_levels: dict[str, str] = {
-        "DEBUG": "{time:HH:mm:ss} | 🐞 | {module} -> {function} -> line: {line} | {message}  🐞  🐞|",
+        "DEBUG": "{time:HH:mm:ss} | 🐞 | {module} -> {function} -> line: {line} | {message} | 🐞|",
         "INFO": "{time:HH:mm:ss} | 👉 | {module} -> {function} -> line: {line} | {message} | 👈 |",
         "SUCCESS": "{time:HH:mm:ss} | 🥳 | {module} -> {function} -> line: {line} | {message} | 🥳 |",
         "WARNING": "{time:HH:mm:ss} | ⚠️ | {module} -> {function} -> line: {line} | {message} | ⚠️ |",
@@ -126,7 +126,7 @@ def logger_setup() -> None:
         "CRITICAL": "{time:HH:mm:ss} | ☠️ | {module} -> {function} -> line: {line} | {message} | ☠️ |",
         "TIMER": "{time:HH:mm:ss} | ⏱  | {message} | ⏱  |",
         "ONCE_per_RUN": "{time:HH:mm:ss} | 👟 | {module} -> {function} -> line: {line} | {message} | 👟 |",
-        "ONCE_per_SESSION": "\n\n{time:HH:mm:ss} | 🔥 | {module} -> {function} -> line: {line} | {message} | 🔥 |\n",
+        "ONCE_per_SESSION": "{time:HH:mm:ss} | 🔥 | {module} -> {function} -> line: {line} | {message} | 🔥 |",
     }
     custom_levels: list[str] = [
         "TIMER",
@@ -169,7 +169,7 @@ def logger_setup() -> None:
             colorize=True,
         )
 
-    logger.log("ONCE_per_SESSION", "🚀 Session Started, Log Initiated 🚀")
+    logger.log("ONCE_per_SESSION", "\n\n\n🚀 Session Started, Log Initiated 🚀\n\n")
 
 
 @func_timer

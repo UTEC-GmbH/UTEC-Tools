@@ -728,6 +728,39 @@ def display_smooth_main() -> bool:
 
     with st.expander("Anzeigeoptionen für geglättete Linien", False):
         with st.form("Anzeigeoptionen für geglättete Linien"):
+            col_general: list = st.columns([3, 1])
+            with col_general[0]:
+                st.slider(
+                    label="Glättung",
+                    min_value=1,
+                    max_value=st.session_state["smooth_max_val"],
+                    value=st.session_state["smooth_start_val"],
+                    format="%i",
+                    step=2,
+                    help=(
+                        """
+                        Je niedriger die Zahl, 
+                        desto weniger wird die Ursprungskurve geglättet.
+                        """
+                    ),
+                    key="gl_win",
+                )
+            with col_general[1]:
+                st.number_input(
+                    label="Polynom",
+                    value=3,
+                    format="%i",
+                    help=(
+                        """
+                        Grad der polinomischen Linie  \n
+                        _(normalerweise passen 2 oder 3 ganz gut)_
+                        """
+                    ),
+                    key="gl_deg",
+                )
+
+            st.markdown("---")
+
             # columns
             columns: dict[str, dict] = display_options_main_col_settings()
             cols: list = st.columns([col["width"] for col in columns.values()])
@@ -744,12 +777,14 @@ def display_smooth_main() -> bool:
             fig_data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
             colorway: list[str] = get_colorway(fig)
             lines: list[dict] = [
-                line for line in fig_data.values() if cont.SMOOTH_SUFFIX in line["name"]
+                line
+                for line in fig_data.values()
+                if all(ex not in line["name"] for ex in cont.EXCLUDE)
             ]
 
             for count, line in enumerate(lines):
                 cols: list = st.columns([col["width"] for col in columns.values()])
-                line_name: str = line["name"]
+                line_name: str = f'{line["name"]}{cont.SMOOTH_SUFFIX}'
                 line_color: str = colorway[count + len(lines)]
                 if (
                     len(line["x"]) > 0
@@ -762,13 +797,7 @@ def display_smooth_main() -> bool:
                     with cols[list(columns).index("vis")]:
                         st.checkbox(
                             label=line_name,
-                            value=all(
-                                part not in line_name
-                                for part in [
-                                    cont.SMOOTH_SUFFIX,
-                                    cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"],
-                                ]
-                            ),
+                            value=False,
                             key=f"cb_vis_{line_name}",
                             label_visibility="collapsed",
                         )
@@ -795,11 +824,11 @@ def display_smooth_main() -> bool:
                         st.empty()
 
             st.markdown("###")
-            but_upd_main: bool = st.form_submit_button("Knöpfle")
+            but_smooth: bool = st.form_submit_button("Knöpfle")
 
     st.markdown("###")
 
-    return but_upd_main
+    return but_smooth
 
 
 # Downloads

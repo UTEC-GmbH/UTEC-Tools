@@ -75,7 +75,7 @@ def initial_setup() -> None:
     pio.templates.default = "plotly"
     sentry_sdk.init(
         dsn=os.getenv("SENTRY_DSN"),
-        traces_sample_rate=0,
+        traces_sample_rate=0.1,
     )
 
     logger_setup()
@@ -118,7 +118,7 @@ def logger_setup() -> None:
     logger_file: str = "log_{time:YYYY-MM-DD}.log"
 
     formats_levels: dict[str, str] = {
-        "DEBUG": "{time:HH:mm:ss} | 🐞 | {module} -> {function} -> line: {line} | {message} | 🐞|",
+        "DEBUG": "{time:HH:mm:ss} | 🐞 | {module} -> {function} -> line: {line} | {message} | 🐞 |",
         "INFO": "{time:HH:mm:ss} | 👉 | {module} -> {function} -> line: {line} | {message} | 👈 |",
         "SUCCESS": "{time:HH:mm:ss} | 🥳 | {module} -> {function} -> line: {line} | {message} | 🥳 |",
         "WARNING": "{time:HH:mm:ss} | ⚠️ | {module} -> {function} -> line: {line} | {message} | ⚠️ |",
@@ -146,8 +146,6 @@ def logger_setup() -> None:
             try:
                 logger.level(lvl)
             except ValueError:
-                pass
-            else:
                 logger.level(lvl, no=1)
 
         logger.add(

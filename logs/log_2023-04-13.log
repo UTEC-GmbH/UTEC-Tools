@@ -839,4 +839,160 @@
 15:20:53 | ⏱  | execution time of 'format_traces': 0.0138 s | ⏱  |
 15:20:53 | ⏱  | execution time of 'show_y_axes': 0.0047 s | ⏱  |
 15:20:53 | ⏱  | execution time of 'update_main': 0.0336 s | ⏱  |
-15:21:00 | ⏱  | execution time of 'plot_figs': 7.104 s | ⏱  |
+15:21:00 | ⏱  | execution time of 'plot_figs': 7.104 s | ⏱  |16:56:11 | 🔥 | setup_stuff -> logger_setup -> line: 170 | 
+
+
+🚀 Session Started, Log Initiated 🚀
+
+ | 🔥 |
+16:56:11 | ⏱  | execution time of 'logger_setup': 0.0196 s | ⏱  |
+16:56:11 | 🥳 | general_functions -> render_svg -> line: 106 | svg-Datei 'logo/UTEC_logo_text.svg' codiert | 🥳 |
+16:56:11 | ⏱  | execution time of 'render_svg': 0.0016 s | ⏱  |
+16:56:12 | ⏱  | execution time of 'get_commit_message_date': 0.7908 s | ⏱  |
+16:56:13 | ⏱  | execution time of 'get_commit_message_date': 0.761 s | ⏱  |
+16:56:13 | 🥳 | user_authentication -> connect_database -> line: 101 | Deta-Database connection established | 🥳 |
+16:56:13 | ⏱  | execution time of 'connect_database': 0.0109 s | ⏱  |
+16:56:13 | 🥳 | user_authentication -> get_all_user_data -> line: 134 | Collected all user data from Database | 🥳 |
+16:56:13 | ⏱  | execution time of 'get_all_user_data': 0.1212 s | ⏱  |
+16:56:13 | 👟 | setup_stuff -> initial_setup -> line: 111 | initial setup done | 👟 |
+16:56:13 | 👟 | setup_stuff -> page_header_setup -> line: 214 | page header for page 'login' created | 👟 |
+16:56:13 | ⏱  | execution time of 'page_header_setup': 0.0044 s | ⏱  |
+16:56:13 | ⏱  | execution time of 'login_section': 0.0069 s | ⏱  |
+16:56:13 | ⏱  | execution time of 'display_login_page': 0.0263 s | ⏱  |
+16:56:13 | 👟 | setup_stuff -> page_header_setup -> line: 214 | page header for page 'login' created | 👟 |
+16:56:13 | ⏱  | execution time of 'page_header_setup': 0.0055 s | ⏱  |
+16:56:13 | 🥳 | 🔑_login -> access_granted -> line: 79 | logged in as: fl, access level: god | 🥳 |
+16:56:13 | ⏱  | execution time of 'login_section': 0.0148 s | ⏱  |
+16:56:13 | ⏱  | execution time of 'display_login_page': 0.0324 s | ⏱  |
+16:56:14 | 👟 | setup_stuff -> page_header_setup -> line: 214 | page header for page 'login' created | 👟 |
+16:56:14 | ⏱  | execution time of 'page_header_setup': 0.0064 s | ⏱  |
+16:56:14 | ⏱  | execution time of 'login_section': 0.0111 s | ⏱  |
+16:56:14 | ⏱  | execution time of 'display_login_page': 0.0312 s | ⏱  |
+16:56:21 | 👟 | setup_stuff -> page_header_setup -> line: 214 | page header for page 'graph' created | 👟 |
+16:56:21 | ⏱  | execution time of 'page_header_setup': 0.0089 s | ⏱  |
+16:56:24 | 👟 | setup_stuff -> page_header_setup -> line: 214 | page header for page 'graph' created | 👟 |
+16:56:24 | ⏱  | execution time of 'page_header_setup': 0.0055 s | ⏱  |
+16:56:28 | ⚠️ | df_manip -> clean_up_daylight_savings -> line: 128 | Data deleted due to daylight savings: | ⚠️ |
+16:56:28 | ⚠️ | df_manip -> clean_up_daylight_savings -> line: 129 | 
+7                    Strombedarf  PV Produktion  Netzeinspeisung  PV Eigennutzung  Strombez. 1-1:1.29.0
+↓ Index ↓                                                                                              
+2021-10-31 02:00:00        2.475            0.0              0.0              0.0                 2.475
+2021-10-31 02:15:00        2.550            0.0              0.0              0.0                 2.550
+2021-10-31 02:30:00        2.175            0.0              0.0              0.0                 2.175
+2021-10-31 02:45:00        2.075            0.0              0.0              0.0                 2.075
+ | ⚠️ |
+16:56:28 | ⏱  | execution time of 'clean_up_daylight_savings': 0.0182 s | ⏱  |
+16:56:28 | ⏱  | execution time of 'edit_df_after_import': 0.1998 s | ⏱  |
+16:56:28 | ⏱  | execution time of 'units_from_messy_df': 0.0754 s | ⏱  |
+16:56:28 | ⏱  | execution time of 'meta_from_index': 0.0125 s | ⏱  |
+16:56:28 | ⏱  | execution time of 'meta_from_col_title': 0.0007 s | ⏱  |
+16:56:28 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 282 | Arbeit und Leistung aufgeteilt | 🥳 |
+16:56:28 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 282 | Arbeit und Leistung aufgeteilt | 🥳 |
+16:56:28 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 282 | Arbeit und Leistung aufgeteilt | 🥳 |
+16:56:28 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 282 | Arbeit und Leistung aufgeteilt | 🥳 |
+16:56:28 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 282 | Arbeit und Leistung aufgeteilt | 🥳 |
+16:56:28 | ⏱  | execution time of 'convert_15min_kwh_to_kw': 0.0116 s | ⏱  |
+16:56:28 | ⏱  | execution time of 'set_y_axis_for_lines': 0.0002 s | ⏱  |
+16:56:28 | 🥳 | excel -> import_prefab_excel -> line: 56 | file imported and metadata extracted | 🥳 |
+16:56:28 | 👉 | excel -> import_prefab_excel -> line: 57 | 
+7                    Strombedarf → Arbeit  PV Produktion → Arbeit  Netzeinspeisung → Arbeit  ...  Netzeinspeisung → Leistung  PV Eigennutzung → Leistung Bezug (1-1:1.29) → Leistung
+↓ Index ↓                                                                                    ...                                                                                    
+2021-01-01 00:00:00                 3.400                     0.0                       0.0  ...                         0.0                         0.0                        13.6
+2021-01-01 00:15:00                 3.225                     0.0                       0.0  ...                         0.0                         0.0                        12.9
+2021-01-01 00:30:00                 3.150                     0.0                       0.0  ...                         0.0                         0.0                        12.6
+2021-01-01 00:45:00                 3.550                     0.0                       0.0  ...                         0.0                         0.0                        14.2
+2021-01-01 01:00:00                 4.300                     0.0                       0.0  ...                         0.0                         0.0                        17.2
+
+[5 rows x 11 columns]
+ | 👈 |
+16:56:28 | ⏱  | execution time of 'import_prefab_excel': 4.2136 s | ⏱  |
+16:56:28 | 🥳 | df_manip -> h_from_other -> line: 294 | DataFrame mit Stundenwerten erstellt | 🥳 |
+16:56:28 | 👉 | df_manip -> h_from_other -> line: 295 | 
+                     Strombedarf *h  PV Produktion *h  Netzeinspeisung *h  PV Eigennutzung *h  Bezug (1-1:1.29) *h              orgidx
+↓ Index ↓                                                                                                                             
+2021-01-01 00:00:00          13.325               0.0                 0.0                 0.0               13.325 2021-01-01 00:00:00
+2021-01-01 01:00:00          14.550               0.0                 0.0                 0.0               14.550 2021-01-01 01:00:00
+2021-01-01 02:00:00          11.350               0.0                 0.0                 0.0               11.350 2021-01-01 02:00:00
+2021-01-01 03:00:00          10.725               0.0                 0.0                 0.0               10.725 2021-01-01 03:00:00
+2021-01-01 04:00:00           9.300               0.0                 0.0                 0.0                9.300 2021-01-01 04:00:00
+ | 👈 |
+16:56:28 | ⏱  | execution time of 'h_from_other': 0.0473 s | ⏱  |
+16:56:28 | 🥳 | df_manip -> jdl -> line: 348 | DataFrame für Jahresdauerlinie erstellt | 🥳 |
+16:56:28 | 👉 | df_manip -> jdl -> line: 349 | 
+   Strombedarf *h  PV Produktion *h  Netzeinspeisung *h  PV Eigennutzung *h  ...  PV Produktion *h_orgidx Netzeinspeisung *h_orgidx PV Eigennutzung *h_orgidx Bezug (1-1:1.29) *h_orgidx
+1          36.225            43.350              27.025              24.975  ...      2021-04-27 13:00:00       2021-04-27 13:00:00       2021-04-24 15:00:00        2021-11-18 19:00:00
+2          34.650            42.175              24.850              24.600  ...      2021-04-13 13:00:00       2021-04-26 13:00:00       2021-04-24 16:00:00        2021-01-30 17:00:00
+3          34.550            40.375              23.100              23.600  ...      2021-05-30 14:00:00       2021-04-28 15:00:00       2021-04-24 13:00:00        2021-01-23 18:00:00
+4          34.450            40.350              22.975              23.475  ...      2021-04-27 12:00:00       2021-04-13 13:00:00       2021-05-30 11:00:00        2021-02-07 19:00:00
+5          34.450            39.700              22.100              23.400  ...      2021-04-26 13:00:00       2021-05-06 13:00:00       2021-04-17 13:00:00        2021-01-19 18:00:00
+
+[5 rows x 10 columns]
+ | 👈 |
+16:56:28 | ⏱  | execution time of 'jdl': 0.0847 s | ⏱  |
+16:56:28 | 🥳 | df_manip -> h_from_other -> line: 294 | DataFrame mit Stundenwerten erstellt | 🥳 |
+16:56:28 | 👉 | df_manip -> h_from_other -> line: 295 | 
+                     Strombedarf *h  PV Produktion *h  Netzeinspeisung *h  PV Eigennutzung *h  Bezug (1-1:1.29) *h              orgidx
+↓ Index ↓                                                                                                                             
+2021-01-01 00:00:00          13.325               0.0                 0.0                 0.0               13.325 2021-01-01 00:00:00
+2021-01-01 01:00:00          14.550               0.0                 0.0                 0.0               14.550 2021-01-01 01:00:00
+2021-01-01 02:00:00          11.350               0.0                 0.0                 0.0               11.350 2021-01-01 02:00:00
+2021-01-01 03:00:00          10.725               0.0                 0.0                 0.0               10.725 2021-01-01 03:00:00
+2021-01-01 04:00:00           9.300               0.0                 0.0                 0.0                9.300 2021-01-01 04:00:00
+ | 👈 |
+16:56:28 | ⏱  | execution time of 'h_from_other': 0.0343 s | ⏱  |
+16:56:28 | 🥳 | df_manip -> mon -> line: 389 | DataFrame mit Monatswerten erstellt | 🥳 |
+16:56:28 | 👉 | df_manip -> mon -> line: 390 | 
+            Strombedarf *mon  PV Produktion *mon  Netzeinspeisung *mon  PV Eigennutzung *mon  Bezug (1-1:1.29) *mon     orgidx
+2021-01-15         13100.800             801.150                 1.950                799.20              12301.600 2021-01-15
+2021-02-15         11460.800            1629.025                83.775               1545.25               9915.550 2021-02-15
+2021-03-15         12272.500            3948.400               730.800               3217.60               9054.900 2021-03-15
+2021-04-15         11587.775            6171.075              1820.375               4350.70               7237.075 2021-04-15
+2021-05-15         11830.100            6227.375              1592.225               4635.15               7194.950 2021-05-15
+ | 👈 |
+16:56:28 | ⏱  | execution time of 'mon': 0.0545 s | ⏱  |
+16:56:33 | ⏱  | execution time of 'line_plot': 4.7619 s | ⏱  |
+16:56:33 | 👉 | fig_annotations -> middle_xaxis -> line: 50 | middle of x-axis: 2021-07-02 12:52:30 | 👈 |
+16:56:33 | ⏱  | execution time of 'middle_xaxis': 0.0142 s | ⏱  |
+16:56:33 | 🥳 | fig_annotations -> add_arrows_min_max -> line: 174 | Max / Min arrows added to figure | 🥳 |
+16:56:33 | ⏱  | execution time of 'add_arrows_min_max': 0.2004 s | ⏱  |
+16:56:33 | ⏱  | execution time of 'format_tickstops': 0.0001 s | ⏱  |
+16:56:33 | ⏱  | execution time of 'standard_xaxis': 0.0398 s | ⏱  |
+16:56:33 | ⏱  | execution time of 'standard_yaxis': 0.0207 s | ⏱  |
+16:56:33 | ⏱  | execution time of 'standard_layout': 0.0404 s | ⏱  |
+16:56:33 | ⏱  | execution time of 'standard_axes_and_layout': 0.1088 s | ⏱  |
+16:56:33 | ⏱  | execution time of 'cr_fig_base': 5.2864 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'line_plot': 0.3242 s | ⏱  |
+16:56:34 | 👉 | fig_annotations -> middle_xaxis -> line: 53 | middle of x-axis: 4380.5 | 👈 |
+16:56:34 | ⏱  | execution time of 'middle_xaxis': 0.0068 s | ⏱  |
+16:56:34 | 🥳 | fig_annotations -> add_arrows_min_max -> line: 174 | Max / Min arrows added to figure | 🥳 |
+16:56:34 | ⏱  | execution time of 'add_arrows_min_max': 0.0443 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'standard_xaxis': 0.0084 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'standard_yaxis': 0.0027 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'standard_layout': 0.0089 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'standard_axes_and_layout': 0.0257 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'cr_fig_jdl': 0.4071 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'line_plot': 0.0091 s | ⏱  |
+16:56:34 | 👉 | fig_annotations -> middle_xaxis -> line: 50 | middle of x-axis: 2021-07-01 01:00:00 | 👈 |
+16:56:34 | ⏱  | execution time of 'middle_xaxis': 0.001 s | ⏱  |
+16:56:34 | 🥳 | fig_annotations -> add_arrows_min_max -> line: 174 | Max / Min arrows added to figure | 🥳 |
+16:56:34 | ⏱  | execution time of 'add_arrows_min_max': 0.0243 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'format_tickstops': 0.0 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'standard_xaxis': 0.0093 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'standard_yaxis': 0.0031 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'standard_layout': 0.009 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'standard_axes_and_layout': 0.0267 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'cr_fig_mon': 0.077 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'smooth': 0.0067 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'show_traces': 0.0169 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'format_traces': 0.018 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'show_y_axes': 0.0084 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'update_main': 0.0651 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'show_traces': 0.0055 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'format_traces': 0.0143 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'show_y_axes': 0.0083 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'update_main': 0.0489 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'show_traces': 0.0066 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'format_traces': 0.0111 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'show_y_axes': 0.0081 s | ⏱  |
+16:56:34 | ⏱  | execution time of 'update_main': 0.0386 s | ⏱  |
+16:56:40 | ⏱  | execution time of 'plot_figs': 6.0686 s | ⏱  |

@@ -63,7 +63,7 @@ if uauth.authentication(st.session_state["page"]):
     sm.sidebar_file_upload()
 
     if any(st.session_state.get(entry) is not None for entry in ("f_up", "df")):
-        if any(x not in st.session_state for x in ("df", "metadata")):
+        if any(entry not in st.session_state for entry in ("df", "metadata")):
             with st.spinner("Momentle bitte - Datei wird gelesen..."):
                 ex.import_prefab_excel(st.session_state["f_up"])
 

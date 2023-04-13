@@ -6,16 +6,15 @@ Formatting and configuration of plots
 - plotly configuration
 """
 
-import re
 from datetime import datetime
 from typing import Any
 
 import plotly.graph_objects as go
 import streamlit as st
-from loguru import logger
 
 from modules import constants as cont
 from modules import fig_general_functions as fgf
+from modules.fig_annotations import smooth
 from modules.general_functions import (
     func_timer,
     last_day_of_month,
@@ -98,28 +97,6 @@ def format_secondary_y_axis(y_suffix: str, overlaying: str) -> dict[str, Any]:
         "autoshift": True,
         "shift": 10,
     }
-
-
-def fill_colour_with_opacity(sel_trans: str, line_colour: str) -> str:
-    """Get an RGBA-string with the line colour and the selected transparency of the fill.
-
-    Args:
-        sel_trans (str): selected transparency (from the select box)
-        line_colour (str): line colour (from colour picker)
-
-    Returns:
-        str: "rgba(r,g,b,a)"
-    """
-    fill_transp: int = (
-        100
-        if sel_trans == cont.TRANSPARENCY_OPTIONS[0]
-        else (int(sel_trans.strip(cont.TRANSPARENCY_OPTIONS_SUFFIX)))
-    )
-    fill_col_rgba: tuple = tuple(
-        int(line_colour.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4)
-    ) + (1 - (fill_transp / 100),)
-
-    return f"rgba{fill_col_rgba}"
 
 
 def add_range_slider(fig: go.Figure) -> go.Figure:
@@ -342,14 +319,19 @@ def show_traces(fig: go.Figure) -> go.Figure:
         - fig (go.Figure): Figure to edit
     """
 
-    data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
-    switch: bool = layout["meta"]["title"] == "fig_days"
-
     fig_type: str = "lastgang"
     for key, value in cont.FIG_TITLES.items():
         if value in layout["meta"]["title"]:
             fig_type = key
+
+    if fig_type == "lastgang":
+        fig = smooth(fig)
+        layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
+
+    data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
+
+    switch: bool = layout["meta"]["title"] == "fig_days"
 
     for trace in data.values():
         trace_name: str = trace["name"]

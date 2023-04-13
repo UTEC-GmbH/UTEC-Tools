@@ -728,34 +728,38 @@ def display_smooth_main() -> bool:
 
     with st.expander("Anzeigeoptionen für geglättete Linien", False):
         with st.form("Anzeigeoptionen für geglättete Linien"):
-            st.slider(
-                label="Glättung",
-                min_value=1,
-                max_value=st.session_state["smooth_max_val"],
-                value=st.session_state["smooth_start_val"],
-                format="%i",
-                step=2,
-                help=(
-                    """
-                    Je niedriger die Zahl, 
-                    desto weniger wird die Ursprungskurve geglättet.
-                    """
-                ),
-                key="gl_win",
-            )
+            col_general: list = st.columns([3, 1])
+            with col_general[0]:
+                st.slider(
+                    label="Glättung",
+                    min_value=1,
+                    max_value=st.session_state["smooth_max_val"],
+                    value=st.session_state["smooth_start_val"],
+                    format="%i",
+                    step=2,
+                    help=(
+                        """
+                        Je niedriger die Zahl, 
+                        desto weniger wird die Ursprungskurve geglättet.
+                        """
+                    ),
+                    key="gl_win",
+                )
+            with col_general[1]:
+                st.number_input(
+                    label="Polynom",
+                    value=3,
+                    format="%i",
+                    help=(
+                        """
+                        Grad der polinomischen Linie  \n
+                        _(normalerweise passen 2 oder 3 ganz gut)_
+                        """
+                    ),
+                    key="gl_deg",
+                )
 
-            st.number_input(
-                label="Polynom",
-                value=3,
-                format="%i",
-                help=(
-                    """
-                    Grad der polinomischen Linie  \n
-                    _(normalerweise passen 2 oder 3 ganz gut)_
-                    """
-                ),
-                key="gl_deg",
-            )
+            st.markdown("---")
 
             # columns
             columns: dict[str, dict] = display_options_main_col_settings()

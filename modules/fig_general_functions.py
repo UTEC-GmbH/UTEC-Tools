@@ -50,9 +50,9 @@ def get_colorway(fig: go.Figure, **kwargs) -> list[str]:
     """
     data: dict[str, dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
     layout: dict[str, Any] = kwargs.get("layout") or fig_layout_as_dic(fig)
-    colorway: list[str] = list(layout["template"]["layout"]["colorway"])
-    if len(colorway) < len(list(data)):
-        colorway *= ceil(len(data) / len(colorway))
+    colorway: list[str] = list(layout["template"]["layout"]["colorway"]) * 2
+    if len(colorway) / 2 < len(list(data)):
+        colorway *= ceil(len(data) / len(colorway)) + 2
 
     return colorway
 
@@ -105,3 +105,23 @@ def get_units_for_all_axes(fig: go.Figure, **kwargs) -> dict[str, str]:
                 units_per_axis[axis] = trace["meta"]["unit"]
 
     return units_per_axis
+
+
+def fill_colour_with_opacity(sel_trans: str, line_colour: str) -> str:
+    """Get an RGBA-string with the line colour and the selected transparency of the fill.
+    Args:
+        sel_trans (str): selected transparency (from the select box)
+        line_colour (str): line colour (from colour picker)
+    Returns:
+        str: "rgba(r,g,b,a)"
+    """
+    fill_transp: int = (
+        100
+        if sel_trans == cont.TRANSPARENCY_OPTIONS[0]
+        else (int(sel_trans.strip(cont.TRANSPARENCY_OPTIONS_SUFFIX)))
+    )
+    fill_col_rgba: tuple = tuple(
+        int(line_colour.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4)
+    ) + (1 - (fill_transp / 100),)
+
+    return f"rgba{fill_col_rgba}"

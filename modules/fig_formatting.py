@@ -399,7 +399,7 @@ def format_traces(fig: go.Figure) -> go.Figure:
                 "tozeroy" if line_transp != cont.TRANSPARENCY_OPTIONS[0] else None
             )
             fill_color: str | None = (
-                fill_colour_with_opacity(line_transp, line_colour)
+                fgf.fill_colour_with_opacity(line_transp, line_colour)
                 if line_fill
                 else None
             )

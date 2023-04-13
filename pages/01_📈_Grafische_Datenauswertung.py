@@ -171,14 +171,14 @@ if uauth.authentication(st.session_state["page"]):
             fig_anno.clean_outliers()
 
         # glatte Linien
-        sm.smooth()
-        if st.session_state.get("but_smooth") and st.session_state.get("cb_smooth"):
-            st.session_state["fig_base"] = fig_anno.smooth(st.session_state["fig_base"])
-        if (
-            st.session_state.get("but_smooth")
-            and st.session_state.get("cb_smooth") is not True
-        ):
-            dfm.del_smooth()
+        # sm.smooth()
+        # if st.session_state.get("but_smooth") and st.session_state.get("cb_smooth"):
+        #     st.session_state["fig_base"] = fig_anno.smooth(st.session_state["fig_base"])
+        # if (
+        #     st.session_state.get("but_smooth")
+        #     and st.session_state.get("cb_smooth") is not True
+        # ):
+        #     dfm.del_smooth()
         tab_grafik: Any
         tab_download: Any
         tab_grafik, tab_download = st.tabs(["Datenauswertung", "Downloads"])

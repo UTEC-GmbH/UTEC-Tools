@@ -65,7 +65,7 @@ def cr_fig_base() -> go.Figure:
         start_val + 1 if start_val % 2 == 0 else start_val
     )
 
-    fig = fig_anno.smooth(fig, data=data)
+    # fig = fig_anno.smooth(fig, data=data)
 
     # updates
     fig = fig.update_layout(

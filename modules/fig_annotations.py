@@ -360,50 +360,64 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
 
     fig_data: dict[str, dict[str, Any]] = kwargs.get("data") or fgf.fig_data_as_dic(fig)
 
-    traces: list[dict] = [
+    traces: list[dict] = kwargs.get("traces") or [
         trace
         for trace in fig_data.values()
         if all(excl not in trace["name"] for excl in cont.EXCLUDE)
     ]
+    gl_win: int = st.session_state["gl_win"]
+    gl_deg: int = st.session_state["gl_deg"]
 
     for trace in traces:
-        y_glatt: np.ndarray = signal.savgol_filter(
-            x=pd.Series(trace["y"]).interpolate("akima"),
-            mode="mirror",
-            window_length=int(
-                st.session_state.get("gl_win") or st.session_state["smooth_start_val"]
-            ),
-            polyorder=int(st.session_state.get("gl_deg") or 3),
-        )
         smooth_name: str = f"{trace['name']}{cont.SMOOTH_SUFFIX}"
-
-        if smooth_name not in fig_data:
-            smooth_legendgroup: str = trace.get("legendgroup") or "geglättet"
-            smooth_yaxis: str = trace["yaxis"]
-            smooth_unit: str = trace["meta"]["unit"]
-            fig = fig.add_trace(
-                go.Scatter(
-                    x=trace["x"],
-                    y=y_glatt,
-                    mode="lines",
-                    line_dash="0.75%",
-                    name=smooth_name,
-                    legendgroup=smooth_legendgroup,
-                    legendgrouptitle_text=smooth_legendgroup,
-                    hoverinfo="skip",
-                    visible=False,
-                    yaxis=smooth_yaxis,
-                )
+        smooth_visible: bool = bool(st.session_state.get(f"cb_vis_{smooth_name}"))
+        if smooth_visible:
+            y_glatt = trace["y"]
+            meta_trace: dict[str, Any] = trace["meta"].update(
+                {"gl_win": gl_win, "gl_deg": gl_deg}
             )
-            st.session_state["metadata"][smooth_name] = {
-                "tit": smooth_name,
-                "y_axis": smooth_yaxis,
-                "unit": smooth_unit,
-            }
+            if any(
+                [
+                    trace["meta"].get("gl_win") != gl_win,
+                    trace["meta"].get("gl_deg") != gl_deg,
+                ]
+            ):
+                y_glatt: np.ndarray = signal.savgol_filter(
+                    x=pd.Series(trace["y"]).interpolate("akima"),
+                    mode="mirror",
+                    window_length=int(
+                        st.session_state.get("gl_win")
+                        or st.session_state["smooth_start_val"]
+                    ),
+                    polyorder=int(st.session_state.get("gl_deg") or 3),
+                )
 
-        else:
-            fig = fig.update_traces({"y": y_glatt}, {"name": smooth_name})
+            if smooth_name not in fig_data:
+                smooth_legendgroup: str = trace.get("legendgroup") or "geglättet"
+                fig = fig.add_trace(
+                    go.Scatter(
+                        x=trace["x"],
+                        y=y_glatt,
+                        mode="lines",
+                        line_dash="0.75%",
+                        name=smooth_name,
+                        legendgroup=smooth_legendgroup,
+                        legendgrouptitle_text=smooth_legendgroup,
+                        hoverinfo="skip",
+                        visible=True,
+                        yaxis=trace["yaxis"],
+                        meta=meta_trace,
+                    )
+                )
+                st.session_state["metadata"][smooth_name] = meta_trace
 
+            else:
+                fig = fig.update_traces(
+                    {"y": y_glatt, "meta": meta_trace}, {"name": smooth_name}
+                )
+
+        elif smooth_name in fig_data:
+            fig = fig.update_traces({"visible": False}, {"name": smooth_name})
     return fig
 
 

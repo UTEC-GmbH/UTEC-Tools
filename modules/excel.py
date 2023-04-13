@@ -54,7 +54,7 @@ def import_prefab_excel(file: Any) -> None:
         st.session_state["years"] = meta["index"]["years"]
 
     logger.success("file imported and metadata extracted")
-    logger.info(f"{df.head()}")
+    logger.info(f"\n{df.head()}\n")
 
 
 @func_timer

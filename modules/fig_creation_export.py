@@ -94,15 +94,15 @@ def cr_fig_jdl() -> None:
 
     if st.session_state.get("cb_multi_year"):
         st.session_state["fig_jdl"] = ploplo.line_plot_y_overlay(
-            st.session_state["dic_jdl"],
-            st.session_state["metadata"],
-            st.session_state["years"],
+            dic_df=st.session_state["dic_jdl"],
+            meta=st.session_state["metadata"],
+            years=st.session_state["years"],
             title=tit,
         )
     else:
         st.session_state["fig_jdl"] = ploplo.line_plot(
-            st.session_state["df_jdl"],
-            st.session_state["metadata"],
+            df=st.session_state["df_jdl"],
+            meta=st.session_state["metadata"],
             title=tit,
         )
 
@@ -118,10 +118,10 @@ def cr_fig_jdl() -> None:
         st.session_state["fig_jdl"], x_tickformat=",d"
     )
 
-    st.session_state["fig_jdl"].update_traces(
-        legendgroup=None,
-        legendgrouptitle=None,
-    )
+    # st.session_state["fig_jdl"].update_traces(
+    #     legendgroup=None,
+    #     legendgrouptitle=None,
+    # )
     x_min = min(min(d.x) for d in st.session_state["fig_jdl"].data)
     x_max = max(max(d.x) for d in st.session_state["fig_jdl"].data)
 
@@ -137,15 +137,15 @@ def cr_fig_mon() -> None:
 
     if st.session_state.get("cb_multi_year"):
         st.session_state["fig_mon"] = ploplo.line_plot_y_overlay(
-            st.session_state["dic_mon"],
-            st.session_state["metadata"],
-            st.session_state["years"],
+            dic_df=st.session_state["dic_mon"],
+            meta=st.session_state["metadata"],
+            years=st.session_state["years"],
             title=cont.FIG_TITLES["mon"],
         )
     else:
         st.session_state["fig_mon"] = ploplo.line_plot(
-            st.session_state["df_mon"],
-            st.session_state["metadata"],
+            df=st.session_state["df_mon"],
+            meta=st.session_state["metadata"],
             title=cont.FIG_TITLES["mon"],
         )
 
@@ -176,8 +176,8 @@ def cr_fig_mon() -> None:
         mode="markers+lines",
         line={"dash": "dash", "width": 1},
         marker={"size": 10},
-        legendgroup=None,
-        legendgrouptitle=None,
+        # legendgroup=None,
+        # legendgrouptitle=None,
     )
 
 

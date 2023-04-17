@@ -334,7 +334,7 @@ def meteo_sidebar(page: str) -> None:
                     """
                     Außentemperaturen  werden 
                     für den unten eingegebenen Ort heruntergeladen 
-                    und in den Grafiken angezeigt.
+                    und in den Grafiken eingefügt.
                     """
                 ),
                 disabled=True,

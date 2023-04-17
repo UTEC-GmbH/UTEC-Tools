@@ -179,7 +179,7 @@ def line_plot_y_overlay(
                 ),
                 visible=True,
                 yaxis=meta[line].get("y_axis"),
-                meta={"unit": trace_unit, "negativ": manip < 0, "df_col": line},
+                meta={"unit": trace_unit, "negativ": manip < 0, "df_col": line, "year": year},
             )
         )
 

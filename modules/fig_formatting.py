@@ -11,6 +11,7 @@ from typing import Any
 
 import plotly.graph_objects as go
 import streamlit as st
+from loguru import logger
 
 from modules import constants as cont
 from modules import fig_general_functions as fgf
@@ -279,7 +280,7 @@ def standard_layout(fig: go.Figure, data: dict[str, dict[str, Any]]) -> go.Figur
             "xanchor": "left" if lastgang else "right",
             "x": 1.02 if lastgang else 0.99,
         },
-        showlegend=len(visible_traces) != 1,
+        showlegend=len(visible_traces) > 1,
         margin={"l": 5, "r": 5, "t": 40, "b": 10},
         hovermode="x",
     )
@@ -303,7 +304,7 @@ def update_main(fig: go.Figure) -> go.Figure:
     fig = show_annos(fig, visible_traces)
 
     # Legende ausblenden, wenn nur eine Linie angezeigt wird
-    fig = fig.update_layout({"showlegend": number_of_visible_traces != 1})
+    fig = fig.update_layout({"showlegend": number_of_visible_traces > 1})
 
     if st.session_state.get("cb_multi_year"):
         fig = legend_groups_for_multi_year(fig)
@@ -333,21 +334,19 @@ def show_traces(fig: go.Figure) -> go.Figure:
 
     switch: bool = layout["meta"]["title"] == "fig_days"
 
-    for trace in data.values():
-        trace_name: str = trace["name"]
-
-        if f"cp_{trace_name}" not in st.session_state:
+    for name, trace_data in data.items():
+        if f"cp_{name}" not in st.session_state:
             suff: str = "Arbeit" if fig_type in ["mon"] else "Leistung"
-            trace_name = f"{trace_name}{cont.ARBEIT_LEISTUNG['suffix'][suff]}"
+            name = f"{name}{cont.ARBEIT_LEISTUNG['suffix'][suff]}"
 
         trace_visible: bool = False
         if switch:
-            trace_visible = st.session_state[f'cb_vis_{trace["legendgroup"]}']
+            trace_visible = st.session_state[f'cb_vis_{trace_data["legendgroup"]}']
         if fig_type in ["mon", "jdl"] and any(
-            suff in trace_name for suff in cont.ARBEIT_LEISTUNG["suffix"].values()
+            suff in name for suff in cont.ARBEIT_LEISTUNG["suffix"].values()
         ):
             suffixes: list[str] = list(cont.ARBEIT_LEISTUNG["suffix"].values())
-            trace_stripped: str = trace_name
+            trace_stripped: str = name
             for suffix in suffixes:
                 trace_stripped = trace_stripped.replace(suffix, "")
             combos: list[str] = [f"{trace_stripped}{suffix}" for suffix in suffixes]
@@ -355,9 +354,9 @@ def show_traces(fig: go.Figure) -> go.Figure:
                 st.session_state[f"cb_vis_{trace_suff}"] for trace_suff in combos
             )
         else:
-            trace_visible = st.session_state[f"cb_vis_{trace_name}"]
+            trace_visible = st.session_state[f"cb_vis_{name}"]
 
-        fig = fig.update_traces({"visible": trace_visible}, {"name": trace_name})
+        fig = fig.update_traces({"visible": trace_visible}, {"name": name})
 
     return fig
 
@@ -513,28 +512,33 @@ def legend_groups_for_multi_year(fig: go.Figure) -> go.Figure:
     """change"""
 
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
-
-    legend_groups: list[int] = st.session_state["years"]
+    legend_groups: list[str] = [str(year) for year in st.session_state["years"]]
 
     number_of_traces_in_groups: dict = {
         group: len(
             [
                 trace
                 for trace in data.values()
-                if trace.get("legendgroup") == group and trace.get("visible")
+                if str(trace["meta"]["year"]) == group and trace.get("visible")
             ]
         )
         for group in legend_groups
     }
 
+    logger.debug(f"number of traces in groups: {number_of_traces_in_groups}")
+
     for group, amount in number_of_traces_in_groups.items():
         if amount < 2:
             fig = fig.update_traces({"legendgroup": None}, {"legendgroup": group})
+            fig = fig.update_traces(
+                {"legendgrouptitle": None}, {"legendgrouptitle": {"text": group}}
+            )
         else:
             for trace in data.values():
-                if group in trace["name"]:
+                if group in str(trace["meta"]["year"]):
                     fig = fig.update_traces(
-                        {"legendgroup": group}, {"name": trace["name"]}
+                        {"legendgroup": group, "legendgrouptitle": {"text": group}},
+                        {"name": trace["name"]},
                     )
 
     return fig

@@ -201,7 +201,7 @@ def split_up_df_multi_years(df: pd.DataFrame) -> dict[int, pd.DataFrame]:
             for col in df_multi[year].columns
             if all(exc not in str(col) for exc in cont.EXCLUDE)
         ]:
-            new_col_name: str = f"{col} {year}"
+            new_col_name: str = f'{col.replace(" *h","")} {year}'
             if any(suff in col for suff in cont.ARBEIT_LEISTUNG["suffix"].values()):
                 for suff in cont.ARBEIT_LEISTUNG["suffix"].values():
                     if suff in col:
@@ -276,7 +276,7 @@ def h_from_other(df: pd.DataFrame, meta: dict[str, Any] | None = None) -> pd.Dat
             df_h[col_h] = df[col].copy()
         else:
             dic_meta[col_h] = dic_meta[col].copy()
-            dic_meta[col_h]["tit"] = col_h.replace(" *h", "")
+            # dic_meta[col_h]["tit"] = col_h.replace(" *h", "")
 
         if dic_meta["index"]["td_mean"] < pd.Timedelta(hours=1):
             if dic_meta[col]["unit"] in cont.GRP_MEAN:

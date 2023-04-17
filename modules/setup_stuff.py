@@ -158,8 +158,8 @@ def logger_setup() -> None:
 
         logger.add(
             sink=f"{logger_path}{logger_file}",
-            mode="a",
             retention=3,
+            mode="a",
             catch=True,
             level=1,
             filter=level_filter(lvl),

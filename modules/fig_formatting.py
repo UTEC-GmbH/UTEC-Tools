@@ -293,9 +293,9 @@ def update_main(fig: go.Figure) -> go.Figure:
     fig = show_traces(fig)
     fig = format_traces(fig)
     visible_traces: list[str] = [
-        tr.name
+        tr["name"]
         for tr in fig.data
-        if tr.visible and all(ex not in tr.name for ex in cont.EXCLUDE)
+        if tr["visible"] and all(ex not in tr["name"] for ex in cont.EXCLUDE)
     ]
     number_of_visible_traces: int = len(visible_traces)
 

@@ -117,55 +117,49 @@ def logger_setup() -> None:
     logger_path: str = f"{cont.CWD}\\logs\\"
     logger_file: str = "log_{time:YYYY-MM-DD}.log"
 
-    formats_levels: dict[str, str] = {
-        "DEBUG": "{time:HH:mm:ss} | 🐞 | {module} -> {function} -> line: {line} | {message} | 🐞 |",
-        "INFO": "{time:HH:mm:ss} | 👉 | {module} -> {function} -> line: {line} | {message} | 👈 |",
-        "SUCCESS": "{time:HH:mm:ss} | 🥳 | {module} -> {function} -> line: {line} | {message} | 🥳 |",
-        "WARNING": "{time:HH:mm:ss} | ⚠️ | {module} -> {function} -> line: {line} | {message} | ⚠️ |",
-        "ERROR": "{time:HH:mm:ss} | 😱 | {module} -> {function} -> line: {line} | {message} | 😱 |",
-        "CRITICAL": "{time:HH:mm:ss} | ☠️ | {module} -> {function} -> line: {line} | {message} | ☠️ |",
-        "TIMER": "{time:HH:mm:ss} | ⏱  | {message} | ⏱  |",
-        "ONCE_per_RUN": "{time:HH:mm:ss} | 👟 | {module} -> {function} -> line: {line} | {message} | 👟 |",
-        "ONCE_per_SESSION": "{time:HH:mm:ss} | 🔥 | {module} -> {function} -> line: {line} | {message} | 🔥 |",
+    standard_levels: dict[str, str] = {
+        "DEBUG": "\n{time:HH:mm:ss} | 🐞 | {module} -> {function} -> line: {line} | {message} | 🐞 |",
+        "INFO": "\n{time:HH:mm:ss} | 👉 | {module} -> {function} -> line: {line} | {message} | 👈 |",
+        "SUCCESS": "\n{time:HH:mm:ss} | 🥳 | {module} -> {function} -> line: {line} | {message} | 🥳 |",
+        "WARNING": "\n{time:HH:mm:ss} | ⚠️ | {module} -> {function} -> line: {line} | {message} | ⚠️ |",
+        "ERROR": "\n{time:HH:mm:ss} | 😱 | {module} -> {function} -> line: {line} | {message} | 😱 |",
+        "CRITICAL": "\n{time:HH:mm:ss} | ☠️ | {module} -> {function} -> line: {line} | {message} | ☠️ |",
     }
-    custom_levels: list[str] = [
-        "TIMER",
-        "ONCE_per_RUN",
-        "ONCE_per_SESSION",
-    ]
+    custom_levels: dict[str, str] = {
+        "TIMER": "\n{time:HH:mm:ss} | ⏱  | {message} | ⏱  |",
+        "ONCE_per_RUN": "\n{time:HH:mm:ss} | 👟 | {module} -> {function} -> line: {line} | {message} | 👟 |",
+        "ONCE_per_SESSION": "\n{time:HH:mm:ss} | 🔥🔥🔥 | {module} -> {function} -> line: {line} | {message}",
+    }
+    all_levels: dict[str, str] = standard_levels | custom_levels
+
+    for lvl in custom_levels:
+        try:
+            logger.level(lvl)
+        except ValueError:
+            logger.level(lvl, no=1)
+
+    def format_of_lvl(record: dict) -> str:
+        return all_levels[record["level"].name]
+
     logger.remove()
 
-    def level_filter(level: str) -> Callable:
-        def is_level(record: dict) -> Any:
-            return record["level"].name == level
+    logger.add(
+        sink=sys.stderr,
+        level=1,
+        format=format_of_lvl,
+        colorize=True,
+    )
 
-        return is_level
-
-    for lvl, format_of_lvl in formats_levels.items():
-        if lvl in custom_levels:
-            try:
-                logger.level(lvl)
-            except ValueError:
-                logger.level(lvl, no=1)
-
-        logger.add(
-            sink=sys.stderr,
-            level=1,
-            filter=level_filter(lvl),
-            format=format_of_lvl,
-            colorize=True,
-        )
-
-        logger.add(
-            sink=f"{logger_path}{logger_file}",
-            mode="a",
-            retention=3,
-            catch=True,
-            level=1,
-            filter=level_filter(lvl),
-            format=format_of_lvl,
-            colorize=True,
-        )
+    logger.add(
+        sink=f"{logger_path}{logger_file}",
+        rotation="1 day",
+        retention=3,
+        mode="a",
+        catch=True,
+        level=1,
+        format=format_of_lvl,
+        colorize=True,
+    )
 
     logger.log("ONCE_per_SESSION", "\n\n\n🚀 Session Started, Log Initiated 🚀\n\n")
 

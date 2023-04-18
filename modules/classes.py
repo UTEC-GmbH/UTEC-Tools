@@ -7,7 +7,6 @@ from typing import Any
 
 import numpy as np
 import plotly.graph_objects as go
-import streamlit as st
 from loguru import logger
 
 from modules.constants import OBIS_ELECTRICAL, ObisDic

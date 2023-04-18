@@ -4,7 +4,7 @@ import datetime as dt
 import locale
 import os
 import sys
-from typing import Any, Callable
+from typing import Any
 
 import plotly.io as pio
 import sentry_sdk
@@ -23,9 +23,9 @@ from modules.user_authentication import get_all_user_data
 def get_commit_message_date() -> dict[str, dt.datetime | str]:
     """Commit message and date from GitHub to show in the header.
 
-    pat = personal access token (loaded from secrets)
-    To create a new one:
-    in github.com click on the profile and go into
+
+    To create a new personal access token in GitHub:
+    on github.com click on the profile and go into
     settings -> developer settings -> personal access tokens
 
     Returns:
@@ -34,6 +34,14 @@ def get_commit_message_date() -> dict[str, dt.datetime | str]:
             - "com_mst" (str): commit message
     """
 
+    personal_access_token: str | None = os.environ.get("GITHUB_PAT")
+    if personal_access_token is None:
+        logger.error("GITHUB_PAT environment variable not set.")
+        return {
+            "com_date": "ERROR",
+            "com_msg": "GITHUB_PAT environment variable not set.",
+        }
+
     utc: BaseTzInfo = timezone("UTC")
     eur: BaseTzInfo = timezone("Europe/Berlin")
     date_now: dt.datetime = dt.datetime.now()
@@ -41,12 +49,12 @@ def get_commit_message_date() -> dict[str, dt.datetime | str]:
         utc.localize(date_now) - eur.localize(date_now).astimezone(utc)
     ).seconds / 3600
 
-    pat: str | None = os.getenv("GITHUB_PAT")
-    gith: Github = Github(pat)
-    repo: Any = gith.get_user().get_repo("UTEC-Tools")
+    gith: Github = Github(personal_access_token)
+    repo: Any = gith.get_user().get_repo(cont.REPO_NAME)
     branch: Any = repo.get_branch("main")
     sha: Any = branch.commit.sha
     commit: Any = repo.get_commit(sha).commit
+
     return {
         "com_date": commit.author.date + dt.timedelta(hours=tz_diff),
         "com_msg": commit.message.split("\n")[-1],
@@ -114,21 +122,25 @@ def initial_setup() -> None:
 @func_timer
 def logger_setup() -> None:
     """Setup the loguru Logging module"""
-    logger_path: str = f"{cont.CWD}\\logs\\"
-    logger_file: str = "log_{time:YYYY-MM-DD}.log"
 
-    standard_levels: dict[str, str] = {
-        "DEBUG": "\n{time:HH:mm:ss} | 🐞 | {module} -> {function} -> line: {line} | {message} | 🐞 |",
-        "INFO": "\n{time:HH:mm:ss} | 👉 | {module} -> {function} -> line: {line} | {message} | 👈 |",
-        "SUCCESS": "\n{time:HH:mm:ss} | 🥳 | {module} -> {function} -> line: {line} | {message} | 🥳 |",
-        "WARNING": "\n{time:HH:mm:ss} | ⚠️ | {module} -> {function} -> line: {line} | {message} | ⚠️ |",
-        "ERROR": "\n{time:HH:mm:ss} | 😱 | {module} -> {function} -> line: {line} | {message} | 😱 |",
-        "CRITICAL": "\n{time:HH:mm:ss} | ☠️ | {module} -> {function} -> line: {line} | {message} | ☠️ |",
+    format_time: str = "\n{time:HH:mm:ss}"
+    format_mesg: str = "{module} -> {function} -> line: {line} | {message}"
+
+    standard_levels = {
+        level: f"{format_time} | {icon} | {format_mesg} | {icon} |"
+        for level, icon in {
+            "DEBUG": "🐞",
+            "INFO": "👉",
+            "SUCCESS": "🥳",
+            "WARNING": "⚠️",
+            "ERROR": "😱",
+            "CRITICAL": "☠️",
+        }.items()
     }
     custom_levels: dict[str, str] = {
-        "TIMER": "\n{time:HH:mm:ss} | ⏱  | {message} | ⏱  |",
-        "ONCE_per_RUN": "\n{time:HH:mm:ss} | 👟 | {module} -> {function} -> line: {line} | {message} | 👟 |",
-        "ONCE_per_SESSION": "\n{time:HH:mm:ss} | 🔥🔥🔥 | {module} -> {function} -> line: {line} | {message}",
+        "TIMER": f"{format_time} | ⏱  | {{message}} | ⏱  |",
+        "ONCE_per_RUN": f"{format_time} | 👟 | {format_mesg} | 👟 |",
+        "ONCE_per_SESSION": f"\n\n{format_time} 🔥🔥🔥 {{message}}\n\n",
     }
     all_levels: dict[str, str] = standard_levels | custom_levels
 
@@ -144,24 +156,25 @@ def logger_setup() -> None:
     logger.remove()
 
     logger.add(
-        sink=sys.stderr,
+        sink=sys.stderr,  # type: ignore
         level=1,
-        format=format_of_lvl,
+        format=format_of_lvl,  # type: ignore
         colorize=True,
     )
 
+    file_sink: str = f"{cont.CWD}/logs/log_{{time:YYYY-MM-DD}}.log"
     logger.add(
-        sink=f"{logger_path}{logger_file}",
+        sink=file_sink,
         rotation="1 day",
         retention=3,
         mode="a",
         catch=True,
         level=1,
-        format=format_of_lvl,
+        format=format_of_lvl,  # type: ignore
         colorize=True,
     )
 
-    logger.log("ONCE_per_SESSION", "\n\n\n🚀 Session Started, Log Initiated 🚀\n\n")
+    logger.log("ONCE_per_SESSION", "🚀 Session Started, Log Initiated 🚀")
 
 
 @func_timer

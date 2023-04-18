@@ -3,6 +3,8 @@
 import os
 from typing import Literal, TypeAlias, TypedDict
 
+REPO_NAME: str = "UTEC-Tools"
+
 # Current Working Directory
 CWD: str = os.getcwd()
 

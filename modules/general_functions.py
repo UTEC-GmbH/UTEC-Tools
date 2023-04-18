@@ -26,7 +26,7 @@ def func_timer(func: Callable) -> Callable:
     """
 
     def wrapper(*args, **kwargs) -> Any:
-        start_time: float = time.perf_counter()
+        start_time: float = time.monotonic()
 
         if "dic_exe_time" not in st.session_state:
             st.session_state["dic_exe_time"] = {}
@@ -35,10 +35,7 @@ def func_timer(func: Callable) -> Callable:
 
         exe_time: float = time.perf_counter() - start_time
         st.session_state["dic_exe_time"][func.__name__] = exe_time
-        logger.log(
-            "TIMER",
-            f"execution time of '{func.__name__}': {round(exe_time, 4)} s",
-        )
+        logger.log("TIMER", f"execution time of '{func.__name__}': {exe_time:.4f} s")
 
         return result
 
@@ -68,7 +65,7 @@ def del_session_state_entry(key: str) -> None:
     if key in st.session_state:
         del st.session_state[key]
 
-        logger.info(f"st.session_state Eintrag {key} gelöscht")
+        logger.warning(f"st.session_state Eintrag {key} gelöscht")
 
 
 def sort_list_by_occurance(list_of_stuff: list[Any]) -> list[Any]:

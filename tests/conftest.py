@@ -11,8 +11,8 @@ from tests import sample_data as sd
 
 # ----------Meta Data-----------
 @pytest.fixture(scope="session")
-def dic_meta() -> dict:
-    """Create a dictionary with meta data for the sample DataFrame"""
+def dic_meta() -> Dict:
+    """Create a Dictionary with meta data for the sample DataFrame"""
 
     return sd.sample_dic_meta()
 

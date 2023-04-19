@@ -4,7 +4,7 @@ Einstellungen und Anmerkungen für plots
 
 
 from datetime import datetime
-from typing import Any, Literal
+from typing import Any, Dict, List, Literal
 
 import numpy as np
 import pandas as pd
@@ -24,7 +24,7 @@ from modules.general_functions import func_timer, nachkomma
 
 @st.cache_data(show_spinner=False)
 @func_timer
-def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> datetime | float:
+def middle_xaxis(fig_data: Dict[str, Dict[str, Any]]) -> datetime | float:
     """Mitte der x-Achse finden
 
     Args:
@@ -34,7 +34,7 @@ def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> datetime | float:
         - datetime | float: je nach Index entweder die Zeit oder die Zahl in der Mitte der x-Achse
     """
 
-    data_x: list = [val["x"] for val in fig_data.values()]
+    data_x: List = [val["x"] for val in fig_data.values()]
     x_max_temp: datetime | int = max(max(dat) for dat in data_x if len(dat) > 0)
     x_max: float = (
         x_max_temp.timestamp() if isinstance(x_max_temp, datetime) else x_max_temp
@@ -57,8 +57,8 @@ def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> datetime | float:
 
 def add_arrow(
     fig: go.Figure,
-    fig_data: dict[str, dict[str, Any]],
-    fig_layout: dict[str, Any],
+    fig_data: Dict[str, Dict[str, Any]],
+    fig_layout: Dict[str, Any],
     x_val: datetime | float | int,
     y_or_line: float | int | str,
     **kwargs,
@@ -85,7 +85,7 @@ def add_arrow(
 
     # find the y-value for the given x-value, if no y-value is given
     if isinstance(y_or_line, str):
-        line_data: dict[str, Any] | None = fig_data[y_or_line]
+        line_data: Dict[str, Any] | None = fig_data[y_or_line]
         y_val: float = line_data["x"][np.where(line_data["y"] == x_val)[0][0]]
     else:
         line_data = None
@@ -109,7 +109,7 @@ def add_arrow(
         kwargs.get("anchor") or "right" if anc else "left"
     )
 
-    dic_arrow: dict[str, Any] = {
+    dic_arrow: Dict[str, Any] = {
         "x": x_val,
         "y": y_val,
         "yref": kwargs.get("yaxis") or "y1",
@@ -144,8 +144,8 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
         - fig (go.Figure): Grafik, die Pfeile erhalten soll
     """
 
-    fig_data: dict[str, dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
-    fig_layout: dict[str, Any] = kwargs.get("layout") or fig_layout_as_dic(fig)
+    fig_data: Dict[str, Dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
+    fig_layout: Dict[str, Any] = kwargs.get("layout") or fig_layout_as_dic(fig)
     middle_x: datetime | float = middle_xaxis(fig_data)
 
     # alle Linien in Grafik
@@ -177,14 +177,14 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
 
 
 def hovertext_from_x_val(
-    jdl: bool, x_val: datetime | float, line_data: dict[str, Any] | None
+    jdl: bool, x_val: datetime | float, line_data: Dict[str, Any] | None
 ) -> str:
     """Falls kein Hovertext gegeben wird, erstellt diese Funktion einen aus dem x-Wert
 
     Args:
         jdl (bool): handelt es sich bei der Grafik um eine Jahresdauerlinie
         x_val (datetime | float): x-Wert, der bezeichnet wird
-        line_data (dict[str, Any] | None): line_data für die Linie, die beschriftet werden soll
+        line_data (Dict[str, Any] | None): line_data für die Linie, die beschriftet werden soll
 
     Returns:
         str: Hovertext
@@ -231,8 +231,8 @@ def vline(fig: go.Figure, x_val: float or datetime, txt: str, pos: str) -> None:
 def hide_hlines(fig: go.Figure) -> None:
     """horizontale Linien ausblenden (ohne sie zu löschen)"""
 
-    fig_data: dict[str, dict[str, Any]] = fig_data_as_dic(fig)
-    fig_layout: dict[str, Any] = fig_layout_as_dic(fig)
+    fig_data: Dict[str, Dict[str, Any]] = fig_data_as_dic(fig)
+    fig_layout: Dict[str, Any] = fig_layout_as_dic(fig)
 
     for dat in fig_data:
         if "hline" in dat:
@@ -292,7 +292,7 @@ def hline_line(
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
 @func_timer
-def hline_fill(fig: go.Figure, value: float, ms_hor: list) -> go.Figure:
+def hline_fill(fig: go.Figure, value: float, ms_hor: List) -> go.Figure:
     """Ausfüllen zwischen horizontaler Linie und Linien"""
     dic_fill = {}
     traces = [tr for tr in fig.data if tr.name in ms_hor]
@@ -337,7 +337,7 @@ def h_v_lines() -> None:
     """horizontale und vertikale Linien"""
 
     # horizontale Linie
-    lis_figs_hor: list[str] = ["fig_base"]
+    lis_figs_hor: List[str] = ["fig_base"]
     if st.session_state.get("cb_jdl"):
         lis_figs_hor.append("fig_jdl")
 
@@ -357,12 +357,12 @@ def h_v_lines() -> None:
             # )
 
 
-def calculate_smooth_values(trace: dict[str, Any]) -> np.ndarray:
+def calculate_smooth_values(trace: Dict[str, Any]) -> np.ndarray:
     """Y-Werte für geglättete Linie berechnen
 
 
     Args:
-        - trace (dict[str, Any]): Linie, die geglättet werden soll
+        - trace (Dict[str, Any]): Linie, die geglättet werden soll
 
     Returns:
         - np.ndarray: geglättete Y-Werte
@@ -384,9 +384,9 @@ def calculate_smooth_values(trace: dict[str, Any]) -> np.ndarray:
 def smooth(fig: go.Figure, **kwargs) -> go.Figure:
     """geglättete Linien"""
 
-    fig_data: dict[str, dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
+    fig_data: Dict[str, Dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
 
-    traces: list[dict] = kwargs.get("traces") or [
+    traces: List[Dict] = kwargs.get("traces") or [
         trace
         for trace in fig_data.values()
         if all(excl not in trace["name"] for excl in cont.EXCLUDE)
@@ -399,7 +399,7 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
         smooth_visible: bool = bool(st.session_state.get(f"cb_vis_{smooth_name}"))
 
         if smooth_visible:
-            meta_trace: dict[str, Any] = trace["meta"]
+            meta_trace: Dict[str, Any] = trace["meta"]
 
             if smooth_name not in fig_data:
                 meta_trace = meta_trace.update({"gl_win": gl_win, "gl_deg": gl_deg})
@@ -461,7 +461,7 @@ def remove_outl(fig: go.Figure, cut_off: float) -> go.Figure:
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
 @func_timer
-def add_points(fig: go.Figure, df: pd.DataFrame, lines: list) -> None:
+def add_points(fig: go.Figure, df: pd.DataFrame, lines: List) -> None:
     """Punkte hinzufügen"""
 
     for line in lines:

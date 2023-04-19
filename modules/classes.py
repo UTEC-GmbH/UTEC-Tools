@@ -3,7 +3,7 @@
 import re
 from dataclasses import dataclass, field
 from math import ceil
-from typing import Any
+from typing import Any, List, Dict
 
 import numpy as np
 import plotly.graph_objects as go
@@ -40,7 +40,7 @@ class ObisElectrical:
             raise ValueError("Kein gültiger OBIS-Code für elektrische Zähler!")
         self.code = pat_match[0]
         code_r: str = self.code.replace(":", "-").replace(".", "-").replace("~*", "-")
-        code_l: list[str] = code_r.split("-")
+        code_l: List[str] = code_r.split("-")
         code_messgr: str = code_l[2]
         code_messart: str = code_l[3]
         dic: ObisDic = OBIS_ELECTRICAL
@@ -98,8 +98,8 @@ class FigData:
     """change"""
 
     fig: go.Figure
-    trace_names: list[str] = field(init=False)
-    traces: dict[str, FigTrace] = field(init=False)
+    trace_names: List[str] = field(init=False)
+    traces: Dict[str, FigTrace] = field(init=False)
 
     def __post_init__(self) -> None:
         """fill in the fields"""
@@ -119,9 +119,9 @@ class FigLayout:
     """change"""
 
     fig: go.Figure
-    colorway: list[str] = field(init=False)
-    layout: dict[str, Any] = field(init=False)
-    meta: dict = field(init=False)
+    colorway: List[str] = field(init=False)
+    layout: Dict[str, Any] = field(init=False)
+    meta: Dict = field(init=False)
     title: str = field(init=False)
 
     def __post_init__(self) -> None:
@@ -133,7 +133,7 @@ class FigLayout:
 
         self.meta = self.fig.layout["meta"]
 
-        colorway: list[str] = list(self.fig.layout["template"]["layout"]["colorway"])
+        colorway: List[str] = list(self.fig.layout["template"]["layout"]["colorway"])
         if len(colorway) < len(list(self.fig.data)):
             colorway *= ceil(len(list(self.fig.data)) / len(colorway))
 

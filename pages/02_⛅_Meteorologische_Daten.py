@@ -10,11 +10,11 @@ from modules import meteorolog as meteo
 from modules import plotly_plots as ploplo
 from modules import streamlit_menus as sm
 from modules import user_authentication as uauth
-from modules.alt import global_variables as gv
+from modules.setup_stuff import page_header_setup
 
 # setup
 PAGE = st.session_state["page"] = "meteo"
-sm.page_setup(PAGE)
+page_header_setup(PAGE)
 
 
 if uauth.authentication(PAGE):

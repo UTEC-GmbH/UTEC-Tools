@@ -5,21 +5,21 @@ from typing import Any
 import plotly.graph_objects as go
 
 
-def sample_fig_y_align() -> dict[str, go.Figure]:
+def sample_fig_y_align() -> Dict[str, go.Figure]:
     """Fuction to try out different combinations of y-axis properties.
 
     Returns:
-        - dict[str, go.Figure]: Dictionary of figures
+        - Dict[str, go.Figure]: Dictionary of figures
     """
 
     # sample data
-    y_axis_1: dict[str, Any] = {
+    y_axis_1: Dict[str, Any] = {
         "name": "first y-axis",
         "y_values": [200, 8, 0, 250, 110],
         "y_axis": "y",
         "fill": "tozeroy",
     }
-    y_axis_2: dict[str, Any] = {
+    y_axis_2: Dict[str, Any] = {
         "name": "second y-axis",
         "y_values": [-3, -1, 4, -2, 2],
         "y_axis": "y2",
@@ -51,7 +51,7 @@ def sample_fig_y_align() -> dict[str, go.Figure]:
     fig_base.show()
 
     # layout changes to try and align y = 0
-    tests_y2: dict[str, dict[str, Any]] = {
+    tests_y2: Dict[str, Dict[str, Any]] = {
         "from post": {  # https://community.plotly.com/t/align-multiple-y-axis-to-one-value-in-plotly/44500
             "rangemode": "tozero",
             "scaleanchor": "y",
@@ -77,16 +77,16 @@ def sample_fig_y_align() -> dict[str, go.Figure]:
         },
     }
 
-    figs: dict[str, go.Figure] = {
+    figs: Dict[str, go.Figure] = {
         test_key: go.Figure(
             fig_base.update_layout(
                 {
-                    "title": {"text": str(test_dict)},
-                    "yaxis2": test_dict,
+                    "title": {"text": str(test_Dict)},
+                    "yaxis2": test_Dict,
                 }
             )
         )
-        for (test_key, test_dict) in list(tests_y2.items())
+        for (test_key, test_Dict) in list(tests_y2.items())
     }
 
     for test_fig in figs:

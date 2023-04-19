@@ -4,7 +4,7 @@ import datetime as dt
 import locale
 import os
 import sys
-from typing import Any
+from typing import Any, Dict, List
 
 import plotly.io as pio
 import sentry_sdk
@@ -19,8 +19,8 @@ from modules.general_functions import func_timer, render_svg
 from modules.user_authentication import get_all_user_data
 
 
-@func_timer
-def get_commit_message_date() -> dict[str, dt.datetime | str]:
+# @func_timer
+def get_commit_message_date() -> Dict[str, dt.datetime | str]:
     """Commit message and date from GitHub to show in the header.
 
 
@@ -29,7 +29,7 @@ def get_commit_message_date() -> dict[str, dt.datetime | str]:
     settings -> developer settings -> personal access tokens
 
     Returns:
-        - dict[str, dt.datetime | str]:
+        - Dict[str, dt.datetime | str]:
             - "com_date" (dt.datetime): date of commit
             - "com_mst" (str): commit message
     """
@@ -95,9 +95,6 @@ def initial_setup() -> None:
         layout="wide",
     )
 
-    if "dic_exe_time" not in st.session_state:
-        st.session_state["dic_exe_time"] = {}
-
     # UTEC Logo
     if "UTEC_logo" not in st.session_state:
         st.session_state["UTEC_logo"] = render_svg()
@@ -109,17 +106,19 @@ def initial_setup() -> None:
     )
 
     # latest changes from GitHub
-    st.session_state["com_date"] = get_commit_message_date()["com_date"]
-    st.session_state["com_msg"] = get_commit_message_date()["com_msg"]
+    if any(entry not in st.session_state for entry in ["com_date", "com_msg"]):
+        st.session_state["com_date"] = get_commit_message_date()["com_date"]
+        st.session_state["com_msg"] = get_commit_message_date()["com_msg"]
 
     # all user data from database
-    st.session_state["all_user_data"] = get_all_user_data()
+    if "all_user_data" not in st.session_state:
+        st.session_state["all_user_data"] = get_all_user_data()
 
     st.session_state["initial_setup"] = True
     logger.log("ONCE_per_RUN", "initial setup done")
 
 
-@func_timer
+# @func_timer
 def logger_setup() -> None:
     """Setup the loguru Logging module"""
 
@@ -137,12 +136,12 @@ def logger_setup() -> None:
             "CRITICAL": "☠️",
         }.items()
     }
-    custom_levels: dict[str, str] = {
+    custom_levels: Dict[str, str] = {
         "TIMER": f"{format_time} | ⏱  | {{message}} | ⏱  |",
         "ONCE_per_RUN": f"{format_time} | 👟 | {format_mesg} | 👟 |",
         "ONCE_per_SESSION": f"\n\n{format_time} 🔥🔥🔥 {{message}}\n\n",
     }
-    all_levels: dict[str, str] = standard_levels | custom_levels
+    all_levels: Dict[str, str] = standard_levels | custom_levels
 
     for lvl in custom_levels:
         try:
@@ -150,7 +149,7 @@ def logger_setup() -> None:
         except ValueError:
             logger.level(lvl, no=1)
 
-    def format_of_lvl(record: dict) -> str:
+    def format_of_lvl(record: Dict) -> str:
         return all_levels[record["level"].name]
 
     logger.remove()
@@ -185,7 +184,7 @@ def page_header_setup(page: str) -> None:
     st.session_state["title_container"] = st.container()
 
     with st.session_state["title_container"]:
-        columns: list = st.columns(2)
+        columns: List = st.columns(2)
 
         # Logo
         with columns[0]:
@@ -204,7 +203,7 @@ def page_header_setup(page: str) -> None:
                 unsafe_allow_html=True,
             )
 
-            access_lvl_user: str | list | None = st.session_state.get("access_lvl")
+            access_lvl_user: str | List | None = st.session_state.get("access_lvl")
             if isinstance(access_lvl_user, str) and access_lvl_user in ("god"):
                 st.write(
                     f"""

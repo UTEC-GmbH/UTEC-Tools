@@ -2,7 +2,7 @@
 Seite Grafische Datenauswertung
 """
 
-from typing import Any
+from typing import Any, List
 
 import streamlit as st
 from streamlit_lottie import st_lottie_spinner
@@ -13,14 +13,14 @@ from modules import fig_annotations as fig_anno
 from modules import fig_creation_export as fig_create
 from modules import fig_formatting as fig_format
 from modules import meteorolog as meteo
-from modules import setup_stuff
 from modules import streamlit_menus as sm
 from modules import user_authentication as uauth
 from modules.general_functions import del_session_state_entry, load_lottie_file
+from modules.setup_stuff import page_header_setup
 
 # setup
 MANUAL_DEBUG: bool = True
-setup_stuff.page_header_setup(page="graph")
+page_header_setup(page="graph")
 
 
 def debug_code_run(before: bool) -> None:  # sourcery skip: flag-streamlit-show
@@ -34,7 +34,7 @@ def debug_code_run(before: bool) -> None:  # sourcery skip: flag-streamlit-show
                 config=fig_format.plotly_config(),
             )
 
-            se_st_show: list[str] = [
+            se_st_show: List[str] = [
                 "fig_base",
                 "fig_jdl",
                 "fig_mon",

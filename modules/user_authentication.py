@@ -4,7 +4,7 @@ user authentication
 
 import os
 from datetime import date, datetime, timedelta
-from typing import Any
+from typing import Any, Dict, List
 
 import streamlit as st
 import streamlit_authenticator as stauth
@@ -22,7 +22,7 @@ def infos_warnings_errors(key: str) -> str:
         or f"{st.session_state['access_until']:%d.%m.%Y}"
     )
 
-    dic: dict[str, dict[str, str]] = {
+    dic: Dict[str, Dict[str, str]] = {
         "no_access": {
             "message": """
                 Mit diesem Benutzerkonto haben Sie keinen Zugriff auf dieses Modul.  \n  \n
@@ -104,7 +104,7 @@ def connect_database(database: str = "UTEC_users") -> Any:
 
 
 @func_timer
-def get_all_user_data() -> dict[str, dict[str, Any]]:
+def get_all_user_data() -> Dict[str, Dict[str, Any]]:
     """Liste aller gespeicherter Benutzerdaten - je Benutzer ein Dictionary
 
     Returns:
@@ -127,7 +127,7 @@ def get_all_user_data() -> dict[str, dict[str, Any]]:
         if datetime.strptime(entry["access_until"], "%Y-%m-%d") < datetime.now():
             deta_db.delete(entry["key"])
 
-    users: dict[str, dict[str, Any]] = {
+    users: Dict[str, Dict[str, Any]] = {
         list_entry["key"]: list_entry for list_entry in deta_db.fetch().items
     }
 
@@ -136,12 +136,12 @@ def get_all_user_data() -> dict[str, dict[str, Any]]:
     return users
 
 
-def format_user_credentials() -> dict[str, dict[str, Any]]:
-    """Create a dictionary out of all the user data in the database
+def format_user_credentials() -> Dict[str, Dict[str, Any]]:
+    """Create a Dictionary out of all the user data in the database
     in the format, the authenticator-class needs
 
     Returns:
-        - dict[str, dict[str, Any]]: Dictionalry with
+        - Dict[str, Dict[str, Any]]: Dictionalry with
             - "usernames":
                 - "key": Benutzername
                     - "name": Klartext Name
@@ -166,14 +166,14 @@ def insert_new_user(
     name: str,
     email: str,
     password: str,
-    access_lvl: str | list,
+    access_lvl: str | List,
     access_until: str = str(date.today() + timedelta(weeks=3)),
 ) -> None:
     """
     bei Aufrufen der Funktion, Passwort als Klartext angeben -> wird in hash umgewandelt
     """
-    # password muss eine liste sein, deshalb wird hier für einezelnen user das pw in eine Liste geschrieben
-    hashed_pw: list = stauth.Hasher([password]).generate()
+    # password muss eine Liste sein, deshalb wird hier für einezelnen user das pw in eine Liste geschrieben
+    hashed_pw: List = stauth.Hasher([password]).generate()
     deta_db: Any = connect_database()
     deta_db.put(
         {
@@ -201,7 +201,7 @@ def insert_new_user(
 
 
 @func_timer
-def update_user(username: str, updates: dict) -> Any:
+def update_user(username: str, updates: Dict) -> Any:
     """existierendes Benutzerkonto ändern"""
     deta_db: Any = connect_database()
     return deta_db.update(updates, username)
@@ -211,7 +211,7 @@ def update_user(username: str, updates: dict) -> Any:
 def delete_user(usernames: str | None = None) -> None:
     """Benutzer löschen"""
     deta_db: Any = connect_database()
-    all_users: list[dict[str, Any]] = st.session_state["all_user_data"]
+    all_users: List[Dict[str, Any]] = st.session_state["all_user_data"]
 
     if (
         usernames is None
@@ -225,7 +225,7 @@ def delete_user(usernames: str | None = None) -> None:
         logger.error("tried to delete admin account")
 
     if usernames is not None:
-        del_users: list[str] = [
+        del_users: List[str] = [
             user for user in usernames if user not in ["utec", "fl"]
         ]
     else:

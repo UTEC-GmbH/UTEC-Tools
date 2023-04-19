@@ -2,7 +2,7 @@
 
 import os
 from io import BytesIO
-from typing import Any
+from typing import Any, Dict, List
 
 import numpy as np
 import pandas as pd
@@ -13,8 +13,8 @@ pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
 FOLDER: str = "P:\\Haustechnik\\861 Focke Wulf Siedlung West\\8. LP 1-2 Vorplanung\\Kesseldimensionierung\\WMZ-Daten"
 
 
-def import_files_in_folder(folder: str = FOLDER) -> dict[str, pd.DataFrame]:
-    """Import files into a dictionary of dfs"""
+def import_files_in_folder(folder: str = FOLDER) -> Dict[str, pd.DataFrame]:
+    """Import files into a Dictionary of dfs"""
 
     files = os.listdir(folder)
     for file in files:
@@ -53,7 +53,6 @@ def fix_bullshit_index(df: pd.DataFrame, bs_name: str = "Zeitstempel") -> pd.Dat
 
     # wenn Stunden negative Differenz haben und Tag gleich bleibt
     if any(bs_col.dt.hour.diff().values < 0) and any(bs_col.dt.day.diff().values == 0):
-
         conditions = [
             (bs_col.dt.day.diff().values > 0),  # neuer Tag
             (bs_col.dt.month.diff().values != 0),  # neuer Monat
@@ -63,7 +62,7 @@ def fix_bullshit_index(df: pd.DataFrame, bs_name: str = "Zeitstempel") -> pd.Dat
             ),  # Stunden mit negativer Differenz und Tag bleibt gleich
         ]
 
-        choices: list = [
+        choices: List = [
             pd.Timedelta(0, "h"),
             pd.Timedelta(0, "h"),
             pd.Timedelta(0, "h"),
@@ -93,11 +92,11 @@ def fix_bullshit_index(df: pd.DataFrame, bs_name: str = "Zeitstempel") -> pd.Dat
     return df_h
 
 
-def excel_hourly(dic: dict[str, pd.DataFrame]) -> None:
+def excel_hourly(dic: Dict[str, pd.DataFrame]) -> None:
     """create Excel-file
 
     Args:
-        dic (dict[str, pd.DataFrame]): _description_
+        dic (Dict[str, pd.DataFrame]): _description_
     """
     offset_col = 2
     offset_row = 4

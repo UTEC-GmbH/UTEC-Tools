@@ -1,0 +1,311 @@
+
+
+
+09:14:53 🔥🔥🔥 🚀 Session Started, Log Initiated 🚀
+
+
+09:14:53 | 🥳 | general_functions -> render_svg -> line: 103 | svg-Datei 'logo/UTEC_logo_text.svg' codiert | 🥳 |
+09:14:53 | ⏱  | execution time of 'render_svg': 0.0000 s | ⏱  |
+09:15:01 | 🥳 | user_authentication -> connect_database -> line: 101 | Deta-Database connection established | 🥳 |
+09:15:01 | ⏱  | execution time of 'connect_database': 0.0000 s | ⏱  |
+09:15:02 | 🥳 | user_authentication -> get_all_user_data -> line: 134 | Collected all user data from Database | 🥳 |
+09:15:02 | ⏱  | execution time of 'get_all_user_data': 1.2820 s | ⏱  |
+09:15:02 | 👟 | setup_stuff -> initial_setup -> line: 118 | initial setup done | 👟 |
+09:15:02 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'login' created | 👟 |
+09:15:02 | ⏱  | execution time of 'page_header_setup': 0.0000 s | ⏱  |
+09:15:03 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'login' created | 👟 |
+09:15:03 | ⏱  | execution time of 'page_header_setup': 0.0160 s | ⏱  |
+09:15:03 | 🥳 | 🔑_login -> access_granted -> line: 79 | logged in as: fl, access level: god | 🥳 |
+09:15:03 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'login' created | 👟 |
+09:15:03 | ⏱  | execution time of 'page_header_setup': 0.0150 s | ⏱  |
+09:15:07 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'graph' created | 👟 |
+09:15:07 | ⏱  | execution time of 'page_header_setup': 0.0000 s | ⏱  |
+09:15:13 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'graph' created | 👟 |
+09:15:13 | ⏱  | execution time of 'page_header_setup': 0.0000 s | ⏱  |
+09:15:15 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'graph' created | 👟 |
+09:15:15 | ⏱  | execution time of 'page_header_setup': 0.0160 s | ⏱  |
+09:15:19 | 🥳 | excel -> position_of_index_and_units -> line: 91 | Zelle '↓ Index ↓' gefunden. Einheiten ab Zeile 8, Spalte 1 | 🥳 |
+09:15:19 | 🥳 | excel -> position_of_index_and_units -> line: 114 | Zelle '→ Einheit →' gefunden. Einheiten ab Zeile 6, Spalte 2 | 🥳 |
+09:20:32 | ⏱  | execution time of 'start_end_time': 0.0000 s | ⏱  |
+09:20:32 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'graph' created | 👟 |
+09:20:32 | ⏱  | execution time of 'page_header_setup': 0.0160 s | ⏱  |
+09:20:37 | 🥳 | excel -> position_of_index_and_units -> line: 91 | Zelle '↓ Index ↓' gefunden. Einheiten ab Zeile 8, Spalte 1 | 🥳 |
+09:20:37 | 🥳 | excel -> position_of_index_and_units -> line: 114 | Zelle '→ Einheit →' gefunden. Einheiten ab Zeile 6, Spalte 2 | 🥳 |
+
+09:21:00 🔥🔥🔥 Session Started, Log Initiated 🚀🚀🚀
+
+09:21:00 | 🥳 | general_functions -> render_svg -> line: 103 | svg-Datei 'logo/UTEC_logo_text.svg' codiert | 🥳 |
+09:21:00 | ⏱  | execution time of 'render_svg': 0.0000 s | ⏱  |
+09:21:05 | 🥳 | user_authentication -> connect_database -> line: 101 | Deta-Database connection established | 🥳 |
+09:21:05 | ⏱  | execution time of 'connect_database': 0.0150 s | ⏱  |
+09:21:06 | 🥳 | user_authentication -> get_all_user_data -> line: 134 | Collected all user data from Database | 🥳 |
+09:21:06 | ⏱  | execution time of 'get_all_user_data': 1.1250 s | ⏱  |
+09:21:06 | 👟 | setup_stuff -> initial_setup -> line: 118 | initial setup done | 👟 |
+09:21:06 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'login' created | 👟 |
+09:21:06 | ⏱  | execution time of 'page_header_setup': 0.0150 s | ⏱  |
+09:21:07 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'login' created | 👟 |
+09:21:07 | ⏱  | execution time of 'page_header_setup': 0.0000 s | ⏱  |
+09:21:08 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'login' created | 👟 |
+09:21:08 | ⏱  | execution time of 'page_header_setup': 0.0150 s | ⏱  |
+
+
+09:21:28 🔥🔥🔥 Session Started, Log Initiated 🚀🚀🚀
+
+09:21:28 | 🥳 | general_functions -> render_svg -> line: 103 | svg-Datei 'logo/UTEC_logo_text.svg' codiert | 🥳 |
+09:21:28 | ⏱  | execution time of 'render_svg': 0.0000 s | ⏱  |
+09:21:32 | 🥳 | user_authentication -> connect_database -> line: 101 | Deta-Database connection established | 🥳 |
+09:21:32 | ⏱  | execution time of 'connect_database': 0.0000 s | ⏱  |
+09:21:33 | 🥳 | user_authentication -> get_all_user_data -> line: 134 | Collected all user data from Database | 🥳 |
+09:21:33 | ⏱  | execution time of 'get_all_user_data': 0.9530 s | ⏱  |
+09:21:33 | 👟 | setup_stuff -> initial_setup -> line: 118 | initial setup done | 👟 |
+09:21:33 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'login' created | 👟 |
+09:21:33 | ⏱  | execution time of 'page_header_setup': 0.0000 s | ⏱  |
+09:21:33 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'login' created | 👟 |
+09:21:33 | ⏱  | execution time of 'page_header_setup': 0.0160 s | ⏱  |
+09:21:33 | 🥳 | 🔑_login -> access_granted -> line: 79 | logged in as: fl, access level: god | 🥳 |
+09:21:34 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'login' created | 👟 |
+09:21:34 | ⏱  | execution time of 'page_header_setup': 0.0000 s | ⏱  |
+09:21:36 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'graph' created | 👟 |
+09:21:36 | ⏱  | execution time of 'page_header_setup': 0.0160 s | ⏱  |
+09:21:41 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'graph' created | 👟 |
+09:21:41 | ⏱  | execution time of 'page_header_setup': 0.0150 s | ⏱  |
+09:21:43 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'graph' created | 👟 |
+09:21:43 | ⏱  | execution time of 'page_header_setup': 0.0160 s | ⏱  |
+09:21:48 | 🥳 | excel -> position_of_index_and_units -> line: 91 | Zelle '↓ Index ↓' gefunden. Einheiten ab Zeile 8, Spalte 1 | 🥳 |
+09:21:48 | 🥳 | excel -> position_of_index_and_units -> line: 114 | Zelle '→ Einheit →' gefunden. Einheiten ab Zeile 6, Spalte 2 | 🥳 |
+
+
+09:23:52 🔥🔥🔥 Session Started, Log Initiated 🚀🚀🚀
+
+09:23:52 | 🥳 | general_functions -> render_svg -> line: 103 | svg-Datei 'logo/UTEC_logo_text.svg' codiert | 🥳 |
+09:23:52 | ⏱  | execution time of 'render_svg': 0.0310 s | ⏱  |
+09:23:58 | 🥳 | user_authentication -> connect_database -> line: 101 | Deta-Database connection established | 🥳 |
+09:23:58 | ⏱  | execution time of 'connect_database': 0.0320 s | ⏱  |
+09:23:59 | 🥳 | user_authentication -> get_all_user_data -> line: 134 | Collected all user data from Database | 🥳 |
+09:23:59 | ⏱  | execution time of 'get_all_user_data': 1.1410 s | ⏱  |
+09:23:59 | 👟 | setup_stuff -> initial_setup -> line: 118 | initial setup done | 👟 |
+09:23:59 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'login' created | 👟 |
+09:23:59 | ⏱  | execution time of 'page_header_setup': 0.0000 s | ⏱  |
+09:24:00 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'login' created | 👟 |
+09:24:00 | ⏱  | execution time of 'page_header_setup': 0.0000 s | ⏱  |
+09:24:00 | 🥳 | 🔑_login -> access_granted -> line: 79 | logged in as: fl, access level: god | 🥳 |
+09:24:00 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'login' created | 👟 |
+09:24:00 | ⏱  | execution time of 'page_header_setup': 0.0160 s | ⏱  |
+09:24:30 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'graph' created | 👟 |
+09:24:30 | ⏱  | execution time of 'page_header_setup': 0.0150 s | ⏱  |
+09:24:33 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'graph' created | 👟 |
+09:24:33 | ⏱  | execution time of 'page_header_setup': 0.0000 s | ⏱  |
+09:24:37 | 🥳 | excel -> position_of_index_and_units -> line: 91 | Zelle '↓ Index ↓' gefunden in Zeile 7, Spalte 1 | 🥳 |
+09:24:37 | 🥳 | excel -> position_of_index_and_units -> line: 112 | Zelle '→ Einheit →' gefunden. Einheiten ab Zeile 6, Spalte 2 | 🥳 |
+09:27:09 | ⏱  | execution time of 'start_end_time': 0.0000 s | ⏱  |
+09:27:09 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'graph' created | 👟 |
+09:27:09 | ⏱  | execution time of 'page_header_setup': 0.0000 s | ⏱  |
+09:27:13 | 🐞 | excel -> import_prefab_excel -> line: 31 | df_messy
+   Unnamed: 0           Unnamed: 1   Unnamed: 2     Unnamed: 3       Unnamed: 4       Unnamed: 5            Unnamed: 6
+0         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+1         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+2         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+3         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+4         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+5         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+6         NaN          → Einheit →          kWh            kWh              kWh              kWh                   kWh
+7         NaN            ↓ Index ↓  Strombedarf  PV Produktion  Netzeinspeisung  PV Eigennutzung  Strombez. 1-1:1.29.0
+8         NaN  2021-01-01 00:00:00          3.4              0                0                0                   3.4
+9         NaN  2021-01-01 00:15:00        3.225              0                0                0                 3.225
+ | 🐞 |
+09:27:14 | 🥳 | excel -> position_of_index_and_units -> line: 92 | Zelle '↓ Index ↓' gefunden in Zeile 7, Spalte 1 | 🥳 |
+09:27:14 | 🥳 | excel -> position_of_index_and_units -> line: 113 | Zelle '→ Einheit →' gefunden. Einheiten ab Zeile 6, Spalte 2 | 🥳 |
+09:29:50 | ⏱  | execution time of 'start_end_time': 0.0000 s | ⏱  |
+09:29:50 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'graph' created | 👟 |
+09:29:50 | ⏱  | execution time of 'page_header_setup': 0.0150 s | ⏱  |
+09:29:55 | 🐞 | excel -> import_prefab_excel -> line: 31 | df_messy
+   Unnamed: 0           Unnamed: 1   Unnamed: 2     Unnamed: 3       Unnamed: 4       Unnamed: 5            Unnamed: 6
+0         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+1         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+2         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+3         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+4         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+5         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+6         NaN          → Einheit →          kWh            kWh              kWh              kWh                   kWh
+7         NaN            ↓ Index ↓  Strombedarf  PV Produktion  Netzeinspeisung  PV Eigennutzung  Strombez. 1-1:1.29.0
+8         NaN  2021-01-01 00:00:00          3.4              0                0                0                   3.4
+9         NaN  2021-01-01 00:15:00        3.225              0                0                0                 3.225
+ | 🐞 |
+09:29:55 | 🥳 | excel -> position_of_index_and_units -> line: 92 | Zelle '↓ Index ↓' gefunden in Zeile 7, Spalte 1 | 🥳 |
+09:29:55 | 🥳 | excel -> position_of_index_and_units -> line: 113 | Zelle '→ Einheit →' gefunden. Einheiten ab Zeile 6, Spalte 2 | 🥳 |
+09:29:55 | 🐞 | excel -> edit_df_after_import -> line: 185 | first df
+7             ↓ Index ↓  Strombedarf  PV Produktion  Netzeinspeisung  PV Eigennutzung  Strombez. 1-1:1.29.0
+7             ↓ Index ↓  Strombedarf  PV Produktion  Netzeinspeisung  PV Eigennutzung  Strombez. 1-1:1.29.0
+8   2021-01-01 00:00:00          3.4              0                0                0                   3.4
+9   2021-01-01 00:15:00        3.225              0                0                0                 3.225
+10  2021-01-01 00:30:00         3.15              0                0                0                  3.15
+11  2021-01-01 00:45:00         3.55              0                0                0                  3.55
+ | 🐞 |
+09:30:34 | ⏱  | execution time of 'start_end_time': 0.0000 s | ⏱  |
+09:30:34 | 👟 | setup_stuff -> page_header_setup -> line: 220 | page header for page 'graph' created | 👟 |
+09:30:34 | ⏱  | execution time of 'page_header_setup': 0.0160 s | ⏱  |
+09:30:39 | 🐞 | excel -> import_prefab_excel -> line: 31 | df_messy
+   Unnamed: 0           Unnamed: 1   Unnamed: 2     Unnamed: 3       Unnamed: 4       Unnamed: 5            Unnamed: 6
+0         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+1         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+2         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+3         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+4         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+5         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+6         NaN          → Einheit →          kWh            kWh              kWh              kWh                   kWh
+7         NaN            ↓ Index ↓  Strombedarf  PV Produktion  Netzeinspeisung  PV Eigennutzung  Strombez. 1-1:1.29.0
+8         NaN  2021-01-01 00:00:00          3.4              0                0                0                   3.4
+9         NaN  2021-01-01 00:15:00        3.225              0                0                0                 3.225
+ | 🐞 |
+09:30:39 | 🥳 | excel -> position_of_index_and_units -> line: 92 | Zelle '↓ Index ↓' gefunden in Zeile 7, Spalte 1 | 🥳 |
+09:30:39 | 🥳 | excel -> position_of_index_and_units -> line: 113 | Zelle '→ Einheit →' gefunden. Einheiten ab Zeile 6, Spalte 2 | 🥳 |
+09:30:39 | 🐞 | excel -> edit_df_after_import -> line: 186 | first df
+7             ↓ Index ↓ Strombedarf PV Produktion Netzeinspeisung PV Eigennutzung Strombez. 1-1:1.29.0
+8   2021-01-01 00:00:00         3.4             0               0               0                  3.4
+9   2021-01-01 00:15:00       3.225             0               0               0                3.225
+10  2021-01-01 00:30:00        3.15             0               0               0                 3.15
+11  2021-01-01 00:45:00        3.55             0               0               0                 3.55
+12  2021-01-01 01:00:00         4.3             0               0               0                  4.3
+ | 🐞 |
+09:30:39 | ⚠️ | df_manip -> clean_up_daylight_savings -> line: 128 | Data deleted due to daylight savings: 
+
+7                    Strombedarf  PV Produktion  Netzeinspeisung  PV Eigennutzung  Strombez. 1-1:1.29.0
+↓ Index ↓                                                                                              
+2021-10-31 02:00:00        2.475            0.0              0.0              0.0                 2.475
+2021-10-31 02:15:00        2.550            0.0              0.0              0.0                 2.550
+2021-10-31 02:30:00        2.175            0.0              0.0              0.0                 2.175
+2021-10-31 02:45:00        2.075            0.0              0.0              0.0                 2.075
+
+ | ⚠️ |
+09:30:39 | ⏱  | execution time of 'clean_up_daylight_savings': 0.0310 s | ⏱  |
+09:30:39 | ⏱  | execution time of 'edit_df_after_import': 0.2350 s | ⏱  |
+09:30:39 | 🥳 | excel -> position_of_index_and_units -> line: 92 | Zelle '↓ Index ↓' gefunden in Zeile 7, Spalte 1 | 🥳 |
+09:30:39 | 🥳 | excel -> position_of_index_and_units -> line: 113 | Zelle '→ Einheit →' gefunden. Einheiten ab Zeile 6, Spalte 2 | 🥳 |
+09:30:39 | ⏱  | execution time of 'units_from_messy_df': 0.0310 s | ⏱  |
+09:30:39 | ⏱  | execution time of 'meta_from_index': 0.0310 s | ⏱  |
+09:30:39 | ⏱  | execution time of 'meta_from_col_title': 0.0000 s | ⏱  |
+09:30:39 | ⏱  | execution time of 'insert_column_arbeit_leistung': 0.0000 s | ⏱  |
+09:30:39 | ⏱  | execution time of 'rename_column_arbeit_leistung': 0.0000 s | ⏱  |
+09:30:39 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 333 | Arbeit und Leistung aufgeteilt | 🥳 |
+09:30:39 | ⏱  | execution time of 'insert_column_arbeit_leistung': 0.0000 s | ⏱  |
+09:30:39 | ⏱  | execution time of 'rename_column_arbeit_leistung': 0.0000 s | ⏱  |
+09:30:39 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 333 | Arbeit und Leistung aufgeteilt | 🥳 |
+09:30:39 | ⏱  | execution time of 'insert_column_arbeit_leistung': 0.0000 s | ⏱  |
+09:30:39 | ⏱  | execution time of 'rename_column_arbeit_leistung': 0.0000 s | ⏱  |
+09:30:39 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 333 | Arbeit und Leistung aufgeteilt | 🥳 |
+09:30:39 | ⏱  | execution time of 'insert_column_arbeit_leistung': 0.0000 s | ⏱  |
+09:30:39 | ⏱  | execution time of 'rename_column_arbeit_leistung': 0.0000 s | ⏱  |
+09:30:39 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 333 | Arbeit und Leistung aufgeteilt | 🥳 |
+09:30:39 | ⏱  | execution time of 'insert_column_arbeit_leistung': 0.0000 s | ⏱  |
+09:30:39 | ⏱  | execution time of 'rename_column_arbeit_leistung': 0.0000 s | ⏱  |
+09:30:39 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 333 | Arbeit und Leistung aufgeteilt | 🥳 |
+09:30:39 | ⏱  | execution time of 'convert_15min_kwh_to_kw': 0.0160 s | ⏱  |
+09:30:39 | ⏱  | execution time of 'set_y_axis_for_lines': 0.0000 s | ⏱  |
+09:30:39 | 🥳 | excel -> import_prefab_excel -> line: 58 | file imported and metadata extracted | 🥳 |
+09:30:39 | 👉 | excel -> import_prefab_excel -> line: 59 | 
+7                    Strombedarf → Arbeit  PV Produktion → Arbeit  Netzeinspeisung → Arbeit  ...  Netzeinspeisung → Leistung  PV Eigennutzung → Leistung Bezug (1-1:1.29) → Leistung
+↓ Index ↓                                                                                    ...                                                                                    
+2021-01-01 00:00:00                 3.400                     0.0                       0.0  ...                         0.0                         0.0                        13.6
+2021-01-01 00:15:00                 3.225                     0.0                       0.0  ...                         0.0                         0.0                        12.9
+2021-01-01 00:30:00                 3.150                     0.0                       0.0  ...                         0.0                         0.0                        12.6
+2021-01-01 00:45:00                 3.550                     0.0                       0.0  ...                         0.0                         0.0                        14.2
+2021-01-01 01:00:00                 4.300                     0.0                       0.0  ...                         0.0                         0.0                        17.2
+
+[5 rows x 11 columns]
+ | 👉 |
+09:30:39 | ⏱  | execution time of 'import_prefab_excel': 4.8120 s | ⏱  |
+09:30:39 | 🥳 | df_manip -> h_from_other -> line: 283 | DataFrame mit Stundenwerten erstellt: 
+
+                     Strombedarf *h  PV Produktion *h  Netzeinspeisung *h  PV Eigennutzung *h  Bezug (1-1:1.29) *h              orgidx
+↓ Index ↓                                                                                                                             
+2021-01-01 00:00:00          13.325               0.0                 0.0                 0.0               13.325 2021-01-01 00:00:00
+2021-01-01 01:00:00          14.550               0.0                 0.0                 0.0               14.550 2021-01-01 01:00:00
+2021-01-01 02:00:00          11.350               0.0                 0.0                 0.0               11.350 2021-01-01 02:00:00
+2021-01-01 03:00:00          10.725               0.0                 0.0                 0.0               10.725 2021-01-01 03:00:00
+2021-01-01 04:00:00           9.300               0.0                 0.0                 0.0                9.300 2021-01-01 04:00:00
+
+ | 🥳 |
+09:30:39 | ⏱  | execution time of 'h_from_other': 0.0630 s | ⏱  |
+09:30:39 | 🥳 | df_manip -> jdl -> line: 336 | DataFrame für Jahresdauerlinie erstellt: 
+
+   Strombedarf *h  PV Produktion *h  Netzeinspeisung *h  PV Eigennutzung *h  ...  PV Produktion *h_orgidx Netzeinspeisung *h_orgidx PV Eigennutzung *h_orgidx Bezug (1-1:1.29) *h_orgidx
+1          36.225            43.350              27.025              24.975  ...      2021-04-27 13:00:00       2021-04-27 13:00:00       2021-04-24 15:00:00        2021-11-18 19:00:00
+2          34.650            42.175              24.850              24.600  ...      2021-04-13 13:00:00       2021-04-26 13:00:00       2021-04-24 16:00:00        2021-01-30 17:00:00
+3          34.550            40.375              23.100              23.600  ...      2021-05-30 14:00:00       2021-04-28 15:00:00       2021-04-24 13:00:00        2021-01-23 18:00:00
+4          34.450            40.350              22.975              23.475  ...      2021-04-27 12:00:00       2021-04-13 13:00:00       2021-05-30 11:00:00        2021-02-07 19:00:00
+5          34.450            39.700              22.100              23.400  ...      2021-04-26 13:00:00       2021-05-06 13:00:00       2021-04-17 13:00:00        2021-01-19 18:00:00
+
+[5 rows x 10 columns]
+
+ | 🥳 |
+09:30:39 | ⏱  | execution time of 'jdl': 0.1090 s | ⏱  |
+09:30:39 | 🥳 | df_manip -> h_from_other -> line: 283 | DataFrame mit Stundenwerten erstellt: 
+
+                     Strombedarf *h  PV Produktion *h  Netzeinspeisung *h  PV Eigennutzung *h  Bezug (1-1:1.29) *h              orgidx
+↓ Index ↓                                                                                                                             
+2021-01-01 00:00:00          13.325               0.0                 0.0                 0.0               13.325 2021-01-01 00:00:00
+2021-01-01 01:00:00          14.550               0.0                 0.0                 0.0               14.550 2021-01-01 01:00:00
+2021-01-01 02:00:00          11.350               0.0                 0.0                 0.0               11.350 2021-01-01 02:00:00
+2021-01-01 03:00:00          10.725               0.0                 0.0                 0.0               10.725 2021-01-01 03:00:00
+2021-01-01 04:00:00           9.300               0.0                 0.0                 0.0                9.300 2021-01-01 04:00:00
+
+ | 🥳 |
+09:30:39 | ⏱  | execution time of 'h_from_other': 0.0470 s | ⏱  |
+09:30:39 | 🥳 | df_manip -> mon -> line: 378 | DataFrame mit Monatswerten erstellt: 
+
+            Strombedarf *mon  PV Produktion *mon  Netzeinspeisung *mon  PV Eigennutzung *mon  Bezug (1-1:1.29) *mon     orgidx
+↓ Index ↓                                                                                                                     
+2021-01-15         13100.800             801.150                 1.950                799.20              12301.600 2021-01-15
+2021-02-15         11460.800            1629.025                83.775               1545.25               9915.550 2021-02-15
+2021-03-15         12272.500            3948.400               730.800               3217.60               9054.900 2021-03-15
+2021-04-15         11587.775            6171.075              1820.375               4350.70               7237.075 2021-04-15
+2021-05-15         11830.100            6227.375              1592.225               4635.15               7194.950 2021-05-15
+
+ | 🥳 |
+09:30:39 | ⏱  | execution time of 'mon': 0.0630 s | ⏱  |
+09:30:44 | ⏱  | execution time of 'line_plot': 4.9370 s | ⏱  |
+09:30:45 | 👉 | fig_annotations -> middle_xaxis -> line: 50 | middle of x-axis: 2021-07-02 12:52:30 | 👉 |
+09:30:45 | ⏱  | execution time of 'middle_xaxis': 0.0160 s | ⏱  |
+09:30:45 | 🥳 | fig_annotations -> add_arrows_min_max -> line: 174 | Max / Min arrows added to figure | 🥳 |
+09:30:45 | ⏱  | execution time of 'add_arrows_min_max': 0.2190 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'format_tickstops': 0.0000 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'standard_xaxis': 0.0470 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'standard_yaxis': 0.0310 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'standard_layout': 0.0310 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'standard_axes_and_layout': 0.1090 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'cr_fig_base': 5.5310 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'line_plot': 0.3130 s | ⏱  |
+09:30:45 | 👉 | fig_annotations -> middle_xaxis -> line: 53 | middle of x-axis: 4380.5 | 👉 |
+09:30:45 | ⏱  | execution time of 'middle_xaxis': 0.0160 s | ⏱  |
+09:30:45 | 🥳 | fig_annotations -> add_arrows_min_max -> line: 174 | Max / Min arrows added to figure | 🥳 |
+09:30:45 | ⏱  | execution time of 'add_arrows_min_max': 0.0470 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'standard_xaxis': 0.0150 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'standard_yaxis': 0.0000 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'standard_layout': 0.0160 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'standard_axes_and_layout': 0.0310 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'cr_fig_jdl': 0.3910 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'line_plot': 0.0000 s | ⏱  |
+09:30:45 | 👉 | fig_annotations -> middle_xaxis -> line: 50 | middle of x-axis: 2021-07-01 01:00:00 | 👉 |
+09:30:45 | ⏱  | execution time of 'middle_xaxis': 0.0000 s | ⏱  |
+09:30:45 | 🥳 | fig_annotations -> add_arrows_min_max -> line: 174 | Max / Min arrows added to figure | 🥳 |
+09:30:45 | ⏱  | execution time of 'add_arrows_min_max': 0.0320 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'format_tickstops': 0.0000 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'standard_xaxis': 0.0150 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'standard_yaxis': 0.0000 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'standard_layout': 0.0000 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'standard_axes_and_layout': 0.0150 s | ⏱  |
+09:30:45 | ⏱  | execution time of 'cr_fig_mon': 0.0630 s | ⏱  |
+09:30:46 | ⏱  | execution time of 'smooth': 0.0160 s | ⏱  |
+09:30:46 | ⏱  | execution time of 'show_traces': 0.0160 s | ⏱  |
+09:30:46 | ⏱  | execution time of 'format_traces': 0.0150 s | ⏱  |
+09:30:46 | ⏱  | execution time of 'show_y_axes': 0.0160 s | ⏱  |
+09:30:46 | ⏱  | execution time of 'update_main': 0.0630 s | ⏱  |
+09:30:46 | ⏱  | execution time of 'show_traces': 0.0000 s | ⏱  |
+09:30:46 | ⏱  | execution time of 'format_traces': 0.0150 s | ⏱  |
+09:30:46 | ⏱  | execution time of 'show_y_axes': 0.0000 s | ⏱  |
+09:30:46 | ⏱  | execution time of 'update_main': 0.0310 s | ⏱  |
+09:30:46 | ⏱  | execution time of 'show_traces': 0.0000 s | ⏱  |
+09:30:46 | ⏱  | execution time of 'format_traces': 0.0160 s | ⏱  |
+09:30:46 | ⏱  | execution time of 'show_y_axes': 0.0000 s | ⏱  |
+09:30:46 | ⏱  | execution time of 'update_main': 0.0310 s | ⏱  |
+09:30:51 | ⏱  | execution time of 'plot_figs': 5.6720 s | ⏱  |

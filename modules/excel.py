@@ -3,8 +3,9 @@ Import und Download von Excel-Dateien
 """
 import re
 from io import BytesIO
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List, Literal, NamedTuple, Tuple
 
+import numpy as np
 import pandas as pd
 import pandas.io.formats.excel
 import streamlit as st
@@ -27,6 +28,7 @@ def import_prefab_excel(file: Any) -> None:
     """vordefinierte Datei (benannte Zelle für Index) importieren"""
 
     df_messy: pd.DataFrame = pd.read_excel(file, sheet_name="Daten")
+    logger.debug(f"df_messy\n{df_messy.head(10)}\n")
     df: pd.DataFrame = edit_df_after_import(df_messy)
 
     # Metadaten
@@ -67,29 +69,35 @@ def position_of_index_and_units(df_messy: pd.DataFrame) -> Dict[str, Dict[str, i
         - Dict: A Dictionary containing the row and column positions of the index and units markers.
     """
 
-    # Zelle mit Index-Markierung
-    ind_cell: pd.DataFrame = (
-        df_messy[df_messy == "↓ Index ↓"].dropna(how="all").dropna(axis=1)
-    )
-    if ind_cell.empty:
+    index_marker_position: Tuple = np.where(df_messy == "↓ Index ↓")
+
+    if any([len(index_marker_position[0]) < 1, len(index_marker_position[1]) < 1]):
         raise ValueError("Index marker '↓ Index ↓' not found in the DataFrame.")
+    if any([len(index_marker_position[0]) > 1, len(index_marker_position[1]) > 1]):
+        raise ValueError("Multiple index markers '↓ Index ↓' found in the DataFrame.")
 
-    ind_row: int = df_messy.index.get_loc(ind_cell.index[0])
-    ind_col: int = df_messy.columns.get_loc(ind_cell.columns[0])
+    ind_row: int = index_marker_position[0][0]
+    ind_col: int = index_marker_position[1][0]
 
-    # Zelle mit Einheiten-Markierung
-    unit_cell: pd.DataFrame = (
-        df_messy[df_messy == "→ Einheit →"].dropna(how="all").dropna(axis=1)
-    )
-    if unit_cell.empty:
+    logger.success(f"Zelle '↓ Index ↓' gefunden in Zeile {ind_row}, Spalte {ind_col}")
+
+    unit_marker_position: Tuple = np.where(df_messy == "→ Einheit →")
+
+    if any([len(unit_marker_position[0]) < 1, len(unit_marker_position[1]) < 1]):
         raise ValueError("Unit marker '→ Einheit →' not found in the DataFrame.")
+    if any([len(unit_marker_position[0]) > 1, len(unit_marker_position[1]) > 1]):
+        raise ValueError("Multiple Unit markers '→ Einheit →' found in the DataFrame.")
 
-    unit_row: int = df_messy.index.get_loc(unit_cell.index[0])
-    unit_col: int = ind_col + 1
+    uni_row: int = unit_marker_position[0][0]
+    uni_col: int = unit_marker_position[1][0] + 1
+
+    logger.success(
+        f"Zelle '→ Einheit →' gefunden. Einheiten ab Zeile {uni_row}, Spalte {uni_col}"
+    )
 
     return {
         "index": {"row": ind_row, "col": ind_col},
-        "units": {"row": unit_row, "col": unit_col},
+        "units": {"row": uni_row, "col": uni_col},
     }
 
 
@@ -112,7 +120,7 @@ def units_from_messy_df(df_messy: pd.DataFrame) -> Dict[str, str]:
     p_in: Dict[str, int] = positions["index"]
     p_un: Dict[str, int] = positions["units"]
 
-    column_names: List[str] = df_messy.iloc[p_in["row"], p_in["col"] + 1 :].to_list()
+    column_names: List[str] = df_messy.iloc[p_in["row"], p_in["col"] :].to_list()
     units: List[str] = df_messy.iloc[p_un["row"], p_un["col"] :].to_list()
 
     # leerzeichen vor Einheit
@@ -359,21 +367,28 @@ def insert_column_arbeit_leistung(
     )
 
 
-# TODO: rewrite, refactor, docstring
 @func_timer
-def excel_download(df: pd.DataFrame, page: str = "graph") -> Any:
-    """Daten als Excel-Datei herunterladen"""
+def excel_download(df: pd.DataFrame, page: str = "graph") -> bytes:
+    """
+    Download data as an Excel file.
 
-    ws_name: str = ws_name_num_format(df, page)[0]
-    dic_num_formats: Dict[str, str] = ws_name_num_format(df, page)[1]
+    Args:
+        - df (pd.DataFrame): The data frame to download.
+        - page (str, optional): The name of the page to use in the Excel file.
+            Defaults to "graph".
 
-    OFFSET_COL: int = 2
-    OFFSET_ROW: int = 4
+    Returns:
+        - bytes: The Excel file as a bytes object.
+    """
+    name_and_format: WsNameNumFormat = ws_name_num_format(df, page)
+    ws_name: str = name_and_format.worksheet_name
+    num_formats: Dict[str, str] = name_and_format.number_formats
 
-    output: BytesIO = BytesIO()
+    column_offset: int = 2
+    row_offset: int = 4
 
     # pylint: disable=abstract-class-instantiated
-    with pd.ExcelWriter(
+    with BytesIO() as output, pd.ExcelWriter(
         output,
         engine="xlsxwriter",
         datetime_format="dd.mm.yyyy hh:mm",
@@ -382,24 +397,25 @@ def excel_download(df: pd.DataFrame, page: str = "graph") -> Any:
         df.to_excel(
             writer,
             sheet_name=ws_name,
-            startrow=OFFSET_ROW,
-            startcol=OFFSET_COL,
+            startrow=row_offset,
+            startcol=column_offset,
             engine="xlsxwriter",
         )
 
-        wkb: Any = writer.book
-        wks: Any = writer.sheets[ws_name]
+        workbook: Any = writer.book
+        worksheet: Any = writer.sheets[ws_name]
 
-        # Formatierung
-        edit_ws_format(wkb, wks, df, dic_num_formats, OFFSET_COL, OFFSET_ROW)
+        format_worksheet(
+            workbook, worksheet, df, num_formats, column_offset, row_offset
+        )
 
     return output.getvalue()
 
 
 @func_timer
-def edit_ws_format(
-    wkb: Any,
-    wks: Any,
+def format_worksheet(
+    workbook: Any,
+    worksheet: Any,
     df: pd.DataFrame,
     number_formats: Dict[str, str],
     offset_col: int = 2,
@@ -417,7 +433,7 @@ def edit_ws_format(
     cols: List[str] = [str(col) for col in df.columns]
 
     # Formatierung
-    wks.hide_gridlines(2)
+    worksheet.hide_gridlines(2)
     base_format: Dict[str, Any] = {
         "bold": False,
         "font_name": "Arial",
@@ -429,26 +445,26 @@ def edit_ws_format(
     # erste Spalte
     spec_format: Dict[str, Any] = base_format.copy()
     spec_format["align"] = "left"
-    cell_format: Any = wkb.add_format(spec_format)
-    wks.set_column(offset_col, offset_col, 18, cell_format)
+    cell_format: Any = workbook.add_format(spec_format)
+    worksheet.set_column(offset_col, offset_col, 18, cell_format)
 
     # erste Zeile
     spec_format = base_format.copy()
     spec_format["bottom"] = 1
-    cell_format = wkb.add_format(spec_format)
-    wks.write(offset_row, offset_col, "Datum", cell_format)
+    cell_format = workbook.add_format(spec_format)
+    worksheet.write(offset_row, offset_col, "Datum", cell_format)
 
     for col, header in enumerate(cols):
-        wks.write(offset_row, col + 1 + offset_col, header, cell_format)
+        worksheet.write(offset_row, col + 1 + offset_col, header, cell_format)
 
     for num_format in number_formats.values():
         spec_format = base_format.copy()
         spec_format["num_format"] = num_format
-        col_format: Any = wkb.add_format(spec_format)
+        col_format: Any = workbook.add_format(spec_format)
 
         for cnt, col in enumerate(cols):
             if number_formats[col] == num_format:
-                wks.set_column(
+                worksheet.set_column(
                     cnt + offset_col + 1,
                     cnt + offset_col + 1,
                     len(col) + 1,
@@ -456,8 +472,15 @@ def edit_ws_format(
                 )
 
 
+class WsNameNumFormat(NamedTuple):
+    """Named tuple for the return value of the following function."""
+
+    worksheet_name: str
+    number_formats: Dict[str, str]
+
+
 @func_timer
-def ws_name_num_format(df: pd.DataFrame, page: str) -> tuple[str, Dict]:
+def ws_name_num_format(df: pd.DataFrame, page: str) -> WsNameNumFormat:
     """Worksheet name and number fromat based on app page
 
     Args:
@@ -465,21 +488,26 @@ def ws_name_num_format(df: pd.DataFrame, page: str) -> tuple[str, Dict]:
         - page (str): page of app (graph or meteo...)
 
     Returns:
-        - tuple[str, Dict]: ws_name, dic_num_formats = {column: number format}
+        - Tuple[str, Dict]: ws_name, dic_num_formats = {column: number format}
     """
 
-    ws_name: str = "Tabelle1"
-    num_formats: Dict[str, str] = {}
+    page_mapping: Dict[str, Dict[str, Any]] = {
+        "meteo": {
+            "ws_name": "Wetterdaten",
+            "num_formats": {par.tit_de: par.num_format for par in meteo.LIS_PARAMS},
+        },
+        "graph": {
+            "ws_name": "Daten",
+            "num_formats": {
+                key: f'#,##0.0"{st.session_state["metadata"][key]["unit"]}"'
+                for key in [str(col) for col in df.columns]
+            },
+        },
+    }
+    if page not in page_mapping:
+        raise ValueError(f"Invalid page: {page}")
+    mapping: Dict[str, Any] = page_mapping[page]
 
-    if page in ("meteo"):
-        ws_name = "Wetterdaten"
-        num_formats = {par.tit_de: par.num_format for par in meteo.LIS_PARAMS}
-
-    if page in ("graph"):
-        ws_name = "Daten"
-        num_formats = {
-            key: f'#,##0.0"{st.session_state["metadata"][key]["unit"]}"'
-            for key in [str(col) for col in df.columns]
-        }
-
-    return ws_name, num_formats
+    return WsNameNumFormat(
+        worksheet_name=mapping["ws_name"], number_formats=mapping["num_formats"]
+    )

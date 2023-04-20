@@ -122,11 +122,11 @@ def initial_setup() -> None:
 def logger_setup() -> None:
     """Setup the loguru Logging module"""
 
-    format_time: str = "\n{time:HH:mm:ss}"
+    format_time: str = "{time:HH:mm:ss}"
     format_mesg: str = "{module} -> {function} -> line: {line} | {message}"
 
-    standard_levels = {
-        level: f"{format_time} | {icon} | {format_mesg} | {icon} |"
+    standard_levels: Dict[str, str] = {
+        level: f"{format_time} | {icon} | {format_mesg} | {icon} |\n"
         for level, icon in {
             "DEBUG": "🐞",
             "INFO": "👉",
@@ -137,8 +137,8 @@ def logger_setup() -> None:
         }.items()
     }
     custom_levels: Dict[str, str] = {
-        "TIMER": f"{format_time} | ⏱  | {{message}} | ⏱  |",
-        "ONCE_per_RUN": f"{format_time} | 👟 | {format_mesg} | 👟 |",
+        "TIMER": f"{format_time} | ⏱  | {{message}} | ⏱  |\n",
+        "ONCE_per_RUN": f"{format_time} | 👟 | {format_mesg} | 👟 |\n",
         "ONCE_per_SESSION": f"\n\n{format_time} 🔥🔥🔥 {{message}}\n\n",
     }
     all_levels: Dict[str, str] = standard_levels | custom_levels
@@ -173,7 +173,7 @@ def logger_setup() -> None:
         colorize=True,
     )
 
-    logger.log("ONCE_per_SESSION", "🚀 Session Started, Log Initiated 🚀")
+    logger.log("ONCE_per_SESSION", "Session Started, Log Initiated 🚀🚀🚀")
 
 
 @func_timer
@@ -187,10 +187,15 @@ def page_header_setup(page: str) -> None:
         columns: List = st.columns(2)
 
         # Logo
+        if "UTEC_logo" not in st.session_state:
+            st.session_state["UTEC_logo"] = render_svg()
         with columns[0]:
             st.write(st.session_state["UTEC_logo"], unsafe_allow_html=True)
 
         # Version info (latest changes and python version)
+        if any(entry not in st.session_state for entry in ["com_date", "com_msg"]):
+            st.session_state["com_date"] = get_commit_message_date()["com_date"]
+            st.session_state["com_msg"] = get_commit_message_date()["com_msg"]
         with columns[1]:
             st.write(
                 f"""

@@ -4,7 +4,7 @@ Bearbeitung der Daten
 
 
 import datetime as dt
-from typing import Any
+from typing import Any, Dict, List, NamedTuple
 
 import numpy as np
 import pandas as pd
@@ -57,7 +57,7 @@ def fix_am_pm(df: pd.DataFrame, time_column: str = "Zeitstempel") -> pd.DataFram
 
     # Stunden haben negative Differenz und Tag bleibt gleich
     if any(col.dt.hour.diff() < 0) and any(col.dt.day.diff() == 0):
-        conditions: list = [
+        conditions: List = [
             (col.dt.day.diff() > 0),  # neuer Tag
             (col.dt.month.diff() != 0),  # neuer Monat
             (col.dt.year.diff() != 0),  # neues Jahr
@@ -67,7 +67,7 @@ def fix_am_pm(df: pd.DataFrame, time_column: str = "Zeitstempel") -> pd.DataFram
             ),
         ]
 
-        choices: list[Any] = [
+        choices: List[Any] = [
             pd.Timedelta(0, "h"),
             pd.Timedelta(0, "h"),
             pd.Timedelta(0, "h"),
@@ -87,9 +87,13 @@ def fix_am_pm(df: pd.DataFrame, time_column: str = "Zeitstempel") -> pd.DataFram
 
     return df
 
-
+class CleanUpDLS(NamedTuple):
+    """Named Tuple for return value of following function"""
+    df_clean: pd.DataFrame
+    df_deleted: pd.DataFrame
+    
 @func_timer
-def clean_up_daylight_savings(df: pd.DataFrame) -> dict[str, pd.DataFrame]:
+def clean_up_daylight_savings(df: pd.DataFrame) -> CleanUpDLS:
     """Zeitumstellung
 
     Bei der Zeitumstellung auf Sommerzeit wird die Uhr eine Stunde vor gestellt,
@@ -104,7 +108,7 @@ def clean_up_daylight_savings(df: pd.DataFrame) -> dict[str, pd.DataFrame]:
         - df (pd.DataFrame): DataFrame to edit
 
     Returns:
-        - dict[str, pd.DataFrame]:
+        - Dict[str, pd.DataFrame]:
             - "df_clean": edited DataFrame
             - "df_deleted": deleted data
     """
@@ -125,12 +129,11 @@ def clean_up_daylight_savings(df: pd.DataFrame) -> dict[str, pd.DataFrame]:
     df_deleted: pd.DataFrame = df[summer | winter]
 
     if len(df_deleted.index) > 0:
-        logger.warning("Data deleted due to daylight savings:")
-        logger.warning(f"\n{df_deleted}\n")
+        logger.warning(f"Data deleted due to daylight savings: \n\n{df_deleted}\n\n")
     else:
         logger.info("No data deleted due to daylight savings")
 
-    return {"df_clean": df_clean, "df_deleted": df_deleted}
+    return CleanUpDLS(df_clean = df_clean, df_deleted= df_deleted)
 
 
 @func_timer
@@ -146,9 +149,8 @@ def interpolate_missing_data(df: pd.DataFrame, method: str = "akima") -> pd.Data
         - pd.DataFrame: edited DataFrame
     """
 
-    for col in [str(col) for col in df.columns]:
-        df.loc[df[col].diff() == 0, col] = np.nan
-        df.interpolate(method=method, inplace=True)
+    df[df.diff() == 0] = np.nan
+    df.interpolate(method=method, inplace=True)
 
     return df
 
@@ -165,7 +167,7 @@ def del_smooth() -> None:
                     item.drop(columns=[col], inplace=True)
 
     # Linien löschen
-    lis_dat: list = [
+    lis_dat: List = [
         dat
         for dat in st.session_state["fig_base"].data
         if cont.SMOOTH_SUFFIX not in dat.name
@@ -174,7 +176,7 @@ def del_smooth() -> None:
 
 
 @func_timer
-def split_up_df_multi_years(df: pd.DataFrame) -> dict[int, pd.DataFrame]:
+def split_up_df_multi_years(df: pd.DataFrame) -> Dict[int, pd.DataFrame]:
     """Split up a DataFrame that has data for multiple years into separate
     DataFrames for each year. The columns names are suffixed with the year.
     The index of all DataFrames is set to the year 2020.
@@ -183,18 +185,18 @@ def split_up_df_multi_years(df: pd.DataFrame) -> dict[int, pd.DataFrame]:
         - df (pd.DataFrame): DataFrame to edit
 
     Returns:
-        - dict (int, pd.DataFrame):
+        - Dict (int, pd.DataFrame):
             - key (int)= year
             - item (pd.DataFrame)= edited DataFrame
     """
 
     ind: pd.DatetimeIndex = pd.DatetimeIndex(data=df.index)
-    years: list[int] = st.session_state["years"]
+    years: List[int] = st.session_state["years"]
 
-    df_multi: dict[int, pd.DataFrame] = {}
+    df_multi: Dict[int, pd.DataFrame] = {}
     for year in years:
         df_multi[year] = df[ind.year == year].copy()
-        df_multi[year]["orgidx"] = df.loc[ind.year == year, :].index.copy()
+        df_multi[year]["orgidx"] = df.loc[ind.year == year, :].index
 
         for col in [
             str(col)
@@ -216,16 +218,7 @@ def split_up_df_multi_years(df: pd.DataFrame) -> dict[int, pd.DataFrame]:
 
     for frame in df_multi.values():
         ind: pd.DatetimeIndex = pd.DatetimeIndex(frame.index)
-
-        frame.index = pd.to_datetime(
-            {
-                "year": 2020,
-                "month": ind.month,
-                "day": ind.day,
-                "hour": ind.hour,
-                "minute": ind.minute,
-            }  # type: ignore
-        )
+        frame.index = pd.to_datetime(ind.strftime("2020-%m-%d %H:%M:%S"))
 
     return df_multi
 
@@ -234,20 +227,20 @@ def split_up_df_multi_years(df: pd.DataFrame) -> dict[int, pd.DataFrame]:
 def df_multi_y(df: pd.DataFrame) -> None:
     """mehrere Jahre"""
 
-    years: list[int] = st.session_state["years"]
+    years: List[int] = st.session_state["years"]
 
-    df_multi: dict[int, pd.DataFrame] = split_up_df_multi_years(df)
+    df_multi: Dict[int, pd.DataFrame] = split_up_df_multi_years(df)
 
     st.session_state["dic_df_multi"] = df_multi
 
     # df geordnete Jahresdauerlinie
     if st.session_state.get("cb_jdl"):
-        dic_jdl: dict[int, pd.DataFrame] = {y: jdl(df_multi[y]) for y in years}
+        dic_jdl: Dict[int, pd.DataFrame] = {y: jdl(df_multi[y]) for y in years}
         st.session_state["dic_jdl"] = dic_jdl
 
     # df Monatswerte
     if st.session_state.get("cb_mon"):
-        dic_mon: dict[int, pd.DataFrame] = {
+        dic_mon: Dict[int, pd.DataFrame] = {
             year: mon(df_multi[year], st.session_state["metadata"], year)
             for year in years
         }
@@ -256,12 +249,12 @@ def df_multi_y(df: pd.DataFrame) -> None:
 
 
 @func_timer
-def h_from_other(df: pd.DataFrame, meta: dict[str, Any] | None = None) -> pd.DataFrame:
+def h_from_other(df: pd.DataFrame, meta: Dict[str, Any] | None = None) -> pd.DataFrame:
     """Stundenwerte aus anderer zeitlicher Auflösung"""
 
     df_h: pd.DataFrame = pd.DataFrame()
-    dic_meta: dict[str, Any] = meta or st.session_state["metadata"]
-    extended_exclude: list[str] = cont.EXCLUDE + [
+    dic_meta: Dict[str, Any] = meta or st.session_state["metadata"]
+    extended_exclude: List[str] = cont.EXCLUDE + [
         cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"]
     ]
     suff_leistung: str = cont.ARBEIT_LEISTUNG["suffix"]["Leistung"]
@@ -291,8 +284,7 @@ def h_from_other(df: pd.DataFrame, meta: dict[str, Any] | None = None) -> pd.Dat
     df_h = df_h.infer_objects()
     st.session_state["metadata"] = dic_meta
 
-    logger.success("DataFrame mit Stundenwerten erstellt")
-    logger.info(f"\n{df_h.head()}\n")
+    logger.success(f"DataFrame mit Stundenwerten erstellt: \n\n{df_h.head()}\n\n")
 
     return df_h
 
@@ -304,7 +296,7 @@ def check_if_hourly_resolution(df: pd.DataFrame) -> pd.DataFrame:
 
     Args:
         - df (pd.DataFrame): The DataFrame in question
-        - dic_meta (dict, optional): Metadata. Defaults to st.session_state["metadata"].
+        - dic_meta (Dict, optional): Metadata. Defaults to st.session_state["metadata"].
 
     Returns:
         - pd.DataFrame: DataFrame in hourly resolution
@@ -345,19 +337,18 @@ def jdl(df: pd.DataFrame) -> pd.DataFrame:
     df_jdl = df_jdl.infer_objects()
     st.session_state["df_jdl"] = df_jdl
 
-    logger.success("DataFrame für Jahresdauerlinie erstellt")
-    logger.info(f"\n{df_jdl.head()}\n")
+    logger.success(f"DataFrame für Jahresdauerlinie erstellt: \n\n{df_jdl.head()}\n\n")
 
     return df_jdl
 
 
 @func_timer
-def mon(df: pd.DataFrame, dic_meta: dict, year: int | None = None) -> pd.DataFrame:
+def mon(df: pd.DataFrame, dic_meta: Dict, year: int | None = None) -> pd.DataFrame:
     """Monatswerte"""
 
     df_h: pd.DataFrame = check_if_hourly_resolution(df)
 
-    df_mon: pd.DataFrame = df_h.groupby(pd.Grouper(freq="M")).sum(True)
+    df_mon: pd.DataFrame = df_h.resample("M").sum(True)
 
     for col in df_mon.columns:
         col_mon: str = str(col).replace("*h", "*mon")
@@ -373,7 +364,9 @@ def mon(df: pd.DataFrame, dic_meta: dict, year: int | None = None) -> pd.DataFra
             " kWh" if dic_meta[col_mon]["unit"] == " kW" else dic_meta[col_mon]["unit"]
         )
 
-    df_mon.index = [df_mon.index[x].replace(day=15) for x in range(len(df_mon.index))]  # type: ignore
+    # df_mon.index = [df_mon.index[x].replace(day=15) for x in range(len(df_mon.index))]  # type: ignore
+    ind: pd.DatetimeIndex = pd.DatetimeIndex(df_mon.index)
+    df_mon.index = pd.to_datetime(ind.strftime("%Y-%m-15"))
 
     if year:
         df_mon["orgidx"] = [
@@ -386,31 +379,22 @@ def mon(df: pd.DataFrame, dic_meta: dict, year: int | None = None) -> pd.DataFra
 
     st.session_state["df_mon"] = df_mon
 
-    logger.success("DataFrame mit Monatswerten erstellt")
-    logger.info(f"\n{df_mon.head()}\n")
+    logger.success(f"DataFrame mit Monatswerten erstellt: \n\n{df_mon.head()}\n\n")
 
     return df_mon
 
 
 @func_timer
 def dic_days(df: pd.DataFrame) -> None:
-    """dictionary für Tage"""
+    """Dictionary für Tage"""
 
     st.session_state["dic_days"] = {}
     for num in range(int(st.session_state["ni_days"])):
         date: dt.date = st.session_state[f"day_{str(num)}"]
-        item: pd.DataFrame = df.loc[f"{date:%Y-%m-%d}"].copy()
+        item: pd.DataFrame = df.loc[[f"{date:%Y-%m-%d}"]].copy()
 
-        indx: pd.DatetimeIndex = item.index
+        indx: pd.DatetimeIndex = pd.DatetimeIndex(item.index)
         item["orgidx"] = indx.copy()
-        item.index = pd.to_datetime(
-            {
-                "year": 2020,
-                "month": 1,
-                "day": 1,
-                "hour": indx.hour,
-                "minute": indx.minute,
-            }
-        )
+        item.index = pd.to_datetime(indx.strftime("2020-1-1 %H:%M:%S"))
 
         st.session_state["dic_days"][f"{date:%d. %b %Y}"] = item

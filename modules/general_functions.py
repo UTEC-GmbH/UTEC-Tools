@@ -7,7 +7,7 @@ import datetime as dt
 import json
 import time
 from collections import Counter
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List
 
 import streamlit as st
 from loguru import logger
@@ -26,33 +26,30 @@ def func_timer(func: Callable) -> Callable:
     """
 
     def wrapper(*args, **kwargs) -> Any:
-        start_time: float = time.perf_counter()
+        start_time: float = time.monotonic()
 
         if "dic_exe_time" not in st.session_state:
             st.session_state["dic_exe_time"] = {}
 
         result: Any = func(*args, **kwargs)
 
-        exe_time: float = time.perf_counter() - start_time
+        exe_time: float = time.monotonic() - start_time
         st.session_state["dic_exe_time"][func.__name__] = exe_time
-        logger.log(
-            "TIMER",
-            f"execution time of '{func.__name__}': {round(exe_time, 4)} s",
-        )
+        logger.log("TIMER", f"execution time of '{func.__name__}': {exe_time:.4f} s")
 
         return result
 
     return wrapper
 
 
-def load_lottie_file(path: str) -> dict:
-    """Load a Lottie-animatio by providing a json-file.
+def load_lottie_file(path: str) -> Dict:
+    """Load a Lottie-animation by providing a json-file.
 
     Args:
         - path (str): path to json-file
 
     Returns:
-        - dict: animation
+        - Dict: animation
     """
     with open(path) as file:
         return json.load(file)
@@ -68,25 +65,25 @@ def del_session_state_entry(key: str) -> None:
     if key in st.session_state:
         del st.session_state[key]
 
-        logger.info(f"st.session_state Eintrag {key} gelöscht")
+        logger.warning(f"st.session_state Eintrag {key} gelöscht")
 
 
-def sort_list_by_occurance(list_of_stuff: list[Any]) -> list[Any]:
+def sort_list_by_occurance(list_of_stuff: List[Any]) -> List[Any]:
     """Given a list of stuff, which can have multiple same elements,
     this function returns a list sorted by the number of occurances
     of same elements, where same elements are combined.
 
-    Example: list_of_stuff = ["kW", "kWh", "kWh", "°C"]
+    Example: List_of_stuff = ["kW", "kWh", "kWh", "°C"]
     returns: ['kWh', 'kW', '°C']
 
     -> 'kWh' is first, because it's in the original list twice
 
 
     Args:
-        - list_of_stuff (list): List with multiple same elements
+        - list_of_stuff (List): List with multiple same elements
 
     Returns:
-        - list: Set in list form, sorted by number of occurances
+        - List: Set in list form, sorted by number of occurances
     """
 
     return sorted(Counter(list_of_stuff), key=list_of_stuff.count, reverse=True)

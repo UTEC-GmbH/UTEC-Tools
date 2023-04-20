@@ -3,7 +3,7 @@ login page
 """
 
 from datetime import date, datetime
-from typing import Any
+from typing import Any, Dict, List
 
 import streamlit as st
 import streamlit_authenticator as stauth
@@ -22,13 +22,13 @@ setup_stuff.initial_setup()
 setup_stuff.page_header_setup(page="login")
 
 
-@func_timer
+# @func_timer
 def display_login_page() -> None:
     """Login-Page with two columns
     - login with username and password
     - lottie-animation
     """
-    columns: list = st.columns(2)
+    columns: List = st.columns(2)
 
     with columns[0]:
         login_section()
@@ -38,11 +38,11 @@ def display_login_page() -> None:
         )
 
 
-@func_timer
+# @func_timer
 def login_section() -> None:
     """user authentication part of the login page"""
 
-    user_credentials: dict[str, dict[str, Any]] = uauth.format_user_credentials()
+    user_credentials: Dict[str, Dict[str, Any]] = uauth.format_user_credentials()
     authenticator: stauth.Authenticate = stauth.Authenticate(
         credentials=user_credentials,
         cookie_name="utec_tools",
@@ -70,8 +70,8 @@ def access_granted() -> None:
 
     # determine the access level
     user_key: str = st.session_state["username"]
-    all_users: dict[str, dict[str, Any]] = st.session_state["all_user_data"]
-    access_lvl_user: str | list = all_users[user_key]["access_lvl"]
+    all_users: Dict[str, Dict[str, Any]] = st.session_state["all_user_data"]
+    access_lvl_user: str | List = all_users[user_key]["access_lvl"]
     st.session_state["access_lvl"] = access_lvl_user
 
     # log used username and access level

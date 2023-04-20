@@ -3,7 +3,7 @@ Import und Download von Excel-Dateien
 """
 import re
 from io import BytesIO
-from typing import Any, Literal
+from typing import Any, Dict, List, Literal, NamedTuple
 
 import pandas as pd
 import pandas.io.formats.excel
@@ -12,14 +12,14 @@ from loguru import logger
 
 from modules import constants as cont
 from modules import meteorolog as meteo
-from modules.classes import ObisElectrical
-from modules.df_manip import clean_up_daylight_savings
+from modules.classes import ExcelMarkers, MarkerPosition, MarkerType, ObisElectrical
+from modules.df_manip import clean_up_daylight_savings, CleanUpDLS
 from modules.general_functions import func_timer, sort_list_by_occurance
 
 pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
 
 
-# ? return value (maybe dict) instead of putting everything in session_state???
+# ? return value (maybe Dict) instead of putting everything in session_state???
 # TODO: better docstring
 @func_timer
 @st.cache_data(show_spinner=False)
@@ -27,11 +27,12 @@ def import_prefab_excel(file: Any) -> None:
     """vordefinierte Datei (benannte Zelle für Index) importieren"""
 
     df_messy: pd.DataFrame = pd.read_excel(file, sheet_name="Daten")
+    logger.debug(f"df_messy\n{df_messy.head(10)}\n")
     df: pd.DataFrame = edit_df_after_import(df_messy)
 
     # Metadaten
-    units: dict[str, str] = units_from_messy_df(df_messy)
-    meta_index: dict[str, Any] = meta_from_index(df)
+    units: Dict[str, str] = units_from_messy_df(df_messy)
+    meta_index: Dict[str, Any] = meta_from_index(df)
 
     meta: cont.DicStrNest = meta_from_col_title(df, units)
     meta["index"] = meta_index
@@ -58,57 +59,45 @@ def import_prefab_excel(file: Any) -> None:
 
 
 @func_timer
-def units_from_messy_df(df_messy: pd.DataFrame) -> dict[str, str]:
+def units_from_messy_df(df_messy: pd.DataFrame) -> Dict[str, str]:
     """Get the units of every column from the messy df right after import
+
+    The function assumes that the DataFrame has a row with
+    the string "↓ Index ↓" marking the start of the data
+    and a row with the string "→ Einheit →" marking the units of each column.
 
     Args:
         - df (pd.DataFrame): messy df
 
     Returns:
-        - dict[str, str]: keys = column names, values = units
+        - Dict[str, str]: keys = column names, values = units
     """
 
-    # Zelle mit Index-Markierung
-    ind_cell: pd.DataFrame = (
-        df_messy[df_messy == "↓ Index ↓"].dropna(how="all").dropna(axis=1)
-    )
-    ind_row: int = df_messy.index.get_loc(ind_cell.index[0])
-    ind_col: int = df_messy.columns.get_loc(ind_cell.columns[0])
+    p_in: MarkerPosition = ExcelMarkers(MarkerType.INDEX).get_marker_position(df_messy)
+    p_un: MarkerPosition = ExcelMarkers(MarkerType.UNITS).get_marker_position(df_messy)
 
-    # Zelle mit Einheiten-Markierung
-    unit_cell: pd.DataFrame = (
-        df_messy[df_messy == "→ Einheit →"].dropna(how="all").dropna(axis=1)
-    )
-    unit_row: int = df_messy.index.get_loc(unit_cell.index[0])
-
-    column_names: list[str] = df_messy.iloc[ind_row, ind_col + 1 :].to_list()
-    units: list[str] = df_messy.iloc[unit_row, ind_col + 1 :].to_list()
+    column_names: List[str] = df_messy.iloc[p_in.row, p_in.col :].to_list()
+    units: List[str] = df_messy.iloc[p_un.row, p_un.col :].to_list()
 
     # leerzeichen vor Einheit
-    for unit in units:
+    for ind, unit in enumerate(units):
         if not unit.startswith(" ") and unit not in ["", None]:
-            units[units.index(unit)] = f" {unit}"
+            units[ind] = f" {unit}"
 
     return dict(zip(column_names, units))
 
 
-# Einheiten
 @func_timer
 def set_y_axis_for_lines() -> None:
     """Y-Achsen der Linien"""
+    meta: cont.DicStrNest = st.session_state["metadata"]
+    lines_with_units: List = [key for key, value in meta.items() if value.get("unit")]
 
-    for k_1 in [
-        k_2
-        for k_2 in st.session_state["metadata"]
-        if st.session_state["metadata"][k_2].get("unit")
-    ]:
-        ind: int = st.session_state["metadata"]["units"]["set"].index(
-            st.session_state["metadata"][k_1].get("unit")
-        )
+    for line in lines_with_units:
+        ind: int = meta["units"]["set"].index(meta[line]["unit"])
+        meta[line]["y_axis"] = f"y{ind + 1}" if ind > 0 else "y"
 
-        st.session_state["metadata"][k_1]["y_axis"] = (
-            f"y{str(ind + 1)}" if ind > 0 else "y"
-        )
+    st.session_state["metadata"] = meta
 
 
 @func_timer
@@ -124,16 +113,11 @@ def edit_df_after_import(df_messy: pd.DataFrame) -> pd.DataFrame:
     """
 
     # Zelle mit Index-Markierung
-    ind: pd.DataFrame = (
-        df_messy[df_messy == "↓ Index ↓"].dropna(how="all").dropna(axis=1)
-    )
-    ind_row: int = df_messy.index.get_loc(ind.index[0])
-    ind_col: int = df_messy.columns.get_loc(ind.columns[0])
-
-    df_messy.columns = df_messy.iloc[ind_row]
+    p_in: MarkerPosition = ExcelMarkers(MarkerType.INDEX).get_marker_position(df_messy)
+    df_messy.columns = df_messy.iloc[p_in.row]
 
     # fix index and delete unneeded and empty cells
-    df: pd.DataFrame = df_messy.iloc[ind_row + 1 :, ind_col:]
+    df: pd.DataFrame = df_messy.iloc[p_in.row + 1 :, p_in.col :]
     df = df.set_index("↓ Index ↓")
     pd.to_datetime(df.index, dayfirst=True)
     df = df.infer_objects()
@@ -148,10 +132,10 @@ def edit_df_after_import(df_messy: pd.DataFrame) -> pd.DataFrame:
         )
 
     # delete duplicates in index (day light savings)
-    dls: dict[str, pd.DataFrame] = clean_up_daylight_savings(df)
-    df = dls["df_clean"]
+    dls: CleanUpDLS = clean_up_daylight_savings(df)
+    df = dls.df_clean
     st.session_state["df_dls_deleted"] = (
-        dls["df_deleted"] if len(dls["df_deleted"]) > 0 else None
+        dls.df_deleted if len(dls.df_deleted) > 0 else None
     )
 
     # copy index in separate column to preserve if index is changed (multi year)
@@ -162,21 +146,21 @@ def edit_df_after_import(df_messy: pd.DataFrame) -> pd.DataFrame:
 
 @func_timer
 @st.cache_data(show_spinner=False)
-def meta_from_index(df: pd.DataFrame) -> dict[str, Any]:
+def meta_from_index(df: pd.DataFrame) -> Dict[str, Any]:
     """check if index is datetime and if so, get temporal resolution
 
     Args:
         - df (pd.DataFrame): pd.DataFrame
 
     Returns:
-        - dict[str, Any]:
+        - Dict[str, Any]:
             - datetime: bool,
             - td_mean: average time difference (minutes),
             - td_int: "15min" or "h"
             - years: list of years in index
     """
 
-    dic_index: dict[str, Any] = {"datetime": False, "years": []}
+    dic_index: Dict[str, Any] = {"datetime": False, "years": []}
 
     if isinstance(df.index, pd.DatetimeIndex):
         dic_index["datetime"] = True
@@ -197,7 +181,7 @@ def meta_from_index(df: pd.DataFrame) -> dict[str, Any]:
 
 
 @func_timer
-def meta_from_col_title(df: pd.DataFrame, units: dict[str, str]) -> cont.DicStrNest:
+def meta_from_col_title(df: pd.DataFrame, units: Dict[str, str]) -> cont.DicStrNest:
     """Get metadata from the column title and obis code (if available)
 
     Args:
@@ -262,7 +246,7 @@ def convert_15min_kwh_to_kw(
     if meta["index"]["td_int"] not in ["15min"]:
         return df, meta
 
-    suffixes: list[str] = list(cont.ARBEIT_LEISTUNG["suffix"].values())
+    suffixes: List[str] = list(cont.ARBEIT_LEISTUNG["suffix"].values())
 
     for col in [str(column) for column in df.columns]:
         suffix_not_in_col_name: bool = all(suffix not in col for suffix in suffixes)
@@ -284,6 +268,7 @@ def convert_15min_kwh_to_kw(
     return df, meta
 
 
+@func_timer
 def rename_column_arbeit_leistung(
     original_data: Literal["Arbeit", "Leistung"],
     df: pd.DataFrame,
@@ -307,6 +292,7 @@ def rename_column_arbeit_leistung(
     meta[col_name]["tit"] = col_name
 
 
+@func_timer
 def insert_column_arbeit_leistung(
     original_data: Literal["Arbeit", "Leistung"],
     df: pd.DataFrame,
@@ -336,50 +322,59 @@ def insert_column_arbeit_leistung(
     )
 
 
-# TODO: rewrite, refactor, docstring
 @func_timer
-def excel_download(df: pd.DataFrame, page: str = "graph") -> Any:
-    """Daten als Excel-Datei herunterladen"""
+def excel_download(df: pd.DataFrame, page: str = "graph") -> bytes:
+    """
+    Download data as an Excel file.
 
-    ws_name: str = ws_name_num_format(df, page)[0]
-    dic_num_formats: dict[str, str] = ws_name_num_format(df, page)[1]
+    Args:
+        - df (pd.DataFrame): The data frame to download.
+        - page (str, optional): The name of the page to use in the Excel file.
+            Defaults to "graph".
 
-    offset_col: int = 2
-    offset_row: int = 4
+    Returns:
+        - bytes: The Excel file as a bytes object.
+    """
+    name_and_format: WsNameNumFormat = ws_name_num_format(df, page)
+    ws_name: str = name_and_format.worksheet_name
+    num_formats: Dict[str, str] = name_and_format.number_formats
 
-    output: BytesIO = BytesIO()
+    column_offset: int = 2
+    row_offset: int = 4
+
     # pylint: disable=abstract-class-instantiated
-    writer: pd.ExcelWriter = pd.ExcelWriter(
+    with BytesIO() as output, pd.ExcelWriter(
         output,
         engine="xlsxwriter",
         datetime_format="dd.mm.yyyy hh:mm",
         date_format="dd.mm.yyyy",
-    )
-    # pylint: enable=abstract-class-instantiated
-    df.to_excel(
-        writer,
-        sheet_name=ws_name,
-        startrow=offset_row,
-        startcol=offset_col,
-    )
+    ) as writer:
+        df.to_excel(
+            writer,
+            sheet_name=ws_name,
+            startrow=row_offset,
+            startcol=column_offset,
+            engine="xlsxwriter",
+        )
 
-    wkb: Any = writer.book
-    wks: Any = writer.sheets[ws_name]
+        workbook: Any = writer.book
+        worksheet: Any = writer.sheets[ws_name]
 
-    # Formatierung
-
-    edit_ws_format(wkb, wks, df, dic_num_formats)
-
-    wkb.close()
+        format_worksheet(
+            workbook, worksheet, df, num_formats, column_offset, row_offset
+        )
 
     return output.getvalue()
 
 
-def edit_ws_format(
-    wkb: Any,
-    wks: Any,
+@func_timer
+def format_worksheet(
+    workbook: Any,
+    worksheet: Any,
     df: pd.DataFrame,
-    dic_num_formats: dict[str, str],
+    number_formats: Dict[str, str],
+    offset_col: int = 2,
+    offset_row: int = 4,
 ) -> None:
     """Edit the formatting of the worksheet in the output excel-file
 
@@ -387,16 +382,14 @@ def edit_ws_format(
         - wkb (Any): Workbook
         - wks (Any): Worksheet
         - df (pd.DataFrame): main pd.DataFrame
-        - dic_num_formats (dict): dictionary {col: number format}
+        - dic_num_formats (Dict): Dictionary {col: number format}
     """
 
-    cols: list[str] = [str(col) for col in df.columns]
-    offset_col: int = 2
-    offset_row: int = 4
+    cols: List[str] = [str(col) for col in df.columns]
 
     # Formatierung
-    wks.hide_gridlines(2)
-    dic_format_base: dict[str, Any] = {
+    worksheet.hide_gridlines(2)
+    base_format: Dict[str, Any] = {
         "bold": False,
         "font_name": "Arial",
         "font_size": 10,
@@ -405,28 +398,28 @@ def edit_ws_format(
     }
 
     # erste Spalte
-    dic_format: dict[str, Any] = dic_format_base.copy()
-    dic_format["align"] = "left"
-    cell_format: Any = wkb.add_format(dic_format)
-    wks.set_column(offset_col, offset_col, 18, cell_format)
+    spec_format: Dict[str, Any] = base_format.copy()
+    spec_format["align"] = "left"
+    cell_format: Any = workbook.add_format(spec_format)
+    worksheet.set_column(offset_col, offset_col, 18, cell_format)
 
     # erste Zeile
-    dic_format = dic_format_base.copy()
-    dic_format["bottom"] = 1
-    cell_format = wkb.add_format(dic_format)
-    wks.write(offset_row, offset_col, "Datum", cell_format)
+    spec_format = base_format.copy()
+    spec_format["bottom"] = 1
+    cell_format = workbook.add_format(spec_format)
+    worksheet.write(offset_row, offset_col, "Datum", cell_format)
 
     for col, header in enumerate(cols):
-        wks.write(offset_row, col + 1 + offset_col, header, cell_format)
+        worksheet.write(offset_row, col + 1 + offset_col, header, cell_format)
 
-    for num_format in dic_num_formats.values():
-        dic_format = dic_format_base.copy()
-        dic_format["num_format"] = num_format
-        col_format: Any = wkb.add_format(dic_format)
+    for num_format in number_formats.values():
+        spec_format = base_format.copy()
+        spec_format["num_format"] = num_format
+        col_format: Any = workbook.add_format(spec_format)
 
         for cnt, col in enumerate(cols):
-            if dic_num_formats[col] == num_format:
-                wks.set_column(
+            if number_formats[col] == num_format:
+                worksheet.set_column(
                     cnt + offset_col + 1,
                     cnt + offset_col + 1,
                     len(col) + 1,
@@ -434,7 +427,15 @@ def edit_ws_format(
                 )
 
 
-def ws_name_num_format(df: pd.DataFrame, page: str) -> tuple[str, dict]:
+class WsNameNumFormat(NamedTuple):
+    """Named tuple for the return value of the following function."""
+
+    worksheet_name: str
+    number_formats: Dict[str, str]
+
+
+@func_timer
+def ws_name_num_format(df: pd.DataFrame, page: str) -> WsNameNumFormat:
     """Worksheet name and number fromat based on app page
 
     Args:
@@ -442,21 +443,26 @@ def ws_name_num_format(df: pd.DataFrame, page: str) -> tuple[str, dict]:
         - page (str): page of app (graph or meteo...)
 
     Returns:
-        - tuple[str, dict]: ws_name, dic_num_formats = {column: number format}
+        - Tuple[str, Dict]: ws_name, dic_num_formats = {column: number format}
     """
 
-    ws_name: str = "Tabelle1"
-    dic_num_formats: dict[str, str] = {}
+    page_mapping: Dict[str, Dict[str, Any]] = {
+        "meteo": {
+            "ws_name": "Wetterdaten",
+            "num_formats": {par.tit_de: par.num_format for par in meteo.LIS_PARAMS},
+        },
+        "graph": {
+            "ws_name": "Daten",
+            "num_formats": {
+                key: f'#,##0.0"{st.session_state["metadata"][key]["unit"]}"'
+                for key in [str(col) for col in df.columns]
+            },
+        },
+    }
+    if page not in page_mapping:
+        raise ValueError(f"Invalid page: {page}")
+    mapping: Dict[str, Any] = page_mapping[page]
 
-    if page in ("meteo"):
-        ws_name = "Wetterdaten"
-        dic_num_formats = {par.tit_de: par.num_format for par in meteo.LIS_PARAMS}
-
-    if page in ("graph"):
-        ws_name = "Daten"
-        dic_num_formats = {
-            key: f'#,##0.0"{st.session_state["metadata"][key]["unit"]}"'
-            for key in [str(col) for col in df.columns]
-        }
-
-    return ws_name, dic_num_formats
+    return WsNameNumFormat(
+        worksheet_name=mapping["ws_name"], number_formats=mapping["num_formats"]
+    )

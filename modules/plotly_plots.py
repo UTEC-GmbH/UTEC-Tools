@@ -3,6 +3,7 @@ Darstellung der Plots
 """
 
 import os
+from typing import Dict, List
 
 import numpy as np
 import pandas as pd
@@ -16,26 +17,26 @@ from modules.general_functions import func_timer, sort_list_by_occurance
 
 
 @func_timer
-def line_plot(df: pd.DataFrame, meta: dict, **kwargs) -> go.Figure:
+def line_plot(df: pd.DataFrame, meta: Dict, **kwargs) -> go.Figure:
     """Liniengrafik für Daten eines einzelnen Jahres
 
 
     Args:
         - df (pd.DataFrame): Daten
-        - meta (dict): Metadaten
+        - meta (Dict): Metadaten
 
     Returns:
         - go.Figure: Linengrafik
     """
 
-    lines: list[str] = kwargs.get("lines") or [str(col) for col in df.columns]
+    lines: List[str] = kwargs.get("lines") or [str(col) for col in df.columns]
     title: str = kwargs.get("title") or ""
     cusd_format: str = (
         "(%{customdata|%a %d. %b %Y %H:%M})"
         if "Monatswerte" not in title
         else "(%{customdata|%b %Y})"
     )
-    all_units: list[str] = [
+    all_units: List[str] = [
         meta[line].get("unit")
         for line in lines
         if all(ex not in line for ex in cont.EXCLUDE)
@@ -89,10 +90,10 @@ def line_plot(df: pd.DataFrame, meta: dict, **kwargs) -> go.Figure:
 # Lastgang mehrerer Jahre übereinander darstellen
 @func_timer
 def line_plot_y_overlay(
-    dic_df: dict,
-    meta: dict,
-    years: list,
-    lines: list | None = None,
+    dic_df: Dict,
+    meta: Dict,
+    years: List,
+    lines: List | None = None,
     title: str = "",
     var_name: str = "",
 ) -> go.Figure:
@@ -101,10 +102,10 @@ def line_plot_y_overlay(
 
 
     Args:
-        - dic_df (dict): Dictionary mit df für jedes Jahr
-        - meta (dict): Dictionary mit Metadaten für jedes Jahr
-        - years (list): Liste der Jahre
-        - lines (list | None, optional): Liste der Linien - wenn None, werden alle Linien der df verwendet. Defaults to None.
+        - dic_df (Dict): Dictionary mit df für jedes Jahr
+        - meta (Dict): Dictionary mit Metadaten für jedes Jahr
+        - years (List): Liste der Jahre
+        - lines (List | None, optional): Liste der Linien - wenn None, werden alle Linien der df verwendet. Defaults to None.
         - title (str, optional): Titel der Grafik. Defaults to "".
         - var_name (str, optional): Variablenname für Metadaten. Defaults to "".
 
@@ -119,7 +120,7 @@ def line_plot_y_overlay(
             for col in list
             if all(ex not in col for ex in cont.EXCLUDE)
         ]
-    all_units: list[str] = [
+    all_units: List[str] = [
         meta[line].get("unit")
         for line in lines
         if all(excl not in line for excl in cont.EXCLUDE)
@@ -193,15 +194,15 @@ def line_plot_y_overlay(
 
 @func_timer
 def line_plot_day_overlay(
-    dic_days: dict, meta: dict, title: str = "", var_name: str = ""
+    dic_days: Dict, meta: Dict, title: str = "", var_name: str = ""
 ) -> go.Figure:
     """Liniengrafik für Tagesvergleich
     Jeder Tag bekommt eine Linie. Die Linien werden übereinander gelegt.
 
 
     Args:
-        - dic_days (dict): Dictionary mit Daten der Tage
-        - meta (dict): Dictionary mit Metadaten
+        - dic_days (Dict): Dictionary mit Daten der Tage
+        - meta (Dict): Dictionary mit Metadaten
         - title (str, optional): Titel der Grafik. Defaults to "".
         - var_name (str, optional): Variablenname für Metadaten. Defaults to "".
 
@@ -221,7 +222,7 @@ def line_plot_day_overlay(
     )
     cusd_format: str = "(%{customdata|%a %e. %b %Y %H:%M})"
 
-    lis_units: list[str] = []
+    lis_units: List[str] = []
     for date in dic_days:
         for line in [lin for lin in dic_days[date].columns if "orgidx" not in lin]:
             lis_units.append(meta[line].get("unit"))
@@ -469,7 +470,7 @@ def map_weatherstations() -> go.Figure:
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-def timings(dic: dict) -> go.Figure:
+def timings(dic: Dict) -> go.Figure:
     """Grafik mit Ausführungszeiten für debug"""
     fig_tim = go.Figure(
         [

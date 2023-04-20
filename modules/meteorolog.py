@@ -5,6 +5,7 @@ Meteorologische Daten
 import datetime
 import os
 from dataclasses import dataclass, field
+from typing import Dict, List
 from zoneinfo import ZoneInfo
 
 import geopy
@@ -100,7 +101,7 @@ if "page" in st.session_state:
 
 
 @func_timer
-def geo(address: str) -> dict:
+def geo(address: str) -> Dict:
     """
     geographische daten (Längengrad, Breitengrad) aus eingegebener Adresse
     """
@@ -255,7 +256,7 @@ def closest_station_with_data(param: str) -> tuple[str | float]:
 
 
 @func_timer
-def selected_params(page: str = "meteo") -> list:
+def selected_params(page: str = "meteo") -> List:
     """ausgewählte Parameter"""
 
     if "graph" in page:
@@ -570,7 +571,7 @@ class ClassParam:
 
 
 # Parameter, die standardmäßig für den Download ausgewählt sind
-LIS_DEFAULT_PARAMS: list = [
+LIS_DEFAULT_PARAMS: List = [
     "Lufttemperatur in 2 m Höhe",
     "Globalstrahlung",
     "Windgeschwindigkeit",
@@ -579,7 +580,7 @@ LIS_DEFAULT_PARAMS: list = [
 
 
 # Parameter von Meteostat
-DIC_METEOSTAT_CODES: dict = {
+DIC_METEOSTAT_CODES: Dict = {
     "TEMP": {
         "orig_name": "Air Temperature",
         "tit": "Lufttemperatur in 2 m Höhe",
@@ -643,7 +644,7 @@ DIC_METEOSTAT_CODES: dict = {
 }
 
 # Eigene Kategorien
-LIS_CAT_UTEC: list = [
+LIS_CAT_UTEC: List = [
     "Temperaturen",
     "Sonne und Wind",
     "Feuchte, Luftdruck, Niederschlag",
@@ -651,13 +652,13 @@ LIS_CAT_UTEC: list = [
 ]
 
 # alle Parameter
-LIS_PARAMS: list = [
+LIS_PARAMS: List = [
     ClassParam(key)
     for key in list(DIC_METEOSTAT_CODES.keys())
     if ClassParam(key).cat_utec
 ]
 
-DIC_PARAMS: dict = {
+DIC_PARAMS: Dict = {
     key: ClassParam(key)
     for key in list(DIC_METEOSTAT_CODES.keys())
     if ClassParam(key).cat_utec

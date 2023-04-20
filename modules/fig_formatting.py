@@ -7,7 +7,7 @@ Formatting and configuration of plots
 """
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List
 
 import plotly.graph_objects as go
 import streamlit as st
@@ -24,14 +24,14 @@ from modules.general_functions import (
 
 
 @func_timer
-def format_tickstops(fig: go.Figure) -> list[dict[str, Any]]:
+def format_tickstops(fig: go.Figure) -> List[Dict[str, Any]]:
     """tickformat stops for axes
 
     Args:
         fig (go.Figure): figure to update
 
     Returns:
-        list[dict[str, Any]]: formating parameters
+        List[Dict[str, Any]]: formating parameters
     """
 
     multi_y: bool | None = fig.layout.meta.get("multi_y")  # type: ignore
@@ -59,7 +59,7 @@ def format_tickstops(fig: go.Figure) -> list[dict[str, Any]]:
     ]
 
 
-def format_primary_y_axis(y_suffix: str) -> dict[str, Any]:
+def format_primary_y_axis(y_suffix: str) -> Dict[str, Any]:
     """Format Parameters for the Primary Y-Axis
 
 
@@ -67,7 +67,7 @@ def format_primary_y_axis(y_suffix: str) -> dict[str, Any]:
         - y_suffix (str): suffix for ticks (usually the unit)
 
     Returns:
-        - dict[str, Any]: dictionary of parameters
+        - Dict[str, Any]: Dictionary of parameters
     """
     return {
         "ticksuffix": y_suffix,
@@ -80,7 +80,7 @@ def format_primary_y_axis(y_suffix: str) -> dict[str, Any]:
     }
 
 
-def format_secondary_y_axis(y_suffix: str, overlaying: str) -> dict[str, Any]:
+def format_secondary_y_axis(y_suffix: str, overlaying: str) -> Dict[str, Any]:
     """Format Parameters for the Secondary Y-Axes
 
     Args:
@@ -88,7 +88,7 @@ def format_secondary_y_axis(y_suffix: str, overlaying: str) -> dict[str, Any]:
         - overlaying (str): name of primary y-axis (e.g. "y", "y2", ...)
 
     Returns:
-        - dict[str, Any]: dictionary of parameters
+        - Dict[str, Any]: Dictionary of parameters
     """
     return format_primary_y_axis(y_suffix) | {
         "tickmode": "sync",
@@ -157,8 +157,8 @@ def standard_axes_and_layout(
         - go.Figure: Bearbeitete Grafik
     """
 
-    data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
-    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
+    data: Dict[str, Dict[str, Any]] = fgf.fig_data_as_dic(fig)
+    layout: Dict[str, Any] = fgf.fig_layout_as_dic(fig)
     title: str = layout["title"]["text"]
 
     fig = standard_xaxis(fig, data, title, x_tickformat)
@@ -172,7 +172,7 @@ def standard_axes_and_layout(
 @func_timer
 def standard_xaxis(
     fig: go.Figure,
-    data: dict[str, dict[str, Any]],
+    data: Dict[str, Dict[str, Any]],
     title: str,
     x_tickformat: str,
 ) -> go.Figure:
@@ -181,7 +181,7 @@ def standard_xaxis(
 
     Args:
         - fig (go.Figure): Grafik, die bearbeitet werden soll
-        - data (dict[str, dict[str, Any]]): Daten der Grafik (für Range der Achse)
+        - data (Dict[str, Dict[str, Any]]): Daten der Grafik (für Range der Achse)
         - title (str): Titel der Grafik (nicht der Achse)
         - x_tickformat (str): Format der Daten auf der X-Achse. Standard: "%b" (Monat).
 
@@ -217,16 +217,16 @@ def standard_xaxis(
 @func_timer
 def standard_yaxis(
     fig: go.Figure,
-    data: dict[str, dict[str, Any]],
-    layout: dict[str, Any],
+    data: Dict[str, Dict[str, Any]],
+    layout: Dict[str, Any],
     title: str,
 ) -> go.Figure:
     """standard formatting of the y-axis"""
 
-    all_y_axes: list[str] = list(
+    all_y_axes: List[str] = list(
         {f'yaxis{(val.get("yaxis") or "y").replace("y", "")}' for val in data.values()}
     )
-    units_per_axis: dict[str, str] = fgf.get_units_for_all_axes(
+    units_per_axis: Dict[str, str] = fgf.get_units_for_all_axes(
         fig, data=data, layout=layout
     )
 
@@ -251,10 +251,10 @@ def standard_yaxis(
 
 
 @func_timer
-def standard_layout(fig: go.Figure, data: dict[str, dict[str, Any]]) -> go.Figure:
+def standard_layout(fig: go.Figure, data: Dict[str, Dict[str, Any]]) -> go.Figure:
     """Standardlayout"""
 
-    visible_traces: list[str] = [
+    visible_traces: List[str] = [
         trace
         for trace, value in data.items()
         if value["visible"] and all(excl not in trace for excl in cont.EXCLUDE)
@@ -292,7 +292,7 @@ def update_main(fig: go.Figure) -> go.Figure:
 
     fig = show_traces(fig)
     fig = format_traces(fig)
-    visible_traces: list[str] = [
+    visible_traces: List[str] = [
         tr["name"]
         for tr in fig.data
         if tr["visible"] and all(ex not in tr["name"] for ex in cont.EXCLUDE)
@@ -320,7 +320,7 @@ def show_traces(fig: go.Figure) -> go.Figure:
         - fig (go.Figure): Figure to edit
     """
 
-    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
+    layout: Dict[str, Any] = fgf.fig_layout_as_dic(fig)
     fig_type: str = "lastgang"
     for key, value in cont.FIG_TITLES.items():
         if value in layout["meta"]["title"]:
@@ -328,9 +328,9 @@ def show_traces(fig: go.Figure) -> go.Figure:
 
     if fig_type == "lastgang":
         fig = smooth(fig)
-        layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
+        layout: Dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
-    data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
+    data: Dict[str, Dict[str, Any]] = fgf.fig_data_as_dic(fig)
 
     switch: bool = layout["meta"]["title"] == "fig_days"
 
@@ -345,11 +345,11 @@ def show_traces(fig: go.Figure) -> go.Figure:
         if fig_type in ["mon", "jdl"] and any(
             suff in name for suff in cont.ARBEIT_LEISTUNG["suffix"].values()
         ):
-            suffixes: list[str] = list(cont.ARBEIT_LEISTUNG["suffix"].values())
+            suffixes: List[str] = list(cont.ARBEIT_LEISTUNG["suffix"].values())
             trace_stripped: str = name
             for suffix in suffixes:
                 trace_stripped = trace_stripped.replace(suffix, "")
-            combos: list[str] = [f"{trace_stripped}{suffix}" for suffix in suffixes]
+            combos: List[str] = [f"{trace_stripped}{suffix}" for suffix in suffixes]
             trace_visible = any(
                 st.session_state[f"cb_vis_{trace_suff}"] for trace_suff in combos
             )
@@ -372,11 +372,11 @@ def format_traces(fig: go.Figure) -> go.Figure:
     Args:
         - fig (go.Figure): Figure in question
     """
-    data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
+    data: Dict[str, Dict[str, Any]] = fgf.fig_data_as_dic(fig)
     fig_type: str = fgf.fig_type_by_title(fig)
     switch: bool = fig_type == "fig_days"
 
-    visible_traces: list[dict] = [trace for trace in data.values() if trace["visible"]]
+    visible_traces: List[Dict] = [trace for trace in data.values() if trace["visible"]]
 
     for trace in visible_traces:
         trace_name: str = trace["name"]
@@ -427,21 +427,21 @@ def show_y_axes(fig: go.Figure) -> go.Figure:
     Args:
         - fig (go.Figure): Figure in question
     """
-    data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
-    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
+    data: Dict[str, Dict[str, Any]] = fgf.fig_data_as_dic(fig)
+    layout: Dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
     fig_type: str = fgf.fig_type_by_title(fig, layout=layout)
 
     fig = fig.update_yaxes({"visible": False})  # turn off all y-axes
 
     # show axis if a line is visible, that uses this axis
-    axes_to_show: list[str] = [
+    axes_to_show: List[str] = [
         f'yaxis{(val.get("yaxis") or "y").replace("y", "")}'
         for val in data.values()
         if val.get("visible")
     ]
     axes_to_show = sort_list_by_occurance(axes_to_show)
-    units_per_axes: dict[str, str] = fgf.get_units_for_all_axes(fig, data=data)
+    units_per_axes: Dict[str, str] = fgf.get_units_for_all_axes(fig, data=data)
 
     y_suffix: str = units_per_axes[axes_to_show[0]]
     if fig_type == "mon" and y_suffix == " kW":
@@ -466,7 +466,7 @@ def show_y_axes(fig: go.Figure) -> go.Figure:
     return fig
 
 
-def show_annos(fig: go.Figure, visible_traces: list[str]) -> go.Figure:
+def show_annos(fig: go.Figure, visible_traces: List[str]) -> go.Figure:
     """Annotations (Pfeile) ein-/ausblenden
 
 
@@ -477,7 +477,7 @@ def show_annos(fig: go.Figure, visible_traces: list[str]) -> go.Figure:
         - go.Figure: Grafik mit bearbeiteter Anzeigt
     """
 
-    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
+    layout: Dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
     for anno in layout["annotations"]:
         an_name: str = anno["name"]
@@ -511,10 +511,10 @@ def show_annos(fig: go.Figure, visible_traces: list[str]) -> go.Figure:
 def legend_groups_for_multi_year(fig: go.Figure) -> go.Figure:
     """change"""
 
-    data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
-    legend_groups: list[str] = [str(year) for year in st.session_state["years"]]
+    data: Dict[str, Dict[str, Any]] = fgf.fig_data_as_dic(fig)
+    legend_groups: List[str] = [str(year) for year in st.session_state["years"]]
 
-    number_of_traces_in_groups: dict = {
+    number_of_traces_in_groups: Dict = {
         group: len(
             [
                 trace
@@ -544,7 +544,7 @@ def legend_groups_for_multi_year(fig: go.Figure) -> go.Figure:
     return fig
 
 
-def plotly_config(height: int = 420, title_edit: bool = True) -> dict[str, Any]:
+def plotly_config(height: int = 420, title_edit: bool = True) -> Dict[str, Any]:
     """Anzeigeeinstellungen für Plotly-Grafiken"""
 
     return {

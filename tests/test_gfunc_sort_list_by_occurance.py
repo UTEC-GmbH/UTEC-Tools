@@ -2,7 +2,7 @@
 
 import pytest
 
-from modules.general_functions import sort_list_by_occurance
+from modules.general_functions import sort_List_by_occurance
 
 """
 Code Analysis
@@ -11,7 +11,7 @@ Objective:
 The objective of the function is to take a list of elements and sort them based on the number of occurrences of each element in the list. The function combines same elements and returns a list sorted by the number of occurrences of each combined element.
 
 Inputs:
-- list_of_stuff (list): A list with multiple same elements.
+- list_of_stuff (List): A list with multiple same elements.
 
 Flow:
 1. The function takes a list of elements as input.
@@ -20,7 +20,7 @@ Flow:
 4. The sorted list is returned as output.
 
 Outputs:
-- list: A sorted list of elements based on the number of occurrences of each combined element.
+- List: A sorted list of elements based on the number of occurrences of each combined element.
 
 Additional aspects:
 - The function uses the Counter function to count the occurrences of each element in the list.

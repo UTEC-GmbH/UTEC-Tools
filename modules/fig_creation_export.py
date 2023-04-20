@@ -3,7 +3,7 @@ plots erstellen und in session_state schreiben
 """
 
 import os
-from typing import Any
+from typing import Any, Dict, List
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -22,7 +22,7 @@ from modules.general_functions import func_timer, render_svg
 def cr_fig_base() -> go.Figure:
     """Lastgang erstellen"""
 
-    meta: dict = st.session_state["metadata"]
+    meta: Dict = st.session_state["metadata"]
 
     tit_res: str = ""
     if st.session_state.get("cb_h"):
@@ -48,11 +48,11 @@ def cr_fig_base() -> go.Figure:
             title=tit,
         )
 
-    data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
-    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
+    data: Dict[str, Dict[str, Any]] = fgf.fig_data_as_dic(fig)
+    layout: Dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
     fig = fig_anno.add_arrows_min_max(fig, data=data, layout=layout)
-    colorway: list[str] = fgf.get_colorway(fig, data=data, layout=layout)
+    colorway: List[str] = fgf.get_colorway(fig, data=data, layout=layout)
 
     # geglättete Linien
     max_val: int = int(
@@ -228,7 +228,7 @@ def plot_figs() -> None:
         if st.session_state.get("cb_jdl") and st.session_state.get("cb_mon"):
             st.markdown("###")
 
-            columns: list = st.columns(2)
+            columns: List = st.columns(2)
             with columns[0]:
                 st.plotly_chart(
                     st.session_state["fig_jdl"],

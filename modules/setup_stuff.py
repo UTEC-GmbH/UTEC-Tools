@@ -4,7 +4,7 @@ import datetime as dt
 import locale
 import os
 import sys
-from typing import Any, Callable
+from typing import Any, Dict, List
 
 import plotly.io as pio
 import sentry_sdk
@@ -19,20 +19,28 @@ from modules.general_functions import func_timer, render_svg
 from modules.user_authentication import get_all_user_data
 
 
-@func_timer
-def get_commit_message_date() -> dict[str, dt.datetime | str]:
+# @func_timer
+def get_commit_message_date() -> Dict[str, dt.datetime | str]:
     """Commit message and date from GitHub to show in the header.
 
-    pat = personal access token (loaded from secrets)
-    To create a new one:
-    in github.com click on the profile and go into
+
+    To create a new personal access token in GitHub:
+    on github.com click on the profile and go into
     settings -> developer settings -> personal access tokens
 
     Returns:
-        - dict[str, dt.datetime | str]:
+        - Dict[str, dt.datetime | str]:
             - "com_date" (dt.datetime): date of commit
             - "com_mst" (str): commit message
     """
+
+    personal_access_token: str | None = os.environ.get("GITHUB_PAT")
+    if personal_access_token is None:
+        logger.error("GITHUB_PAT environment variable not set.")
+        return {
+            "com_date": "ERROR",
+            "com_msg": "GITHUB_PAT environment variable not set.",
+        }
 
     utc: BaseTzInfo = timezone("UTC")
     eur: BaseTzInfo = timezone("Europe/Berlin")
@@ -41,12 +49,12 @@ def get_commit_message_date() -> dict[str, dt.datetime | str]:
         utc.localize(date_now) - eur.localize(date_now).astimezone(utc)
     ).seconds / 3600
 
-    pat: str | None = os.getenv("GITHUB_PAT")
-    gith: Github = Github(pat)
-    repo: Any = gith.get_user().get_repo("UTEC-Tools")
+    gith: Github = Github(personal_access_token)
+    repo: Any = gith.get_user().get_repo(cont.REPO_NAME)
     branch: Any = repo.get_branch("main")
     sha: Any = branch.commit.sha
     commit: Any = repo.get_commit(sha).commit
+
     return {
         "com_date": commit.author.date + dt.timedelta(hours=tz_diff),
         "com_msg": commit.message.split("\n")[-1],
@@ -87,9 +95,6 @@ def initial_setup() -> None:
         layout="wide",
     )
 
-    if "dic_exe_time" not in st.session_state:
-        st.session_state["dic_exe_time"] = {}
-
     # UTEC Logo
     if "UTEC_logo" not in st.session_state:
         st.session_state["UTEC_logo"] = render_svg()
@@ -101,36 +106,42 @@ def initial_setup() -> None:
     )
 
     # latest changes from GitHub
-    st.session_state["com_date"] = get_commit_message_date()["com_date"]
-    st.session_state["com_msg"] = get_commit_message_date()["com_msg"]
+    if any(entry not in st.session_state for entry in ["com_date", "com_msg"]):
+        st.session_state["com_date"] = get_commit_message_date()["com_date"]
+        st.session_state["com_msg"] = get_commit_message_date()["com_msg"]
 
     # all user data from database
-    st.session_state["all_user_data"] = get_all_user_data()
+    if "all_user_data" not in st.session_state:
+        st.session_state["all_user_data"] = get_all_user_data()
 
     st.session_state["initial_setup"] = True
     logger.log("ONCE_per_RUN", "initial setup done")
 
 
-@func_timer
+# @func_timer
 def logger_setup() -> None:
     """Setup the loguru Logging module"""
-    logger_path: str = f"{cont.CWD}\\logs\\"
-    logger_file: str = "log_{time:YYYY-MM-DD}.log"
 
-    standard_levels: dict[str, str] = {
-        "DEBUG": "\n{time:HH:mm:ss} | 🐞 | {module} -> {function} -> line: {line} | {message} | 🐞 |",
-        "INFO": "\n{time:HH:mm:ss} | 👉 | {module} -> {function} -> line: {line} | {message} | 👈 |",
-        "SUCCESS": "\n{time:HH:mm:ss} | 🥳 | {module} -> {function} -> line: {line} | {message} | 🥳 |",
-        "WARNING": "\n{time:HH:mm:ss} | ⚠️ | {module} -> {function} -> line: {line} | {message} | ⚠️ |",
-        "ERROR": "\n{time:HH:mm:ss} | 😱 | {module} -> {function} -> line: {line} | {message} | 😱 |",
-        "CRITICAL": "\n{time:HH:mm:ss} | ☠️ | {module} -> {function} -> line: {line} | {message} | ☠️ |",
+    format_time: str = "{time:HH:mm:ss}"
+    format_mesg: str = "{module} -> {function} -> line: {line} | {message}"
+
+    standard_levels: Dict[str, str] = {
+        level: f"{format_time} | {icon} | {format_mesg} | {icon} |\n"
+        for level, icon in {
+            "DEBUG": "🐞",
+            "INFO": "👉",
+            "SUCCESS": "🥳",
+            "WARNING": "⚠️",
+            "ERROR": "😱",
+            "CRITICAL": "☠️",
+        }.items()
     }
-    custom_levels: dict[str, str] = {
-        "TIMER": "\n{time:HH:mm:ss} | ⏱  | {message} | ⏱  |",
-        "ONCE_per_RUN": "\n{time:HH:mm:ss} | 👟 | {module} -> {function} -> line: {line} | {message} | 👟 |",
-        "ONCE_per_SESSION": "\n{time:HH:mm:ss} | 🔥🔥🔥 | {module} -> {function} -> line: {line} | {message}",
+    custom_levels: Dict[str, str] = {
+        "TIMER": f"{format_time} | ⏱  | {{message}} | ⏱  |\n",
+        "ONCE_per_RUN": f"{format_time} | 👟 | {format_mesg} | 👟 |\n",
+        "ONCE_per_SESSION": f"\n\n{format_time} 🔥🔥🔥 {{message}}\n\n",
     }
-    all_levels: dict[str, str] = standard_levels | custom_levels
+    all_levels: Dict[str, str] = standard_levels | custom_levels
 
     for lvl in custom_levels:
         try:
@@ -138,30 +149,31 @@ def logger_setup() -> None:
         except ValueError:
             logger.level(lvl, no=1)
 
-    def format_of_lvl(record: dict) -> str:
+    def format_of_lvl(record: Dict) -> str:
         return all_levels[record["level"].name]
 
     logger.remove()
 
     logger.add(
-        sink=sys.stderr,
+        sink=sys.stderr,  # type: ignore
         level=1,
-        format=format_of_lvl,
+        format=format_of_lvl,  # type: ignore
         colorize=True,
     )
 
+    file_sink: str = f"{cont.CWD}/logs/log_{{time:YYYY-MM-DD}}.log"
     logger.add(
-        sink=f"{logger_path}{logger_file}",
+        sink=file_sink,
         rotation="1 day",
         retention=3,
         mode="a",
         catch=True,
         level=1,
-        format=format_of_lvl,
+        format=format_of_lvl,  # type: ignore
         colorize=True,
     )
 
-    logger.log("ONCE_per_SESSION", "\n\n\n🚀 Session Started, Log Initiated 🚀\n\n")
+    logger.log("ONCE_per_SESSION", "Session Started, Log Initiated 🚀🚀🚀")
 
 
 @func_timer
@@ -172,13 +184,18 @@ def page_header_setup(page: str) -> None:
     st.session_state["title_container"] = st.container()
 
     with st.session_state["title_container"]:
-        columns: list = st.columns(2)
+        columns: List = st.columns(2)
 
         # Logo
+        if "UTEC_logo" not in st.session_state:
+            st.session_state["UTEC_logo"] = render_svg()
         with columns[0]:
             st.write(st.session_state["UTEC_logo"], unsafe_allow_html=True)
 
         # Version info (latest changes and python version)
+        if any(entry not in st.session_state for entry in ["com_date", "com_msg"]):
+            st.session_state["com_date"] = get_commit_message_date()["com_date"]
+            st.session_state["com_msg"] = get_commit_message_date()["com_msg"]
         with columns[1]:
             st.write(
                 f"""
@@ -191,7 +208,7 @@ def page_header_setup(page: str) -> None:
                 unsafe_allow_html=True,
             )
 
-            access_lvl_user: str | list | None = st.session_state.get("access_lvl")
+            access_lvl_user: str | List | None = st.session_state.get("access_lvl")
             if isinstance(access_lvl_user, str) and access_lvl_user in ("god"):
                 st.write(
                     f"""

@@ -5,7 +5,7 @@ UI - Menus
 import datetime
 import secrets
 from glob import glob
-from typing import Any
+from typing import Any, Dict, List
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -118,7 +118,7 @@ def new_user_form() -> None:
 
 def list_all_accounts() -> None:
     """Liste aller Benutzerkonten"""
-    users: list[dict[str, Any]] = st.session_state["all_user_data"]
+    users: List[Dict[str, Any]] = st.session_state["all_user_data"]
     df_users = pd.DataFrame()
     df_users["Benutzername"] = [user["key"] for user in users]
     df_users["Name"] = [user["name"] for user in users]
@@ -401,7 +401,7 @@ def meteo_params_main() -> None:
 
     with st.expander("Datenauswahl", False):
         with st.form("Meteo Datenauswahl"):
-            columns: list = st.columns(4)
+            columns: List = st.columns(4)
 
             for cnt, col in enumerate(columns):
                 with col:
@@ -567,11 +567,11 @@ def h_v_lines() -> None:
 
 
 # Darstellungsoptionen für Linien auf Hauptseite
-def display_options_main_col_settings() -> dict[str, dict]:
+def display_options_main_col_settings() -> Dict[str, Dict]:
     """Settings for the columns of the main display options (controlling line color, type, etc.)
 
     Returns:
-        dict[str, dict]: "Title" -> column header with hover-text | "width" -> width of the column
+        Dict[str, Dict]: "Title" -> column header with hover-text | "width" -> width of the column
             - "name" -> name of line
             - "vis" -> visibility of line (show line or not)
             - "colour" -> line colour
@@ -616,8 +616,8 @@ def display_options_main() -> bool:
     with st.expander("Anzeigeoptionen", False):
         with st.form("Anzeigeoptionen"):
             # columns
-            columns: dict[str, dict] = display_options_main_col_settings()
-            cols: list = st.columns([col["width"] for col in columns.values()])
+            columns: Dict[str, Dict] = display_options_main_col_settings()
+            cols: List = st.columns([col["width"] for col in columns.values()])
 
             # Überschriften
             for count, col in enumerate(columns):
@@ -627,17 +627,17 @@ def display_options_main() -> bool:
 
             # Check Boxes for line visibility, fill and color
             fig: go.Figure = st.session_state["fig_base"]
-            fig_data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
-            fig_layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
-            colorway: list[str] = get_colorway(fig)
-            lines: list[dict] = [
+            fig_data: Dict[str, Dict[str, Any]] = fgf.fig_data_as_dic(fig)
+            fig_layout: Dict[str, Any] = fgf.fig_layout_as_dic(fig)
+            colorway: List[str] = get_colorway(fig)
+            lines: List[Dict] = [
                 line
                 for line in fig_data.values()
                 if all(ex not in line["name"] for ex in cont.EXCLUDE)
             ]
 
             for count, line in enumerate(lines):
-                cols: list = st.columns([col["width"] for col in columns.values()])
+                cols: List = st.columns([col["width"] for col in columns.values()])
                 line_name: str = line["name"]
                 line_color: str = colorway[count]
                 if (
@@ -728,7 +728,7 @@ def display_smooth_main() -> bool:
 
     with st.expander("Anzeigeoptionen für geglättete Linien", False):
         with st.form("Anzeigeoptionen für geglättete Linien"):
-            col_general: list = st.columns([3, 1])
+            col_general: List = st.columns([3, 1])
             with col_general[0]:
                 st.slider(
                     label="Glättung",
@@ -762,8 +762,8 @@ def display_smooth_main() -> bool:
             st.markdown("---")
 
             # columns
-            columns: dict[str, dict] = display_options_main_col_settings()
-            cols: list = st.columns([col["width"] for col in columns.values()])
+            columns: Dict[str, Dict] = display_options_main_col_settings()
+            cols: List = st.columns([col["width"] for col in columns.values()])
 
             # Überschriften
             for count, col in enumerate(columns):
@@ -774,16 +774,16 @@ def display_smooth_main() -> bool:
 
             # Check Boxes for line visibility, fill and color
             fig: go.Figure = st.session_state["fig_base"]
-            fig_data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
-            colorway: list[str] = get_colorway(fig)
-            lines: list[dict] = [
+            fig_data: Dict[str, Dict[str, Any]] = fgf.fig_data_as_dic(fig)
+            colorway: List[str] = get_colorway(fig)
+            lines: List[Dict] = [
                 line
                 for line in fig_data.values()
                 if all(ex not in line["name"] for ex in cont.EXCLUDE)
             ]
 
             for count, line in enumerate(lines):
-                cols: list = st.columns([col["width"] for col in columns.values()])
+                cols: List = st.columns([col["width"] for col in columns.values()])
                 line_name: str = f'{line["name"]}{cont.SMOOTH_SUFFIX}'
                 line_color: str = colorway[count + len(lines)]
                 if (
@@ -874,7 +874,7 @@ def downloads(page: str = "graph") -> None:
         with st.spinner("Momentle bitte - html-Datei wird erzeugt..."):
             fig_cr.html_exp()
 
-        cols: list = st.columns(3)
+        cols: List = st.columns(3)
 
         with cols[1]:
             f_pn = "export/interaktive_grafische_Auswertung.html"
@@ -906,7 +906,7 @@ def downloads(page: str = "graph") -> None:
     ):
         with st.spinner("Momentle bitte - Excel-Datei wird erzeugt..."):
             if page in ("graph"):
-                dic_df_ex: dict = {
+                dic_df_ex: Dict = {
                     x.name: {
                         "df": pd.DataFrame(data=x.y, index=x.x, columns=[x.name]),
                         "unit": st.session_state["metadata"][x.name].get("unit"),
@@ -928,7 +928,7 @@ def downloads(page: str = "graph") -> None:
 
             dat = ex.excel_download(df_ex, page)
 
-        cols: list = st.columns(3)
+        cols: List = st.columns(3)
 
         with cols[1]:
             st.download_button(

@@ -3,9 +3,8 @@ Import und Download von Excel-Dateien
 """
 import re
 from io import BytesIO
-from typing import Any, Dict, List, Literal, NamedTuple, Tuple
+from typing import Any, Dict, List, Literal, NamedTuple
 
-import numpy as np
 import pandas as pd
 import pandas.io.formats.excel
 import streamlit as st
@@ -13,8 +12,8 @@ from loguru import logger
 
 from modules import constants as cont
 from modules import meteorolog as meteo
-from modules.classes import ObisElectrical
-from modules.df_manip import clean_up_daylight_savings
+from modules.classes import ExcelMarkers, MarkerPosition, MarkerType, ObisElectrical
+from modules.df_manip import clean_up_daylight_savings, CleanUpDLS
 from modules.general_functions import func_timer, sort_list_by_occurance
 
 pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
@@ -59,48 +58,6 @@ def import_prefab_excel(file: Any) -> None:
     logger.info(f"\n{df.head()}\n")
 
 
-def position_of_index_and_units(df_messy: pd.DataFrame) -> Dict[str, Dict[str, int]]:
-    """Returns the position of the index and units markers in a messy DataFrame.
-
-    Args:
-        - df_messy (pandas.DataFrame): The messy DataFrame.
-
-    Returns:
-        - Dict: A Dictionary containing the row and column positions of the index and units markers.
-    """
-
-    index_marker_position: Tuple = np.where(df_messy == "↓ Index ↓")
-
-    if any([len(index_marker_position[0]) < 1, len(index_marker_position[1]) < 1]):
-        raise ValueError("Index marker '↓ Index ↓' not found in the DataFrame.")
-    if any([len(index_marker_position[0]) > 1, len(index_marker_position[1]) > 1]):
-        raise ValueError("Multiple index markers '↓ Index ↓' found in the DataFrame.")
-
-    ind_row: int = index_marker_position[0][0]
-    ind_col: int = index_marker_position[1][0]
-
-    logger.success(f"Zelle '↓ Index ↓' gefunden in Zeile {ind_row}, Spalte {ind_col}")
-
-    unit_marker_position: Tuple = np.where(df_messy == "→ Einheit →")
-
-    if any([len(unit_marker_position[0]) < 1, len(unit_marker_position[1]) < 1]):
-        raise ValueError("Unit marker '→ Einheit →' not found in the DataFrame.")
-    if any([len(unit_marker_position[0]) > 1, len(unit_marker_position[1]) > 1]):
-        raise ValueError("Multiple Unit markers '→ Einheit →' found in the DataFrame.")
-
-    uni_row: int = unit_marker_position[0][0]
-    uni_col: int = unit_marker_position[1][0] + 1
-
-    logger.success(
-        f"Zelle '→ Einheit →' gefunden. Einheiten ab Zeile {uni_row}, Spalte {uni_col}"
-    )
-
-    return {
-        "index": {"row": ind_row, "col": ind_col},
-        "units": {"row": uni_row, "col": uni_col},
-    }
-
-
 @func_timer
 def units_from_messy_df(df_messy: pd.DataFrame) -> Dict[str, str]:
     """Get the units of every column from the messy df right after import
@@ -116,12 +73,11 @@ def units_from_messy_df(df_messy: pd.DataFrame) -> Dict[str, str]:
         - Dict[str, str]: keys = column names, values = units
     """
 
-    positions: Dict[str, Dict[str, int]] = position_of_index_and_units(df_messy)
-    p_in: Dict[str, int] = positions["index"]
-    p_un: Dict[str, int] = positions["units"]
+    p_in: MarkerPosition = ExcelMarkers(MarkerType.INDEX).get_marker_position(df_messy)
+    p_un: MarkerPosition = ExcelMarkers(MarkerType.UNITS).get_marker_position(df_messy)
 
-    column_names: List[str] = df_messy.iloc[p_in["row"], p_in["col"] :].to_list()
-    units: List[str] = df_messy.iloc[p_un["row"], p_un["col"] :].to_list()
+    column_names: List[str] = df_messy.iloc[p_in.row, p_in.col :].to_list()
+    units: List[str] = df_messy.iloc[p_un.row, p_un.col :].to_list()
 
     # leerzeichen vor Einheit
     for ind, unit in enumerate(units):
@@ -131,7 +87,6 @@ def units_from_messy_df(df_messy: pd.DataFrame) -> Dict[str, str]:
     return dict(zip(column_names, units))
 
 
-# Einheiten
 @func_timer
 def set_y_axis_for_lines() -> None:
     """Y-Achsen der Linien"""
@@ -158,11 +113,11 @@ def edit_df_after_import(df_messy: pd.DataFrame) -> pd.DataFrame:
     """
 
     # Zelle mit Index-Markierung
-    p_index: Dict[str, int] = position_of_index_and_units(df_messy)["index"]
-    df_messy.columns = df_messy.iloc[p_index["row"]]
+    p_in: MarkerPosition = ExcelMarkers(MarkerType.INDEX).get_marker_position(df_messy)
+    df_messy.columns = df_messy.iloc[p_in.row]
 
     # fix index and delete unneeded and empty cells
-    df: pd.DataFrame = df_messy.iloc[p_index["row"] + 1 :, p_index["col"] :]
+    df: pd.DataFrame = df_messy.iloc[p_in.row + 1 :, p_in.col :]
     df = df.set_index("↓ Index ↓")
     pd.to_datetime(df.index, dayfirst=True)
     df = df.infer_objects()
@@ -177,10 +132,10 @@ def edit_df_after_import(df_messy: pd.DataFrame) -> pd.DataFrame:
         )
 
     # delete duplicates in index (day light savings)
-    dls: Dict[str, pd.DataFrame] = clean_up_daylight_savings(df)
-    df = dls["df_clean"]
+    dls: CleanUpDLS = clean_up_daylight_savings(df)
+    df = dls.df_clean
     st.session_state["df_dls_deleted"] = (
-        dls["df_deleted"] if len(dls["df_deleted"]) > 0 else None
+        dls.df_deleted if len(dls.df_deleted) > 0 else None
     )
 
     # copy index in separate column to preserve if index is changed (multi year)

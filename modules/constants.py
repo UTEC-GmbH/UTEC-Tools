@@ -8,7 +8,6 @@ REPO_NAME: str = "UTEC-Tools"
 # Current Working Directory
 CWD: str = os.getcwd()
 
-
 DURATIONS_IN_MS: Dict[str, int] = {
     "half_day": 12 * 60 * 60 * 1000,  # 43.200.000
     "week": 7 * 24 * 60 * 60 * 1000,  # 604.800.000

@@ -4,7 +4,7 @@ Bearbeitung der Daten
 
 
 import datetime as dt
-from typing import Any, Dict, List
+from typing import Any, Dict, List, NamedTuple
 
 import numpy as np
 import pandas as pd
@@ -87,9 +87,13 @@ def fix_am_pm(df: pd.DataFrame, time_column: str = "Zeitstempel") -> pd.DataFram
 
     return df
 
-
+class CleanUpDLS(NamedTuple):
+    """Named Tuple for return value of following function"""
+    df_clean: pd.DataFrame
+    df_deleted: pd.DataFrame
+    
 @func_timer
-def clean_up_daylight_savings(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
+def clean_up_daylight_savings(df: pd.DataFrame) -> CleanUpDLS:
     """Zeitumstellung
 
     Bei der Zeitumstellung auf Sommerzeit wird die Uhr eine Stunde vor gestellt,
@@ -129,7 +133,7 @@ def clean_up_daylight_savings(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     else:
         logger.info("No data deleted due to daylight savings")
 
-    return {"df_clean": df_clean, "df_deleted": df_deleted}
+    return CleanUpDLS(df_clean = df_clean, df_deleted= df_deleted)
 
 
 @func_timer

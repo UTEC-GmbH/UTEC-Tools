@@ -13,7 +13,7 @@ from loguru import logger
 from modules import constants as cont
 from modules import meteorolog as meteo
 from modules.classes import ExcelMarkers, MarkerPosition, MarkerType, ObisElectrical
-from modules.df_manip import clean_up_daylight_savings, CleanUpDLS
+from modules.df_manip import CleanUpDLS, clean_up_daylight_savings
 from modules.general_functions import func_timer, sort_list_by_occurance
 
 pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore

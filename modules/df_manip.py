@@ -87,11 +87,14 @@ def fix_am_pm(df: pd.DataFrame, time_column: str = "Zeitstempel") -> pd.DataFram
 
     return df
 
+
 class CleanUpDLS(NamedTuple):
     """Named Tuple for return value of following function"""
+
     df_clean: pd.DataFrame
     df_deleted: pd.DataFrame
-    
+
+
 @func_timer
 def clean_up_daylight_savings(df: pd.DataFrame) -> CleanUpDLS:
     """Zeitumstellung
@@ -133,7 +136,7 @@ def clean_up_daylight_savings(df: pd.DataFrame) -> CleanUpDLS:
     else:
         logger.info("No data deleted due to daylight savings")
 
-    return CleanUpDLS(df_clean = df_clean, df_deleted= df_deleted)
+    return CleanUpDLS(df_clean=df_clean, df_deleted=df_deleted)
 
 
 @func_timer
@@ -253,7 +256,7 @@ def h_from_other(df: pd.DataFrame, meta: Dict[str, Any] | None = None) -> pd.Dat
     """Stundenwerte aus anderer zeitlicher Auflösung"""
 
     df_h: pd.DataFrame = pd.DataFrame()
-    dic_meta: Dict[str, Any] = meta or st.session_state["metadata"]
+    metadata: Dict[str, Any] = meta or st.session_state["metadata"]
     extended_exclude: List[str] = cont.EXCLUDE + [
         cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"]
     ]
@@ -268,21 +271,21 @@ def h_from_other(df: pd.DataFrame, meta: Dict[str, Any] | None = None) -> pd.Dat
         if col.endswith(" *h"):
             df_h[col_h] = df[col].copy()
         else:
-            dic_meta[col_h] = dic_meta[col].copy()
+            metadata[col_h] = metadata[col].copy()
             # dic_meta[col_h]["tit"] = col_h.replace(" *h", "")
 
-        if dic_meta["index"]["td_mean"] < pd.Timedelta(hours=1):
-            if dic_meta[col]["unit"] in cont.GRP_MEAN:
+        if metadata["index"]["td_mean"] < pd.Timedelta(hours=1):
+            if metadata[col]["unit"] in cont.GRP_MEAN:
                 df_h[col_h] = df[col].resample("H").mean()
             else:
                 df_h[col_h] = df[col].resample("H").sum()
 
-        if dic_meta["index"]["td_mean"] == pd.Timedelta(hours=1):
+        if metadata["index"]["td_mean"] == pd.Timedelta(hours=1):
             df_h[col_h] = df[col].copy()
 
     df_h["orgidx"] = df_h.index.copy()
     df_h = df_h.infer_objects()
-    st.session_state["metadata"] = dic_meta
+    st.session_state["metadata"] = metadata
 
     logger.success(f"DataFrame mit Stundenwerten erstellt: \n\n{df_h.head()}\n\n")
 
@@ -301,7 +304,7 @@ def check_if_hourly_resolution(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         - pd.DataFrame: DataFrame in hourly resolution
     """
-    ind_td: pd.Timedelta = pd.to_timedelta(df.index.to_series().diff().mean())
+    ind_td: pd.Timedelta = pd.to_timedelta(df.index.to_series().diff()).mean()
 
     if ind_td.round("min") < pd.Timedelta(hours=1):
         df_h: pd.DataFrame = h_from_other(df)

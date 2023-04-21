@@ -40,6 +40,8 @@ pipreqs --force --ignore .venv ./
 
 
 
+
+
 pip
 ---
 
@@ -58,8 +60,6 @@ pip list
 
 # show information about specific package
 pip show plotly
-
-
 
 
 

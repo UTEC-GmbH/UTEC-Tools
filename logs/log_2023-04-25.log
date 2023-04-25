@@ -1,0 +1,306 @@
+
+
+15:21:31 🔥🔥🔥 Session Started, Log Initiated 🚀🚀🚀
+
+15:21:31 | 🥳 | general_functions -> render_svg -> line: 103 | svg-Datei 'logo/UTEC_logo_text.svg' codiert | 🥳 |
+15:21:31 | ⏱  | execution time of 'render_svg': 0.0160 s | ⏱  |
+15:21:45 | 🥳 | user_authentication -> connect_database -> line: 101 | Deta-Database connection established | 🥳 |
+15:21:45 | ⏱  | execution time of 'connect_database': 0.0150 s | ⏱  |
+15:21:45 | 🥳 | user_authentication -> get_all_user_data -> line: 134 | Collected all user data from Database | 🥳 |
+15:21:45 | ⏱  | execution time of 'get_all_user_data': 0.4220 s | ⏱  |
+15:21:45 | 👟 | setup_stuff -> initial_setup -> line: 118 | initial setup done | 👟 |
+15:21:45 | 👟 | setup_stuff -> page_header_setup -> line: 225 | page header for page 'login' created | 👟 |
+15:21:45 | ⏱  | execution time of 'page_header_setup': 0.0150 s | ⏱  |
+15:21:53 | 👟 | setup_stuff -> page_header_setup -> line: 225 | page header for page 'login' created | 👟 |
+15:21:53 | ⏱  | execution time of 'page_header_setup': 0.0000 s | ⏱  |
+15:21:54 | 👟 | setup_stuff -> page_header_setup -> line: 225 | page header for page 'login' created | 👟 |
+15:21:54 | ⏱  | execution time of 'page_header_setup': 0.0160 s | ⏱  |
+15:22:21 | 👟 | setup_stuff -> page_header_setup -> line: 225 | page header for page 'login' created | 👟 |
+15:22:21 | ⏱  | execution time of 'page_header_setup': 0.0000 s | ⏱  |
+15:22:21 | 🥳 | 00_🔑_login -> access_granted -> line: 79 | logged in as: fl, access level: god | 🥳 |
+15:22:22 | 👟 | setup_stuff -> page_header_setup -> line: 225 | page header for page 'login' created | 👟 |
+15:22:22 | ⏱  | execution time of 'page_header_setup': 0.0160 s | ⏱  |
+15:22:22 | 👟 | setup_stuff -> page_header_setup -> line: 225 | page header for page 'login' created | 👟 |
+15:22:22 | ⏱  | execution time of 'page_header_setup': 0.0000 s | ⏱  |
+15:22:26 | 👟 | setup_stuff -> page_header_setup -> line: 225 | page header for page 'graph' created | 👟 |
+15:22:26 | ⏱  | execution time of 'page_header_setup': 0.0160 s | ⏱  |
+15:22:41 | 👟 | setup_stuff -> page_header_setup -> line: 225 | page header for page 'graph' created | 👟 |
+15:22:41 | ⏱  | execution time of 'page_header_setup': 0.0000 s | ⏱  |
+15:22:43 | 👟 | setup_stuff -> page_header_setup -> line: 225 | page header for page 'graph' created | 👟 |
+15:22:43 | ⏱  | execution time of 'page_header_setup': 0.0000 s | ⏱  |
+15:22:50 | 🐞 | excel -> import_prefab_excel -> line: 30 | df_messy
+   Unnamed: 0   Unnamed: 1  Unnamed: 2 Unnamed: 3  Unnamed: 4 Unnamed: 5 Unnamed: 6
+0         NaN          NaN         NaN        NaN         NaN        NaN        NaN
+1         NaN          NaN         NaN        NaN         NaN        NaN        NaN
+2         NaN          NaN         NaN        NaN         NaN        NaN        NaN
+3         NaN          NaN         NaN        NaN         NaN        NaN        NaN
+4         NaN          NaN         NaN        NaN         NaN        NaN        NaN
+5         NaN        Summe  416887.875  70497.625  135921.225    1003459        NaN
+6         NaN          max    98,50 kW   24,50 kW   12,98 kWh  30,88 kWh   36,90 °C
+7         NaN          min     0,00 kW    0,00 kW    0,00 kWh   0,13 kWh  -11,20 °C
+8         NaN          NaN         NaN        NaN         NaN        NaN        NaN
+9         NaN  → Einheit →          kW         kW         kWh        kWh         °C
+ | 🐞 |
+15:22:50 | 🥳 | classes -> get_marker_position -> line: 76 | Marker ↓ Index ↓ found in row 10, column 1 | 🥳 |
+15:22:50 | ⚠️ | df_manip -> clean_up_daylight_savings -> line: 135 | Data deleted due to daylight savings: 
+
+10                   Bezug (1-1:1.29.0)  Einsp. (1-1:2.29.0)  PV-Anlage  Bedarf  Temperatur
+↓ Index ↓                                                                                  
+2017-03-26 02:00:00                 0.0                 12.5        0.0   3.125         6.2
+2017-03-26 02:15:00                 0.0                  0.0        0.0   6.250         6.2
+2017-03-26 02:30:00                 0.0                  0.0        0.0   6.250         6.2
+2017-03-26 02:45:00                 0.0                  0.0        0.0   6.250         6.2
+2017-10-29 02:15:00                 0.0                 13.5        0.0   2.875        12.8
+2017-10-29 02:30:00                 0.0                 11.5        0.0   3.375        12.8
+2017-10-29 02:45:00                 0.0                 13.0        0.0   3.000        12.8
+2017-10-29 03:00:00                 0.0                 13.5        0.0   2.875        10.5
+2018-03-25 02:00:00                19.0                  0.0        0.0  11.000         6.8
+2018-03-25 02:15:00                 0.0                  0.0        0.0   6.250         6.8
+2018-03-25 02:30:00                 0.0                  0.0        0.0   6.250         6.8
+2018-03-25 02:45:00                 0.0                  0.0        0.0   6.250         6.8
+2018-10-28 02:15:00                 0.0                 11.0        0.0   3.500         2.1
+2018-10-28 02:30:00                 0.0                 13.5        0.0   2.875         2.1
+2018-10-28 02:45:00                 0.0                 13.0        0.0   3.000         2.1
+2018-10-28 03:00:00                 0.0                 13.5        0.0   2.875         1.4
+2019-03-31 02:00:00                 0.0                 15.5        0.0   2.375         6.5
+2019-03-31 02:15:00                 0.0                  0.0        0.0   6.250         6.5
+2019-03-31 02:30:00                 0.0                  0.0        0.0   6.250         6.5
+2019-03-31 02:45:00                 0.0                  0.0        0.0   6.250         6.5
+2019-10-27 02:15:00                22.0                  0.0        0.0  11.750        15.4
+2019-10-27 02:30:00                24.0                  0.0        0.0  12.250        15.4
+2019-10-27 02:45:00                23.0                  0.0        0.0  12.000        15.4
+2019-10-27 03:00:00                22.5                  0.0        0.0  11.875        11.8
+
+ | ⚠️ |
+15:22:50 | ⏱  | execution time of 'clean_up_daylight_savings': 0.0310 s | ⏱  |
+15:22:50 | ⏱  | execution time of 'edit_df_after_import': 0.2190 s | ⏱  |
+15:22:50 | 🥳 | classes -> get_marker_position -> line: 76 | Marker ↓ Index ↓ found in row 10, column 1 | 🥳 |
+15:22:50 | 🥳 | classes -> get_marker_position -> line: 76 | Marker → Einheit → found in row 9, column 1 | 🥳 |
+15:22:50 | ⏱  | execution time of 'units_from_messy_df': 0.0470 s | ⏱  |
+15:22:50 | ⏱  | execution time of 'meta_from_index': 0.0150 s | ⏱  |
+15:22:50 | ⏱  | execution time of 'meta_from_col_title': 0.0000 s | ⏱  |
+15:22:50 | ⏱  | execution time of 'insert_column_arbeit_leistung': 0.0000 s | ⏱  |
+15:22:50 | ⏱  | execution time of 'rename_column_arbeit_leistung': 0.0000 s | ⏱  |
+15:22:50 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 266 | Arbeit und Leistung aufgeteilt | 🥳 |
+15:22:50 | ⏱  | execution time of 'insert_column_arbeit_leistung': 0.0000 s | ⏱  |
+15:22:50 | ⏱  | execution time of 'rename_column_arbeit_leistung': 0.0000 s | ⏱  |
+15:22:50 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 266 | Arbeit und Leistung aufgeteilt | 🥳 |
+15:22:50 | ⏱  | execution time of 'insert_column_arbeit_leistung': 0.0000 s | ⏱  |
+15:22:50 | ⏱  | execution time of 'rename_column_arbeit_leistung': 0.0000 s | ⏱  |
+15:22:50 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 266 | Arbeit und Leistung aufgeteilt | 🥳 |
+15:22:50 | ⏱  | execution time of 'insert_column_arbeit_leistung': 0.0000 s | ⏱  |
+15:22:50 | ⏱  | execution time of 'rename_column_arbeit_leistung': 0.0000 s | ⏱  |
+15:22:50 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 266 | Arbeit und Leistung aufgeteilt | 🥳 |
+15:22:50 | ⏱  | execution time of 'convert_15min_kwh_to_kw': 0.0320 s | ⏱  |
+15:22:50 | ⏱  | execution time of 'set_y_axis_for_lines': 0.0150 s | ⏱  |
+15:22:50 | 🥳 | excel -> import_prefab_excel -> line: 57 | file imported and metadata extracted | 🥳 |
+15:22:50 | 👉 | excel -> import_prefab_excel -> line: 58 | 
+10                   Bezug (1-1:1.29) → Leistung  Lieferung (1-1:2.29) → Leistung  PV-Anlage → Arbeit  ...  Lieferung (1-1:2.29) → Arbeit  PV-Anlage → Leistung Bedarf → Leistung
+↓ Index ↓                                                                                              ...                                                                       
+2017-01-01 00:15:00                          0.0                             12.0                 0.0  ...                          3.000                   0.0              13.0
+2017-01-01 00:30:00                          0.0                             11.0                 0.0  ...                          2.750                   0.0              14.0
+2017-01-01 00:45:00                          0.0                             12.5                 0.0  ...                          3.125                   0.0              12.5
+2017-01-01 01:00:00                          0.0                             12.5                 0.0  ...                          3.125                   0.0              12.5
+2017-01-01 01:15:00                          0.0                              9.5                 0.0  ...                          2.375                   0.0              15.5
+
+[5 rows x 10 columns]
+ | 👉 |
+15:22:50 | ⏱  | execution time of 'import_prefab_excel': 6.7030 s | ⏱  |
+15:22:50 | ⏱  | execution time of 'split_up_df_multi_years': 0.3750 s | ⏱  |
+15:22:51 | 🥳 | df_manip -> h_from_other -> line: 290 | DataFrame mit Stundenwerten erstellt: 
+
+                     Bezug (1-1:1.29) 2017 *h  Lieferung (1-1:2.29) 2017 *h  Temperatur 2017 *h  PV-Anlage 2017 *h  Bedarf 2017 *h              orgidx
+↓ Index ↓                                                                                                                                             
+2020-01-01 00:00:00                       0.0                     11.833333                 3.3                0.0       13.166667 2020-01-01 00:00:00
+2020-01-01 01:00:00                       0.0                     10.750000                 3.5                0.0       14.250000 2020-01-01 01:00:00
+2020-01-01 02:00:00                       0.0                     10.500000                 3.5                0.0       14.500000 2020-01-01 02:00:00
+2020-01-01 03:00:00                       0.0                     10.750000                 3.9                0.0       14.250000 2020-01-01 03:00:00
+2020-01-01 04:00:00                       0.0                     10.750000                 3.7                0.0       14.250000 2020-01-01 04:00:00
+
+ | 🥳 |
+15:22:51 | ⏱  | execution time of 'h_from_other': 0.0620 s | ⏱  |
+15:22:51 | 🥳 | df_manip -> jdl -> line: 342 | DataFrame für Jahresdauerlinie erstellt: 
+
+   Bezug (1-1:1.29) 2017 *h  Lieferung (1-1:2.29) 2017 *h  Temperatur 2017 *h  ...  Temperatur 2017 *h_orgidx  PV-Anlage 2017 *h_orgidx Bedarf 2017 *h_orgidx
+1                    96.500                        22.000                30.2  ...        2020-06-22 16:00:00       2020-04-27 13:00:00   2020-08-15 15:00:00
+2                    95.375                        22.000                30.2  ...        2020-06-22 17:00:00       2020-04-13 13:00:00   2020-08-07 14:00:00
+3                    92.625                        21.875                29.5  ...        2020-06-22 10:00:00       2020-04-26 13:00:00   2020-05-26 17:00:00
+4                    92.375                        21.750                29.5  ...        2020-06-22 11:00:00       2020-05-31 12:00:00   2020-06-14 15:00:00
+5                    91.625                        21.625                29.4  ...        2020-06-19 15:00:00       2020-05-30 15:00:00   2020-08-07 17:00:00
+
+[5 rows x 10 columns]
+
+ | 🥳 |
+15:22:51 | ⏱  | execution time of 'jdl': 0.0780 s | ⏱  |
+15:22:51 | 🥳 | df_manip -> h_from_other -> line: 290 | DataFrame mit Stundenwerten erstellt: 
+
+                     Bezug (1-1:1.29) 2018 *h  Lieferung (1-1:2.29) 2018 *h  Temperatur 2018 *h  PV-Anlage 2018 *h  Bedarf 2018 *h              orgidx
+↓ Index ↓                                                                                                                                             
+2020-01-01 00:00:00                       0.0                          13.5                 9.1                0.0            11.5 2020-01-01 00:00:00
+2020-01-01 01:00:00                       0.0                          12.5                 7.9                0.0            12.5 2020-01-01 01:00:00
+2020-01-01 02:00:00                       0.0                          11.5                 7.9                0.0            13.5 2020-01-01 02:00:00
+2020-01-01 03:00:00                       0.0                          11.5                 8.9                0.0            13.5 2020-01-01 03:00:00
+2020-01-01 04:00:00                       0.0                          11.5                 8.4                0.0            13.5 2020-01-01 04:00:00
+
+ | 🥳 |
+15:22:51 | ⏱  | execution time of 'h_from_other': 0.0160 s | ⏱  |
+15:22:51 | 🥳 | df_manip -> jdl -> line: 342 | DataFrame für Jahresdauerlinie erstellt: 
+
+   Bezug (1-1:1.29) 2018 *h  Lieferung (1-1:2.29) 2018 *h  Temperatur 2018 *h  ...  Temperatur 2018 *h_orgidx  PV-Anlage 2018 *h_orgidx Bedarf 2018 *h_orgidx
+1                    89.000                        24.375                35.8  ...        2020-08-07 15:00:00       2020-04-27 13:00:00   2020-05-31 14:00:00
+2                    88.500                        24.000                35.8  ...        2020-08-07 17:00:00       2020-04-13 13:00:00   2020-05-31 15:00:00
+3                    87.750                        23.875                35.8  ...        2020-08-07 16:00:00       2020-04-26 13:00:00   2020-05-31 17:00:00
+4                    86.875                        23.750                34.7  ...        2020-07-26 15:00:00       2020-05-31 12:00:00   2020-08-09 16:00:00
+5                    85.375                        23.750                34.4  ...        2020-08-07 14:00:00       2020-05-30 15:00:00   2020-08-23 15:00:00
+
+[5 rows x 10 columns]
+
+ | 🥳 |
+15:22:51 | ⏱  | execution time of 'jdl': 0.0320 s | ⏱  |
+15:22:51 | 🥳 | df_manip -> h_from_other -> line: 290 | DataFrame mit Stundenwerten erstellt: 
+
+                     Bezug (1-1:1.29) 2019 *h  Lieferung (1-1:2.29) 2019 *h  Temperatur 2019 *h  PV-Anlage 2019 *h  Bedarf 2019 *h              orgidx
+↓ Index ↓                                                                                                                                             
+2020-01-01 00:00:00                       0.0                        13.375                 7.8                0.0          11.625 2020-01-01 00:00:00
+2020-01-01 01:00:00                       0.0                        13.375                 7.9                0.0          11.625 2020-01-01 01:00:00
+2020-01-01 02:00:00                       0.0                        12.125                 7.9                0.0          12.875 2020-01-01 02:00:00
+2020-01-01 03:00:00                       0.0                        12.250                 8.2                0.0          12.750 2020-01-01 03:00:00
+2020-01-01 04:00:00                       0.0                        12.500                 8.2                0.0          12.500 2020-01-01 04:00:00
+
+ | 🥳 |
+15:22:51 | ⏱  | execution time of 'h_from_other': 0.0150 s | ⏱  |
+15:22:51 | 🥳 | df_manip -> jdl -> line: 342 | DataFrame für Jahresdauerlinie erstellt: 
+
+   Bezug (1-1:1.29) 2019 *h  Lieferung (1-1:2.29) 2019 *h  Temperatur 2019 *h  ...  Temperatur 2019 *h_orgidx  PV-Anlage 2019 *h_orgidx Bedarf 2019 *h_orgidx
+1                    90.625                        21.875                36.9  ...        2020-07-25 13:00:00       2020-04-27 13:00:00   2020-06-03 15:00:00
+2                    89.250                        21.625                36.9  ...        2020-07-25 14:00:00       2020-04-13 13:00:00   2020-06-13 17:00:00
+3                    88.750                        20.125                36.5  ...        2020-07-25 15:00:00       2020-04-26 13:00:00   2020-06-04 15:00:00
+4                    87.750                        19.500                35.6  ...        2020-07-25 12:00:00       2020-05-31 12:00:00   2020-06-17 17:00:00
+5                    87.250                        19.125                35.5  ...        2020-07-25 16:00:00       2020-05-30 15:00:00   2020-08-26 13:00:00
+
+[5 rows x 10 columns]
+
+ | 🥳 |
+15:22:51 | ⏱  | execution time of 'jdl': 0.0310 s | ⏱  |
+15:22:51 | 🥳 | df_manip -> h_from_other -> line: 290 | DataFrame mit Stundenwerten erstellt: 
+
+                     Bezug (1-1:1.29) 2017 *h  Lieferung (1-1:2.29) 2017 *h  Temperatur 2017 *h  PV-Anlage 2017 *h  Bedarf 2017 *h              orgidx
+↓ Index ↓                                                                                                                                             
+2020-01-01 00:00:00                       0.0                     11.833333                 3.3                0.0       13.166667 2020-01-01 00:00:00
+2020-01-01 01:00:00                       0.0                     10.750000                 3.5                0.0       14.250000 2020-01-01 01:00:00
+2020-01-01 02:00:00                       0.0                     10.500000                 3.5                0.0       14.500000 2020-01-01 02:00:00
+2020-01-01 03:00:00                       0.0                     10.750000                 3.9                0.0       14.250000 2020-01-01 03:00:00
+2020-01-01 04:00:00                       0.0                     10.750000                 3.7                0.0       14.250000 2020-01-01 04:00:00
+
+ | 🥳 |
+15:22:51 | ⏱  | execution time of 'h_from_other': 0.0150 s | ⏱  |
+15:22:51 | 🥳 | df_manip -> mon -> line: 384 | DataFrame mit Monatswerten erstellt: 
+
+            Bezug (1-1:1.29) 2017 *mon  Lieferung (1-1:2.29) 2017 *mon  Temperatur 2017 *mon  PV-Anlage 2017 *mon  Bedarf 2017 *mon     orgidx
+↓ Index ↓                                                                                                                                     
+2020-01-15                    5549.625                     2253.333333              0.005645              801.150      21896.291667 2017-01-15
+2020-02-15                    3800.000                     2373.250000              3.370982             1629.025      18226.750000 2017-02-15
+2020-03-15                    2921.125                     3084.750000              7.682773             3948.400      18411.375000 2017-03-15
+2020-04-15                    4483.875                     2001.750000              7.684444             6171.075      20482.125000 2017-04-15
+2020-05-15                   18403.375                        0.875000             14.437903             6227.375      37002.500000 2017-05-15
+
+ | 🥳 |
+15:22:51 | ⏱  | execution time of 'mon': 0.0150 s | ⏱  |
+15:22:51 | 🥳 | df_manip -> h_from_other -> line: 290 | DataFrame mit Stundenwerten erstellt: 
+
+                     Bezug (1-1:1.29) 2018 *h  Lieferung (1-1:2.29) 2018 *h  Temperatur 2018 *h  PV-Anlage 2018 *h  Bedarf 2018 *h              orgidx
+↓ Index ↓                                                                                                                                             
+2020-01-01 00:00:00                       0.0                          13.5                 9.1                0.0            11.5 2020-01-01 00:00:00
+2020-01-01 01:00:00                       0.0                          12.5                 7.9                0.0            12.5 2020-01-01 01:00:00
+2020-01-01 02:00:00                       0.0                          11.5                 7.9                0.0            13.5 2020-01-01 02:00:00
+2020-01-01 03:00:00                       0.0                          11.5                 8.9                0.0            13.5 2020-01-01 03:00:00
+2020-01-01 04:00:00                       0.0                          11.5                 8.4                0.0            13.5 2020-01-01 04:00:00
+
+ | 🥳 |
+15:22:51 | ⏱  | execution time of 'h_from_other': 0.0000 s | ⏱  |
+15:22:51 | 🥳 | df_manip -> mon -> line: 384 | DataFrame mit Monatswerten erstellt: 
+
+            Bezug (1-1:1.29) 2018 *mon  Lieferung (1-1:2.29) 2018 *mon  Temperatur 2018 *mon  PV-Anlage 2018 *mon  Bedarf 2018 *mon     orgidx
+↓ Index ↓                                                                                                                                     
+2020-01-15                    2913.375                        3178.000              4.076747              801.150         18335.375 2018-01-15
+2020-02-15                    3596.125                        1946.250             -0.660119             1629.025         18449.875 2018-02-15
+2020-03-15                    8940.750                        1428.750              2.979542             3948.400         26087.000 2018-03-15
+2020-04-15                   12695.500                         507.375             12.164444             6171.075         30188.125 2018-04-15
+2020-05-15                   21172.500                           1.250             17.317070             6227.375         39771.250 2018-05-15
+
+ | 🥳 |
+15:22:51 | ⏱  | execution time of 'mon': 0.0320 s | ⏱  |
+15:22:51 | 🥳 | df_manip -> h_from_other -> line: 290 | DataFrame mit Stundenwerten erstellt: 
+
+                     Bezug (1-1:1.29) 2019 *h  Lieferung (1-1:2.29) 2019 *h  Temperatur 2019 *h  PV-Anlage 2019 *h  Bedarf 2019 *h              orgidx
+↓ Index ↓                                                                                                                                             
+2020-01-01 00:00:00                       0.0                        13.375                 7.8                0.0          11.625 2020-01-01 00:00:00
+2020-01-01 01:00:00                       0.0                        13.375                 7.9                0.0          11.625 2020-01-01 01:00:00
+2020-01-01 02:00:00                       0.0                        12.125                 7.9                0.0          12.875 2020-01-01 02:00:00
+2020-01-01 03:00:00                       0.0                        12.250                 8.2                0.0          12.750 2020-01-01 03:00:00
+2020-01-01 04:00:00                       0.0                        12.500                 8.2                0.0          12.500 2020-01-01 04:00:00
+
+ | 🥳 |
+15:22:51 | ⏱  | execution time of 'h_from_other': 0.0150 s | ⏱  |
+15:22:51 | 🥳 | df_manip -> mon -> line: 384 | DataFrame mit Monatswerten erstellt: 
+
+            Bezug (1-1:1.29) 2019 *mon  Lieferung (1-1:2.29) 2019 *mon  Temperatur 2019 *mon  PV-Anlage 2019 *mon  Bedarf 2019 *mon     orgidx
+↓ Index ↓                                                                                                                                     
+2020-01-15                    2764.875                        3512.500              2.425538              801.150         17852.375 2019-01-15
+2020-02-15                    2098.625                        3108.875              5.223512             1629.025         15789.750 2019-02-15
+2020-03-15                    2147.500                        3894.375              7.285599             3948.400         16828.125 2019-03-15
+2020-04-15                    4296.125                        3947.750             10.240139             6171.075         18348.375 2019-04-15
+2020-05-15                   15515.750                         289.625             11.586559             6227.375         33826.125 2019-05-15
+
+ | 🥳 |
+15:22:51 | ⏱  | execution time of 'mon': 0.0150 s | ⏱  |
+15:22:51 | ⏱  | execution time of 'df_multi_y': 0.5930 s | ⏱  |
+15:22:59 | ⏱  | execution time of 'line_plot_y_overlay': 8.0470 s | ⏱  |
+15:23:01 | 👉 | fig_annotations -> middle_xaxis -> line: 50 | middle of x-axis: 2020-07-02 00:52:30 | 👉 |
+15:23:01 | ⏱  | execution time of 'middle_xaxis': 0.0160 s | ⏱  |
+15:23:01 | 🥳 | fig_annotations -> add_arrows_min_max -> line: 174 | Max / Min arrows added to figure | 🥳 |
+15:23:01 | ⏱  | execution time of 'add_arrows_min_max': 0.6250 s | ⏱  |
+15:23:01 | ⏱  | execution time of 'format_tickstops': 0.0000 s | ⏱  |
+15:23:02 | ⏱  | execution time of 'standard_xaxis': 0.4220 s | ⏱  |
+15:23:02 | ⏱  | execution time of 'standard_yaxis': 0.1250 s | ⏱  |
+15:23:02 | ⏱  | execution time of 'standard_layout': 0.2500 s | ⏱  |
+15:23:02 | ⏱  | execution time of 'standard_axes_and_layout': 0.7970 s | ⏱  |
+15:23:03 | ⏱  | execution time of 'cr_fig_base': 11.8120 s | ⏱  |
+15:23:03 | ⏱  | execution time of 'line_plot_y_overlay': 0.5470 s | ⏱  |
+15:23:03 | 👉 | fig_annotations -> middle_xaxis -> line: 53 | middle of x-axis: 4392.5 | 👉 |
+15:23:03 | ⏱  | execution time of 'middle_xaxis': 0.0160 s | ⏱  |
+15:23:03 | 🥳 | fig_annotations -> add_arrows_min_max -> line: 174 | Max / Min arrows added to figure | 🥳 |
+15:23:03 | ⏱  | execution time of 'add_arrows_min_max': 0.0940 s | ⏱  |
+15:23:03 | ⏱  | execution time of 'standard_xaxis': 0.0000 s | ⏱  |
+15:23:03 | ⏱  | execution time of 'standard_yaxis': 0.0000 s | ⏱  |
+15:23:03 | ⏱  | execution time of 'standard_layout': 0.0000 s | ⏱  |
+15:23:03 | ⏱  | execution time of 'standard_axes_and_layout': 0.0310 s | ⏱  |
+15:23:03 | ⏱  | execution time of 'cr_fig_jdl': 0.6720 s | ⏱  |
+15:23:03 | ⏱  | execution time of 'line_plot_y_overlay': 0.0000 s | ⏱  |
+15:23:03 | 👉 | fig_annotations -> middle_xaxis -> line: 50 | middle of x-axis: 2020-06-30 13:00:00 | 👉 |
+15:23:03 | ⏱  | execution time of 'middle_xaxis': 0.0000 s | ⏱  |
+15:23:03 | 🥳 | fig_annotations -> add_arrows_min_max -> line: 174 | Max / Min arrows added to figure | 🥳 |
+15:23:03 | ⏱  | execution time of 'add_arrows_min_max': 0.0310 s | ⏱  |
+15:23:03 | ⏱  | execution time of 'format_tickstops': 0.0000 s | ⏱  |
+15:23:03 | ⏱  | execution time of 'standard_xaxis': 0.0000 s | ⏱  |
+15:23:03 | ⏱  | execution time of 'standard_yaxis': 0.0000 s | ⏱  |
+15:23:03 | ⏱  | execution time of 'standard_layout': 0.0000 s | ⏱  |
+15:23:03 | ⏱  | execution time of 'standard_axes_and_layout': 0.0160 s | ⏱  |
+15:23:03 | ⏱  | execution time of 'cr_fig_mon': 0.1710 s | ⏱  |
+15:23:04 | ⏱  | execution time of 'smooth': 0.0160 s | ⏱  |
+15:23:04 | ⏱  | execution time of 'show_traces': 0.0470 s | ⏱  |
+15:23:04 | ⏱  | execution time of 'format_traces': 0.0310 s | ⏱  |
+15:23:04 | ⏱  | execution time of 'show_y_axes': 0.0000 s | ⏱  |
+15:23:04 | 🐞 | fig_formatting -> legend_groups_for_multi_year -> line: 528 | number of traces in groups: {'2017': 5, '2018': 5, '2019': 5} | 🐞 |
+15:23:04 | ⏱  | execution time of 'update_main': 0.1720 s | ⏱  |
+15:23:04 | ⏱  | execution time of 'show_traces': 0.0000 s | ⏱  |
+15:23:04 | ⏱  | execution time of 'format_traces': 0.0160 s | ⏱  |
+15:23:04 | ⏱  | execution time of 'show_y_axes': 0.0000 s | ⏱  |
+15:23:04 | 🐞 | fig_formatting -> legend_groups_for_multi_year -> line: 528 | number of traces in groups: {'2017': 5, '2018': 5, '2019': 5} | 🐞 |
+15:23:04 | ⏱  | execution time of 'update_main': 0.0620 s | ⏱  |
+15:23:04 | ⏱  | execution time of 'show_traces': 0.0160 s | ⏱  |
+15:23:04 | ⏱  | execution time of 'format_traces': 0.0160 s | ⏱  |
+15:23:04 | ⏱  | execution time of 'show_y_axes': 0.0000 s | ⏱  |
+15:23:04 | 🐞 | fig_formatting -> legend_groups_for_multi_year -> line: 528 | number of traces in groups: {'2017': 5, '2018': 5, '2019': 5} | 🐞 |
+15:23:04 | ⏱  | execution time of 'update_main': 0.0630 s | ⏱  |
+15:23:14 | ⏱  | execution time of 'plot_figs': 10.0470 s | ⏱  |

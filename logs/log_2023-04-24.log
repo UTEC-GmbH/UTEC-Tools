@@ -1,0 +1,13 @@
+
+
+16:08:52 🔥🔥🔥 Session Started, Log Initiated 🚀🚀🚀
+
+16:08:53 | 🥳 | general_functions -> render_svg -> line: 103 | svg-Datei 'logo/UTEC_logo_text.svg' codiert | 🥳 |
+16:08:53 | ⏱  | execution time of 'render_svg': 0.0310 s | ⏱  |
+16:10:09 | 🥳 | user_authentication -> connect_database -> line: 101 | Deta-Database connection established | 🥳 |
+16:10:09 | ⏱  | execution time of 'connect_database': 0.0630 s | ⏱  |
+16:10:09 | 🥳 | user_authentication -> get_all_user_data -> line: 134 | Collected all user data from Database | 🥳 |
+16:10:09 | ⏱  | execution time of 'get_all_user_data': 0.4840 s | ⏱  |
+16:10:09 | 👟 | setup_stuff -> initial_setup -> line: 118 | initial setup done | 👟 |
+16:10:09 | 👟 | setup_stuff -> page_header_setup -> line: 225 | page header for page 'login' created | 👟 |
+16:10:09 | ⏱  | execution time of 'page_header_setup': 0.0160 s | ⏱  |

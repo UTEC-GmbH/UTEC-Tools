@@ -296,7 +296,6 @@ def check_if_hourly_resolution(df: pd.DataFrame) -> pd.DataFrame:
     """Check if the given DataFrame is in hourly resolution.
     If not, give out DataFrame in hourly resolution
 
-
     Args:
         - df (pd.DataFrame): The DataFrame in question
         - dic_meta (Dict, optional): Metadata. Defaults to st.session_state["metadata"].

@@ -21,6 +21,8 @@ setup_stuff.initial_setup()
 
 setup_stuff.page_header_setup(page="login")
 
+logger.log("ONCE_per_RUN", "\nNEW RUN")
+
 
 # @func_timer
 def display_login_page() -> None:

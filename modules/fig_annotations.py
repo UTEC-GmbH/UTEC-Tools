@@ -43,7 +43,6 @@ def middle_xaxis(fig_data: Dict[str, Dict[str, Any]]) -> datetime | float:
     x_min: float = (
         x_min_temp.timestamp() if isinstance(x_min_temp, datetime) else x_min_temp
     )
-
     middle: float = x_min + (x_max - x_min) / 2
 
     if isinstance(x_max_temp, datetime):

@@ -28,6 +28,57 @@ class MarkerType(Enum):
     UNITS = "units"
 
 
+@dataclass(frozen=True)
+class LogLevel:
+    """Logger Levels"""
+
+    lvl: str
+    custom: bool = False
+    icon: str = "👉👈"
+    new_lines_before: int = 0
+    new_lines_after: int = 1
+    time: str = "{time:HH:mm:ss}"
+    info: str = "{module} -> {function} -> line: {line} | "
+    # message: str = field(default_factory=str)
+
+    def get_format(self) -> str:
+        """Logger message Format erzeugen"""
+        nl_0: str = "\n" * self.new_lines_before
+        nl_1: str = "\n" * self.new_lines_after
+        info: str = self.info
+        time: str = self.time
+        if len(self.icon) == 2:
+            ic_0: str = self.icon[0]
+            ic_1: str = self.icon[1]
+        else:
+            ic_0: str = self.icon
+            ic_1: str = ic_0
+        return f"{nl_0}{time} | {ic_0} | {info}{{message}} | {ic_1} |{nl_1}"
+
+
+@dataclass
+class Logg:
+    """Logger Format"""
+
+    DEBUG: LogLevel = LogLevel("DEBUG", icon="🐞")
+    INFO: LogLevel = LogLevel("INFO", icon="💡")
+    SUCCESS: LogLevel = LogLevel("SUCCESS", icon="🥳")
+    WARNING: LogLevel = LogLevel("WARNING", icon="⚠️")
+    ERROR: LogLevel = LogLevel("ERROR", icon="😱")
+    CRITICAL: LogLevel = LogLevel("CRITICAL", icon="☠️")
+    TIMER: LogLevel = LogLevel("TIMER", icon="⏱", custom=True, info="")
+    FUNC_START: LogLevel = LogLevel("FUNC_START", icon="👉👈", custom=True, info="")
+    ONCE_PER_RUN: LogLevel = LogLevel("ONCE_PER_RUN", icon="👟", custom=True)
+    ONCE_per_SESSION: LogLevel = LogLevel(
+        "ONCE_PER_SESSION",
+        icon="🔥🔥🔥",
+        custom=True,
+        new_lines_before=2,
+        new_lines_after=2,
+        info="",
+    )
+
+
 @dataclass
 class ExcelMarkers:
     """Name of Markers for Index and Units in the Excel-File"""

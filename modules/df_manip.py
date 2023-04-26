@@ -292,7 +292,7 @@ def h_from_other(df: pd.DataFrame, meta: Dict[str, Any] | None = None) -> pd.Dat
     return df_h
 
 
-def check_if_hourly_resolution(df: pd.DataFrame) -> pd.DataFrame:
+def check_if_hourly_resolution(df: pd.DataFrame, **kwargs) -> pd.DataFrame:
     """Check if the given DataFrame is in hourly resolution.
     If not, give out DataFrame in hourly resolution
 
@@ -303,13 +303,28 @@ def check_if_hourly_resolution(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         - pd.DataFrame: DataFrame in hourly resolution
     """
-    ind_td: pd.Timedelta = pd.to_timedelta(df.index.to_series().diff()).mean()
+    metadata: Dict[str, Any] = kwargs.get("meta") or st.session_state["metadata"]
+    extended_exclude: List[str] = cont.EXCLUDE + [
+        cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"]
+    ]
+    suff_leistung: str = cont.ARBEIT_LEISTUNG["suffix"]["Leistung"]
 
+    ind_td: pd.Timedelta = pd.to_timedelta(df.index.to_series().diff()).mean()
+    df_h: pd.DataFrame = pd.DataFrame()
     if ind_td.round("min") < pd.Timedelta(hours=1):
-        df_h: pd.DataFrame = h_from_other(df)
+        df_h = h_from_other(df)
     else:
         logger.info("df schon in Stundenauflösung")
-        df_h = df.copy()
+        for col in [
+            str(col)
+            for col in df.columns
+            if all(excl not in str(col) for excl in extended_exclude)
+        ]:
+            col_h: str = f"{col} *h".replace(suff_leistung, "")
+            df_h[col_h] = df[col].copy()
+            metadata[col_h] = metadata[col].copy()
+            if "metadata" in st.session_state:
+                st.session_state["metadata"][col_h] = metadata[col].copy()
 
     df_h = df_h.infer_objects()
 
@@ -318,6 +333,7 @@ def check_if_hourly_resolution(df: pd.DataFrame) -> pd.DataFrame:
 
 @func_timer
 def jdl(df: pd.DataFrame) -> pd.DataFrame:
+    # sourcery skip: remove-unnecessary-cast
     """Jahresdauerlinie"""
 
     df_h: pd.DataFrame = check_if_hourly_resolution(df)
@@ -328,7 +344,9 @@ def jdl(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     for col in [str(col) for col in df_jdl.columns]:
-        df_col: pd.DataFrame = df_h.sort_values(col, ascending=df_h[col].mean() < 0)
+        df_col: pd.DataFrame = df_h.sort_values(
+            col, ascending=bool(df_h[col].mean() < 0)
+        )
 
         df_jdl[col] = df_col[col].values
 
@@ -345,28 +363,27 @@ def jdl(df: pd.DataFrame) -> pd.DataFrame:
 
 
 @func_timer
-def mon(df: pd.DataFrame, dic_meta: Dict, year: int | None = None) -> pd.DataFrame:
+def mon(df: pd.DataFrame, meta: Dict, year: int | None = None) -> pd.DataFrame:
     """Monatswerte"""
 
-    df_h: pd.DataFrame = check_if_hourly_resolution(df)
+    df_h: pd.DataFrame = check_if_hourly_resolution(df, meta=meta)
 
     df_mon: pd.DataFrame = df_h.resample("M").sum(True)
+    df_mon.columns = [str(col).replace("*h", "*mon") for col in df_mon.columns]
+
+    if mean_cols := [
+        str(col)
+        for col in df_h.columns
+        if meta[col]["unit"]
+        in [unit for unit in cont.GRP_MEAN if unit not in [" kWh", " kW"]]
+    ]:
+        for col in mean_cols:
+            df_mon[str(col).replace("*h", "*mon")] = df_h[col].resample("M").mean()
 
     for col in df_mon.columns:
-        col_mon: str = str(col).replace("*h", "*mon")
+        meta[col] = meta[str(col).replace("*mon", "*h")].copy()
+        meta[col]["unit"] = " kWh" if meta[col]["unit"] == " kW" else meta[col]["unit"]
 
-        if dic_meta[col].get("unit") in [
-            unit for unit in cont.GRP_MEAN if unit not in [" kWh", " kW"]
-        ]:
-            df_mon[col] = df_h[col].resample("M").mean()
-
-        df_mon.rename(columns={str(col): col_mon}, inplace=True)
-        dic_meta[col_mon] = dic_meta[col].copy()
-        dic_meta[col_mon]["unit"] = (
-            " kWh" if dic_meta[col_mon]["unit"] == " kW" else dic_meta[col_mon]["unit"]
-        )
-
-    # df_mon.index = [df_mon.index[x].replace(day=15) for x in range(len(df_mon.index))]  # type: ignore
     ind: pd.DatetimeIndex = pd.DatetimeIndex(df_mon.index)
     df_mon.index = pd.to_datetime(ind.strftime("%Y-%m-15"))
 

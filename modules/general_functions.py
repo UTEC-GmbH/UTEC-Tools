@@ -27,6 +27,7 @@ def func_timer(func: Callable) -> Callable:
 
     def wrapper(*args, **kwargs) -> Any:
         start_time: float = time.monotonic()
+        logger.log("FUNC_START", f"{func.__name__} started")
 
         if "dic_exe_time" not in st.session_state:
             st.session_state["dic_exe_time"] = {}

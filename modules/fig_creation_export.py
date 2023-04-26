@@ -4,6 +4,7 @@ plots erstellen und in session_state schreiben
 
 import os
 from typing import Any, Dict, List
+from loguru import logger
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -83,6 +84,8 @@ def cr_fig_base() -> go.Figure:
                 {"line_color": colorway[count].lower()}, {"name": line}
             )
 
+    logger.success("fig_base created")
+
     return fig
 
 
@@ -129,6 +132,8 @@ def cr_fig_jdl() -> None:
         st.session_state["fig_jdl"].update_xaxes(
             range=[x_min, 9000],
         )
+
+    logger.success("fig_jdl created")
 
 
 @func_timer
@@ -179,6 +184,8 @@ def cr_fig_mon() -> None:
         # legendgroup=None,
         # legendgrouptitle=None,
     )
+
+    logger.success("fig_mon created")
 
 
 @func_timer

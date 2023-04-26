@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 from github import Github
 from loguru import logger
 from pytz import BaseTzInfo, timezone
+from modules.classes import Logg
 
 from modules import constants as cont
 from modules.general_functions import func_timer, render_svg
@@ -122,26 +123,9 @@ def initial_setup() -> None:
 def logger_setup() -> None:
     """Setup the loguru Logging module"""
 
-    format_time: str = "{time:HH:mm:ss}"
-    format_mesg: str = "{module} -> {function} -> line: {line} | {message}"
-
-    standard_levels: Dict[str, str] = {
-        level: f"{format_time} | {icon} | {format_mesg} | {icon} |\n"
-        for level, icon in {
-            "DEBUG": "🐞",
-            "INFO": "👉",
-            "SUCCESS": "🥳",
-            "WARNING": "⚠️",
-            "ERROR": "😱",
-            "CRITICAL": "☠️",
-        }.items()
-    }
-    custom_levels: Dict[str, str] = {
-        "TIMER": f"{format_time} | ⏱  | {{message}} | ⏱  |\n",
-        "ONCE_per_RUN": f"{format_time} | 👟 | {format_mesg} | 👟 |\n",
-        "ONCE_per_SESSION": f"\n\n{format_time} 🔥🔥🔥 {{message}}\n\n",
-    }
-    all_levels: Dict[str, str] = standard_levels | custom_levels
+    custom_levels: List[str] = [
+        lvl for lvl in Logg.__annotations__ if getattr(Logg, lvl).custom
+    ]
 
     for lvl in custom_levels:
         try:
@@ -150,7 +134,7 @@ def logger_setup() -> None:
             logger.level(lvl, no=1)
 
     def format_of_lvl(record: Dict) -> str:
-        return all_levels[record["level"].name]
+        return getattr(Logg, record["level"].name).get_format()
 
     logger.remove()
 
@@ -161,9 +145,10 @@ def logger_setup() -> None:
         colorize=True,
     )
 
-    file_sink: str = f"{cont.CWD}/logs/log_{{time:YYYY-MM-DD}}.log"
+    logger_path: str = f"{cont.CWD}\\logs\\"
+    logger_file: str = "log_{time:YYYY-MM-DD}.log"
     logger.add(
-        sink=file_sink,
+        sink=f"{logger_path}{logger_file}",
         rotation="1 day",
         retention=3,
         mode="a",
@@ -173,7 +158,7 @@ def logger_setup() -> None:
         colorize=True,
     )
 
-    logger.log("ONCE_per_SESSION", "Session Started, Log Initiated 🚀🚀🚀")
+    logger.log(Logg.ONCE_per_SESSION.lvl, " 🚀 Session Started, Log Initiated 🚀")
 
 
 @func_timer

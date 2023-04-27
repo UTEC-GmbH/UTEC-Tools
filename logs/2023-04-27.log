@@ -1,0 +1,794 @@
+
+
+14:23:40 | 🔥🔥🔥 | Session Started. Logger Setup Complete. | 🔥🔥🔥 |
+
+14:23:41 | 👉 | general_setup started | 👈 |
+14:23:41 | 🐞 | setup_stuff -> general_setup -> line: 96 | start 'setlocal' | 🐞 |
+14:23:41 | 🐞 | setup_stuff -> general_setup -> line: 98 | 'setlocal' took 0.0150 s | 🐞 |
+14:23:41 | 🐞 | setup_stuff -> general_setup -> line: 101 | start 'load_dotenv' | 🐞 |
+14:23:41 | 🐞 | setup_stuff -> general_setup -> line: 103 | 'load_dotenv' took 0.0940 s | 🐞 |
+14:23:41 | 🐞 | setup_stuff -> general_setup -> line: 109 | start 'plotly template' | 🐞 |
+14:24:01 | 🐞 | setup_stuff -> general_setup -> line: 111 | 'plotly template' took 20.0940 s | 🐞 |
+14:24:01 | 🐞 | setup_stuff -> general_setup -> line: 114 | start 'sentry' | 🐞 |
+14:24:02 | 🐞 | setup_stuff -> general_setup -> line: 116 | 'sentry' took 1.1560 s | 🐞 |
+14:24:02 | 🐞 | setup_stuff -> general_setup -> line: 119 | start 'UTEC Logo' | 🐞 |
+14:24:02 | 👉 | render_svg started | 👈 |
+14:24:02 | ⏱ | execution time of 'render_svg': 0.0320 s | ⏱ |
+14:24:02 | 🐞 | setup_stuff -> general_setup -> line: 122 | 'UTEC Logo' took 0.0320 s | 🐞 |
+14:24:02 | 🐞 | setup_stuff -> general_setup -> line: 125 | start 'CSS_LABELS' | 🐞 |
+14:24:04 | 🐞 | setup_stuff -> general_setup -> line: 130 | 'CSS_LABELS' took 1.7660 s | 🐞 |
+14:24:04 | 🐞 | setup_stuff -> general_setup -> line: 136 | start 'commit_message' | 🐞 |
+14:24:04 | 👉 | get_commit_message_date started | 👈 |
+14:24:22 | ⏱ | execution time of 'get_commit_message_date': 17.7350 s | ⏱ |
+14:24:22 | 🐞 | setup_stuff -> general_setup -> line: 141 | 'commit_message' took 17.7500 s | 🐞 |
+14:24:22 | 🐞 | setup_stuff -> general_setup -> line: 144 | start 'user auth' | 🐞 |
+14:24:22 | 👉 | get_all_user_data started | 👈 |
+14:24:22 | 👉 | connect_database started | 👈 |
+14:24:22 | 🥳 | user_authentication -> connect_database -> line: 101 | Deta-Database connection established | 🥳 |
+14:24:22 | ⏱ | execution time of 'connect_database': 0.0150 s | ⏱ |
+14:24:22 | 🥳 | user_authentication -> get_all_user_data -> line: 134 | Collected all user data from Database | 🥳 |
+14:24:22 | ⏱ | execution time of 'get_all_user_data': 0.1870 s | ⏱ |
+14:24:22 | 🐞 | setup_stuff -> general_setup -> line: 147 | 'user auth' took 0.2030 s | 🐞 |
+
+14:24:22 | 🦤🦤🦤 | Initial Setup Complete | 🦤🦤🦤 |
+
+14:24:22 | ⏱ | execution time of 'general_setup': 41.2660 s | ⏱ |
+14:24:22 | 👉 | page_header_setup started | 👈 |
+14:24:22 | 👟 | setup_stuff -> page_header_setup -> line: 242 | page header for page 'login' created | 👟 |
+14:24:22 | ⏱ | execution time of 'page_header_setup': 0.0150 s | ⏱ |
+14:24:22 | 👉 | display_login_page started | 👈 |
+14:24:22 | 👉 | login_section started | 👈 |
+14:24:22 | ⏱ | execution time of 'login_section': 0.0940 s | ⏱ |
+14:24:22 | ⏱ | execution time of 'display_login_page': 0.1400 s | ⏱ |
+14:25:02 | 👉 | general_setup started | 👈 |
+
+14:25:02 | ✨ | NEW RUN | ✨ |
+14:25:02 | ⏱ | execution time of 'general_setup': 0.0150 s | ⏱ |
+14:25:02 | 👉 | page_header_setup started | 👈 |
+14:25:02 | 👟 | setup_stuff -> page_header_setup -> line: 242 | page header for page 'login' created | 👟 |
+14:25:02 | ⏱ | execution time of 'page_header_setup': 0.0160 s | ⏱ |
+14:25:02 | 👉 | display_login_page started | 👈 |
+14:25:02 | 👉 | login_section started | 👈 |
+14:25:02 | 👉 | access_granted started | 👈 |
+14:25:02 | 🥳 | 00_🔑_login -> access_granted -> line: 86 | logged in as: fl, access level: god | 🥳 |
+14:25:02 | 👉 | god_mode started | 👈 |
+14:25:02 | 👉 | user_accounts started | 👈 |
+14:25:02 | ⏱ | execution time of 'user_accounts': 0.0160 s | ⏱ |
+14:25:02 | ⏱ | execution time of 'god_mode': 0.0160 s | ⏱ |
+14:25:02 | ⏱ | execution time of 'access_granted': 0.0470 s | ⏱ |
+14:25:02 | ⏱ | execution time of 'login_section': 0.0630 s | ⏱ |
+14:25:02 | ⏱ | execution time of 'display_login_page': 0.1100 s | ⏱ |
+14:25:03 | 👉 | general_setup started | 👈 |
+
+14:25:03 | ✨ | NEW RUN | ✨ |
+14:25:03 | ⏱ | execution time of 'general_setup': 0.0160 s | ⏱ |
+14:25:03 | 👉 | page_header_setup started | 👈 |
+14:25:03 | 👟 | setup_stuff -> page_header_setup -> line: 242 | page header for page 'login' created | 👟 |
+14:25:03 | ⏱ | execution time of 'page_header_setup': 0.0150 s | ⏱ |
+14:25:03 | 👉 | display_login_page started | 👈 |
+14:25:03 | 👉 | login_section started | 👈 |
+14:25:03 | 👉 | access_granted started | 👈 |
+14:25:03 | 👉 | god_mode started | 👈 |
+14:25:03 | 👉 | user_accounts started | 👈 |
+14:25:03 | ⏱ | execution time of 'user_accounts': 0.0000 s | ⏱ |
+14:25:03 | ⏱ | execution time of 'god_mode': 0.0150 s | ⏱ |
+14:25:03 | ⏱ | execution time of 'access_granted': 0.0310 s | ⏱ |
+14:25:03 | ⏱ | execution time of 'login_section': 0.0470 s | ⏱ |
+14:25:03 | ⏱ | execution time of 'display_login_page': 0.0780 s | ⏱ |
+
+
+14:26:57 | 🔥🔥🔥 | Session Started. Logger Setup Complete. | 🔥🔥🔥 |
+
+14:26:57 | 👉 | general_setup started | 👈 |
+14:26:57 | 🐞 | setup_stuff -> general_setup -> line: 96 | start 'setlocal' | 🐞 |
+14:26:57 | 🐞 | setup_stuff -> general_setup -> line: 98 | 'setlocal' took 0.0000 s | 🐞 |
+14:26:57 | 🐞 | setup_stuff -> general_setup -> line: 101 | start 'load_dotenv' | 🐞 |
+14:26:57 | 🐞 | setup_stuff -> general_setup -> line: 103 | 'load_dotenv' took 0.0000 s | 🐞 |
+14:26:57 | 🐞 | setup_stuff -> general_setup -> line: 109 | start 'plotly template' | 🐞 |
+14:27:18 | 🐞 | setup_stuff -> general_setup -> line: 111 | 'plotly template' took 20.3900 s | 🐞 |
+14:27:18 | 🐞 | setup_stuff -> general_setup -> line: 114 | start 'sentry' | 🐞 |
+14:27:19 | 🐞 | setup_stuff -> general_setup -> line: 116 | 'sentry' took 1.2030 s | 🐞 |
+14:27:19 | 🐞 | setup_stuff -> general_setup -> line: 119 | start 'UTEC Logo' | 🐞 |
+14:27:19 | 👉 | render_svg started | 👈 |
+14:27:19 | ⏱ | execution time of 'render_svg': 0.0310 s | ⏱ |
+14:27:19 | 🐞 | setup_stuff -> general_setup -> line: 122 | 'UTEC Logo' took 0.0310 s | 🐞 |
+14:27:19 | 🐞 | setup_stuff -> general_setup -> line: 125 | start 'CSS_LABELS' | 🐞 |
+14:27:20 | 🐞 | setup_stuff -> general_setup -> line: 130 | 'CSS_LABELS' took 1.5160 s | 🐞 |
+14:27:20 | 🐞 | setup_stuff -> general_setup -> line: 136 | start 'commit_message' | 🐞 |
+14:27:20 | 👉 | get_commit_message_date started | 👈 |
+14:27:38 | ⏱ | execution time of 'get_commit_message_date': 17.2810 s | ⏱ |
+14:27:38 | 🐞 | setup_stuff -> general_setup -> line: 141 | 'commit_message' took 17.2970 s | 🐞 |
+14:27:38 | 🐞 | setup_stuff -> general_setup -> line: 144 | start 'user auth' | 🐞 |
+14:27:38 | 👉 | get_all_user_data started | 👈 |
+14:27:38 | 👉 | connect_database started | 👈 |
+14:27:38 | 🥳 | user_authentication -> connect_database -> line: 101 | Deta-Database connection established | 🥳 |
+14:27:38 | ⏱ | execution time of 'connect_database': 0.0470 s | ⏱ |
+14:27:38 | 🥳 | user_authentication -> get_all_user_data -> line: 134 | Collected all user data from Database | 🥳 |
+14:27:38 | ⏱ | execution time of 'get_all_user_data': 0.1880 s | ⏱ |
+14:27:38 | 🐞 | setup_stuff -> general_setup -> line: 147 | 'user auth' took 0.2190 s | 🐞 |
+
+14:27:38 | 🦤🦤🦤 | Initial Setup Complete | 🦤🦤🦤 |
+
+14:27:38 | ⏱ | execution time of 'general_setup': 40.7030 s | ⏱ |
+14:27:38 | 👉 | page_header_setup started | 👈 |
+14:27:38 | 👟 | setup_stuff -> page_header_setup -> line: 242 | page header for page 'login' created | 👟 |
+14:27:38 | ⏱ | execution time of 'page_header_setup': 0.0160 s | ⏱ |
+14:27:38 | 👉 | display_login_page started | 👈 |
+14:27:38 | 👉 | login_section started | 👈 |
+14:27:38 | ⏱ | execution time of 'login_section': 0.0940 s | ⏱ |
+14:27:38 | ⏱ | execution time of 'display_login_page': 0.1410 s | ⏱ |
+14:28:20 | 👉 | general_setup started | 👈 |
+
+14:28:20 | ✨ | NEW RUN | ✨ |
+14:28:20 | ⏱ | execution time of 'general_setup': 0.0160 s | ⏱ |
+14:28:20 | 👉 | page_header_setup started | 👈 |
+14:28:20 | 👟 | setup_stuff -> page_header_setup -> line: 242 | page header for page 'login' created | 👟 |
+14:28:20 | ⏱ | execution time of 'page_header_setup': 0.0160 s | ⏱ |
+14:28:20 | 👉 | display_login_page started | 👈 |
+14:28:20 | 👉 | login_section started | 👈 |
+14:28:20 | 👉 | access_granted started | 👈 |
+14:28:20 | 🥳 | 00_🔑_login -> access_granted -> line: 86 | logged in as: fl, access level: god | 🥳 |
+14:28:20 | 👉 | god_mode started | 👈 |
+14:28:20 | 👉 | user_accounts started | 👈 |
+14:28:20 | ⏱ | execution time of 'user_accounts': 0.0000 s | ⏱ |
+14:28:20 | ⏱ | execution time of 'god_mode': 0.0310 s | ⏱ |
+14:28:20 | ⏱ | execution time of 'access_granted': 0.0310 s | ⏱ |
+14:28:20 | ⏱ | execution time of 'login_section': 0.0630 s | ⏱ |
+14:28:20 | ⏱ | execution time of 'display_login_page': 0.0940 s | ⏱ |
+14:28:20 | 👉 | general_setup started | 👈 |
+
+14:28:20 | ✨ | NEW RUN | ✨ |
+14:28:20 | ⏱ | execution time of 'general_setup': 0.0150 s | ⏱ |
+14:28:20 | 👉 | page_header_setup started | 👈 |
+14:28:20 | 👟 | setup_stuff -> page_header_setup -> line: 242 | page header for page 'login' created | 👟 |
+14:28:20 | ⏱ | execution time of 'page_header_setup': 0.0160 s | ⏱ |
+14:28:20 | 👉 | display_login_page started | 👈 |
+14:28:20 | 👉 | login_section started | 👈 |
+14:28:20 | 👉 | access_granted started | 👈 |
+14:28:20 | 👉 | god_mode started | 👈 |
+14:28:20 | 👉 | user_accounts started | 👈 |
+14:28:20 | ⏱ | execution time of 'user_accounts': 0.0000 s | ⏱ |
+14:28:20 | ⏱ | execution time of 'god_mode': 0.0000 s | ⏱ |
+14:28:20 | ⏱ | execution time of 'access_granted': 0.0000 s | ⏱ |
+14:28:20 | ⏱ | execution time of 'login_section': 0.0000 s | ⏱ |
+14:28:20 | ⏱ | execution time of 'display_login_page': 0.0150 s | ⏱ |
+
+
+14:30:32 | 🔥🔥🔥 | Session Started. Logger Setup Complete. | 🔥🔥🔥 |
+
+14:30:32 | 👉 | general_setup started | 👈 |
+14:30:32 | 🐞 | setup_stuff -> general_setup -> line: 96 | start 'setlocal' | 🐞 |
+14:30:32 | 🐞 | setup_stuff -> general_setup -> line: 98 | 'setlocal' took 0.0160 s | 🐞 |
+14:30:32 | 🐞 | setup_stuff -> general_setup -> line: 101 | start 'load_dotenv' | 🐞 |
+14:30:32 | 🐞 | setup_stuff -> general_setup -> line: 103 | 'load_dotenv' took 0.0630 s | 🐞 |
+14:30:32 | 🐞 | setup_stuff -> general_setup -> line: 109 | start 'plotly template' | 🐞 |
+14:30:55 | 🐞 | setup_stuff -> general_setup -> line: 111 | 'plotly template' took 23.0320 s | 🐞 |
+14:30:55 | 🐞 | setup_stuff -> general_setup -> line: 114 | start 'sentry' | 🐞 |
+14:30:57 | 🐞 | setup_stuff -> general_setup -> line: 116 | 'sentry' took 1.4850 s | 🐞 |
+14:30:57 | 🐞 | setup_stuff -> general_setup -> line: 119 | start 'UTEC Logo' | 🐞 |
+14:30:57 | 👉 | render_svg started | 👈 |
+14:30:57 | ⏱ | execution time of 'render_svg': 0.0150 s | ⏱ |
+14:30:57 | 🐞 | setup_stuff -> general_setup -> line: 122 | 'UTEC Logo' took 0.0470 s | 🐞 |
+14:30:57 | 🐞 | setup_stuff -> general_setup -> line: 125 | start 'CSS_LABELS' | 🐞 |
+14:30:59 | 🐞 | setup_stuff -> general_setup -> line: 130 | 'CSS_LABELS' took 1.9840 s | 🐞 |
+14:30:59 | 🐞 | setup_stuff -> general_setup -> line: 136 | start 'commit_message' | 🐞 |
+14:30:59 | 👉 | get_commit_message_date started | 👈 |
+14:31:17 | ⏱ | execution time of 'get_commit_message_date': 18.0940 s | ⏱ |
+14:31:17 | 🐞 | setup_stuff -> general_setup -> line: 141 | 'commit_message' took 18.0940 s | 🐞 |
+14:31:17 | 🐞 | setup_stuff -> general_setup -> line: 144 | start 'user auth' | 🐞 |
+14:31:17 | 👉 | get_all_user_data started | 👈 |
+14:31:17 | 👉 | connect_database started | 👈 |
+14:31:17 | 🥳 | user_authentication -> connect_database -> line: 101 | Deta-Database connection established | 🥳 |
+14:31:17 | ⏱ | execution time of 'connect_database': 0.0470 s | ⏱ |
+14:31:17 | 🥳 | user_authentication -> get_all_user_data -> line: 134 | Collected all user data from Database | 🥳 |
+14:31:17 | ⏱ | execution time of 'get_all_user_data': 0.2190 s | ⏱ |
+14:31:17 | 🐞 | setup_stuff -> general_setup -> line: 147 | 'user auth' took 0.2190 s | 🐞 |
+
+14:31:17 | 🦤🦤🦤 | Initial Setup Complete | 🦤🦤🦤 |
+
+14:31:17 | ⏱ | execution time of 'general_setup': 45.0630 s | ⏱ |
+14:31:17 | 👉 | page_header_setup started | 👈 |
+14:31:17 | 👟 | setup_stuff -> page_header_setup -> line: 242 | page header for page 'login' created | 👟 |
+14:31:17 | ⏱ | execution time of 'page_header_setup': 0.0150 s | ⏱ |
+14:31:17 | 👉 | display_login_page started | 👈 |
+14:31:17 | 👉 | login_section started | 👈 |
+14:31:17 | ⏱ | execution time of 'login_section': 0.1090 s | ⏱ |
+14:31:17 | ⏱ | execution time of 'display_login_page': 0.1410 s | ⏱ |
+14:31:56 | 👉 | general_setup started | 👈 |
+
+14:31:56 | ✨ | NEW RUN | ✨ |
+14:31:56 | ⏱ | execution time of 'general_setup': 0.0150 s | ⏱ |
+14:31:56 | 👉 | page_header_setup started | 👈 |
+14:31:56 | 👟 | setup_stuff -> page_header_setup -> line: 242 | page header for page 'login' created | 👟 |
+14:31:56 | ⏱ | execution time of 'page_header_setup': 0.0160 s | ⏱ |
+14:31:56 | 👉 | display_login_page started | 👈 |
+14:31:56 | 👉 | login_section started | 👈 |
+14:31:56 | 👉 | access_granted started | 👈 |
+14:31:56 | 🥳 | 00_🔑_login -> access_granted -> line: 86 | logged in as: fl, access level: god | 🥳 |
+14:31:56 | 👉 | god_mode started | 👈 |
+14:31:56 | 👉 | user_accounts started | 👈 |
+14:31:56 | ⏱ | execution time of 'user_accounts': 0.0160 s | ⏱ |
+14:31:56 | ⏱ | execution time of 'god_mode': 0.0160 s | ⏱ |
+14:31:56 | ⏱ | execution time of 'access_granted': 0.0320 s | ⏱ |
+14:31:56 | ⏱ | execution time of 'login_section': 0.0620 s | ⏱ |
+14:31:56 | ⏱ | execution time of 'display_login_page': 0.1090 s | ⏱ |
+14:31:56 | 👉 | general_setup started | 👈 |
+
+14:31:56 | ✨ | NEW RUN | ✨ |
+14:31:56 | ⏱ | execution time of 'general_setup': 0.0160 s | ⏱ |
+14:31:56 | 👉 | page_header_setup started | 👈 |
+14:31:56 | 👟 | setup_stuff -> page_header_setup -> line: 242 | page header for page 'login' created | 👟 |
+14:31:56 | ⏱ | execution time of 'page_header_setup': 0.0310 s | ⏱ |
+14:31:56 | 👉 | display_login_page started | 👈 |
+14:31:56 | 👉 | login_section started | 👈 |
+14:31:56 | 👉 | access_granted started | 👈 |
+14:31:56 | 👉 | god_mode started | 👈 |
+14:31:56 | 👉 | user_accounts started | 👈 |
+14:31:56 | ⏱ | execution time of 'user_accounts': 0.0150 s | ⏱ |
+14:31:56 | ⏱ | execution time of 'god_mode': 0.0150 s | ⏱ |
+14:31:56 | ⏱ | execution time of 'access_granted': 0.0310 s | ⏱ |
+14:31:56 | ⏱ | execution time of 'login_section': 0.0470 s | ⏱ |
+14:31:56 | ⏱ | execution time of 'display_login_page': 0.0940 s | ⏱ |
+
+
+14:42:14 | 🔥🔥🔥 | Session Started. Logger Setup Complete. | 🔥🔥🔥 |
+
+14:42:14 | 👉 | general_setup started | 👈 |
+14:42:14 | 🐞 | setup_stuff -> general_setup -> line: 92 | start 'setlocal' | 🐞 |
+14:42:14 | 🐞 | setup_stuff -> general_setup -> line: 94 | 'setlocal' took 0.0160 s | 🐞 |
+14:42:14 | 🐞 | setup_stuff -> general_setup -> line: 97 | start 'load_dotenv' | 🐞 |
+14:42:14 | 🐞 | setup_stuff -> general_setup -> line: 99 | 'load_dotenv' took 0.0150 s | 🐞 |
+14:42:14 | 🐞 | setup_stuff -> general_setup -> line: 105 | start 'plotly template' | 🐞 |
+14:42:34 | 🐞 | setup_stuff -> general_setup -> line: 107 | 'plotly template' took 19.9220 s | 🐞 |
+14:42:34 | 🐞 | setup_stuff -> general_setup -> line: 110 | start 'sentry' | 🐞 |
+14:42:35 | 🐞 | setup_stuff -> general_setup -> line: 112 | 'sentry' took 1.2500 s | 🐞 |
+14:42:35 | 🐞 | setup_stuff -> general_setup -> line: 115 | start 'UTEC Logo' | 🐞 |
+14:42:35 | 👉 | render_svg started | 👈 |
+14:42:35 | ⏱ | execution time of 'render_svg': 0.0320 s | ⏱ |
+14:42:35 | 🐞 | setup_stuff -> general_setup -> line: 118 | 'UTEC Logo' took 0.0320 s | 🐞 |
+14:42:35 | 🐞 | setup_stuff -> general_setup -> line: 121 | start 'CSS_LABELS' | 🐞 |
+14:42:37 | 🐞 | setup_stuff -> general_setup -> line: 126 | 'CSS_LABELS' took 1.7030 s | 🐞 |
+14:42:37 | 🐞 | setup_stuff -> general_setup -> line: 132 | start 'commit_message' | 🐞 |
+14:42:37 | 👉 | get_commit_message_date started | 👈 |
+14:42:55 | ⏱ | execution time of 'get_commit_message_date': 18.7500 s | ⏱ |
+14:42:55 | 🐞 | setup_stuff -> general_setup -> line: 137 | 'commit_message' took 18.7660 s | 🐞 |
+14:42:55 | 🐞 | setup_stuff -> general_setup -> line: 140 | start 'user auth' | 🐞 |
+14:42:55 | 👉 | get_all_user_data started | 👈 |
+14:42:55 | 👉 | connect_database started | 👈 |
+14:42:56 | 🥳 | user_authentication -> connect_database -> line: 101 | Deta-Database connection established | 🥳 |
+14:42:56 | ⏱ | execution time of 'connect_database': 0.0460 s | ⏱ |
+14:42:56 | 🥳 | user_authentication -> get_all_user_data -> line: 134 | Collected all user data from Database | 🥳 |
+14:42:56 | ⏱ | execution time of 'get_all_user_data': 0.2180 s | ⏱ |
+14:42:56 | 🐞 | setup_stuff -> general_setup -> line: 143 | 'user auth' took 0.2500 s | 🐞 |
+
+14:42:56 | 🦤🦤🦤 | Initial Setup Complete | 🦤🦤🦤 |
+
+14:42:56 | ⏱ | execution time of 'general_setup': 42.0470 s | ⏱ |
+14:42:56 | 👉 | page_header_setup started | 👈 |
+14:42:56 | 👟 | setup_stuff -> page_header_setup -> line: 235 | page header for page 'login' created | 👟 |
+14:42:56 | ⏱ | execution time of 'page_header_setup': 0.0160 s | ⏱ |
+14:42:56 | 👉 | display_login_page started | 👈 |
+14:42:56 | 👉 | login_section started | 👈 |
+14:42:56 | ⏱ | execution time of 'login_section': 0.1090 s | ⏱ |
+14:42:56 | ⏱ | execution time of 'display_login_page': 0.1400 s | ⏱ |
+14:42:56 | 🐞 | 00_🔑_login -> <module> -> line: 148 | Initiation Complete | 🐞 |
+
+14:43:37 | ✨ | NEW RUN | ✨ |
+14:43:37 | 👉 | page_header_setup started | 👈 |
+14:43:37 | 👟 | setup_stuff -> page_header_setup -> line: 235 | page header for page 'login' created | 👟 |
+14:43:37 | ⏱ | execution time of 'page_header_setup': 0.0320 s | ⏱ |
+14:43:37 | 👉 | display_login_page started | 👈 |
+14:43:37 | 👉 | login_section started | 👈 |
+14:43:37 | 👉 | access_granted started | 👈 |
+14:43:37 | 🥳 | 00_🔑_login -> access_granted -> line: 93 | logged in as: fl, access level: god | 🥳 |
+14:43:37 | 👉 | god_mode started | 👈 |
+14:43:37 | 👉 | user_accounts started | 👈 |
+14:43:37 | ⏱ | execution time of 'user_accounts': 0.0160 s | ⏱ |
+14:43:37 | ⏱ | execution time of 'god_mode': 0.0160 s | ⏱ |
+14:43:37 | ⏱ | execution time of 'access_granted': 0.0470 s | ⏱ |
+14:43:37 | ⏱ | execution time of 'login_section': 0.0630 s | ⏱ |
+14:43:37 | ⏱ | execution time of 'display_login_page': 0.0780 s | ⏱ |
+14:43:37 | 🐞 | 00_🔑_login -> <module> -> line: 148 | Initiation Complete | 🐞 |
+
+14:43:37 | ✨ | NEW RUN | ✨ |
+14:43:37 | 👉 | page_header_setup started | 👈 |
+14:43:37 | 👟 | setup_stuff -> page_header_setup -> line: 235 | page header for page 'login' created | 👟 |
+14:43:37 | ⏱ | execution time of 'page_header_setup': 0.0150 s | ⏱ |
+14:43:37 | 👉 | display_login_page started | 👈 |
+14:43:37 | 👉 | login_section started | 👈 |
+14:43:37 | 👉 | access_granted started | 👈 |
+14:43:37 | 👉 | god_mode started | 👈 |
+14:43:37 | 👉 | user_accounts started | 👈 |
+14:43:37 | ⏱ | execution time of 'user_accounts': 0.0150 s | ⏱ |
+14:43:37 | ⏱ | execution time of 'god_mode': 0.0150 s | ⏱ |
+14:43:37 | ⏱ | execution time of 'access_granted': 0.0470 s | ⏱ |
+14:43:37 | ⏱ | execution time of 'login_section': 0.0470 s | ⏱ |
+14:43:37 | ⏱ | execution time of 'display_login_page': 0.0940 s | ⏱ |
+14:43:37 | 🐞 | 00_🔑_login -> <module> -> line: 148 | Initiation Complete | 🐞 |
+
+
+
+14:56:47 | 🔥🔥🔥 | Session Started. Logger Setup Complete. | 🔥🔥🔥 |
+
+
+14:56:47 | 👉 | general_setup started | 👈 |
+14:56:47 | 🐞 | setup_stuff -> general_setup -> line: 92 | start 'setlocal' | 🐞 |
+14:56:47 | 🐞 | setup_stuff -> general_setup -> line: 94 | 'setlocal' took 0.0310 s | 🐞 |
+14:56:47 | 🐞 | setup_stuff -> general_setup -> line: 97 | start 'load_dotenv' | 🐞 |
+14:56:47 | 🐞 | setup_stuff -> general_setup -> line: 99 | 'load_dotenv' took 0.0630 s | 🐞 |
+14:56:47 | 🐞 | setup_stuff -> general_setup -> line: 110 | start 'sentry' | 🐞 |
+14:56:49 | 🐞 | setup_stuff -> general_setup -> line: 112 | 'sentry' took 1.6880 s | 🐞 |
+14:56:49 | 🐞 | setup_stuff -> general_setup -> line: 115 | start 'UTEC Logo' | 🐞 |
+
+14:56:49 | 👉 | render_svg started | 👈 |
+14:56:49 | ⏱ | execution time of 'render_svg': 0.0310 s | ⏱ |
+
+14:56:49 | 🐞 | setup_stuff -> general_setup -> line: 118 | 'UTEC Logo' took 0.0460 s | 🐞 |
+14:56:49 | 🐞 | setup_stuff -> general_setup -> line: 121 | start 'CSS_LABELS' | 🐞 |
+14:56:50 | 🐞 | setup_stuff -> general_setup -> line: 126 | 'CSS_LABELS' took 0.7820 s | 🐞 |
+14:56:50 | 🐞 | setup_stuff -> general_setup -> line: 132 | start 'commit_message' | 🐞 |
+
+14:56:50 | 👉 | get_commit_message_date started | 👈 |
+14:57:06 | ⏱ | execution time of 'get_commit_message_date': 16.8280 s | ⏱ |
+
+14:57:06 | 🐞 | setup_stuff -> general_setup -> line: 137 | 'commit_message' took 16.8590 s | 🐞 |
+14:57:06 | 🐞 | setup_stuff -> general_setup -> line: 140 | start 'user auth' | 🐞 |
+
+14:57:06 | 👉 | get_all_user_data started | 👈 |
+
+14:57:06 | 👉 | connect_database started | 👈 |
+14:57:07 | 🥳 | user_authentication -> connect_database -> line: 101 | Deta-Database connection established | 🥳 |
+14:57:07 | ⏱ | execution time of 'connect_database': 0.0780 s | ⏱ |
+
+14:57:07 | 🥳 | user_authentication -> get_all_user_data -> line: 134 | Collected all user data from Database | 🥳 |
+14:57:07 | ⏱ | execution time of 'get_all_user_data': 0.2500 s | ⏱ |
+
+14:57:07 | 🐞 | setup_stuff -> general_setup -> line: 143 | 'user auth' took 0.2660 s | 🐞 |
+
+14:57:07 | 🦤🦤🦤 | Initial Setup Complete | 🦤🦤🦤 |
+
+14:57:07 | ⏱ | execution time of 'general_setup': 19.8430 s | ⏱ |
+
+
+14:57:07 | 👉 | page_header_setup started | 👈 |
+14:57:07 | 👟 | setup_stuff -> page_header_setup -> line: 235 | page header for page 'login' created | 👟 |
+14:57:07 | ⏱ | execution time of 'page_header_setup': 0.0320 s | ⏱ |
+
+
+14:57:07 | 👉 | display_login_page started | 👈 |
+
+14:57:07 | 👉 | login_section started | 👈 |
+14:57:07 | ⏱ | execution time of 'login_section': 0.0460 s | ⏱ |
+
+14:57:07 | ⏱ | execution time of 'display_login_page': 0.0930 s | ⏱ |
+
+14:57:07 | 🥳 | 00_🔑_login -> <module> -> line: 148 | Login Page Loaded | 🥳 |
+
+14:57:31 | ✨ | NEW RUN | ✨ |
+
+
+14:57:31 | 👉 | page_header_setup started | 👈 |
+14:57:31 | 👟 | setup_stuff -> page_header_setup -> line: 235 | page header for page 'login' created | 👟 |
+14:57:31 | ⏱ | execution time of 'page_header_setup': 0.0160 s | ⏱ |
+
+
+14:57:31 | 👉 | display_login_page started | 👈 |
+
+14:57:31 | 👉 | login_section started | 👈 |
+
+14:57:31 | 👉 | access_granted started | 👈 |
+14:57:31 | 🥳 | 00_🔑_login -> access_granted -> line: 93 | logged in as: fl, access level: god | 🥳 |
+
+14:57:31 | 👉 | god_mode started | 👈 |
+
+14:57:31 | 👉 | user_accounts started | 👈 |
+14:57:31 | ⏱ | execution time of 'user_accounts': 0.0160 s | ⏱ |
+
+14:57:31 | ⏱ | execution time of 'god_mode': 0.0160 s | ⏱ |
+
+14:57:31 | ⏱ | execution time of 'access_granted': 0.0470 s | ⏱ |
+
+14:57:31 | ⏱ | execution time of 'login_section': 0.0630 s | ⏱ |
+
+14:57:31 | ⏱ | execution time of 'display_login_page': 0.0940 s | ⏱ |
+
+14:57:31 | 🥳 | 00_🔑_login -> <module> -> line: 148 | Login Page Loaded | 🥳 |
+
+14:57:31 | ✨ | NEW RUN | ✨ |
+
+
+14:57:31 | 👉 | page_header_setup started | 👈 |
+14:57:31 | 👟 | setup_stuff -> page_header_setup -> line: 235 | page header for page 'login' created | 👟 |
+14:57:31 | ⏱ | execution time of 'page_header_setup': 0.0150 s | ⏱ |
+
+
+14:57:31 | 👉 | display_login_page started | 👈 |
+
+14:57:31 | 👉 | login_section started | 👈 |
+
+14:57:31 | 👉 | access_granted started | 👈 |
+
+14:57:31 | 👉 | god_mode started | 👈 |
+
+14:57:31 | 👉 | user_accounts started | 👈 |
+14:57:31 | ⏱ | execution time of 'user_accounts': 0.0000 s | ⏱ |
+
+14:57:31 | ⏱ | execution time of 'god_mode': 0.0150 s | ⏱ |
+
+14:57:31 | ⏱ | execution time of 'access_granted': 0.0470 s | ⏱ |
+
+14:57:31 | ⏱ | execution time of 'login_section': 0.0470 s | ⏱ |
+
+14:57:31 | ⏱ | execution time of 'display_login_page': 0.0940 s | ⏱ |
+
+14:57:31 | 🥳 | 00_🔑_login -> <module> -> line: 148 | Login Page Loaded | 🥳 |
+
+
+
+15:07:41 | 🔥🔥🔥 | Session Started. Logger Setup Complete. | 🔥🔥🔥 |
+
+
+15:07:41 | 👉 | general_setup started | 👈 |
+15:07:41 | 🐞 | setup_stuff -> general_setup -> line: 92 | start 'setlocal' | 🐞 |
+15:07:41 | 🐞 | setup_stuff -> general_setup -> line: 94 | 'setlocal' took 0.0160 s | 🐞 |
+15:07:41 | 🐞 | setup_stuff -> general_setup -> line: 97 | start 'load_dotenv' | 🐞 |
+15:07:41 | 🐞 | setup_stuff -> general_setup -> line: 99 | 'load_dotenv' took 0.0470 s | 🐞 |
+15:07:41 | 🐞 | setup_stuff -> general_setup -> line: 110 | start 'sentry' | 🐞 |
+15:07:42 | 🐞 | setup_stuff -> general_setup -> line: 112 | 'sentry' took 0.9530 s | 🐞 |
+15:07:42 | 🐞 | setup_stuff -> general_setup -> line: 115 | start 'UTEC Logo' | 🐞 |
+
+15:07:42 | 👉 | render_svg started | 👈 |
+15:07:42 | ⏱ | execution time of 'render_svg': 0.0000 s | ⏱ |
+15:07:42 | 🐞 | setup_stuff -> general_setup -> line: 118 | 'UTEC Logo' took 0.0000 s | 🐞 |
+15:07:42 | 🐞 | setup_stuff -> general_setup -> line: 121 | start 'CSS_LABELS' | 🐞 |
+15:07:43 | 🐞 | setup_stuff -> general_setup -> line: 126 | 'CSS_LABELS' took 0.7500 s | 🐞 |
+15:07:43 | 🐞 | setup_stuff -> general_setup -> line: 140 | start 'user auth' | 🐞 |
+
+15:07:43 | 👉 | get_all_user_data started | 👈 |
+
+15:07:43 | 👉 | connect_database started | 👈 |
+15:07:43 | 🥳 | user_authentication -> connect_database -> line: 101 | Deta-Database connection established | 🥳 |
+15:07:43 | ⏱ | execution time of 'connect_database': 0.0310 s | ⏱ |
+15:07:43 | 🥳 | user_authentication -> get_all_user_data -> line: 134 | Collected all user data from Database | 🥳 |
+15:07:43 | ⏱ | execution time of 'get_all_user_data': 0.1880 s | ⏱ |
+15:07:43 | 🐞 | setup_stuff -> general_setup -> line: 143 | 'user auth' took 0.2030 s | 🐞 |
+
+15:07:43 | 🦤🦤🦤 | Initial Setup Complete | 🦤🦤🦤 |
+
+15:07:43 | ⏱ | execution time of 'general_setup': 2.0470 s | ⏱ |
+
+15:07:43 | 👉 | page_header_setup started | 👈 |
+
+15:07:43 | 👉 | get_commit_message_date started | 👈 |
+15:08:00 | ⏱ | execution time of 'get_commit_message_date': 16.4690 s | ⏱ |
+
+15:08:00 | 👉 | get_commit_message_date started | 👈 |
+15:08:00 | ⏱ | execution time of 'get_commit_message_date': 0.0000 s | ⏱ |
+15:08:00 | 👟 | setup_stuff -> page_header_setup -> line: 235 | page header for page 'login' created | 👟 |
+15:08:00 | ⏱ | execution time of 'page_header_setup': 16.4840 s | ⏱ |
+
+15:08:00 | 👉 | display_login_page started | 👈 |
+
+15:08:00 | 👉 | login_section started | 👈 |
+15:08:00 | ⏱ | execution time of 'login_section': 0.0470 s | ⏱ |
+15:08:00 | ⏱ | execution time of 'display_login_page': 0.0940 s | ⏱ |
+15:08:00 | 🥳 | 00_🔑_login -> <module> -> line: 148 | Login Page Loaded | 🥳 |
+
+15:08:20 | ✨ | NEW RUN | ✨ |
+
+15:08:20 | 👉 | page_header_setup started | 👈 |
+15:08:20 | 👟 | setup_stuff -> page_header_setup -> line: 235 | page header for page 'login' created | 👟 |
+15:08:20 | ⏱ | execution time of 'page_header_setup': 0.0160 s | ⏱ |
+
+15:08:20 | 👉 | display_login_page started | 👈 |
+
+15:08:20 | 👉 | login_section started | 👈 |
+
+15:08:20 | 👉 | access_granted started | 👈 |
+15:08:20 | 🥳 | 00_🔑_login -> access_granted -> line: 93 | logged in as: fl, access level: god | 🥳 |
+
+15:08:20 | 👉 | god_mode started | 👈 |
+
+15:08:20 | 👉 | user_accounts started | 👈 |
+15:08:20 | ⏱ | execution time of 'user_accounts': 0.0000 s | ⏱ |
+15:08:20 | ⏱ | execution time of 'god_mode': 0.0160 s | ⏱ |
+15:08:20 | ⏱ | execution time of 'access_granted': 0.0460 s | ⏱ |
+15:08:20 | ⏱ | execution time of 'login_section': 0.0460 s | ⏱ |
+15:08:20 | ⏱ | execution time of 'display_login_page': 0.1090 s | ⏱ |
+15:08:20 | 🥳 | 00_🔑_login -> <module> -> line: 148 | Login Page Loaded | 🥳 |
+
+15:08:21 | ✨ | NEW RUN | ✨ |
+
+15:08:21 | 👉 | page_header_setup started | 👈 |
+15:08:21 | 👟 | setup_stuff -> page_header_setup -> line: 235 | page header for page 'login' created | 👟 |
+15:08:21 | ⏱ | execution time of 'page_header_setup': 0.0150 s | ⏱ |
+
+15:08:21 | 👉 | display_login_page started | 👈 |
+
+15:08:21 | 👉 | login_section started | 👈 |
+
+15:08:21 | 👉 | access_granted started | 👈 |
+
+15:08:21 | 👉 | god_mode started | 👈 |
+
+15:08:21 | 👉 | user_accounts started | 👈 |
+15:08:21 | ⏱ | execution time of 'user_accounts': 0.0160 s | ⏱ |
+15:08:21 | ⏱ | execution time of 'god_mode': 0.0160 s | ⏱ |
+15:08:21 | ⏱ | execution time of 'access_granted': 0.0470 s | ⏱ |
+15:08:21 | ⏱ | execution time of 'login_section': 0.0630 s | ⏱ |
+15:08:21 | ⏱ | execution time of 'display_login_page': 0.0940 s | ⏱ |
+15:08:21 | 🥳 | 00_🔑_login -> <module> -> line: 148 | Login Page Loaded | 🥳 |
+
+15:08:55 | 👉 | page_header_setup started | 👈 |
+15:08:55 | 👟 | setup_stuff -> page_header_setup -> line: 235 | page header for page 'graph' created | 👟 |
+15:08:55 | ⏱ | execution time of 'page_header_setup': 0.0160 s | ⏱ |
+
+15:08:56 | 👉 | sidebar_file_upload started | 👈 |
+15:08:57 | ⏱ | execution time of 'sidebar_file_upload': 0.2030 s | ⏱ |
+
+15:09:38 | 👉 | page_header_setup started | 👈 |
+15:09:38 | 👟 | setup_stuff -> page_header_setup -> line: 235 | page header for page 'graph' created | 👟 |
+15:09:38 | ⏱ | execution time of 'page_header_setup': 0.0160 s | ⏱ |
+
+15:09:38 | 👉 | sidebar_file_upload started | 👈 |
+15:09:38 | ⏱ | execution time of 'sidebar_file_upload': 0.1720 s | ⏱ |
+
+15:09:38 | 👉 | import_prefab_excel started | 👈 |
+15:09:46 | 🐞 | excel -> import_prefab_excel -> line: 30 | df_messy
+   Unnamed: 0           Unnamed: 1   Unnamed: 2     Unnamed: 3       Unnamed: 4       Unnamed: 5            Unnamed: 6
+0         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+1         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+2         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+3         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+4         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+5         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+6         NaN          → Einheit →          kWh            kWh              kWh              kWh                   kWh
+7         NaN            ↓ Index ↓  Strombedarf  PV Produktion  Netzeinspeisung  PV Eigennutzung  Strombez. 1-1:1.29.0
+8         NaN  2021-01-01 00:00:00          3.4              0                0                0                   3.4
+9         NaN  2021-01-01 00:15:00        3.225              0                0                0                 3.225
+ | 🐞 |
+
+15:09:46 | 👉 | edit_df_after_import started | 👈 |
+15:09:47 | 🥳 | classes -> get_marker_position -> line: 145 | Marker ↓ Index ↓ found in row 7, column 1 | 🥳 |
+
+15:09:47 | 👉 | clean_up_daylight_savings started | 👈 |
+15:09:47 | ⚠ | df_manip -> clean_up_daylight_savings -> line: 135 | Data deleted due to daylight savings: 
+
+7                    Strombedarf  PV Produktion  Netzeinspeisung  PV Eigennutzung  Strombez. 1-1:1.29.0
+↓ Index ↓                                                                                              
+2021-10-31 02:00:00        2.475            0.0              0.0              0.0                 2.475
+2021-10-31 02:15:00        2.550            0.0              0.0              0.0                 2.550
+2021-10-31 02:30:00        2.175            0.0              0.0              0.0                 2.175
+2021-10-31 02:45:00        2.075            0.0              0.0              0.0                 2.075
+
+ | ️ |
+15:09:47 | ⏱ | execution time of 'clean_up_daylight_savings': 0.0780 s | ⏱ |
+15:09:47 | ⏱ | execution time of 'edit_df_after_import': 0.2810 s | ⏱ |
+
+15:09:47 | 👉 | units_from_messy_df started | 👈 |
+15:09:47 | 🥳 | classes -> get_marker_position -> line: 145 | Marker ↓ Index ↓ found in row 7, column 1 | 🥳 |
+15:09:47 | 🥳 | classes -> get_marker_position -> line: 145 | Marker → Einheit → found in row 6, column 1 | 🥳 |
+15:09:47 | ⏱ | execution time of 'units_from_messy_df': 0.0160 s | ⏱ |
+
+15:09:47 | 👉 | meta_from_index started | 👈 |
+15:09:47 | ⏱ | execution time of 'meta_from_index': 0.1090 s | ⏱ |
+
+15:09:47 | 👉 | meta_from_col_title started | 👈 |
+15:09:47 | ⏱ | execution time of 'meta_from_col_title': 0.0000 s | ⏱ |
+
+15:09:47 | 👉 | convert_15min_kwh_to_kw started | 👈 |
+
+15:09:47 | 👉 | insert_column_arbeit_leistung started | 👈 |
+15:09:47 | ⏱ | execution time of 'insert_column_arbeit_leistung': 0.0000 s | ⏱ |
+
+15:09:47 | 👉 | rename_column_arbeit_leistung started | 👈 |
+15:09:47 | ⏱ | execution time of 'rename_column_arbeit_leistung': 0.0000 s | ⏱ |
+15:09:47 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 266 | Arbeit und Leistung aufgeteilt | 🥳 |
+
+15:09:47 | 👉 | insert_column_arbeit_leistung started | 👈 |
+15:09:47 | ⏱ | execution time of 'insert_column_arbeit_leistung': 0.0160 s | ⏱ |
+
+15:09:47 | 👉 | rename_column_arbeit_leistung started | 👈 |
+15:09:47 | ⏱ | execution time of 'rename_column_arbeit_leistung': 0.0000 s | ⏱ |
+15:09:47 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 266 | Arbeit und Leistung aufgeteilt | 🥳 |
+
+15:09:47 | 👉 | insert_column_arbeit_leistung started | 👈 |
+15:09:47 | ⏱ | execution time of 'insert_column_arbeit_leistung': 0.0150 s | ⏱ |
+
+15:09:47 | 👉 | rename_column_arbeit_leistung started | 👈 |
+15:09:47 | ⏱ | execution time of 'rename_column_arbeit_leistung': 0.0000 s | ⏱ |
+15:09:47 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 266 | Arbeit und Leistung aufgeteilt | 🥳 |
+
+15:09:47 | 👉 | insert_column_arbeit_leistung started | 👈 |
+15:09:47 | ⏱ | execution time of 'insert_column_arbeit_leistung': 0.0000 s | ⏱ |
+
+15:09:47 | 👉 | rename_column_arbeit_leistung started | 👈 |
+15:09:47 | ⏱ | execution time of 'rename_column_arbeit_leistung': 0.0000 s | ⏱ |
+15:09:47 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 266 | Arbeit und Leistung aufgeteilt | 🥳 |
+
+15:09:47 | 👉 | insert_column_arbeit_leistung started | 👈 |
+15:09:47 | ⏱ | execution time of 'insert_column_arbeit_leistung': 0.0150 s | ⏱ |
+
+15:09:47 | 👉 | rename_column_arbeit_leistung started | 👈 |
+15:09:47 | ⏱ | execution time of 'rename_column_arbeit_leistung': 0.0160 s | ⏱ |
+15:09:47 | 🥳 | excel -> convert_15min_kwh_to_kw -> line: 266 | Arbeit und Leistung aufgeteilt | 🥳 |
+15:09:47 | ⏱ | execution time of 'convert_15min_kwh_to_kw': 0.1880 s | ⏱ |
+
+15:09:47 | 👉 | set_y_axis_for_lines started | 👈 |
+15:09:47 | ⏱ | execution time of 'set_y_axis_for_lines': 0.0150 s | ⏱ |
+15:09:47 | 🥳 | excel -> import_prefab_excel -> line: 57 | file imported and metadata extracted | 🥳 |
+15:09:47 | 💡 | excel -> import_prefab_excel -> line: 58 | 
+7                    Strombedarf → Arbeit  PV Produktion → Arbeit  Netzeinspeisung → Arbeit  ...  Netzeinspeisung → Leistung  PV Eigennutzung → Leistung Bezug (1-1:1.29) → Leistung
+↓ Index ↓                                                                                    ...                                                                                    
+2021-01-01 00:00:00                 3.400                     0.0                       0.0  ...                         0.0                         0.0                        13.6
+2021-01-01 00:15:00                 3.225                     0.0                       0.0  ...                         0.0                         0.0                        12.9
+2021-01-01 00:30:00                 3.150                     0.0                       0.0  ...                         0.0                         0.0                        12.6
+2021-01-01 00:45:00                 3.550                     0.0                       0.0  ...                         0.0                         0.0                        14.2
+2021-01-01 01:00:00                 4.300                     0.0                       0.0  ...                         0.0                         0.0                        17.2
+
+[5 rows x 11 columns]
+ | 💡 |
+15:09:47 | ⏱ | execution time of 'import_prefab_excel': 9.2650 s | ⏱ |
+
+15:09:47 | 👉 | base_settings started | 👈 |
+15:09:47 | ⏱ | execution time of 'base_settings': 0.0160 s | ⏱ |
+
+15:09:47 | 👉 | select_graphs started | 👈 |
+15:09:47 | ⏱ | execution time of 'select_graphs': 0.0470 s | ⏱ |
+
+15:09:47 | 👉 | meteo_sidebar started | 👈 |
+15:09:47 | ⏱ | execution time of 'meteo_sidebar': 0.0160 s | ⏱ |
+
+15:09:47 | 👉 | jdl started | 👈 |
+
+15:09:47 | 👉 | h_from_other started | 👈 |
+15:09:47 | 🥳 | df_manip -> h_from_other -> line: 290 | DataFrame mit Stundenwerten erstellt: 
+
+                     Strombedarf *h  PV Produktion *h  Netzeinspeisung *h  PV Eigennutzung *h  Bezug (1-1:1.29) *h              orgidx
+↓ Index ↓                                                                                                                             
+2021-01-01 00:00:00          13.325               0.0                 0.0                 0.0               13.325 2021-01-01 00:00:00
+2021-01-01 01:00:00          14.550               0.0                 0.0                 0.0               14.550 2021-01-01 01:00:00
+2021-01-01 02:00:00          11.350               0.0                 0.0                 0.0               11.350 2021-01-01 02:00:00
+2021-01-01 03:00:00          10.725               0.0                 0.0                 0.0               10.725 2021-01-01 03:00:00
+2021-01-01 04:00:00           9.300               0.0                 0.0                 0.0                9.300 2021-01-01 04:00:00
+
+ | 🥳 |
+15:09:47 | ⏱ | execution time of 'h_from_other': 0.1250 s | ⏱ |
+15:09:47 | 🥳 | df_manip -> jdl -> line: 360 | DataFrame für Jahresdauerlinie erstellt: 
+
+   Strombedarf *h  PV Produktion *h  Netzeinspeisung *h  PV Eigennutzung *h  ...  PV Produktion *h_orgidx Netzeinspeisung *h_orgidx PV Eigennutzung *h_orgidx Bezug (1-1:1.29) *h_orgidx
+1          36.225            43.350              27.025              24.975  ...      2021-04-27 13:00:00       2021-04-27 13:00:00       2021-04-24 15:00:00        2021-11-18 19:00:00
+2          34.650            42.175              24.850              24.600  ...      2021-04-13 13:00:00       2021-04-26 13:00:00       2021-04-24 16:00:00        2021-01-30 17:00:00
+3          34.550            40.375              23.100              23.600  ...      2021-05-30 14:00:00       2021-04-28 15:00:00       2021-04-24 13:00:00        2021-01-23 18:00:00
+4          34.450            40.350              22.975              23.475  ...      2021-04-27 12:00:00       2021-04-13 13:00:00       2021-05-30 11:00:00        2021-02-07 19:00:00
+5          34.450            39.700              22.100              23.400  ...      2021-04-26 13:00:00       2021-05-06 13:00:00       2021-04-17 13:00:00        2021-01-19 18:00:00
+
+[5 rows x 10 columns]
+
+ | 🥳 |
+15:09:47 | ⏱ | execution time of 'jdl': 0.1710 s | ⏱ |
+
+15:09:47 | 👉 | mon started | 👈 |
+
+15:09:47 | 👉 | h_from_other started | 👈 |
+15:09:47 | 🥳 | df_manip -> h_from_other -> line: 290 | DataFrame mit Stundenwerten erstellt: 
+
+                     Strombedarf *h  PV Produktion *h  Netzeinspeisung *h  PV Eigennutzung *h  Bezug (1-1:1.29) *h              orgidx
+↓ Index ↓                                                                                                                             
+2021-01-01 00:00:00          13.325               0.0                 0.0                 0.0               13.325 2021-01-01 00:00:00
+2021-01-01 01:00:00          14.550               0.0                 0.0                 0.0               14.550 2021-01-01 01:00:00
+2021-01-01 02:00:00          11.350               0.0                 0.0                 0.0               11.350 2021-01-01 02:00:00
+2021-01-01 03:00:00          10.725               0.0                 0.0                 0.0               10.725 2021-01-01 03:00:00
+2021-01-01 04:00:00           9.300               0.0                 0.0                 0.0                9.300 2021-01-01 04:00:00
+
+ | 🥳 |
+15:09:47 | ⏱ | execution time of 'h_from_other': 0.0940 s | ⏱ |
+15:09:47 | 🥳 | df_manip -> mon -> line: 401 | DataFrame mit Monatswerten erstellt: 
+
+            Strombedarf *mon  PV Produktion *mon  Netzeinspeisung *mon  PV Eigennutzung *mon  Bezug (1-1:1.29) *mon     orgidx
+↓ Index ↓                                                                                                                     
+2021-01-15         13100.800             801.150                 1.950                799.20              12301.600 2021-01-15
+2021-02-15         11460.800            1629.025                83.775               1545.25               9915.550 2021-02-15
+2021-03-15         12272.500            3948.400               730.800               3217.60               9054.900 2021-03-15
+2021-04-15         11587.775            6171.075              1820.375               4350.70               7237.075 2021-04-15
+2021-05-15         11830.100            6227.375              1592.225               4635.15               7194.950 2021-05-15
+
+ | 🥳 |
+15:09:47 | ⏱ | execution time of 'mon': 0.1250 s | ⏱ |
+
+15:09:47 | 👉 | cr_fig_base started | 👈 |
+
+15:09:47 | 👉 | line_plot started | 👈 |
+
+
+
+15:24:46 | 🔥🔥🔥 | Session Started. Logger Setup Complete. | 🔥🔥🔥 |
+
+
+15:24:46 | 👉 | general_setup started | 👈 |
+
+15:24:47 | 👉 | render_svg started | 👈 |
+15:24:47 | ⏱ | execution time of 'render_svg': 0.0150 s | ⏱ |
+
+15:24:48 | 👉 | get_all_user_data started | 👈 |
+
+15:24:48 | 👉 | connect_database started | 👈 |
+15:24:48 | 🥳 | user_authentication -> connect_database -> line: 101 | Deta-Database connection established | 🥳 |
+15:24:48 | ⏱ | execution time of 'connect_database': 0.0320 s | ⏱ |
+15:24:49 | 🥳 | user_authentication -> get_all_user_data -> line: 134 | Collected all user data from Database | 🥳 |
+15:24:49 | ⏱ | execution time of 'get_all_user_data': 0.5000 s | ⏱ |
+
+15:24:49 | 🦤🦤🦤 | Initial Setup Complete | 🦤🦤🦤 |
+
+15:24:49 | ⏱ | execution time of 'general_setup': 2.5000 s | ⏱ |
+
+15:24:49 | 👉 | page_header_setup started | 👈 |
+
+15:24:49 | 👉 | render_svg started | 👈 |
+15:24:49 | ⏱ | execution time of 'render_svg': 0.0150 s | ⏱ |
+
+15:24:49 | 👉 | get_commit_message_date started | 👈 |
+15:25:05 | ⏱ | execution time of 'get_commit_message_date': 16.3280 s | ⏱ |
+
+15:25:05 | 👉 | get_commit_message_date started | 👈 |
+15:25:05 | ⏱ | execution time of 'get_commit_message_date': 0.0160 s | ⏱ |
+15:25:05 | 👟 | setup_stuff -> page_header_setup -> line: 204 | page header for page 'login' created | 👟 |
+15:25:05 | ⏱ | execution time of 'page_header_setup': 16.3900 s | ⏱ |
+
+15:25:05 | 👉 | display_login_page started | 👈 |
+
+15:25:05 | 👉 | login_section started | 👈 |
+15:25:05 | ⏱ | execution time of 'login_section': 0.0160 s | ⏱ |
+15:25:05 | ⏱ | execution time of 'display_login_page': 0.0320 s | ⏱ |
+15:25:05 | 🥳 | 00_🔑_login -> <module> -> line: 148 | Login Page Loaded | 🥳 |
+
+15:25:27 | ✨ | NEW RUN | ✨ |
+
+15:25:27 | 👉 | page_header_setup started | 👈 |
+
+15:25:27 | 👉 | render_svg started | 👈 |
+15:25:27 | ⏱ | execution time of 'render_svg': 0.0320 s | ⏱ |
+15:25:27 | 👟 | setup_stuff -> page_header_setup -> line: 204 | page header for page 'login' created | 👟 |
+15:25:27 | ⏱ | execution time of 'page_header_setup': 0.0470 s | ⏱ |
+
+15:25:27 | 👉 | display_login_page started | 👈 |
+
+15:25:27 | 👉 | login_section started | 👈 |
+
+15:25:27 | 👉 | access_granted started | 👈 |
+15:25:27 | 🥳 | 00_🔑_login -> access_granted -> line: 93 | logged in as: fl, access level: god | 🥳 |
+
+15:25:27 | 👉 | god_mode started | 👈 |
+
+15:25:27 | 👉 | user_accounts started | 👈 |
+15:25:27 | ⏱ | execution time of 'user_accounts': 0.0000 s | ⏱ |
+15:25:27 | ⏱ | execution time of 'god_mode': 0.0000 s | ⏱ |
+15:25:27 | ⏱ | execution time of 'access_granted': 0.0000 s | ⏱ |
+15:25:27 | ⏱ | execution time of 'login_section': 0.0310 s | ⏱ |
+15:25:27 | ⏱ | execution time of 'display_login_page': 0.0310 s | ⏱ |
+15:25:27 | 🥳 | 00_🔑_login -> <module> -> line: 148 | Login Page Loaded | 🥳 |
+
+15:25:27 | ✨ | NEW RUN | ✨ |
+
+15:25:27 | 👉 | page_header_setup started | 👈 |
+
+15:25:27 | 👉 | render_svg started | 👈 |
+15:25:27 | ⏱ | execution time of 'render_svg': 0.0160 s | ⏱ |
+15:25:27 | 👟 | setup_stuff -> page_header_setup -> line: 204 | page header for page 'login' created | 👟 |
+15:25:27 | ⏱ | execution time of 'page_header_setup': 0.0310 s | ⏱ |
+
+15:25:27 | 👉 | display_login_page started | 👈 |
+
+15:25:27 | 👉 | login_section started | 👈 |
+
+15:25:27 | 👉 | access_granted started | 👈 |
+
+15:25:27 | 👉 | god_mode started | 👈 |
+
+15:25:27 | 👉 | user_accounts started | 👈 |
+15:25:27 | ⏱ | execution time of 'user_accounts': 0.0000 s | ⏱ |
+15:25:27 | ⏱ | execution time of 'god_mode': 0.0150 s | ⏱ |
+15:25:27 | ⏱ | execution time of 'access_granted': 0.0310 s | ⏱ |
+15:25:27 | ⏱ | execution time of 'login_section': 0.0470 s | ⏱ |
+15:25:27 | ⏱ | execution time of 'display_login_page': 0.0940 s | ⏱ |
+15:25:27 | 🥳 | 00_🔑_login -> <module> -> line: 148 | Login Page Loaded | 🥳 |

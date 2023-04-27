@@ -15,16 +15,27 @@ from modules import setup_stuff
 from modules import streamlit_menus as sm
 from modules import user_authentication as uauth
 from modules.general_functions import func_timer, load_lottie_file
+from modules.classes import LogLevel
 
-# page setup
-setup_stuff.initial_setup()
+st.set_page_config(
+    page_title="UTEC Online Tools",
+    page_icon="logo/UTEC_logo.png",
+    layout="wide",
+)
+
+# general page config (Favicon, etc.)
+if not st.session_state.get("logger_setup"):
+    setup_stuff.logger_setup()
+
+if st.session_state.get("initial_setup"):
+    logger.log(LogLevel.NEW_RUN.name, "NEW RUN")
+else:
+    setup_stuff.general_setup()
 
 setup_stuff.page_header_setup(page="login")
 
-logger.log("ONCE_per_RUN", "\nNEW RUN")
 
-
-# @func_timer
+@func_timer
 def display_login_page() -> None:
     """Login-Page with two columns
     - login with username and password
@@ -40,7 +51,7 @@ def display_login_page() -> None:
         )
 
 
-# @func_timer
+@func_timer
 def login_section() -> None:
     """user authentication part of the login page"""
 
@@ -67,6 +78,7 @@ def login_section() -> None:
         logger.error("Benutzername oder Passwort falsch")
 
 
+@func_timer
 def access_granted() -> None:
     """if access is granted, do this..."""
 
@@ -109,6 +121,7 @@ def access_granted() -> None:
         god_mode()
 
 
+@func_timer
 def god_mode() -> None:
     """special stuff for users with access level 'god'"""
 
@@ -131,3 +144,5 @@ def god_mode() -> None:
 
 
 display_login_page()
+
+logger.success("Login Page Loaded")

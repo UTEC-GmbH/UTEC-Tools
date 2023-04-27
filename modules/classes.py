@@ -4,7 +4,7 @@ import re
 from dataclasses import dataclass, field
 from enum import Enum
 from math import ceil
-from typing import Any, Dict, List, Literal, NamedTuple, Tuple
+from typing import Any, Dict, List, NamedTuple, Tuple
 
 import numpy as np
 import pandas as pd
@@ -29,22 +29,21 @@ class MarkerType(Enum):
 
 
 @dataclass(frozen=True)
-class LogLevel:
+class LevelProperties:
     """Logger Levels"""
 
-    lvl: str
+    name: str
     custom: bool = False
     icon: str = "👉👈"
-    new_lines_before: int = 0
-    new_lines_after: int = 1
+    blank_lines_before: int = 0
+    blank_lines_after: int = 0
     time: str = "{time:HH:mm:ss}"
     info: str = "{module} -> {function} -> line: {line} | "
-    # message: str = field(default_factory=str)
 
     def get_format(self) -> str:
         """Logger message Format erzeugen"""
-        nl_0: str = "\n" * self.new_lines_before
-        nl_1: str = "\n" * self.new_lines_after
+        nl_0: str = "\n" * self.blank_lines_before
+        nl_1: str = "\n" * (self.blank_lines_after + 1)
         info: str = self.info
         time: str = self.time
         if len(self.icon) == 2:
@@ -57,25 +56,44 @@ class LogLevel:
 
 
 @dataclass
-class Logg:
+class LogLevel:
     """Logger Format"""
 
-    DEBUG: LogLevel = LogLevel("DEBUG", icon="🐞")
-    INFO: LogLevel = LogLevel("INFO", icon="💡")
-    SUCCESS: LogLevel = LogLevel("SUCCESS", icon="🥳")
-    WARNING: LogLevel = LogLevel("WARNING", icon="⚠️")
-    ERROR: LogLevel = LogLevel("ERROR", icon="😱")
-    CRITICAL: LogLevel = LogLevel("CRITICAL", icon="☠️")
-    TIMER: LogLevel = LogLevel("TIMER", icon="⏱", custom=True, info="")
-    FUNC_START: LogLevel = LogLevel("FUNC_START", icon="👉👈", custom=True, info="")
-    ONCE_PER_RUN: LogLevel = LogLevel("ONCE_PER_RUN", icon="👟", custom=True)
-    ONCE_per_SESSION: LogLevel = LogLevel(
-        "ONCE_PER_SESSION",
+    INFO: LevelProperties = LevelProperties("INFO", icon="💡")
+    DEBUG: LevelProperties = LevelProperties("DEBUG", icon="🐞")
+    ERROR: LevelProperties = LevelProperties("ERROR", icon="😱")
+    SUCCESS: LevelProperties = LevelProperties("SUCCESS", icon="🥳")
+    WARNING: LevelProperties = LevelProperties("WARNING", icon="⚠️")
+    CRITICAL: LevelProperties = LevelProperties("CRITICAL", icon="☠️")
+    START: LevelProperties = LevelProperties(
+        "START",
         icon="🔥🔥🔥",
         custom=True,
-        new_lines_before=2,
-        new_lines_after=2,
         info="",
+        blank_lines_before=5,
+        blank_lines_after=1,
+    )
+    TIMER: LevelProperties = LevelProperties("TIMER", icon="⏱", custom=True, info="")
+    NEW_RUN: LevelProperties = LevelProperties(
+        "NEW_RUN",
+        icon="✨",
+        custom=True,
+        info="",
+        blank_lines_before=1,
+    )
+    FUNC_START: LevelProperties = LevelProperties(
+        "FUNC_START", icon="👉👈", custom=True, info="", blank_lines_before=1
+    )
+    ONCE_PER_RUN: LevelProperties = LevelProperties(
+        "ONCE_PER_RUN", icon="👟", custom=True
+    )
+    ONCE_PER_SESSION: LevelProperties = LevelProperties(
+        "ONCE_PER_SESSION",
+        icon="🦤🦤🦤",
+        custom=True,
+        info="",
+        blank_lines_before=1,
+        blank_lines_after=1,
     )
 
 

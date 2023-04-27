@@ -17,9 +17,14 @@ from modules import fig_creation_export as fig_cr
 from modules import fig_general_functions as fgf
 from modules import meteorolog as meteo
 from modules.fig_general_functions import get_colorway
-from modules.general_functions import del_session_state_entry, text_with_hover
+from modules.general_functions import (
+    del_session_state_entry,
+    func_timer,
+    text_with_hover,
+)
 
 
+@func_timer
 def user_accounts() -> None:
     """Benutzerkontensteuerung"""
 
@@ -60,6 +65,7 @@ def user_accounts() -> None:
         list_all_accounts()
 
 
+@func_timer
 def delete_user_form() -> None:
     """Benutzer löschen"""
 
@@ -78,6 +84,7 @@ def delete_user_form() -> None:
         st.form_submit_button("Knöpfle")
 
 
+@func_timer
 def new_user_form() -> None:
     """neuen Benutzer hinzufügen"""
     with st.form("Neuer Benutzer"):
@@ -116,6 +123,7 @@ def new_user_form() -> None:
         st.form_submit_button("Knöpfle")
 
 
+@func_timer
 def list_all_accounts() -> None:
     """Liste aller Benutzerkonten"""
     users: List[Dict[str, Any]] = st.session_state["all_user_data"]
@@ -129,7 +137,7 @@ def list_all_accounts() -> None:
     st.button("ok")
 
 
-# Datei Down-/Upload
+@func_timer
 def sidebar_file_upload() -> Any:
     """hochgeladene Excel-Datei"""
 
@@ -195,6 +203,7 @@ def sidebar_file_upload() -> Any:
     return f_up
 
 
+@func_timer
 def base_settings() -> None:
     """Grundeinstellungen (Stundenwerte, JDL, Monatswerte)"""
 
@@ -240,6 +249,7 @@ def base_settings() -> None:
                 st.session_state["but_base_settings"] = st.form_submit_button("Knöpfle")
 
 
+@func_timer
 def select_graphs() -> None:
     """Auswahl der anzuzeigenden Grafiken"""
     with st.sidebar:
@@ -319,6 +329,7 @@ def select_graphs() -> None:
                 st.session_state["but_select_graphs"] = st.form_submit_button("Knöpfle")
 
 
+@func_timer
 def meteo_sidebar(page: str) -> None:
     """sidebar-Menu zur Außentemperatur"""
 
@@ -389,6 +400,7 @@ def meteo_sidebar(page: str) -> None:
         st.markdown("###")
 
 
+@func_timer
 def meteo_params_main() -> None:
     """Wetterdaten-Menu auf der Hauptseite"""
 
@@ -430,9 +442,7 @@ def meteo_params_main() -> None:
             st.session_state["but_meteo_main"] = st.form_submit_button("Knöpfle")
 
 
-# Ausreißerbereinigung
-
-
+@func_timer
 def clean_outliers() -> None:
     """Menu zur Ausreißerbereinigung"""
 
@@ -469,7 +479,7 @@ def clean_outliers() -> None:
                 )
 
 
-# geglättete Linien
+@func_timer
 def smooth() -> None:
     """Einstellungen für die geglätteten Linien"""
 
@@ -516,7 +526,7 @@ def smooth() -> None:
                 st.session_state["but_smooth"] = st.form_submit_button("Knöpfle")
 
 
-# horizontale und vertikale Linien
+@func_timer
 def h_v_lines() -> None:
     """Menu für horizontale und vertikale Linien"""
 
@@ -566,7 +576,7 @@ def h_v_lines() -> None:
                 st.session_state["but_h_v_lines"] = st.form_submit_button("Knöpfle")
 
 
-# Darstellungsoptionen für Linien auf Hauptseite
+@func_timer
 def display_options_main_col_settings() -> Dict[str, Dict]:
     """Settings for the columns of the main display options (controlling line color, type, etc.)
 
@@ -610,6 +620,7 @@ def display_options_main_col_settings() -> Dict[str, Dict]:
     }
 
 
+@func_timer
 def display_options_main() -> bool:
     """Hauptmenu für die Darstellungsoptionen (Linienfarben, Füllung, etc.)"""
 
@@ -723,6 +734,7 @@ def display_options_main() -> bool:
     return but_upd_main
 
 
+@func_timer
 def display_smooth_main() -> bool:
     """Hauptmenu für die Darstellungsoptionen (Linienfarben, Füllung, etc.)"""
 
@@ -831,7 +843,7 @@ def display_smooth_main() -> bool:
     return but_smooth
 
 
-# Downloads
+@func_timer
 def downloads(page: str = "graph") -> None:
     """Dateidownloads"""
     if "meteo" in page:

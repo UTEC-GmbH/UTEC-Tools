@@ -13,6 +13,7 @@ import streamlit as st
 from loguru import logger
 
 from modules import constants as cont
+from modules.classes import LogLevel
 
 
 def func_timer(func: Callable) -> Callable:
@@ -27,7 +28,7 @@ def func_timer(func: Callable) -> Callable:
 
     def wrapper(*args, **kwargs) -> Any:
         start_time: float = time.monotonic()
-        logger.log("FUNC_START", f"{func.__name__} started")
+        logger.log(LogLevel.FUNC_START.name, f"{func.__name__} started")
 
         if "dic_exe_time" not in st.session_state:
             st.session_state["dic_exe_time"] = {}
@@ -36,11 +37,25 @@ def func_timer(func: Callable) -> Callable:
 
         exe_time: float = time.monotonic() - start_time
         st.session_state["dic_exe_time"][func.__name__] = exe_time
-        logger.log("TIMER", f"execution time of '{func.__name__}': {exe_time:.4f} s")
+        logger.log(
+            LogLevel.TIMER.name,
+            f"execution time of '{func.__name__}': {exe_time:.4f} s",
+        )
 
         return result
 
     return wrapper
+
+
+def st_add(key: str, value: Any) -> None:
+    """Add something to streamlit's session_state if it doesn't exist yet.
+
+    Args:
+        - key (str)
+        - value (Any)
+    """
+    if key not in st.session_state:
+        st.session_state[key] = value
 
 
 def load_lottie_file(path: str) -> Dict:
@@ -101,7 +116,6 @@ def render_svg(svg_path: str = "logo/UTEC_logo_text.svg") -> str:
         - str: Bild in string-format
     """
 
-    logger.success(f"svg-Datei '{svg_path}' codiert")
     with open(svg_path) as lines:
         svg: str = "".join(lines.readlines())
         b64: str = base64.b64encode(svg.encode("utf-8")).decode("utf-8")

@@ -8,7 +8,37 @@ https://rebrand.ly/utec-tools
 
 Run the App
 -----------
-streamlit run login.py
+streamlit run 🔑_login.py
+
+
+
+Virtual Environments and Requirements
+-------------------------------------
+
+# Create a virtual environment:
+py -m venv .venv
+
+# Activate virtual environment
+.venv\Scripts\activate
+
+
+# upgrading pip:
+py -m pip install --upgrade pip
+
+# install everything from requirements.txt:     
+pip install -r requirements.txt
+
+# install all the latest versions -> requirements_latest_versions.txt:
+pip install -r requirements_latest_versions.txt
+
+
+
+Create requirements.txt:     
+------------------------
+pip install pipreqs
+pipreqs --force --ignore .venv ./
+
+
 
 
 
@@ -30,34 +60,6 @@ pip list
 
 # show information about specific package
 pip show plotly
-
-
-Virtual Environments and Requirements
--------------------------------------
-
-# Create a virtual environment:
-py -m venv .venv
-
-# Activate virtual environment
-.venv\Scripts\activate
-
-
-
-# upgrading pip:
-py -m pip install --upgrade pip
-
-# install everything from requirements.txt:     
-pip install -r requirements.txt
-
-# install all the latest versions -> requirements_latest_versions.txt:
-pip install -r requirements_latest_versions.txt
-
-
-
-Create requirements.txt:     
-------------------------
-pip install pipreqs
-pipreqs --force --ignore .venv ./
 
 
 

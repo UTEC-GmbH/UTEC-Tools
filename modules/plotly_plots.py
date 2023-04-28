@@ -20,7 +20,6 @@ from modules.general_functions import func_timer, sort_list_by_occurance
 def line_plot(df: pd.DataFrame, meta: Dict, **kwargs) -> go.Figure:
     """Liniengrafik für Daten eines einzelnen Jahres
 
-
     Args:
         - df (pd.DataFrame): Daten
         - meta (Dict): Metadaten
@@ -28,8 +27,10 @@ def line_plot(df: pd.DataFrame, meta: Dict, **kwargs) -> go.Figure:
     Returns:
         - go.Figure: Linengrafik
     """
-
-    lines: List[str] = kwargs.get("lines") or [str(col) for col in df.columns]
+    cols: List[str] = [str(col) for col in df.columns]
+    lines: List[str] = kwargs.get("lines") or [
+        col for col in cols if "orgidx" not in col
+    ]
     title: str = kwargs.get("title") or ""
     cusd_format: str = (
         "(%{customdata|%a %d. %b %Y %H:%M})"

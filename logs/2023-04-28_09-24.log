@@ -1,0 +1,94 @@
+
+
+09:24:42 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+
+
+09:24:42 👉 function 'general_setup' started 👈 
+
+09:24:46 👉 function 'render_svg' started 👈 
+09:24:46 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+
+09:24:47 👉 function 'get_all_user_data' started 👈 
+
+09:24:47 👉 function 'connect_database' started 👈 
+09:24:47 🥳 user_authentication -> connect_database -> line: 101 | Deta-Database connection established 🥳 
+09:24:47 ⏱ execution time of 'connect_database': 0.0160 s ⏱ 
+09:24:47 🥳 user_authentication -> get_all_user_data -> line: 134 | Collected all user data from Database 🥳 
+09:24:47 ⏱ execution time of 'get_all_user_data': 0.1560 s ⏱ 
+
+09:24:47 🦤🦤🦤 Initial Setup Complete 🦤🦤🦤 
+
+09:24:47 ⏱ execution time of 'general_setup': 5.1710 s ⏱ 
+
+09:24:47 👉 function 'page_header_setup' started 👈 
+
+09:24:47 👉 function 'render_svg' started 👈 
+09:24:47 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+
+09:24:47 👉 function 'get_commit_message_date' started 👈 
+09:24:51 ⏱ execution time of 'get_commit_message_date': 3.5160 s ⏱ 
+
+09:24:51 👉 function 'get_commit_message_date' started 👈 
+09:24:51 ⏱ execution time of 'get_commit_message_date': 0.0000 s ⏱ 
+09:24:51 👟 setup_stuff -> page_header_setup -> line: 202 | page header for page 'login' created 👟 
+09:24:51 ⏱ execution time of 'page_header_setup': 3.5940 s ⏱ 
+
+09:24:51 👉 function 'display_login_page' started 👈 
+
+09:24:51 👉 function 'login_section' started 👈 
+09:24:51 ⏱ execution time of 'login_section': 0.0160 s ⏱ 
+09:24:51 ⏱ execution time of 'display_login_page': 0.0160 s ⏱ 
+09:24:51 🥳 00_🔑_login -> <module> -> line: 148 | Login Page Loaded 🥳 
+
+
+09:24:58 ✨ NEW RUN ✨ 
+
+09:24:58 👉 function 'page_header_setup' started 👈 
+
+09:24:58 👉 function 'render_svg' started 👈 
+09:24:58 ⏱ execution time of 'render_svg': 0.0160 s ⏱ 
+09:24:58 👟 setup_stuff -> page_header_setup -> line: 202 | page header for page 'login' created 👟 
+09:24:58 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+09:24:58 👉 function 'display_login_page' started 👈 
+
+09:24:58 👉 function 'login_section' started 👈 
+
+09:24:58 👉 function 'access_granted' started 👈 
+09:24:58 🥳 00_🔑_login -> access_granted -> line: 93 | logged in as: fl, access level: god 🥳 
+
+09:24:58 👉 function 'god_mode' started 👈 
+
+09:24:58 👉 function 'user_accounts' started 👈 
+09:24:58 ⏱ execution time of 'user_accounts': 0.0150 s ⏱ 
+09:24:58 ⏱ execution time of 'god_mode': 0.0150 s ⏱ 
+09:24:58 ⏱ execution time of 'access_granted': 0.0150 s ⏱ 
+09:24:58 ⏱ execution time of 'login_section': 0.0150 s ⏱ 
+09:24:58 ⏱ execution time of 'display_login_page': 0.0310 s ⏱ 
+09:24:58 🥳 00_🔑_login -> <module> -> line: 148 | Login Page Loaded 🥳 
+
+
+09:24:58 ✨ NEW RUN ✨ 
+
+09:24:58 👉 function 'page_header_setup' started 👈 
+
+09:24:58 👉 function 'render_svg' started 👈 
+09:24:58 ⏱ execution time of 'render_svg': 0.0150 s ⏱ 
+09:24:58 👟 setup_stuff -> page_header_setup -> line: 202 | page header for page 'login' created 👟 
+09:24:58 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+09:24:58 👉 function 'display_login_page' started 👈 
+
+09:24:58 👉 function 'login_section' started 👈 
+
+09:24:58 👉 function 'access_granted' started 👈 
+
+09:24:58 👉 function 'god_mode' started 👈 
+
+09:24:58 👉 function 'user_accounts' started 👈 
+09:24:58 ⏱ execution time of 'user_accounts': 0.0000 s ⏱ 
+09:24:58 ⏱ execution time of 'god_mode': 0.0160 s ⏱ 
+09:24:58 ⏱ execution time of 'access_granted': 0.0160 s ⏱ 
+09:24:58 ⏱ execution time of 'login_section': 0.0160 s ⏱ 
+09:24:58 ⏱ execution time of 'display_login_page': 0.0160 s ⏱ 
+09:24:58 🥳 00_🔑_login -> <module> -> line: 148 | Login Page Loaded 🥳 

@@ -12,6 +12,7 @@ import streamlit as st
 from loguru import logger
 
 from modules import constants as cont
+from modules.classes import LogLevel
 from modules.general_functions import func_timer
 
 
@@ -87,11 +88,14 @@ def fix_am_pm(df: pd.DataFrame, time_column: str = "Zeitstempel") -> pd.DataFram
 
     return df
 
+
 class CleanUpDLS(NamedTuple):
     """Named Tuple for return value of following function"""
+
     df_clean: pd.DataFrame
     df_deleted: pd.DataFrame
-    
+
+
 @func_timer
 def clean_up_daylight_savings(df: pd.DataFrame) -> CleanUpDLS:
     """Zeitumstellung
@@ -129,11 +133,12 @@ def clean_up_daylight_savings(df: pd.DataFrame) -> CleanUpDLS:
     df_deleted: pd.DataFrame = df[summer | winter]
 
     if len(df_deleted.index) > 0:
-        logger.warning(f"Data deleted due to daylight savings: \n\n{df_deleted}\n\n")
+        logger.warning("Data deleted due to daylight savings.")
+        logger.log(LogLevel.DATA_FRAME.name, df_deleted)
     else:
         logger.info("No data deleted due to daylight savings")
 
-    return CleanUpDLS(df_clean = df_clean, df_deleted= df_deleted)
+    return CleanUpDLS(df_clean=df_clean, df_deleted=df_deleted)
 
 
 @func_timer
@@ -253,7 +258,7 @@ def h_from_other(df: pd.DataFrame, meta: Dict[str, Any] | None = None) -> pd.Dat
     """Stundenwerte aus anderer zeitlicher Auflösung"""
 
     df_h: pd.DataFrame = pd.DataFrame()
-    dic_meta: Dict[str, Any] = meta or st.session_state["metadata"]
+    metadata: Dict[str, Any] = meta or st.session_state["metadata"]
     extended_exclude: List[str] = cont.EXCLUDE + [
         cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"]
     ]
@@ -268,31 +273,31 @@ def h_from_other(df: pd.DataFrame, meta: Dict[str, Any] | None = None) -> pd.Dat
         if col.endswith(" *h"):
             df_h[col_h] = df[col].copy()
         else:
-            dic_meta[col_h] = dic_meta[col].copy()
+            metadata[col_h] = metadata[col].copy()
             # dic_meta[col_h]["tit"] = col_h.replace(" *h", "")
 
-        if dic_meta["index"]["td_mean"] < pd.Timedelta(hours=1):
-            if dic_meta[col]["unit"] in cont.GRP_MEAN:
+        if metadata["index"]["td_mean"] < pd.Timedelta(hours=1):
+            if metadata[col]["unit"] in cont.GRP_MEAN:
                 df_h[col_h] = df[col].resample("H").mean()
             else:
                 df_h[col_h] = df[col].resample("H").sum()
 
-        if dic_meta["index"]["td_mean"] == pd.Timedelta(hours=1):
+        if metadata["index"]["td_mean"] == pd.Timedelta(hours=1):
             df_h[col_h] = df[col].copy()
 
     df_h["orgidx"] = df_h.index.copy()
     df_h = df_h.infer_objects()
-    st.session_state["metadata"] = dic_meta
+    st.session_state["metadata"] = metadata
 
-    logger.success(f"DataFrame mit Stundenwerten erstellt: \n\n{df_h.head()}\n\n")
+    logger.success("DataFrame mit Stundenwerten erstellt.")
+    logger.log(LogLevel.DATA_FRAME.name, df_h.head())
 
     return df_h
 
 
-def check_if_hourly_resolution(df: pd.DataFrame) -> pd.DataFrame:
+def check_if_hourly_resolution(df: pd.DataFrame, **kwargs) -> pd.DataFrame:
     """Check if the given DataFrame is in hourly resolution.
     If not, give out DataFrame in hourly resolution
-
 
     Args:
         - df (pd.DataFrame): The DataFrame in question
@@ -301,13 +306,28 @@ def check_if_hourly_resolution(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         - pd.DataFrame: DataFrame in hourly resolution
     """
-    ind_td: pd.Timedelta = pd.to_timedelta(df.index.to_series().diff().mean())
+    metadata: Dict[str, Any] = kwargs.get("meta") or st.session_state["metadata"]
+    extended_exclude: List[str] = cont.EXCLUDE + [
+        cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"]
+    ]
+    suff_leistung: str = cont.ARBEIT_LEISTUNG["suffix"]["Leistung"]
 
+    ind_td: pd.Timedelta = pd.to_timedelta(df.index.to_series().diff()).mean()
+    df_h: pd.DataFrame = pd.DataFrame()
     if ind_td.round("min") < pd.Timedelta(hours=1):
-        df_h: pd.DataFrame = h_from_other(df)
+        df_h = h_from_other(df)
     else:
         logger.info("df schon in Stundenauflösung")
-        df_h = df.copy()
+        for col in [
+            str(col)
+            for col in df.columns
+            if all(excl not in str(col) for excl in extended_exclude)
+        ]:
+            col_h: str = f"{col} *h".replace(suff_leistung, "")
+            df_h[col_h] = df[col].copy()
+            metadata[col_h] = metadata[col].copy()
+            if "metadata" in st.session_state:
+                st.session_state["metadata"][col_h] = metadata[col].copy()
 
     df_h = df_h.infer_objects()
 
@@ -316,6 +336,7 @@ def check_if_hourly_resolution(df: pd.DataFrame) -> pd.DataFrame:
 
 @func_timer
 def jdl(df: pd.DataFrame) -> pd.DataFrame:
+    # sourcery skip: remove-unnecessary-cast
     """Jahresdauerlinie"""
 
     df_h: pd.DataFrame = check_if_hourly_resolution(df)
@@ -326,7 +347,9 @@ def jdl(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     for col in [str(col) for col in df_jdl.columns]:
-        df_col: pd.DataFrame = df_h.sort_values(col, ascending=df_h[col].mean() < 0)
+        df_col: pd.DataFrame = df_h.sort_values(
+            col, ascending=bool(df_h[col].mean() < 0)
+        )
 
         df_jdl[col] = df_col[col].values
 
@@ -337,34 +360,34 @@ def jdl(df: pd.DataFrame) -> pd.DataFrame:
     df_jdl = df_jdl.infer_objects()
     st.session_state["df_jdl"] = df_jdl
 
-    logger.success(f"DataFrame für Jahresdauerlinie erstellt: \n\n{df_jdl.head()}\n\n")
+    logger.success("DataFrame für Jahresdauerlinie erstellt.")
+    logger.log(LogLevel.DATA_FRAME.name, df_jdl.head())
 
     return df_jdl
 
 
 @func_timer
-def mon(df: pd.DataFrame, dic_meta: Dict, year: int | None = None) -> pd.DataFrame:
+def mon(df: pd.DataFrame, meta: Dict, year: int | None = None) -> pd.DataFrame:
     """Monatswerte"""
 
-    df_h: pd.DataFrame = check_if_hourly_resolution(df)
+    df_h: pd.DataFrame = check_if_hourly_resolution(df, meta=meta)
 
     df_mon: pd.DataFrame = df_h.resample("M").sum(True)
+    df_mon.columns = [str(col).replace("*h", "*mon") for col in df_mon.columns]
+
+    if mean_cols := [
+        str(col)
+        for col in df_h.columns
+        if meta[col]["unit"]
+        in [unit for unit in cont.GRP_MEAN if unit not in [" kWh", " kW"]]
+    ]:
+        for col in mean_cols:
+            df_mon[str(col).replace("*h", "*mon")] = df_h[col].resample("M").mean()
 
     for col in df_mon.columns:
-        col_mon: str = str(col).replace("*h", "*mon")
+        meta[col] = meta[str(col).replace("*mon", "*h")].copy()
+        meta[col]["unit"] = " kWh" if meta[col]["unit"] == " kW" else meta[col]["unit"]
 
-        if dic_meta[col].get("unit") in [
-            unit for unit in cont.GRP_MEAN if unit not in [" kWh", " kW"]
-        ]:
-            df_mon[col] = df_h[col].resample("M").mean()
-
-        df_mon.rename(columns={str(col): col_mon}, inplace=True)
-        dic_meta[col_mon] = dic_meta[col].copy()
-        dic_meta[col_mon]["unit"] = (
-            " kWh" if dic_meta[col_mon]["unit"] == " kW" else dic_meta[col_mon]["unit"]
-        )
-
-    # df_mon.index = [df_mon.index[x].replace(day=15) for x in range(len(df_mon.index))]  # type: ignore
     ind: pd.DatetimeIndex = pd.DatetimeIndex(df_mon.index)
     df_mon.index = pd.to_datetime(ind.strftime("%Y-%m-15"))
 
@@ -379,7 +402,8 @@ def mon(df: pd.DataFrame, dic_meta: Dict, year: int | None = None) -> pd.DataFra
 
     st.session_state["df_mon"] = df_mon
 
-    logger.success(f"DataFrame mit Monatswerten erstellt: \n\n{df_mon.head()}\n\n")
+    logger.success("DataFrame mit Monatswerten erstellt.")
+    logger.log(LogLevel.DATA_FRAME.name, df_mon.head())
 
     return df_mon
 

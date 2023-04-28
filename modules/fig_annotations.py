@@ -1,10 +1,8 @@
-"""
-Einstellungen und Anmerkungen für plots
-"""
+"""Einstellungen und Anmerkungen für plots"""
 
 
 from datetime import datetime
-from typing import Any, Dict, List, Literal
+from typing import Any, Literal
 
 import numpy as np
 import pandas as pd
@@ -24,17 +22,18 @@ from modules.general_functions import func_timer, nachkomma
 
 @st.cache_data(show_spinner=False)
 @func_timer
-def middle_xaxis(fig_data: Dict[str, Dict[str, Any]]) -> datetime | float:
+def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> datetime | float:
     """Mitte der x-Achse finden
 
     Args:
         - fig (go.Figure): Grafik, die untersucht werden soll
 
     Returns:
-        - datetime | float: je nach Index entweder die Zeit oder die Zahl in der Mitte der x-Achse
+        - datetime | float: je nach Index entweder die Zeit
+            oder die Zahl in der Mitte der x-Achse
     """
 
-    data_x: List = [val["x"] for val in fig_data.values()]
+    data_x: list = [val["x"] for val in fig_data.values()]
     x_max_temp: datetime | int = max(max(dat) for dat in data_x if len(dat) > 0)
     x_max: float = (
         x_max_temp.timestamp() if isinstance(x_max_temp, datetime) else x_max_temp
@@ -56,8 +55,8 @@ def middle_xaxis(fig_data: Dict[str, Dict[str, Any]]) -> datetime | float:
 
 def add_arrow(
     fig: go.Figure,
-    fig_data: Dict[str, Dict[str, Any]],
-    fig_layout: Dict[str, Any],
+    fig_data: dict[str, dict[str, Any]],
+    fig_layout: dict[str, Any],
     x_val: datetime | float | int,
     y_or_line: float | int | str,
     **kwargs,
@@ -67,15 +66,18 @@ def add_arrow(
     Args:
         - fig (go.Figure): Grafik
         - x_val (datetime, float, int): Wert auf der x-Achse
-        - y_or_line (float, int, str): Wert auf der y-Achse (float) oder Name der Linie (str), die beschriftet werden soll
+        - y_or_line (float, int, str): Wert auf der y-Achse (float) oder
+            Name der Linie (str), die beschriftet werden soll
 
     optional kwargs:
         - text (str): Beschriftungstext
         - hovertxt (str): Text bei Maus-Über
         - yaxis(str): die y-Achse, auf die sich der y-Wert bezieht
-        - anchor (Literal["right", "left"]): Anker links oder rechts für Ausrichtung der Beschriftung
-        - x_vers (int): Abstand zwischen Pfeilspitze und Beschriftung in X-Richtung in px; default = 20
-        - y_vers (int): Abstand zwischen Pfeilspitze und Beschriftung in Y-Richtung in px; default = 10
+        - anchor (Literal["right", "left"]): Ausrichtung der Beschriftung
+        - x_vers (int): Abstand zwischen Pfeilspitze und Beschriftung
+            in X-Richtung in px; default = 20
+        - y_vers (int): Abstand zwischen Pfeilspitze und Beschriftung
+            in Y-Richtung in px; default = 10
         - middle_xaxis (datetime | float): die Mitte der x-Achse (für die Ausrichtung)
 
     Returns:
@@ -84,7 +86,7 @@ def add_arrow(
 
     # find the y-value for the given x-value, if no y-value is given
     if isinstance(y_or_line, str):
-        line_data: Dict[str, Any] | None = fig_data[y_or_line]
+        line_data: dict[str, Any] | None = fig_data[y_or_line]
         y_val: float = line_data["x"][np.where(line_data["y"] == x_val)[0][0]]
     else:
         line_data = None
@@ -93,9 +95,9 @@ def add_arrow(
     # Beschriftungstext
     text: str = kwargs.get("text") or f"{str(x_val)} kW"
 
-    # Text bei mouse-hover - wenn nicht angegeben: x-Wert (Datum, an dem der y-Wert auftritt)
+    # Text bei mouse-hover - default: x-Wert (Datum, an dem der y-Wert auftritt)
     hovertext: str = kwargs.get("hovertext") or hovertext_from_x_val(
-        cont.FIG_TITLES["jdl"] in fig_layout["meta"]["title"], x_val, line_data
+        fig_layout["meta"]["title"], x_val, line_data
     )
 
     # Textausrichtung
@@ -108,7 +110,7 @@ def add_arrow(
         kwargs.get("anchor") or "right" if anc else "left"
     )
 
-    dic_arrow: Dict[str, Any] = {
+    dic_arrow: dict[str, Any] = {
         "x": x_val,
         "y": y_val,
         "yref": kwargs.get("yaxis") or "y1",
@@ -143,8 +145,8 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
         - fig (go.Figure): Grafik, die Pfeile erhalten soll
     """
 
-    fig_data: Dict[str, Dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
-    fig_layout: Dict[str, Any] = kwargs.get("layout") or fig_layout_as_dic(fig)
+    fig_data: dict[str, dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
+    fig_layout: dict[str, Any] = kwargs.get("layout") or fig_layout_as_dic(fig)
     middle_x: datetime | float = middle_xaxis(fig_data)
 
     # alle Linien in Grafik
@@ -176,19 +178,19 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
 
 
 def hovertext_from_x_val(
-    jdl: bool, x_val: datetime | float, line_data: Dict[str, Any] | None
+    title: str, x_val: datetime | float, line_data: dict[str, Any] | None
 ) -> str:
     """Falls kein Hovertext gegeben wird, erstellt diese Funktion einen aus dem x-Wert
 
     Args:
         jdl (bool): handelt es sich bei der Grafik um eine Jahresdauerlinie
         x_val (datetime | float): x-Wert, der bezeichnet wird
-        line_data (Dict[str, Any] | None): line_data für die Linie, die beschriftet werden soll
+        line_data (dict[str, Any] | None): line_data für zu beschriftende Linie
 
     Returns:
         str: Hovertext
     """
-
+    jdl: bool = cont.FIG_TITLES["jdl"] in title
     if jdl and line_data:
         hov_date: datetime | str = line_data["customdata"][
             np.where(line_data["x"] == x_val)
@@ -210,7 +212,7 @@ def hovertext_from_x_val(
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
 @func_timer
 def vline(fig: go.Figure, x_val: float or datetime, txt: str, pos: str) -> None:
-    """eine vertikale Linie einfügen"""
+    """Vertikale Linie einfügen"""
 
     fig.add_vline(
         x=x_val,
@@ -228,10 +230,10 @@ def vline(fig: go.Figure, x_val: float or datetime, txt: str, pos: str) -> None:
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
 @func_timer
 def hide_hlines(fig: go.Figure) -> None:
-    """horizontale Linien ausblenden (ohne sie zu löschen)"""
+    """Horizontale Linien ausblenden (ohne sie zu löschen)"""
 
-    fig_data: Dict[str, Dict[str, Any]] = fig_data_as_dic(fig)
-    fig_layout: Dict[str, Any] = fig_layout_as_dic(fig)
+    fig_data: dict[str, dict[str, Any]] = fig_data_as_dic(fig)
+    fig_layout: dict[str, Any] = fig_layout_as_dic(fig)
 
     for dat in fig_data:
         if "hline" in dat:
@@ -252,12 +254,11 @@ def hline_line(
     fig: go.Figure,
     value: float,
     ti_hor_init: str | None = None,
-    cb_hor_dash: bool = True,
 ) -> None:
-    """horizontale Linie einfügen"""
+    """Horizontale Linie einfügen"""
 
     ti_hor: str | None = None if ti_hor_init in {"", "new text"} else ti_hor_init
-
+    cb_hor_dash: bool = st.session_state.get("cb_hor_dash") or True
     if any("hline" in x for x in [s.name for s in fig.layout.shapes]):
         for shape in fig.layout.shapes:
             if "hline" in shape.name:
@@ -291,7 +292,7 @@ def hline_line(
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
 @func_timer
-def hline_fill(fig: go.Figure, value: float, ms_hor: List) -> go.Figure:
+def hline_fill(fig: go.Figure, value: float, ms_hor: list) -> go.Figure:
     """Ausfüllen zwischen horizontaler Linie und Linien"""
     dic_fill = {}
     traces = [tr for tr in fig.data if tr.name in ms_hor]
@@ -333,10 +334,10 @@ def hline_fill(fig: go.Figure, value: float, ms_hor: List) -> go.Figure:
 # horizontale / vertikale Linien
 @func_timer
 def h_v_lines() -> None:
-    """horizontale und vertikale Linien"""
+    """Horizontale und vertikale Linien"""
 
     # horizontale Linie
-    lis_figs_hor: List[str] = ["fig_base"]
+    lis_figs_hor: list[str] = ["fig_base"]
     if st.session_state.get("cb_jdl"):
         lis_figs_hor.append("fig_jdl")
 
@@ -347,21 +348,15 @@ def h_v_lines() -> None:
                 st.session_state[fig],
                 st.session_state["ni_hor"],
                 st.session_state["ti_hor"],
-                st.session_state.get("cb_hor_dash"),
             )
-            # st.session_state[fig]= fuan.hline_fill(
-            #   st.session_state[fig],
-            #   st.session_state['ni_hor'],
-            #   st.session_state['ms_hor']
-            # )
 
 
-def calculate_smooth_values(trace: Dict[str, Any]) -> np.ndarray:
+def calculate_smooth_values(trace: dict[str, Any]) -> np.ndarray:
     """Y-Werte für geglättete Linie berechnen
 
 
     Args:
-        - trace (Dict[str, Any]): Linie, die geglättet werden soll
+        - trace (dict[str, Any]): Linie, die geglättet werden soll
 
     Returns:
         - np.ndarray: geglättete Y-Werte
@@ -383,9 +378,9 @@ def calculate_smooth_values(trace: Dict[str, Any]) -> np.ndarray:
 def smooth(fig: go.Figure, **kwargs) -> go.Figure:
     """geglättete Linien"""
 
-    fig_data: Dict[str, Dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
+    fig_data: dict[str, dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
 
-    traces: List[Dict] = kwargs.get("traces") or [
+    traces: list[dict] = kwargs.get("traces") or [
         trace
         for trace in fig_data.values()
         if all(excl not in trace["name"] for excl in cont.EXCLUDE)
@@ -398,7 +393,7 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
         smooth_visible: bool = bool(st.session_state.get(f"cb_vis_{smooth_name}"))
 
         if smooth_visible:
-            meta_trace: Dict[str, Any] = trace["meta"]
+            meta_trace: dict[str, Any] = trace["meta"]
 
             if smooth_name not in fig_data:
                 meta_trace = meta_trace.update({"gl_win": gl_win, "gl_deg": gl_deg})
@@ -452,7 +447,6 @@ def remove_outl(fig: go.Figure, cut_off: float) -> go.Figure:
         if annot["y"] > cut_off:
             y_old = annot["y"]
             annot["y"] = cut_off
-            # an['name'] = an['name'].replace(str(y_old), str(cut_off))
             annot["text"] = annot["text"].replace(str(y_old), str(cut_off))
 
     return fig
@@ -460,7 +454,7 @@ def remove_outl(fig: go.Figure, cut_off: float) -> go.Figure:
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
 @func_timer
-def add_points(fig: go.Figure, df: pd.DataFrame, lines: List) -> None:
+def add_points(fig: go.Figure, df: pd.DataFrame, lines: list) -> None:
     """Punkte hinzufügen"""
 
     for line in lines:
@@ -487,18 +481,6 @@ def clean_outliers() -> None:
                 st.session_state[fig] = remove_outl(
                     st.session_state[fig], st.session_state["ni_outl"]
                 )
-
-
-# geglättete Linien
-# @dics.timer()
-# def smooth():
-#     # geglättete Linien
-#     st.session_state["fig_base"] = smoothing(
-#         fig=st.session_state["fig_base"],
-#         dic_meta=st.session_state["metadata"],
-#         window=int(st.session_state["gl_win"]),
-#         order=int(st.session_state["gl_deg"]),
-#     )
 
 
 @func_timer

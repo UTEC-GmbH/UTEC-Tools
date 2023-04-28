@@ -1,0 +1,31 @@
+select = ["ALL"]
+fix = true
+ignore = [
+    "ANN101",
+    "ANN002",
+    "ANN003",
+    "COM812",
+    "D202",
+    "D205",
+    "D400",
+    "D401",
+    "D406",
+    "D407",
+    "D415",
+    "D417",
+    "DTZ",
+    "G004",
+    "PD901",
+    "PGH003",
+    "PTH123",
+    "W291",
+    "W292",
+    "W293",
+]
+
+[pep8-naming]
+ignore-names = [
+    "00_🔑_login",
+    "01_📈_Grafische_Datenauswertung",
+    "02_⛅_Meteorologische_Daten",
+]

@@ -1,8 +1,6 @@
 """fix bullshit geg index"""
 
 import os
-from io import BytesIO
-from typing import Any, Dict, List
 
 import numpy as np
 import pandas as pd
@@ -13,8 +11,8 @@ pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
 FOLDER: str = "P:\\Haustechnik\\861 Focke Wulf Siedlung West\\8. LP 1-2 Vorplanung\\Kesseldimensionierung\\WMZ-Daten"
 
 
-def import_files_in_folder(folder: str = FOLDER) -> Dict[str, pd.DataFrame]:
-    """Import files into a Dictionary of dfs"""
+def import_files_in_folder(folder: str = FOLDER) -> dict[str, pd.DataFrame]:
+    """Import files into a dictionary of dfs"""
 
     files = os.listdir(folder)
     for file in files:
@@ -34,14 +32,14 @@ def import_files_in_folder(folder: str = FOLDER) -> Dict[str, pd.DataFrame]:
 
 
 def fix_bullshit_index(df: pd.DataFrame, bs_name: str = "Zeitstempel") -> pd.DataFrame:
-    """repair the bullshit time index
+    """Repair the bullshit time index
 
     Args:
         df (pd.DataFrame): DataFrame with the bullshit index
         bs_name (str, optional): Name of the bullshit column. Defaults to "Zeitstempel".
 
     Returns:
-        tuple[pd.DataFrame, pd.DataFrame]: repaired df with proper index (original, hourly values)
+        pd.DataFrame: repaired df with proper index (original, hourly values)
     """
 
     bs_col: pd.Series = df[bs_name]
@@ -52,17 +50,20 @@ def fix_bullshit_index(df: pd.DataFrame, bs_name: str = "Zeitstempel") -> pd.Dat
             df[col] = pd.to_numeric(df[col], "coerce")
 
     # wenn Stunden negative Differenz haben und Tag gleich bleibt
-    if any(bs_col.dt.hour.diff().values < 0) and any(bs_col.dt.day.diff().values == 0):
+    if any(bs_col.dt.hour.diff().to_numpy() < 0) and any(
+        bs_col.dt.day.diff().to_numpy() == 0
+    ):
         conditions = [
-            (bs_col.dt.day.diff().values > 0),  # neuer Tag
-            (bs_col.dt.month.diff().values != 0),  # neuer Monat
-            (bs_col.dt.year.diff().values != 0),  # neues Jahr
+            (bs_col.dt.day.diff().to_numpy() > 0),  # neuer Tag
+            (bs_col.dt.month.diff().to_numpy() != 0),  # neuer Monat
+            (bs_col.dt.year.diff().to_numpy() != 0),  # neues Jahr
             (
-                (bs_col.dt.hour.diff().values < 0) & (bs_col.dt.day.diff().values == 0)
+                (bs_col.dt.hour.diff().to_numpy() < 0)
+                & (bs_col.dt.day.diff().to_numpy() == 0)
             ),  # Stunden mit negativer Differenz und Tag bleibt gleich
         ]
 
-        choices: List = [
+        choices: list = [
             pd.Timedelta(0, "h"),
             pd.Timedelta(0, "h"),
             pd.Timedelta(0, "h"),
@@ -76,12 +77,12 @@ def fix_bullshit_index(df: pd.DataFrame, bs_name: str = "Zeitstempel") -> pd.Dat
         )
 
         offset[0] = pd.Timedelta(0)
-        offset.fillna(method="ffill", inplace=True)
+        offset = offset.fillna(method="ffill")
 
         bs_col += offset
 
     df[bs_name] = bs_col
-    df.set_index(bs_name, inplace=True)
+    df = df.set_index(bs_name)
     df = df[~df.index.duplicated(keep="first")]
 
     df_h: pd.DataFrame = df.resample("H").mean()
@@ -92,11 +93,11 @@ def fix_bullshit_index(df: pd.DataFrame, bs_name: str = "Zeitstempel") -> pd.Dat
     return df_h
 
 
-def excel_hourly(dic: Dict[str, pd.DataFrame]) -> None:
+def excel_hourly(dic: dict[str, pd.DataFrame]) -> None:
     """create Excel-file
 
     Args:
-        dic (Dict[str, pd.DataFrame]): _description_
+        dic (dict[str, pd.DataFrame]): _description_
     """
     offset_col = 2
     offset_row = 4
@@ -164,7 +165,7 @@ def excel_hourly(dic: Dict[str, pd.DataFrame]) -> None:
 
 
 def fix_all_and_export() -> None:
-    """do it"""
+    """Do it"""
     dic = import_files_in_folder()
     dic_fixed = {key: fix_bullshit_index(df) for key, df in dic.items()}
     excel_hourly(dic_fixed)

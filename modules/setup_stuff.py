@@ -4,11 +4,9 @@ import datetime as dt
 import locale
 import os
 import sys
-from typing import Any, Dict, List
+from typing import Any
 
 import plotly.io as pio
-
-# import plotly.io as pio
 import sentry_sdk
 import streamlit as st
 from dotenv import load_dotenv
@@ -17,14 +15,14 @@ from loguru import logger
 from pytz import BaseTzInfo, timezone
 
 from modules import constants as cont
-from modules.classes import LogLevel
 from modules.general_functions import func_timer, render_svg, st_add
+from modules.logger_setup import LogLevel
 from modules.user_authentication import get_all_user_data
 
 
 @func_timer
 @st.cache_data
-def get_commit_message_date() -> Dict[str, dt.datetime | str]:
+def get_commit_message_date() -> dict[str, dt.datetime | str]:
     """Commit message and date from GitHub to show in the header.
 
 
@@ -33,7 +31,7 @@ def get_commit_message_date() -> Dict[str, dt.datetime | str]:
     settings -> developer settings -> personal access tokens
 
     Returns:
-        - Dict[str, dt.datetime | str]:
+        - dict[str, dt.datetime | str]:
             - "com_date" (dt.datetime): date of commit
             - "com_mst" (str): commit message
     """
@@ -76,7 +74,7 @@ def get_commit_message_date() -> Dict[str, dt.datetime | str]:
 
 @func_timer
 def general_setup() -> None:
-    """initial setup (only done once)
+    """Setup general things (only done once)
     - streamlit page config
     - UTEC logo
     - logger setup (loguru)
@@ -94,61 +92,21 @@ def general_setup() -> None:
     sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), traces_sample_rate=0.1)
 
     st_add("UTEC_logo", render_svg())
-    # if not st.session_state.get("UTEC_logo"):
-    #     st.session_state["UTEC_logo"] = render_svg()
 
     st.markdown(
         cont.CSS_LABELS,
         unsafe_allow_html=True,
     )
 
-    # if any(entry not in st.session_state for entry in ["com_date", "com_msg"]):
-    #     commit: Dict[str, dt.datetime | str] = get_commit_message_date()
-    #     st.session_state["com_date"] = commit["com_date"]
-    #     st.session_state["com_msg"] = commit["com_msg"]
+    if any(entry not in st.session_state for entry in ["com_date", "com_msg"]):
+        commit: dict[str, dt.datetime | str] = get_commit_message_date()
+        st.session_state["com_date"] = commit["com_date"]
+        st.session_state["com_msg"] = commit["com_msg"]
 
     st_add("all_user_data", get_all_user_data())
-    # if "all_user_data" not in st.session_state:
-    #     st.session_state["all_user_data"] = get_all_user_data()
 
     st.session_state["initial_setup"] = True
     logger.log(LogLevel.ONCE_PER_SESSION.name, "Initial Setup Complete")
-
-
-def logger_setup() -> None:
-    """Setup the loguru Logging module"""
-
-    custom_levels: List[str] = [
-        lvl for lvl in LogLevel.__annotations__ if getattr(LogLevel, lvl).custom
-    ]
-
-    for lvl in custom_levels:
-        try:
-            logger.level(lvl)
-        except ValueError:
-            logger.level(lvl, no=1)
-
-    def format_of_lvl(record: Dict) -> str:
-        return getattr(LogLevel, record["level"].name).get_format()
-
-    logger.remove()
-
-    logger.add(
-        sink=sys.stderr,  # type: ignore
-        level=1,
-        format=format_of_lvl,  # type: ignore
-    )
-
-    logger.add(
-        sink=f"{cont.CWD}\\logs\\{{time:YYYY-MM-DD_HH-mm}}.log",
-        # rotation="1 second",
-        retention=2,
-        level=1,
-        format=format_of_lvl,  # type: ignore
-    )
-
-    st.session_state["logger_setup"] = True
-    logger.log(LogLevel.START.name, "Session Started. Logger Setup Complete.")
 
 
 @func_timer
@@ -159,11 +117,8 @@ def page_header_setup(page: str) -> None:
     st.session_state["title_container"] = st.container()
 
     with st.session_state["title_container"]:
-        columns: List = st.columns(2)
+        columns: list = st.columns(2)
 
-        # Logo
-        # if "UTEC_logo" not in st.session_state:
-        #     st.session_state["UTEC_logo"] = render_svg()
         st_add("UTEC_logo", render_svg())
         with columns[0]:
             st.write(st.session_state["UTEC_logo"], unsafe_allow_html=True)
@@ -184,7 +139,7 @@ def page_header_setup(page: str) -> None:
                 unsafe_allow_html=True,
             )
 
-            access_lvl_user: str | List | None = st.session_state.get("access_lvl")
+            access_lvl_user: str | list | None = st.session_state.get("access_lvl")
             if isinstance(access_lvl_user, str) and access_lvl_user in ("god"):
                 st.write(
                     f"""

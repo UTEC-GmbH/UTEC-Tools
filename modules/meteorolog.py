@@ -2,10 +2,9 @@
 Meteorologische Daten
 """
 
-import datetime
 import os
 from dataclasses import dataclass, field
-from typing import Dict, List
+from datetime import datetime as dt
 from zoneinfo import ZoneInfo
 
 import geopy
@@ -13,12 +12,9 @@ import meteostat as met
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from dotenv import load_dotenv
 from geopy import distance
 
 from modules.general_functions import del_session_state_entry, func_timer
-
-load_dotenv(".streamlit/secrets.toml")
 
 # Grenze für Daten-Validität
 # einen Wetterstation muss für den angegebenen Zeitraum
@@ -35,18 +31,15 @@ WEATHERSTATIONS_MAX_DISTANCE = 700
 
 
 @func_timer
-def start_end_time(
-    page: str | None = None,
-) -> tuple[datetime.datetime | None, datetime.datetime | None]:
+def start_end_time(**kwargs) -> tuple[dt | None, dt | None]:
     """
     Zeitraum für Daten-Download
     """
 
-    if page is None:
-        page = st.session_state.get("page")
+    page: str = str(kwargs.get("page")) or st.session_state.get("page")
 
     if page == "meteo":
-        start_year = (
+        start_year: int = (
             min(
                 st.session_state["meteo_start_year"],
                 st.session_state["meteo_end_year"],
@@ -56,27 +49,23 @@ def start_end_time(
         )
 
         if "meteo_end_year" in st.session_state:
-            end_year = max(
+            end_year: int = max(
                 st.session_state["meteo_start_year"],
                 st.session_state["meteo_end_year"],
             )
         else:
             end_year = 2020
 
-        start_time = datetime.datetime(
-            start_year, 1, 1, 0, 0, tzinfo=ZoneInfo("Europe/Berlin")
-        )
-        end_time = datetime.datetime(
-            end_year, 12, 31, 23, 59, tzinfo=ZoneInfo("Europe/Berlin")
-        )
-        if end_time.year == datetime.datetime.now().year:
-            end_time = datetime.datetime.now()
+        start_time = dt(start_year, 1, 1, 0, 0, tzinfo=ZoneInfo("Europe/Berlin"))
+        end_time = dt(end_year, 12, 31, 23, 59, tzinfo=ZoneInfo("Europe/Berlin"))
+        if end_time.year == dt.now().year:
+            end_time = dt.now()
     elif "df" not in st.session_state:
         start_time = end_time = None
     else:
         ind_0 = min(st.session_state["df"].index[0], st.session_state["df"].index[-1])
         ind_1 = max(st.session_state["df"].index[0], st.session_state["df"].index[-1])
-        start_time = datetime.datetime(
+        start_time = dt(
             ind_0.year,
             1,
             1,
@@ -84,7 +73,7 @@ def start_end_time(
             0,
             tzinfo=ZoneInfo("Europe/Berlin"),
         )
-        end_time = datetime.datetime(
+        end_time = dt(
             ind_1.year,
             12,
             31,
@@ -101,7 +90,7 @@ if "page" in st.session_state:
 
 
 @func_timer
-def geo(address: str) -> Dict:
+def geo(address: str) -> dict:
     """
     geographische daten (Längengrad, Breitengrad) aus eingegebener Adresse
     """
@@ -256,7 +245,7 @@ def closest_station_with_data(param: str) -> tuple[str | float]:
 
 
 @func_timer
-def selected_params(page: str = "meteo") -> List:
+def selected_params(page: str = "meteo") -> list:
     """ausgewählte Parameter"""
 
     if "graph" in page:
@@ -571,7 +560,7 @@ class ClassParam:
 
 
 # Parameter, die standardmäßig für den Download ausgewählt sind
-LIS_DEFAULT_PARAMS: List = [
+LIS_DEFAULT_PARAMS: list = [
     "Lufttemperatur in 2 m Höhe",
     "Globalstrahlung",
     "Windgeschwindigkeit",
@@ -580,7 +569,7 @@ LIS_DEFAULT_PARAMS: List = [
 
 
 # Parameter von Meteostat
-DIC_METEOSTAT_CODES: Dict = {
+DIC_METEOSTAT_CODES: dict = {
     "TEMP": {
         "orig_name": "Air Temperature",
         "tit": "Lufttemperatur in 2 m Höhe",
@@ -644,7 +633,7 @@ DIC_METEOSTAT_CODES: Dict = {
 }
 
 # Eigene Kategorien
-LIS_CAT_UTEC: List = [
+LIS_CAT_UTEC: list = [
     "Temperaturen",
     "Sonne und Wind",
     "Feuchte, Luftdruck, Niederschlag",
@@ -652,13 +641,13 @@ LIS_CAT_UTEC: List = [
 ]
 
 # alle Parameter
-LIS_PARAMS: List = [
+LIS_PARAMS: list = [
     ClassParam(key)
     for key in list(DIC_METEOSTAT_CODES.keys())
     if ClassParam(key).cat_utec
 ]
 
-DIC_PARAMS: Dict = {
+DIC_PARAMS: dict = {
     key: ClassParam(key)
     for key in list(DIC_METEOSTAT_CODES.keys())
     if ClassParam(key).cat_utec

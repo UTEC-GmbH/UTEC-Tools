@@ -4,11 +4,10 @@
 import os
 
 import pandas as pd
-from typing import List, Dict
 
 cwd: str = os.getcwd()
 
-FILE_PATHS: Dict[str, str] = {
+FILE_PATHS: dict[str, str] = {
     "el_single": f"{cwd}/example_files/Auswertung Stromlastgang - einzelnes Jahr.xlsx",
     "el_multi": f"{cwd}/example_files/Stromlastgang - mehrere Jahre.xlsx",
     "heat_multi": f"{cwd}/example_files/Wärmelastgang - mehrere Jahre.xlsx",
@@ -24,14 +23,14 @@ file: str = FILE_PATHS["el_single"]
 df_messy: pd.DataFrame = pd.read_excel(file, sheet_name="Daten")
 
 
-def units_from_messy_df(df_messy: pd.DataFrame) -> Dict[str, str]:
+def units_from_messy_df(df_messy: pd.DataFrame) -> dict[str, str]:
     """Get the units of every column from the messy df right after import
 
     Args:
         - df (pd.DataFrame): messy df
 
     Returns:
-        - Dict[str, str]: keys = column names, values = units
+        - dict[str, str]: keys = column names, values = units
     """
 
     # Zelle mit Index-Markierung
@@ -47,8 +46,8 @@ def units_from_messy_df(df_messy: pd.DataFrame) -> Dict[str, str]:
     )
     unit_row: int = df_messy.index.get_loc(unit_cell.index[0])
 
-    column_names: List[str] = df_messy.iloc[ind_row, ind_col + 1 :].to_list()
-    units: List[str] = df_messy.iloc[unit_row, ind_col + 1 :].to_list()
+    column_names: list[str] = df_messy.iloc[ind_row, ind_col + 1 :].to_list()
+    units: list[str] = df_messy.iloc[unit_row, ind_col + 1 :].to_list()
 
     # leerzeichen vor Einheit
     for unit in units:
@@ -93,7 +92,7 @@ def edit_df_after_import(df_messy: pd.DataFrame) -> pd.DataFrame:
         )
 
     # delete duplicates in index (day light savings)
-    # dls: Dict[str, pd.DataFrame] = clean_up_daylight_savings(df)
+    # dls: dict[str, pd.DataFrame] = clean_up_daylight_savings(df)
     # df = dls["df_clean"]
     # st.session_state["df_dls_deleted"] = (
     #     dls["df_deleted"] if len(dls["df_deleted"]) > 0 else None
@@ -108,4 +107,4 @@ def edit_df_after_import(df_messy: pd.DataFrame) -> pd.DataFrame:
 df: pd.DataFrame = edit_df_after_import(df_messy)
 
 # Metadaten
-units: Dict[str, str] = units_from_messy_df(df_messy)
+units: dict[str, str] = units_from_messy_df(df_messy)

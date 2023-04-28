@@ -19,7 +19,7 @@ page_header_setup(PAGE)
 
 if uauth.authentication(PAGE):
     st.warning("temporär außer Betrieb")
-    '''
+    
     # Auswahl Ort
     with st.sidebar:
         sm.meteo_sidebar(PAGE)
@@ -121,4 +121,4 @@ if uauth.authentication(PAGE):
 
         st.markdown("###")
         sm.meteo_params_main()
-    '''
+    

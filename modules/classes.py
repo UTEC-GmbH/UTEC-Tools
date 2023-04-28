@@ -4,7 +4,7 @@ import re
 from dataclasses import dataclass, field
 from enum import Enum
 from math import ceil
-from typing import Any, Dict, List, NamedTuple, Tuple
+from typing import Any, NamedTuple
 
 import numpy as np
 import pandas as pd
@@ -28,83 +28,6 @@ class MarkerType(Enum):
     UNITS = "units"
 
 
-@dataclass(frozen=True)
-class LevelProperties:
-    """Logger Levels"""
-
-    name: str
-    custom: bool = False
-    icon: str = "👉👈"
-    time: str = "{time:HH:mm:ss}"
-    info: str = "{module} -> {function} -> line: {line} | "
-    blank_lines_before: int = 0
-    blank_lines_after: int = 0
-
-    def get_format(self) -> str:
-        """Logger message Format erzeugen"""
-        nl_0: str = "\n" * self.blank_lines_before
-        nl_1: str = "\n" * (self.blank_lines_after + 1)
-        info: str = self.info
-        time: str = self.time
-        if len(self.icon) == 2:
-            ic_0: str = self.icon[0]
-            ic_1: str = self.icon[1]
-        else:
-            ic_0: str = self.icon
-            ic_1: str = ic_0
-        return f"{nl_0}{time} {ic_0} {info}{{message}} {ic_1} {nl_1}"
-
-
-@dataclass
-class LogLevel:
-    """Logger Format"""
-
-    INFO: LevelProperties = LevelProperties("INFO", icon="💡")
-    DEBUG: LevelProperties = LevelProperties("DEBUG", icon="🐞")
-    ERROR: LevelProperties = LevelProperties("ERROR", icon="😱")
-    SUCCESS: LevelProperties = LevelProperties("SUCCESS", icon="🥳")
-    WARNING: LevelProperties = LevelProperties("WARNING", icon="⚠️")
-    CRITICAL: LevelProperties = LevelProperties("CRITICAL", icon="☠️")
-    START: LevelProperties = LevelProperties(
-        "START",
-        icon="🔥🔥🔥",
-        custom=True,
-        info="",
-        blank_lines_before=2,
-        blank_lines_after=1,
-    )
-    TIMER: LevelProperties = LevelProperties("TIMER", icon="⏱", custom=True, info="")
-    NEW_RUN: LevelProperties = LevelProperties(
-        "NEW_RUN",
-        icon="✨",
-        custom=True,
-        info="",
-        blank_lines_before=2,
-    )
-    FUNC_START: LevelProperties = LevelProperties(
-        "FUNC_START", icon="👉👈", custom=True, info="", blank_lines_before=1
-    )
-    DATA_FRAME: LevelProperties = LevelProperties(
-        "DATA_FRAME",
-        custom=True,
-        icon="",
-        time="",
-        info="",
-        blank_lines_after=1,
-    )
-    ONCE_PER_RUN: LevelProperties = LevelProperties(
-        "ONCE_PER_RUN", icon="👟", custom=True
-    )
-    ONCE_PER_SESSION: LevelProperties = LevelProperties(
-        "ONCE_PER_SESSION",
-        icon="🦤🦤🦤",
-        custom=True,
-        info="",
-        blank_lines_before=1,
-        blank_lines_after=1,
-    )
-
-
 @dataclass
 class ExcelMarkers:
     """Name of Markers for Index and Units in the Excel-File"""
@@ -118,8 +41,9 @@ class ExcelMarkers:
         """Check if code is valid and fill in the fields"""
 
         if self.marker_type not in MarkerType:
-            logger.critical("Kein gültiger Marker Typ!")
-            raise ValueError("Kein gültiger Marker Typ!")
+            err_msg: str = "Kein gültiger Marker Typ!"
+            logger.critical(err_msg)
+            raise ValueError(err_msg)
 
         self.marker_string = (
             "↓ Index ↓" if self.marker_type == MarkerType.INDEX else "→ Einheit →"
@@ -144,26 +68,26 @@ class ExcelMarkers:
         Returns:
             - MarkerPosition: row (int), col (int)
         """
-        marker_position: Tuple = np.where(df == self.marker_string)
-        if any([len(marker_position[0]) < 1, len(marker_position[1]) < 1]):
+        pos: tuple = np.where(df == self.marker_string)
+        if any([len(pos[0]) < 1, len(pos[1]) < 1]):
             raise ValueError(self.error_not_found)
-        if any([len(marker_position[0]) > 1, len(marker_position[1]) > 1]):
+        if any([len(pos[0]) > 1, len(pos[1]) > 1]):
             raise ValueError(self.error_multiple)
 
         logger.success(
-            f"Marker {self.marker_string} found in row {marker_position[0][0]}, column {marker_position[1][0]}"
+            f"Marker {self.marker_string} found in row {pos[0][0]}, column {pos[1][0]}"
         )
 
-        return MarkerPosition(row=marker_position[0][0], col=marker_position[1][0])
+        return MarkerPosition(row=pos[0][0], col=pos[1][0])
 
 
 @dataclass
 class ObisElectrical:
-    """OBIS-Codes für elektrische Zähler
+    """OBIS-Codes für elektrische Zähler.
 
-
-    Raises:
-        - ValueError: Falls der Code nicht mit '1' anfängt, ist es kein Code für eletrische Zähler.
+    Raises
+        - ValueError: Falls der Code nicht mit '1' anfängt,
+            ist es kein Code für eletrische Zähler.
     """
 
     code_or_name: str
@@ -181,11 +105,12 @@ class ObisElectrical:
         """Check if code is valid and fill in the fields"""
         pat_match: re.Match[str] | None = re.search(self.pattern, self.code_or_name)
         if pat_match is None:
-            logger.critical("Kein gültiger OBIS-Code")
-            raise ValueError("Kein gültiger OBIS-Code für elektrische Zähler!")
+            err_msg: str = "Kein gültiger OBIS-Code für elektrische Zähler!"
+            logger.critical(err_msg)
+            raise ValueError(err_msg)
         self.code = pat_match[0]
         code_r: str = self.code.replace(":", "-").replace(".", "-").replace("~*", "-")
-        code_l: List[str] = code_r.split("-")
+        code_l: list[str] = code_r.split("-")
         code_messgr: str = code_l[2]
         code_messart: str = code_l[3]
         dic: ObisDic = OBIS_ELECTRICAL
@@ -215,7 +140,7 @@ class FigTrace:
     legendgroup: str = field(init=False)
 
     def __post_init__(self) -> None:
-        """fill in the fields"""
+        """Fill in the fields"""
         trace: go.Scatter = go.Scatter()
         for dat in self.fig.data:
             if isinstance(dat, go.Scatter) and go.Scatter(dat).name == self.trace_name:
@@ -237,17 +162,16 @@ class FigTrace:
             self.legendgroup = trace.legendgroup
 
 
-# todo: change
 @dataclass(kw_only=False)
 class FigData:
     """change"""
 
     fig: go.Figure
-    trace_names: List[str] = field(init=False)
-    traces: Dict[str, FigTrace] = field(init=False)
+    trace_names: list[str] = field(init=False)
+    traces: dict[str, FigTrace] = field(init=False)
 
     def __post_init__(self) -> None:
-        """fill in the fields"""
+        """Fill in the fields"""
 
         self.trace_names = [
             str(entry.name) for entry in self.fig.data if isinstance(entry, go.Scatter)
@@ -264,13 +188,13 @@ class FigLayout:
     """change"""
 
     fig: go.Figure
-    colorway: List[str] = field(init=False)
-    layout: Dict[str, Any] = field(init=False)
-    meta: Dict = field(init=False)
+    colorway: list[str] = field(init=False)
+    layout: dict[str, Any] = field(init=False)
+    meta: dict = field(init=False)
     title: str = field(init=False)
 
     def __post_init__(self) -> None:
-        """fill in the fields"""
+        """Fill in the fields"""
 
         self.layout = {item: self.fig.layout[item] for item in self.fig.layout}
 
@@ -278,7 +202,7 @@ class FigLayout:
 
         self.meta = self.fig.layout["meta"]
 
-        colorway: List[str] = list(self.fig.layout["template"]["layout"]["colorway"])
+        colorway: list[str] = list(self.fig.layout["template"]["layout"]["colorway"])
         if len(colorway) < len(list(self.fig.data)):
             colorway *= ceil(len(list(self.fig.data)) / len(colorway))
 

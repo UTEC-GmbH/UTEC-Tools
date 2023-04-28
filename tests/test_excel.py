@@ -1,6 +1,6 @@
 """Tests for functions in excel.py"""
 
-from typing import Any, Dict, List
+from typing import Any
 
 import pandas as pd
 
@@ -12,14 +12,14 @@ from tests import sample_data as sd
 def test_conversion_15min_arbeit_leistung() -> None:
     """Leistung / Arbeit"""
     df: pd.DataFrame = sd.sample_df("single", "15")
-    meta: Dict[str, Dict[str, Any]] = sd.sample_dic_meta(df)
+    meta: dict[str, dict[str, Any]] = sd.sample_dic_meta(df)
 
     df_con: pd.DataFrame
-    meta_new: Dict[str, Dict[str, Any]]
+    meta_new: dict[str, dict[str, Any]]
 
     df_con, meta_new = ex.convert_15min_kwh_to_kw(df, meta)
 
-    suffixes: List[str] = list(cont.ARBEIT_LEISTUNG["suffix"].values())
+    suffixes: list[str] = list(cont.ARBEIT_LEISTUNG["suffix"].values())
     suff_arbeit: str = cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"]
     suff_leistung: str = cont.ARBEIT_LEISTUNG["suffix"]["Leistung"]
 
@@ -27,7 +27,7 @@ def test_conversion_15min_arbeit_leistung() -> None:
         (suffix in str(col) for suffix in suffixes) for col in df_con.columns
     )
 
-    leistung_is_4_times_arbeit: List[bool] = []
+    leistung_is_4_times_arbeit: list[bool] = []
     for col in [str(col) for col in df_con.columns]:
         if suff_arbeit in col:
             leist_col: str = col.replace(suff_arbeit, suff_leistung)

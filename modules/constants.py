@@ -1,24 +1,24 @@
-""" Konstanten """
+"""Konstanten"""
 
-import os
-from typing import Dict, List, Literal, TypeAlias, TypedDict
+from pathlib import Path
+from typing import Literal, TypeAlias, TypedDict
 
 REPO_NAME: str = "UTEC-Tools"
 
 # Current Working Directory
-CWD: str = os.getcwd()
+CWD: str = str(Path.cwd())
 
-DURATIONS_IN_MS: Dict[str, int] = {
+DURATIONS_IN_MS: dict[str, int] = {
     "half_day": 12 * 60 * 60 * 1000,  # 43.200.000
     "week": 7 * 24 * 60 * 60 * 1000,  # 604.800.000
     "month": 30 * 24 * 60 * 60 * 1000,  # 2.592.000.000
 }
 
 
-# Type Alias für nested Dict of stings
-DicStrNest: TypeAlias = Dict[str, Dict[str, str]]
+# Type Alias für nested dict of stings
+DicStrNest: TypeAlias = dict[str, dict[str, str]]
 
-# Aussehen der labels (Überschriften)    {font-size:105%; font-weight:bold; font-style:italic; color:blue;}
+# Aussehen der labels (Überschriften)
 CSS_LABEL_1: str = "{font-size:1rem; font-weight:600;}"
 CSS_LABEL_2: str = "{font-size:0.95rem; font-weight:600;}"
 
@@ -39,23 +39,23 @@ COL_ORG_DATE: str = "cutomdata"
 SMOOTH_SUFFIX: str = " geglättet"
 
 # Titel der Grafiken
-FIG_TITLES: Dict[str, str] = {
+FIG_TITLES: dict[str, str] = {
     "lastgang": "Lastgang",
     "jdl": "Geordnete Jahresdauerlinie",
     "mon": "Monatswerte",
     "tage": "Vergleich ausgewählter Tage",
 }
-FIG_TITLE_SUFFIXES: Dict[str, str] = {
+FIG_TITLE_SUFFIXES: dict[str, str] = {
     "suffix_Stunden": '<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>',
     "suffix_15min": '<i><span style="font-size: 12px;"> (15-Minuten-Werte)</span></i>',
 }
 
 
 class ArLeiDic(TypedDict):
-    """Dictionary type definition for ARBEIT_LEISTUNG Dictionary"""
+    """dictionary type definition for ARBEIT_LEISTUNG dictionary"""
 
-    suffix: Dict[str, str]
-    units: Dict[str, List[str]]
+    suffix: dict[str, str]
+    units: dict[str, list[str]]
 
 
 ARBEIT_LEISTUNG: ArLeiDic = {
@@ -69,12 +69,12 @@ ARBEIT_LEISTUNG: ArLeiDic = {
 
 # Menu für Ausfüllen von Linien
 TRANSPARENCY_OPTIONS_SUFFIX: str = "% Transparenz"
-TRANSPARENCY_OPTIONS: List[str] = ["keine Füllung"] + [
+TRANSPARENCY_OPTIONS: list[str] = ["keine Füllung"] + [
     f"{integer}{TRANSPARENCY_OPTIONS_SUFFIX}" for integer in range(0, 100, 20)
 ]
 
 # Menu für Linientypen
-LINE_TYPES: Dict[str, str] = {
+LINE_TYPES: dict[str, str] = {
     "durchgezogen": "solid",
     "gepunktet": "dot",
     "gestrichelt": "dash",
@@ -88,7 +88,7 @@ LINE_TYPES: Dict[str, str] = {
 }
 
 # negative Werte für Lieferung ins Netz etc.
-NEGATIVE_VALUES: List[str] = [
+NEGATIVE_VALUES: list[str] = [
     "Batteriebeladung",
     "Einsp",
     "Netzeinsp",
@@ -98,14 +98,14 @@ NEGATIVE_VALUES: List[str] = [
 ]
 
 # Linien, die bei gewissen Operationen übersprungen werden
-EXCLUDE: List[str] = [SMOOTH_SUFFIX, "hline", "orgidx"]
+EXCLUDE: list[str] = [SMOOTH_SUFFIX, "hline", "orgidx"]
 
 # Theme for plots in streamlit app -> theme="streamlit" or theme=None
 ST_PLOTLY_THEME: Literal["streamlit"] | None = None
 
 
-# allgemeine Liste von Einheiten
-UNITS_GENERAL: List[str] = [
+# allgemeine liste von Einheiten
+UNITS_GENERAL: list[str] = [
     "W",
     "kW",
     "MW",
@@ -123,7 +123,7 @@ UNITS_GENERAL: List[str] = [
 
 
 # Einheiten, bei denen der Mittelwert gebildet werden muss (statt Summe)
-GRP_MEAN: List[str] = [
+GRP_MEAN: list[str] = [
     " °c",
     " °C",
     " w",
@@ -156,13 +156,13 @@ PAGES: DicStrNest = {
 
 
 # Transparenz (Deckungsgrad) 0= durchsichtig, 1= undurchsichtig
-ALPHA: Dict[str, str] = {
+ALPHA: dict[str, str] = {
     "bg": ", 0.5)",  # Hintergrund Beschriftungen
     "fill": ", 0.2)",  # fill von Linien etc.
 }
 
 
-FARBEN: Dict[str, str] = {
+FARBEN: dict[str, str] = {
     "weiß": "255, 255, 255",
     "schwarz": "0, 0, 0",
     "hellgrau": "200, 200, 200",
@@ -178,7 +178,7 @@ FARBEN: Dict[str, str] = {
     "gelb": "254, 203, 82",
 }
 
-PLOTFARBE: Dict[str, str] = {
+PLOTFARBE: dict[str, str] = {
     "Ost-West": FARBEN["hellgrün"],
     "Süd": FARBEN["gelb"],
     "Bedarf": FARBEN["blau"],
@@ -193,9 +193,9 @@ OBIS_PATTERN_EL: str = r"1-\d*:\d*\.\d*"  # fnmatch "*1-*:*.*"
 
 
 class ObisDic(TypedDict):
-    """Dictionary type definition for OBIS Code Dictionary"""
+    """dictionary type definition for OBIS Code dictionary"""
 
-    medium: Dict[str, str]
+    medium: dict[str, str]
     messgroesse: DicStrNest
     messart: DicStrNest
 
@@ -516,7 +516,7 @@ OBIS_ELECTRICAL: ObisDic = {
 }
 
 
-HEX_PER_CENT: Dict[int, str] = {
+HEX_PER_CENT: dict[int, str] = {
     0: "00",
     1: "03",
     2: "05",

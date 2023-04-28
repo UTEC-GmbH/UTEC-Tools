@@ -4,8 +4,9 @@ import datetime as dt
 import locale
 import os
 import sys
-import time
 from typing import Any, Dict, List
+
+import plotly.io as pio
 
 # import plotly.io as pio
 import sentry_sdk
@@ -89,7 +90,7 @@ def general_setup() -> None:
 
     locale.setlocale(locale.LC_ALL, "")
     load_dotenv(".streamlit/secrets.toml")
-    # pio.templates.default = "plotly"
+    pio.templates.default = "plotly"
     sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), traces_sample_rate=0.1)
 
     st_add("UTEC_logo", render_svg())
@@ -136,18 +137,14 @@ def logger_setup() -> None:
         sink=sys.stderr,  # type: ignore
         level=1,
         format=format_of_lvl,  # type: ignore
-        colorize=True,
     )
 
     logger.add(
-        sink=f"{cont.CWD}\\logs\\{{time:YYYY-MM-DD}}.log",
-        rotation="1 day",
-        retention=3,
-        mode="a",
-        catch=True,
+        sink=f"{cont.CWD}\\logs\\{{time:YYYY-MM-DD_HH-mm}}.log",
+        # rotation="1 second",
+        retention=2,
         level=1,
         format=format_of_lvl,  # type: ignore
-        colorize=True,
     )
 
     st.session_state["logger_setup"] = True

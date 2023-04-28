@@ -20,7 +20,6 @@ from modules.general_functions import func_timer, sort_list_by_occurance
 def line_plot(df: pd.DataFrame, meta: Dict, **kwargs) -> go.Figure:
     """Liniengrafik für Daten eines einzelnen Jahres
 
-
     Args:
         - df (pd.DataFrame): Daten
         - meta (Dict): Metadaten
@@ -28,8 +27,10 @@ def line_plot(df: pd.DataFrame, meta: Dict, **kwargs) -> go.Figure:
     Returns:
         - go.Figure: Linengrafik
     """
-
-    lines: List[str] = kwargs.get("lines") or [str(col) for col in df.columns]
+    cols: List[str] = [str(col) for col in df.columns]
+    lines: List[str] = kwargs.get("lines") or [
+        col for col in cols if "orgidx" not in col
+    ]
     title: str = kwargs.get("title") or ""
     cusd_format: str = (
         "(%{customdata|%a %d. %b %Y %H:%M})"
@@ -54,80 +55,35 @@ def line_plot(df: pd.DataFrame, meta: Dict, **kwargs) -> go.Figure:
         }
     )
 
-    old_way: bool = False
-
-    if old_way:
-        for line in [lin for lin in lines if "orgidx" not in lin]:
-            manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
-            cusd: pd.Series = (
-                df[f"{line}_orgidx"] if f"{line}_orgidx" in df.columns else df["orgidx"]
-            )
-            trace_unit: str | None = meta[line].get("unit")
-            hovtemp: str = f"{trace_unit} {cusd_format}"
-            fig = fig.add_trace(
-                go.Scatter(
-                    x=df.index,
-                    y=df[line] * manip,
-                    customdata=cusd,
-                    name=meta[line].get("tit"),
-                    hovertemplate=(
-                        np.select(
-                            [abs(df[line]) < 10, abs(df[line]) < 100],
-                            [
-                                "%{y:,.2f}" + hovtemp,
-                                "%{y:,.1f}" + hovtemp,
-                            ],
-                            "%{y:,.0f}" + hovtemp,
-                        )
-                    ),
-                    mode="lines",
-                    visible=True,
-                    yaxis=meta[line]["y_axis"],
-                    meta={"unit": trace_unit, "negativ": manip < 0, "df_col": line},
-                )
-            )
-    else:
-        # Get the y values for all lines at once using vectorization
-        y_values = df[lines].values
-
-        # Create a 2D array of customdata values for each line
-        customdata_values = np.stack(
-            [
-                df[f"{line}_orgidx"] if f"{line}_orgidx" in df.columns else df["orgidx"]
-                for line in lines
-            ],
-            axis=1,
+    for line in [lin for lin in lines if "orgidx" not in lin]:
+        manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
+        cusd: pd.Series = (
+            df[f"{line}_orgidx"] if f"{line}_orgidx" in df.columns else df["orgidx"]
         )
-
-        # Create a single trace with all the lines
-        trace = go.Scatter(
-            x=df.index,
-            y=y_values,
-            customdata=customdata_values,
-            name=[meta[line].get("tit") for line in lines],
-            hovertemplate=(
-                np.select(
-                    [abs(y_values) < 10, abs(y_values) < 100],
-                    [
-                        "%{y:,.2f}" + cusd_format,
-                        "%{y:,.1f}" + cusd_format,
-                    ],
-                    "%{y:,.0f}" + cusd_format,
-                )
-            ),
-            mode="lines",
-            visible=True,
-            yaxis=[meta[line]["y_axis"] for line in lines],
-            meta={
-                "unit": [meta[line].get("unit") for line in lines],
-                "negativ": [
-                    any(neg in line for neg in cont.NEGATIVE_VALUES) for line in lines
-                ],
-                "df_col": lines,
-            },
+        trace_unit: str | None = meta[line].get("unit")
+        hovtemp: str = f"{trace_unit} {cusd_format}"
+        fig = fig.add_trace(
+            go.Scatter(
+                x=df.index,
+                y=df[line] * manip,
+                customdata=cusd,
+                name=meta[line].get("tit"),
+                hovertemplate=(
+                    np.select(
+                        [abs(df[line]) < 10, abs(df[line]) < 100],
+                        [
+                            "%{y:,.2f}" + hovtemp,
+                            "%{y:,.1f}" + hovtemp,
+                        ],
+                        "%{y:,.0f}" + hovtemp,
+                    )
+                ),
+                mode="lines",
+                visible=True,
+                yaxis=meta[line]["y_axis"],
+                meta={"unit": trace_unit, "negativ": manip < 0, "df_col": line},
+            )
         )
-
-        fig.add_trace(trace)
 
     return fig
 

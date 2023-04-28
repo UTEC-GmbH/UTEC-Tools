@@ -35,10 +35,10 @@ class LevelProperties:
     name: str
     custom: bool = False
     icon: str = "👉👈"
-    blank_lines_before: int = 0
-    blank_lines_after: int = 0
     time: str = "{time:HH:mm:ss}"
     info: str = "{module} -> {function} -> line: {line} | "
+    blank_lines_before: int = 0
+    blank_lines_after: int = 0
 
     def get_format(self) -> str:
         """Logger message Format erzeugen"""
@@ -52,7 +52,7 @@ class LevelProperties:
         else:
             ic_0: str = self.icon
             ic_1: str = ic_0
-        return f"{nl_0}{time} | {ic_0} | {info}{{message}} | {ic_1} |{nl_1}"
+        return f"{nl_0}{time} {ic_0} {info}{{message}} {ic_1} {nl_1}"
 
 
 @dataclass
@@ -70,7 +70,7 @@ class LogLevel:
         icon="🔥🔥🔥",
         custom=True,
         info="",
-        blank_lines_before=5,
+        blank_lines_before=2,
         blank_lines_after=1,
     )
     TIMER: LevelProperties = LevelProperties("TIMER", icon="⏱", custom=True, info="")
@@ -79,10 +79,18 @@ class LogLevel:
         icon="✨",
         custom=True,
         info="",
-        blank_lines_before=1,
+        blank_lines_before=2,
     )
     FUNC_START: LevelProperties = LevelProperties(
         "FUNC_START", icon="👉👈", custom=True, info="", blank_lines_before=1
+    )
+    DATA_FRAME: LevelProperties = LevelProperties(
+        "DATA_FRAME",
+        custom=True,
+        icon="",
+        time="",
+        info="",
+        blank_lines_after=1,
     )
     ONCE_PER_RUN: LevelProperties = LevelProperties(
         "ONCE_PER_RUN", icon="👟", custom=True

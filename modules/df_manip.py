@@ -12,6 +12,7 @@ import streamlit as st
 from loguru import logger
 
 from modules import constants as cont
+from modules.classes import LogLevel
 from modules.general_functions import func_timer
 
 
@@ -132,7 +133,8 @@ def clean_up_daylight_savings(df: pd.DataFrame) -> CleanUpDLS:
     df_deleted: pd.DataFrame = df[summer | winter]
 
     if len(df_deleted.index) > 0:
-        logger.warning(f"Data deleted due to daylight savings: \n\n{df_deleted}\n\n")
+        logger.warning("Data deleted due to daylight savings.")
+        logger.log(LogLevel.DATA_FRAME.name, df_deleted)
     else:
         logger.info("No data deleted due to daylight savings")
 
@@ -287,7 +289,8 @@ def h_from_other(df: pd.DataFrame, meta: Dict[str, Any] | None = None) -> pd.Dat
     df_h = df_h.infer_objects()
     st.session_state["metadata"] = metadata
 
-    logger.success(f"DataFrame mit Stundenwerten erstellt: \n\n{df_h.head()}\n\n")
+    logger.success("DataFrame mit Stundenwerten erstellt.")
+    logger.log(LogLevel.DATA_FRAME.name, df_h.head())
 
     return df_h
 
@@ -357,7 +360,8 @@ def jdl(df: pd.DataFrame) -> pd.DataFrame:
     df_jdl = df_jdl.infer_objects()
     st.session_state["df_jdl"] = df_jdl
 
-    logger.success(f"DataFrame für Jahresdauerlinie erstellt: \n\n{df_jdl.head()}\n\n")
+    logger.success("DataFrame für Jahresdauerlinie erstellt.")
+    logger.log(LogLevel.DATA_FRAME.name, df_jdl.head())
 
     return df_jdl
 
@@ -398,7 +402,8 @@ def mon(df: pd.DataFrame, meta: Dict, year: int | None = None) -> pd.DataFrame:
 
     st.session_state["df_mon"] = df_mon
 
-    logger.success(f"DataFrame mit Monatswerten erstellt: \n\n{df_mon.head()}\n\n")
+    logger.success("DataFrame mit Monatswerten erstellt.")
+    logger.log(LogLevel.DATA_FRAME.name, df_mon.head())
 
     return df_mon
 

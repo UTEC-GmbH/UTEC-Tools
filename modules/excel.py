@@ -12,7 +12,13 @@ from loguru import logger
 
 from modules import constants as cont
 from modules import meteorolog as meteo
-from modules.classes import ExcelMarkers, MarkerPosition, MarkerType, ObisElectrical
+from modules.classes import (
+    ExcelMarkers,
+    MarkerPosition,
+    MarkerType,
+    ObisElectrical,
+    LogLevel,
+)
 from modules.df_manip import CleanUpDLS, clean_up_daylight_savings
 from modules.general_functions import func_timer, sort_list_by_occurance
 
@@ -27,7 +33,8 @@ def import_prefab_excel(file: Any) -> None:
     """vordefinierte Datei (benannte Zelle für Index) importieren"""
 
     df_messy: pd.DataFrame = pd.read_excel(file, sheet_name="Daten")
-    logger.debug(f"df_messy\n{df_messy.head(10)}\n")
+    logger.debug("df_messy")
+    logger.log(LogLevel.DATA_FRAME.name, df_messy.head(10))
     df: pd.DataFrame = edit_df_after_import(df_messy)
 
     # Metadaten
@@ -55,7 +62,7 @@ def import_prefab_excel(file: Any) -> None:
         st.session_state["years"] = meta["index"]["years"]
 
     logger.success("file imported and metadata extracted")
-    logger.info(f"\n{df.head()}\n")
+    logger.log(LogLevel.DATA_FRAME.name, df.head())
 
 
 @func_timer

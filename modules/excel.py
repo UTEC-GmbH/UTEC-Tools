@@ -1,9 +1,8 @@
-"""
-Import und Download von Excel-Dateien
-"""
+"""Import und Download von Excel-Dateien"""
+
 import re
 from io import BytesIO
-from typing import Any, Dict, List, Literal, NamedTuple
+from typing import Any, Literal, NamedTuple
 
 import pandas as pd
 import pandas.io.formats.excel
@@ -12,25 +11,20 @@ from loguru import logger
 
 from modules import constants as cont
 from modules import meteorolog as meteo
-from modules.classes import (
-    ExcelMarkers,
-    MarkerPosition,
-    MarkerType,
-    ObisElectrical,
-    LogLevel,
-)
+from modules.classes import ExcelMarkers, MarkerPosition, MarkerType, ObisElectrical
 from modules.df_manip import CleanUpDLS, clean_up_daylight_savings
 from modules.general_functions import func_timer, sort_list_by_occurance
+from modules.logger_setup import LogLevel
 
 pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
 
 
-# ? return value (maybe Dict) instead of putting everything in session_state???
+# ? return value (maybe dict) instead of putting everything in session_state???
 # TODO: better docstring
 @func_timer
 @st.cache_data(show_spinner=False)
 def import_prefab_excel(file: Any) -> None:
-    """vordefinierte Datei (benannte Zelle für Index) importieren"""
+    """Vordefinierte Datei (benannte Zelle für Index) importieren"""
 
     df_messy: pd.DataFrame = pd.read_excel(file, sheet_name="Daten")
     logger.debug("df_messy")
@@ -38,8 +32,8 @@ def import_prefab_excel(file: Any) -> None:
     df: pd.DataFrame = edit_df_after_import(df_messy)
 
     # Metadaten
-    units: Dict[str, str] = units_from_messy_df(df_messy)
-    meta_index: Dict[str, Any] = meta_from_index(df)
+    units: dict[str, str] = units_from_messy_df(df_messy)
+    meta_index: dict[str, Any] = meta_from_index(df)
 
     meta: cont.DicStrNest = meta_from_col_title(df, units)
     meta["index"] = meta_index
@@ -66,7 +60,7 @@ def import_prefab_excel(file: Any) -> None:
 
 
 @func_timer
-def units_from_messy_df(df_messy: pd.DataFrame) -> Dict[str, str]:
+def units_from_messy_df(df_messy: pd.DataFrame) -> dict[str, str]:
     """Get the units of every column from the messy df right after import
 
     The function assumes that the DataFrame has a row with
@@ -77,28 +71,28 @@ def units_from_messy_df(df_messy: pd.DataFrame) -> Dict[str, str]:
         - df (pd.DataFrame): messy df
 
     Returns:
-        - Dict[str, str]: keys = column names, values = units
+        - dict[str, str]: keys = column names, values = units
     """
 
     p_in: MarkerPosition = ExcelMarkers(MarkerType.INDEX).get_marker_position(df_messy)
     p_un: MarkerPosition = ExcelMarkers(MarkerType.UNITS).get_marker_position(df_messy)
 
-    column_names: List[str] = df_messy.iloc[p_in.row, p_in.col :].to_list()
-    units: List[str] = df_messy.iloc[p_un.row, p_un.col :].to_list()
+    column_names: list[str] = df_messy.iloc[p_in.row, p_in.col :].to_list()
+    units: list[str] = df_messy.iloc[p_un.row, p_un.col :].to_list()
 
     # leerzeichen vor Einheit
     for ind, unit in enumerate(units):
         if not unit.startswith(" ") and unit not in ["", None]:
             units[ind] = f" {unit}"
 
-    return dict(zip(column_names, units))
+    return dict(zip(column_names, units, strict=False))
 
 
 @func_timer
 def set_y_axis_for_lines() -> None:
     """Y-Achsen der Linien"""
     meta: cont.DicStrNest = st.session_state["metadata"]
-    lines_with_units: List = [key for key, value in meta.items() if value.get("unit")]
+    lines_with_units: list = [key for key, value in meta.items() if value.get("unit")]
 
     for line in lines_with_units:
         ind: int = meta["units"]["set"].index(meta[line]["unit"])
@@ -128,13 +122,13 @@ def edit_df_after_import(df_messy: pd.DataFrame) -> pd.DataFrame:
     df = df.set_index("↓ Index ↓")
     pd.to_datetime(df.index, dayfirst=True)
     df = df.infer_objects()
-    df.dropna(how="all", inplace=True)
-    df.dropna(axis="columns", how="all", inplace=True)
+    df = df.dropna(how="all")
+    df = df.dropna(axis="columns", how="all")
 
     # Index ohne Jahreszahl
     if not isinstance(df.index, pd.DatetimeIndex) and "01.01. " in str(df.index[0]):
         df.index = pd.to_datetime(
-            [f"{x.split()[0]}2020 {x.split()[1]}" for x in df.index.values],
+            [f"{x.split()[0]}2020 {x.split()[1]}" for x in df.index.to_numpy()],
             dayfirst=True,
         )
 
@@ -153,21 +147,21 @@ def edit_df_after_import(df_messy: pd.DataFrame) -> pd.DataFrame:
 
 @func_timer
 @st.cache_data(show_spinner=False)
-def meta_from_index(df: pd.DataFrame) -> Dict[str, Any]:
-    """check if index is datetime and if so, get temporal resolution
+def meta_from_index(df: pd.DataFrame) -> dict[str, Any]:
+    """Check if index is datetime and if so, get temporal resolution
 
     Args:
         - df (pd.DataFrame): pd.DataFrame
 
     Returns:
-        - Dict[str, Any]:
+        - dict[str, Any]:
             - datetime: bool,
             - td_mean: average time difference (minutes),
             - td_int: "15min" or "h"
             - years: list of years in index
     """
 
-    dic_index: Dict[str, Any] = {"datetime": False, "years": []}
+    dic_index: dict[str, Any] = {"datetime": False, "years": []}
 
     if isinstance(df.index, pd.DatetimeIndex):
         dic_index["datetime"] = True
@@ -188,14 +182,14 @@ def meta_from_index(df: pd.DataFrame) -> Dict[str, Any]:
 
 
 @func_timer
-def meta_from_col_title(df: pd.DataFrame, units: Dict[str, str]) -> cont.DicStrNest:
+def meta_from_col_title(df: pd.DataFrame, units: dict[str, str]) -> cont.DicStrNest:
     """Get metadata from the column title and obis code (if available)
 
     Args:
         - df (pd.DataFrame): pd.DataFrame
 
     Returns:
-        - cont.DicStrNest: Dictionary with metadata (first key = column name)
+        - cont.DicStrNest: dictionary with metadata (first key = column name)
             - for every column:
                 - "orig_tit": Original Title of the column
                 - "tit": renamed title if OBIS code in title, else same as orig_tit
@@ -224,7 +218,7 @@ def meta_from_col_title(df: pd.DataFrame, units: Dict[str, str]) -> cont.DicStrN
                 }
             )
             meta[meta[col]["tit"]] = meta[col]
-            df.rename(columns={col: meta[col]["tit"]}, inplace=True)
+            df = df.rename(columns={col: meta[col]["tit"]})
 
     return meta
 
@@ -244,7 +238,7 @@ def convert_15min_kwh_to_kw(
 
     Args:
         - df (pd.DataFrame): Der zu untersuchende DataFrame
-        - meta (cont.DicStrNest): Dictionary mit Metadaten
+        - meta (cont.DicStrNest): dictionary mit Metadaten
 
     Returns:
         - tuple[pd.DataFrame, cont.DicStrNest]: Aktualisierte df und Metadaten
@@ -253,7 +247,7 @@ def convert_15min_kwh_to_kw(
     if meta["index"]["td_int"] not in ["15min"]:
         return df, meta
 
-    suffixes: List[str] = list(cont.ARBEIT_LEISTUNG["suffix"].values())
+    suffixes: list[str] = list(cont.ARBEIT_LEISTUNG["suffix"].values())
 
     for col in [str(column) for column in df.columns]:
         suffix_not_in_col_name: bool = all(suffix not in col for suffix in suffixes)
@@ -288,13 +282,14 @@ def rename_column_arbeit_leistung(
 
 
     Args:
-        - original_data (Literal['Arbeit', 'Leistung']): Sind die Daten "Arbeit" oder "Leistung"
+        - original_data (Literal['Arbeit', 'Leistung']): 
+            Sind die Daten "Arbeit" oder "Leistung"
         - df (pd.DataFrame): DataFrame für neue Spalte
-        - meta (cont.DicStrNest): Dictionar der Metadaten
+        - meta (cont.DicStrNest): dictionar der Metadaten
         - col (str): Name der (Original-) Spalte
     """
     col_name: str = f'{col}{cont.ARBEIT_LEISTUNG["suffix"][original_data]}'
-    df.rename(columns={col: col_name}, inplace=True)
+    df = df.rename(columns={col: col_name})
     meta[col_name] = meta[col].copy()
     meta[col_name]["tit"] = col_name
 
@@ -311,9 +306,10 @@ def insert_column_arbeit_leistung(
 
 
     Args:
-        - original_data (Literal['Arbeit', 'Leistung']): Sind die Daten "Arbeit" oder "Leistung"
+        - original_data (Literal['Arbeit', 'Leistung']): 
+            Sind die Daten "Arbeit" oder "Leistung"
         - df (pd.DataFrame): DataFrame für neue Spalte
-        - meta (cont.DicStrNest): Dictionar der Metadaten
+        - meta (cont.DicStrNest): dictionar der Metadaten
         - col (str): Name der (Original-) Spalte
     """
     new_col: str = "Arbeit" if original_data == "Leistung" else "Leistung"
@@ -331,8 +327,7 @@ def insert_column_arbeit_leistung(
 
 @func_timer
 def excel_download(df: pd.DataFrame, page: str = "graph") -> bytes:
-    """
-    Download data as an Excel file.
+    """Download data as an Excel file.
 
     Args:
         - df (pd.DataFrame): The data frame to download.
@@ -344,7 +339,7 @@ def excel_download(df: pd.DataFrame, page: str = "graph") -> bytes:
     """
     name_and_format: WsNameNumFormat = ws_name_num_format(df, page)
     ws_name: str = name_and_format.worksheet_name
-    num_formats: Dict[str, str] = name_and_format.number_formats
+    num_formats: dict[str, str] = name_and_format.number_formats
 
     column_offset: int = 2
     row_offset: int = 4
@@ -379,7 +374,7 @@ def format_worksheet(
     workbook: Any,
     worksheet: Any,
     df: pd.DataFrame,
-    number_formats: Dict[str, str],
+    number_formats: dict[str, str],
     offset_col: int = 2,
     offset_row: int = 4,
 ) -> None:
@@ -389,14 +384,14 @@ def format_worksheet(
         - wkb (Any): Workbook
         - wks (Any): Worksheet
         - df (pd.DataFrame): main pd.DataFrame
-        - dic_num_formats (Dict): Dictionary {col: number format}
+        - dic_num_formats (dict): dictionary {col: number format}
     """
 
-    cols: List[str] = [str(col) for col in df.columns]
+    cols: list[str] = [str(col) for col in df.columns]
 
     # Formatierung
     worksheet.hide_gridlines(2)
-    base_format: Dict[str, Any] = {
+    base_format: dict[str, Any] = {
         "bold": False,
         "font_name": "Arial",
         "font_size": 10,
@@ -405,7 +400,7 @@ def format_worksheet(
     }
 
     # erste Spalte
-    spec_format: Dict[str, Any] = base_format.copy()
+    spec_format: dict[str, Any] = base_format.copy()
     spec_format["align"] = "left"
     cell_format: Any = workbook.add_format(spec_format)
     worksheet.set_column(offset_col, offset_col, 18, cell_format)
@@ -438,7 +433,7 @@ class WsNameNumFormat(NamedTuple):
     """Named tuple for the return value of the following function."""
 
     worksheet_name: str
-    number_formats: Dict[str, str]
+    number_formats: dict[str, str]
 
 
 @func_timer
@@ -450,10 +445,10 @@ def ws_name_num_format(df: pd.DataFrame, page: str) -> WsNameNumFormat:
         - page (str): page of app (graph or meteo...)
 
     Returns:
-        - Tuple[str, Dict]: ws_name, dic_num_formats = {column: number format}
+        - tuple[str, dict]: ws_name, dic_num_formats = {column: number format}
     """
 
-    page_mapping: Dict[str, Dict[str, Any]] = {
+    page_mapping: dict[str, dict[str, Any]] = {
         "meteo": {
             "ws_name": "Wetterdaten",
             "num_formats": {par.tit_de: par.num_format for par in meteo.LIS_PARAMS},
@@ -467,8 +462,9 @@ def ws_name_num_format(df: pd.DataFrame, page: str) -> WsNameNumFormat:
         },
     }
     if page not in page_mapping:
-        raise ValueError(f"Invalid page: {page}")
-    mapping: Dict[str, Any] = page_mapping[page]
+        err_msg: str = f"Invalid page: {page}"
+        raise ValueError(err_msg)
+    mapping: dict[str, Any] = page_mapping[page]
 
     return WsNameNumFormat(
         worksheet_name=mapping["ws_name"], number_formats=mapping["num_formats"]

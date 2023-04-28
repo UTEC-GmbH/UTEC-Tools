@@ -1,8 +1,6 @@
-"""
-Seite Grafische Datenauswertung
-"""
+"""Seite Grafische Datenauswertung"""
 
-from typing import Any, List
+from typing import Any, Literal
 
 import streamlit as st
 from streamlit_lottie import st_lottie_spinner
@@ -23,18 +21,20 @@ MANUAL_DEBUG: bool = True
 page_header_setup(page="graph")
 
 
-def debug_code_run(before: bool) -> None:  # sourcery skip: flag-streamlit-show
+def debug_code_run(
+    position: Literal["before", "after"]
+) -> None:  # sourcery skip: flag-streamlit-show
     """Anzeige mit st.experimental_show() für Debugging"""
 
     if MANUAL_DEBUG and st.session_state.get("access_lvl") == "god":
-        with st.expander(f"Debug {'before' if before else 'after'}", False):
+        with st.expander(f"Debug {position}", expanded=False):
             st.plotly_chart(
                 fig_create.ploplo.timings(st.session_state["dic_exe_time"]),
                 use_container_width=True,
                 config=fig_format.plotly_config(),
             )
 
-            se_st_show: List[str] = [
+            se_st_show: list[str] = [
                 "fig_base",
                 "fig_jdl",
                 "fig_mon",
@@ -59,7 +59,7 @@ def debug_code_run(before: bool) -> None:  # sourcery skip: flag-streamlit-show
 
 
 if uauth.authentication(st.session_state["page"]):
-    debug_code_run(before=True)
+    debug_code_run(position="before")
 
     sm.sidebar_file_upload()
 
@@ -86,9 +86,8 @@ if uauth.authentication(st.session_state["page"]):
             sm.select_graphs()
 
             # Außentemperatur
-            with st.sidebar:
-                with st.expander("Außentemperatur", False):
-                    sm.meteo_sidebar("graph")
+            with st.sidebar, st.expander("Außentemperatur", expanded=False):
+                sm.meteo_sidebar("graph")
 
             if st.session_state.get("but_meteo_sidebar"):
                 if st.session_state.get("cb_temp"):
@@ -205,7 +204,7 @@ if uauth.authentication(st.session_state["page"]):
             with tab_download:
                 sm.downloads()
 
-            debug_code_run(before=False)
+            debug_code_run(position="after")
 
             st.markdown("###")
             st.markdown("---")

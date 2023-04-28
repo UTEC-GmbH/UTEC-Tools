@@ -1,14 +1,13 @@
-"""
-plots erstellen und in session_state schreiben
-"""
+"""plots erstellen und in session_state schreiben"""
 
-import os
-from typing import Any, Dict, List
-from loguru import logger
+
+from pathlib import Path
+from typing import Any
 
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+from loguru import logger
 
 from modules import constants as cont
 from modules import fig_annotations as fig_anno
@@ -23,7 +22,8 @@ from modules.general_functions import func_timer, render_svg
 def cr_fig_base() -> go.Figure:
     """Lastgang erstellen"""
 
-    meta: Dict = st.session_state["metadata"]
+    meta: dict = st.session_state["metadata"]
+    min_amount_vals: int = 20
 
     tit_res: str = ""
     if st.session_state.get("cb_h"):
@@ -49,15 +49,20 @@ def cr_fig_base() -> go.Figure:
             title=tit,
         )
 
-    data: Dict[str, Dict[str, Any]] = fgf.fig_data_as_dic(fig)
-    layout: Dict[str, Any] = fgf.fig_layout_as_dic(fig)
+    data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
+    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
     fig = fig_anno.add_arrows_min_max(fig, data=data, layout=layout)
-    colorway: List[str] = fgf.get_colorway(fig, data=data, layout=layout)
+    colorway: list[str] = fgf.get_colorway(fig, data=data, layout=layout)
 
     # geglättete Linien
     max_val: int = int(
-        max(len(trace["x"]) for trace in data.values() if len(trace["x"]) > 20) // 3
+        max(
+            len(trace["x"])
+            for trace in data.values()
+            if len(trace["x"]) > min_amount_vals
+        )
+        // 3
     )
     max_val = int(max_val + 1 if max_val % 2 == 0 else max_val)
     st.session_state["smooth_max_val"] = max_val
@@ -65,8 +70,6 @@ def cr_fig_base() -> go.Figure:
     st.session_state["smooth_start_val"] = int(
         start_val + 1 if start_val % 2 == 0 else start_val
     )
-
-    # fig = fig_anno.smooth(fig, data=data)
 
     # updates
     fig = fig.update_layout(
@@ -121,10 +124,6 @@ def cr_fig_jdl() -> None:
         st.session_state["fig_jdl"], x_tickformat=",d"
     )
 
-    # st.session_state["fig_jdl"].update_traces(
-    #     legendgroup=None,
-    #     legendgrouptitle=None,
-    # )
     x_min = min(min(d.x) for d in st.session_state["fig_jdl"].data)
     x_max = max(max(d.x) for d in st.session_state["fig_jdl"].data)
 
@@ -181,8 +180,6 @@ def cr_fig_mon() -> None:
         mode="markers+lines",
         line={"dash": "dash", "width": 1},
         marker={"size": 10},
-        # legendgroup=None,
-        # legendgrouptitle=None,
     )
 
     logger.success("fig_mon created")
@@ -235,7 +232,7 @@ def plot_figs() -> None:
         if st.session_state.get("cb_jdl") and st.session_state.get("cb_mon"):
             st.markdown("###")
 
-            columns: List = st.columns(2)
+            columns: list = st.columns(2)
             with columns[0]:
                 st.plotly_chart(
                     st.session_state["fig_jdl"],
@@ -301,8 +298,8 @@ def plot_figs() -> None:
 def html_exp(f_pn: str = "export\\interaktive_grafische_Auswertung.html") -> None:
     """html-Export"""
 
-    if os.path.exists(f_pn):
-        os.remove(f_pn)
+    if Path.exists(Path(f_pn)):
+        Path.unlink(Path(f_pn))
 
     with open(f_pn, "w", encoding="utf-8") as fil:
         fil.write("<!DOCTYPE html>")

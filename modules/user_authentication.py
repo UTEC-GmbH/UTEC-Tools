@@ -1,10 +1,8 @@
-"""
-user authentication
-"""
+"""user authentication"""
 
 import os
 from datetime import date, datetime, timedelta
-from typing import Any, Dict, List
+from typing import Any
 
 import streamlit as st
 import streamlit_authenticator as stauth
@@ -22,7 +20,7 @@ def infos_warnings_errors(key: str) -> str:
         or f"{st.session_state['access_until']:%d.%m.%Y}"
     )
 
-    dic: Dict[str, Dict[str, str]] = {
+    dic: dict[str, dict[str, str]] = {
         "no_access": {
             "message": """
                 Mit diesem Benutzerkonto haben Sie keinen Zugriff auf dieses Modul.  \n  \n
@@ -86,10 +84,12 @@ def authentication(page: str) -> bool:
 @func_timer
 def connect_database(database: str = "UTEC_users") -> Any:
     """Connection to a Deta database.
-    The default is the "users" database, which holds the user information (like username, access level, etc.)
+
+    The default is the "users" database,
+    which holds the user information (like username, access level, etc.)
 
     Args:
-        - database (str, optional): The database to connect to. Defaults to "UTEC_users".
+        - database (str, optional): The database to connect. Defaults to "UTEC_users".
 
     Returns:
         - _Base: Database connection
@@ -104,8 +104,8 @@ def connect_database(database: str = "UTEC_users") -> Any:
 
 
 @func_timer
-def get_all_user_data() -> Dict[str, Dict[str, Any]]:
-    """Liste aller gespeicherter Benutzerdaten - je Benutzer ein Dictionary
+def get_all_user_data() -> dict[str, dict[str, Any]]:
+    """Liste aller gespeicherter Benutzerdaten - je Benutzer ein dictionary
 
     Returns:
         - cont.DicStrNest: {
@@ -114,7 +114,8 @@ def get_all_user_data() -> Dict[str, Dict[str, Any]]:
                 - "name" -> Klartext Name (z.B. "Florian")
                 - "email" -> E-Mail-Adresse (z.B. ludwig@utec-bremen.de)
                 - "password" -> verschlüsseltes Passwort
-                - "access_lvl" -> Zugangsberechtigung ("god" oder "full" oder Liste von Seiten z.B. ["graph", "meteo"])
+                - "access_lvl" -> Zugangsberechtigung
+                    ("god" oder "full" oder liste von Seiten z.B. ["graph", "meteo"])
                 - "access_until" -> Datum des Endes der Zugangsberechtigung
             }
         }
@@ -127,7 +128,7 @@ def get_all_user_data() -> Dict[str, Dict[str, Any]]:
         if datetime.strptime(entry["access_until"], "%Y-%m-%d") < datetime.now():
             deta_db.delete(entry["key"])
 
-    users: Dict[str, Dict[str, Any]] = {
+    users: dict[str, dict[str, Any]] = {
         list_entry["key"]: list_entry for list_entry in deta_db.fetch().items
     }
 
@@ -136,12 +137,12 @@ def get_all_user_data() -> Dict[str, Dict[str, Any]]:
     return users
 
 
-def format_user_credentials() -> Dict[str, Dict[str, Any]]:
-    """Create a Dictionary out of all the user data in the database
+def format_user_credentials() -> dict[str, dict[str, Any]]:
+    """Create a dictionary out of all the user data in the database
     in the format, the authenticator-class needs
 
     Returns:
-        - Dict[str, Dict[str, Any]]: Dictionalry with
+        - dict[str, dict[str, Any]]: dictionalry with
             - "usernames":
                 - "key": Benutzername
                     - "name": Klartext Name
@@ -166,21 +167,25 @@ def insert_new_user(
     name: str,
     email: str,
     password: str,
-    access_lvl: str | List,
-    access_until: str = str(date.today() + timedelta(weeks=3)),
+    access_lvl: str | list,
+    access_until: str = "",
 ) -> None:
+    """Neuen Benutzer hinzufügen.
+
+    Bei Aufrufen der Funktion, Passwort als Klartext angeben -> wird in hash umgewandelt
     """
-    bei Aufrufen der Funktion, Passwort als Klartext angeben -> wird in hash umgewandelt
-    """
-    # password muss eine Liste sein, deshalb wird hier für einezelnen user das pw in eine Liste geschrieben
-    hashed_pw: List = stauth.Hasher([password]).generate()
+    access_until = access_until or str(date.today() + timedelta(weeks=3))
+
+    # password muss eine liste sein, 
+    # deshalb wird hier für einezelnen user das pw in eine liste geschrieben
+    hashed_pw: list = stauth.Hasher([password]).generate()
     deta_db: Any = connect_database()
     deta_db.put(
         {
             "key": username,  # Benutzername für login
             "name": name,  # Klartext name
             "email": email,  # e-Mail-Adresse
-            "password": hashed_pw[0],  # erstes Element aus der Passwort-"Liste"
+            "password": hashed_pw[0],  # erstes Element aus der Passwort-"liste"
             "access_lvl": access_lvl,  # "god" | "full" | list of allowed pages e.g. ["graph", "meteo"] ...page options: dics.pages.keys()
             "access_until": access_until,
         }
@@ -201,8 +206,8 @@ def insert_new_user(
 
 
 @func_timer
-def update_user(username: str, updates: Dict) -> Any:
-    """existierendes Benutzerkonto ändern"""
+def update_user(username: str, updates: dict) -> Any:
+    """Existierendes Benutzerkonto ändern"""
     deta_db: Any = connect_database()
     return deta_db.update(updates, username)
 
@@ -211,7 +216,7 @@ def update_user(username: str, updates: Dict) -> Any:
 def delete_user(usernames: str | None = None) -> None:
     """Benutzer löschen"""
     deta_db: Any = connect_database()
-    all_users: List[Dict[str, Any]] = st.session_state["all_user_data"]
+    all_users: list[dict[str, Any]] = st.session_state["all_user_data"]
 
     if (
         usernames is None
@@ -225,7 +230,7 @@ def delete_user(usernames: str | None = None) -> None:
         logger.error("tried to delete admin account")
 
     if usernames is not None:
-        del_users: List[str] = [
+        del_users: list[str] = [
             user for user in usernames if user not in ["utec", "fl"]
         ]
     else:

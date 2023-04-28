@@ -1,21 +1,20 @@
-"""
-login page
-"""
+"""login page"""
 
 from datetime import date, datetime
-from typing import Any, Dict, List
+from typing import Any
 
 import streamlit as st
 import streamlit_authenticator as stauth
 from loguru import logger
 from streamlit_lottie import st_lottie
 
+import modules.logger_setup
 from modules import constants as cont
 from modules import setup_stuff
 from modules import streamlit_menus as sm
 from modules import user_authentication as uauth
 from modules.general_functions import func_timer, load_lottie_file
-from modules.classes import LogLevel
+from modules.logger_setup import LogLevel
 
 st.set_page_config(
     page_title="UTEC Online Tools",
@@ -25,7 +24,7 @@ st.set_page_config(
 
 # general page config (Favicon, etc.)
 if not st.session_state.get("logger_setup"):
-    setup_stuff.logger_setup()
+    modules.logger_setup.logger_setup()
 
 if st.session_state.get("initial_setup"):
     logger.log(LogLevel.NEW_RUN.name, "NEW RUN")
@@ -41,7 +40,7 @@ def display_login_page() -> None:
     - login with username and password
     - lottie-animation
     """
-    columns: List = st.columns(2)
+    columns: list = st.columns(2)
 
     with columns[0]:
         login_section()
@@ -53,9 +52,9 @@ def display_login_page() -> None:
 
 @func_timer
 def login_section() -> None:
-    """user authentication part of the login page"""
+    """User authentication part of the login page"""
 
-    user_credentials: Dict[str, Dict[str, Any]] = uauth.format_user_credentials()
+    user_credentials: dict[str, dict[str, Any]] = uauth.format_user_credentials()
     authenticator: stauth.Authenticate = stauth.Authenticate(
         credentials=user_credentials,
         cookie_name="utec_tools",
@@ -80,12 +79,12 @@ def login_section() -> None:
 
 @func_timer
 def access_granted() -> None:
-    """if access is granted, do this..."""
+    """If access is granted, do this..."""
 
     # determine the access level
     user_key: str = st.session_state["username"]
-    all_users: Dict[str, Dict[str, Any]] = st.session_state["all_user_data"]
-    access_lvl_user: str | List = all_users[user_key]["access_lvl"]
+    all_users: dict[str, dict[str, Any]] = st.session_state["all_user_data"]
+    access_lvl_user: str | list = all_users[user_key]["access_lvl"]
     st.session_state["access_lvl"] = access_lvl_user
 
     # log used username and access level
@@ -98,9 +97,11 @@ def access_granted() -> None:
         st.session_state["access_until"] = date.max
     else:
         st.session_state["access_pages"] = access_lvl_user
-        st.session_state["access_until"] = datetime.strptime(
-            all_users[user_key]["access_until"], "%Y-%m-%d"
-        ).date()
+        st.session_state["access_until"] = (
+            datetime.strptime(all_users[user_key]["access_until"], "%Y-%m-%d")
+            .astimezone()
+            .date()
+        )
 
     if st.session_state.get("username") in ["utec"]:
         st.markdown(uauth.infos_warnings_errors("access_UTEC"))
@@ -123,7 +124,7 @@ def access_granted() -> None:
 
 @func_timer
 def god_mode() -> None:
-    """special stuff for users with access level 'god'"""
+    """Define special stuff for users with access level 'god'"""
 
     sm.user_accounts()
     # neuen Benutzer eintragen

@@ -1,11 +1,9 @@
-"""
-UI - Menus
-"""
+"""UI - Menus"""
 
 import datetime
 import secrets
 from glob import glob
-from typing import Any, Dict, List
+from typing import Any
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -38,7 +36,7 @@ def user_accounts() -> None:
 
     # Knöpfle für neuen Benutzer, Benutzer löschen...
     if not any(st.session_state.get(butt) for butt in lis_butt):
-        st.button("Liste aller Konten", "butt_list_all")
+        st.button("liste aller Konten", "butt_list_all")
         st.button("neuen Benutzer hinzufügen", "butt_add_new_user")
         st.button("Benutzer löschen", "butt_del_user")
         st.button("Benutzerdaten ändern", "butt_change_user", disabled=True)
@@ -86,7 +84,7 @@ def delete_user_form() -> None:
 
 @func_timer
 def new_user_form() -> None:
-    """neuen Benutzer hinzufügen"""
+    """Neuen Benutzer hinzufügen"""
     with st.form("Neuer Benutzer"):
         st.text_input(
             label="Benutzername",
@@ -126,7 +124,7 @@ def new_user_form() -> None:
 @func_timer
 def list_all_accounts() -> None:
     """Liste aller Benutzerkonten"""
-    users: List[Dict[str, Any]] = st.session_state["all_user_data"]
+    users: list[dict[str, Any]] = st.session_state["all_user_data"]
     df_users = pd.DataFrame()
     df_users["Benutzername"] = [user["key"] for user in users]
     df_users["Name"] = [user["name"] for user in users]
@@ -139,66 +137,65 @@ def list_all_accounts() -> None:
 
 @func_timer
 def sidebar_file_upload() -> Any:
-    """hochgeladene Excel-Datei"""
+    """Hochgeladene Excel-Datei"""
 
-    with st.sidebar:
-        with st.expander(
-            "Auszuwertende Daten", expanded=not bool(st.session_state.get("f_up"))
-        ):
-            # Download
-            sb_example: str | None = st.selectbox(
-                "Beispieldateien",
-                options=[
-                    x.replace("/", "\\").split("\\")[-1].replace(".xlsx", "")
-                    for x in glob("example_files/*.xlsx")
-                ],
-                help=(
-                    """
+    with st.sidebar, st.expander(
+        "Auszuwertende Daten", expanded=not bool(st.session_state.get("f_up"))
+    ):
+        # Download
+        sb_example: str | None = st.selectbox(
+            "Beispieldateien",
+            options=[
+                x.replace("/", "\\").split("\\")[-1].replace(".xlsx", "")
+                for x in glob("example_files/*.xlsx")
+            ],
+            help=(
+                """
                     Bitte eine der Beispieldateien (egal welche) herunterladen
                      und mit den zu untersuchenden Daten füllen.
                     """
-                ),
+            ),
+        )
+
+        with open(f"example_files/{sb_example}.xlsx", "rb") as exfile:
+            st.download_button(
+                label="Beispieldatei herunterladen",
+                data=exfile,
+                file_name=f"{sb_example}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             )
 
-            with open(f"example_files/{sb_example}.xlsx", "rb") as exfile:
-                st.download_button(
-                    label="Beispieldatei herunterladen",
-                    data=exfile,
-                    file_name=f"{sb_example}.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                )
+        # benutze ausgewählte Beispieldatei direkt für debugging
+        if st.session_state.get("access_lvl") == "god":
+            st.button("Beispieldatei direkt verwenden", "but_example_direct")
+            st.button("RESET", "but_reset")
 
-            # benutze ausgewählte Beispieldatei direkt für debugging
-            if st.session_state.get("access_lvl") == "god":
-                st.button("Beispieldatei direkt verwenden", "but_example_direct")
-                st.button("RESET", "but_reset")
+        if st.session_state.get("but_reset"):
+            del_session_state_entry("f_up")
 
-            if st.session_state.get("but_reset"):
-                del_session_state_entry("f_up")
+        # Upload
+        sample_direct: str = f"example_files/{sb_example}.xlsx"
+        if (
+            st.session_state.get("but_example_direct")
+            or st.session_state.get("f_up") == sample_direct
+        ):
+            f_up = sample_direct
+            st.session_state["f_up"] = f_up
 
-            # Upload
-            sample_direct: str = f"example_files/{sb_example}.xlsx"
-            if (
-                st.session_state.get("but_example_direct")
-                or st.session_state.get("f_up") == sample_direct
-            ):
-                f_up = sample_direct
-                st.session_state["f_up"] = f_up
-
-            else:
-                st.markdown("---")
-                f_up = st.file_uploader(
-                    label="Datei hochladen",
-                    type=["xlsx", "xlsm"],
-                    accept_multiple_files=False,
-                    help=(
-                        """
+        else:
+            st.markdown("---")
+            f_up = st.file_uploader(
+                label="Datei hochladen",
+                type=["xlsx", "xlsm"],
+                accept_multiple_files=False,
+                help=(
+                    """
                         Das Arbeitsblatt "Daten" in der Datei muss
                         wie eine der Beispieldateien aufgebaut sein.
                         """
-                    ),
-                    key="f_up",
-                )
+                ),
+                key="f_up",
+            )
 
     return f_up
 
@@ -214,119 +211,115 @@ def base_settings() -> None:
         st.session_state["metadata"]["index"]["td_mean"] < pd.Timedelta(hours=1)
         or len(st.session_state["years"]) > 1
     ):
-        with st.sidebar:
-            with st.form("Grundeinstellungen"):
-                if st.session_state["metadata"]["index"]["td_mean"] < pd.Timedelta(
-                    hours=1
-                ):
-                    st.checkbox(
-                        label="Umrechnung in Stundenwerte",
-                        help=(
-                            """
+        with st.sidebar, st.form("Grundeinstellungen"):
+            if st.session_state["metadata"]["index"]["td_mean"] < pd.Timedelta(hours=1):
+                st.checkbox(
+                    label="Umrechnung in Stundenwerte",
+                    help=(
+                        """
                             Die Werte aus der Excel-Tabelle werden in Stundenwerte umgewandelt.  \n
                             _(abhängig von der angebenen Einheit entweder per Summe oder Mittelwert)_
                             """
-                        ),
-                        value=False,
-                        disabled=False,
-                        key="cb_h",
-                    )
+                    ),
+                    value=False,
+                    disabled=False,
+                    key="cb_h",
+                )
 
-                if len(st.session_state["years"]) > 1:
-                    st.checkbox(
-                        label="mehrere Jahre übereinander",
-                        help=(
-                            """
+            if len(st.session_state["years"]) > 1:
+                st.checkbox(
+                    label="mehrere Jahre übereinander",
+                    help=(
+                        """
                             Die Werte in der Excel-Tabelle werden in Jahre 
                             gruppiert und übereinander gezeichnet.
                             """
-                        ),
-                        value=True,
-                        key="cb_multi_year",
-                        # disabled=True,
-                    )
+                    ),
+                    value=True,
+                    key="cb_multi_year",
+                    # disabled=True,
+                )
 
-                st.session_state["but_base_settings"] = st.form_submit_button("Knöpfle")
+            st.session_state["but_base_settings"] = st.form_submit_button("Knöpfle")
 
 
 @func_timer
 def select_graphs() -> None:
     """Auswahl der anzuzeigenden Grafiken"""
-    with st.sidebar:
-        with st.expander("anzuzeigende Grafiken", False):
-            with st.form("anzuzeigende Grafiken"):
-                st.checkbox(
-                    label="geordnete Jahresdauerlinie",
-                    help=(
-                        """
+    with st.sidebar, st.expander("anzuzeigende Grafiken", expanded=False), st.form(
+        "anzuzeigende Grafiken"
+    ):
+        st.checkbox(
+            label="geordnete Jahresdauerlinie",
+            help=(
+                """
                         Die Werte aus der Excel-Tabelle werden nach Größe sortiert ausgegeben.  \n
                         _(Werden mehrere Jahre übereinander dargestellt, werden auch hier 
                         die Werte in Jahre gruppiert und übereinander dargestellt.)_
                         """
-                    ),
-                    value=True,
-                    key="cb_jdl",
-                )
+            ),
+            value=True,
+            key="cb_jdl",
+        )
 
-                st.checkbox(
-                    label="Monatswerte",
-                    help=(
-                        """
+        st.checkbox(
+            label="Monatswerte",
+            help=(
+                """
                         Aus den gegebenen Werten werden Monatswerte (je nach gegebener Einheit) 
                         entweder durch Aufsummieren oder durch Bilden von Mittelwerten erzeugt 
                         und als Liniengrafik dargestellt.
                         """
-                    ),
-                    value=True,
-                    key="cb_mon",
-                )
+            ),
+            value=True,
+            key="cb_mon",
+        )
 
-                st.markdown("###")
-                st.markdown("---")
+        st.markdown("###")
+        st.markdown("---")
 
-                # Tagesvergleiche
-                st.checkbox(
-                    label="Tagesvergleich",
-                    help=(
-                        """
+        # Tagesvergleiche
+        st.checkbox(
+            label="Tagesvergleich",
+            help=(
+                """
                         Hier können Tage gewählt werden, die übereinander als Liniengrafik dargestellt werden sollen.  \n
                         _(z.B. zum Vergleich eines Wintertags mit einem Sommertag oder Woche - Wochenende, etc.)_
                         """
-                    ),
-                    value=False,
-                    key="cb_days",
-                    # disabled=True,
-                )
+            ),
+            value=False,
+            key="cb_days",
+            # disabled=True,
+        )
 
-                st.number_input(
-                    label="Anzahl der Tage",
-                    min_value=2,
-                    value=2,
-                    format="%i",
-                    help=(
-                        """
+        st.number_input(
+            label="Anzahl der Tage",
+            min_value=2,
+            value=2,
+            format="%i",
+            help=(
+                """
                         Wieveile Tage sollen verglichen werden?  \n
                         _(Wird die Anzahl geändert muss auf "aktualisieren" 
                         geklickt werden um weitere Felder anzuzeigen)_
                         """
-                    ),
-                    key="ni_days",
-                )
+            ),
+            key="ni_days",
+        )
 
-                for num in range(int(st.session_state["ni_days"])):
-                    st.date_input(
-                        label=f"Tag {str(num + 1)}",
-                        min_value=st.session_state["df"].index.min(),
-                        max_value=st.session_state["df"].index.max(),
-                        value=st.session_state["df"].index.min()
-                        + pd.DateOffset(days=num),
-                        key=f"day_{str(num)}",
-                    )
+        for num in range(int(st.session_state["ni_days"])):
+            st.date_input(
+                label=f"Tag {str(num + 1)}",
+                min_value=st.session_state["df"].index.min(),
+                max_value=st.session_state["df"].index.max(),
+                value=st.session_state["df"].index.min() + pd.DateOffset(days=num),
+                key=f"day_{str(num)}",
+            )
 
-                st.markdown("---")
-                st.markdown("###")
+        st.markdown("---")
+        st.markdown("###")
 
-                st.session_state["but_select_graphs"] = st.form_submit_button("Knöpfle")
+        st.session_state["but_select_graphs"] = st.form_submit_button("Knöpfle")
 
 
 @func_timer
@@ -411,15 +404,14 @@ def meteo_params_main() -> None:
         if par.tit_de not in [param.tit_de for param in set_params]:
             set_params.append(par)
 
-    with st.expander("Datenauswahl", False):
-        with st.form("Meteo Datenauswahl"):
-            columns: List = st.columns(4)
+    with st.expander("Datenauswahl", expanded=False), st.form("Meteo Datenauswahl"):
+        columns: list = st.columns(4)
 
-            for cnt, col in enumerate(columns):
-                with col:
-                    st.markdown("###")
-                    st.markdown(
-                        f"""
+        for cnt, col in enumerate(columns):
+            with col:
+                st.markdown("###")
+                st.markdown(
+                    f"""
                         <html>
                             <body>
                                 <span style="{cont.CSS_LABEL_1[1:-1]}; float:left; text-align:left;">
@@ -427,161 +419,159 @@ def meteo_params_main() -> None:
                             </body>
                         </html>
                         """,
-                        unsafe_allow_html=True,
-                    )
+                    unsafe_allow_html=True,
+                )
 
-                    for par in set_params:
-                        if par.cat_utec == cats[cnt]:
-                            st.checkbox(
-                                label=par.tit_de,
-                                key=f"cb_{par.tit_de}",
-                                value=par.default,
-                                disabled=True,
-                            )
+                for par in set_params:
+                    if par.cat_utec == cats[cnt]:
+                        st.checkbox(
+                            label=par.tit_de,
+                            key=f"cb_{par.tit_de}",
+                            value=par.default,
+                            disabled=True,
+                        )
 
-            st.session_state["but_meteo_main"] = st.form_submit_button("Knöpfle")
+        st.session_state["but_meteo_main"] = st.form_submit_button("Knöpfle")
 
 
 @func_timer
 def clean_outliers() -> None:
     """Menu zur Ausreißerbereinigung"""
 
-    with st.sidebar:
-        with st.expander("Ausreißerbereinigung", False):
-            with st.form("Ausreißerbereinigung"):
-                if "abs_max" not in st.session_state:
-                    st.session_state["abs_max"] = float(
-                        max(
-                            line["y"].max()
-                            for line in st.session_state["fig_base"].data
-                            if "orgidx" not in line.name
-                        )
-                    )
+    with st.sidebar, st.expander("Ausreißerbereinigung", expanded=False), st.form(
+        "Ausreißerbereinigung"
+    ):
+        if "abs_max" not in st.session_state:
+            st.session_state["abs_max"] = float(
+                max(
+                    line["y"].max()
+                    for line in st.session_state["fig_base"].data
+                    if "orgidx" not in line.name
+                )
+            )
 
-                st.number_input(
-                    label="Bereinigung von Werten über:",
-                    value=st.session_state["abs_max"],
-                    format="%.0f",
-                    help=(
-                        """
+        st.number_input(
+            label="Bereinigung von Werten über:",
+            value=st.session_state["abs_max"],
+            format="%.0f",
+            help=(
+                """
                         Ist ein Wert in den Daten höher als der hier eingegebene, 
                         wird dieser Datenpunkt aus der Reihe gelöscht und die Lücke interpoliert.
                         """
-                    ),
-                    key="ni_outl",
-                    disabled=True,
-                )
+            ),
+            key="ni_outl",
+            disabled=True,
+        )
 
-                st.markdown("###")
+        st.markdown("###")
 
-                st.session_state["but_clean_outliers"] = st.form_submit_button(
-                    "Knöpfle"
-                )
+        st.session_state["but_clean_outliers"] = st.form_submit_button("Knöpfle")
 
 
 @func_timer
 def smooth() -> None:
     """Einstellungen für die geglätteten Linien"""
 
-    with st.sidebar:
-        with st.expander("geglättete Linien", False):
-            with st.form("geglättete Linien"):
-                st.checkbox(
-                    label="anzeigen",
-                    value=True,
-                    key="cb_smooth",
-                    help=("Anzeige geglätteter Linien (gleitender Durchschnitt)"),
-                )
-                st.slider(
-                    label="Glättung",
-                    min_value=1,
-                    max_value=st.session_state["smooth_max_val"],
-                    value=st.session_state["smooth_start_val"],
-                    format="%i",
-                    step=2,
-                    help=(
-                        """
+    with st.sidebar, st.expander("geglättete Linien", expanded=False), st.form(
+        "geglättete Linien"
+    ):
+        st.checkbox(
+            label="anzeigen",
+            value=True,
+            key="cb_smooth",
+            help=("Anzeige geglätteter Linien (gleitender Durchschnitt)"),
+        )
+        st.slider(
+            label="Glättung",
+            min_value=1,
+            max_value=st.session_state["smooth_max_val"],
+            value=st.session_state["smooth_start_val"],
+            format="%i",
+            step=2,
+            help=(
+                """
                         Je niedriger die Zahl, 
                         desto weniger wird die Ursprungskurve geglättet.
                         """
-                    ),
-                    key="gl_win",
-                )
+            ),
+            key="gl_win",
+        )
 
-                st.number_input(
-                    label="Polynom",
-                    value=3,
-                    format="%i",
-                    help=(
-                        """
+        st.number_input(
+            label="Polynom",
+            value=3,
+            format="%i",
+            help=(
+                """
                         Grad der polinomischen Linie  \n
                         _(normalerweise passen 2 oder 3 ganz gut)_
                         """
-                    ),
-                    key="gl_deg",
-                )
+            ),
+            key="gl_deg",
+        )
 
-                st.markdown("###")
+        st.markdown("###")
 
-                st.session_state["but_smooth"] = st.form_submit_button("Knöpfle")
+        st.session_state["but_smooth"] = st.form_submit_button("Knöpfle")
 
 
 @func_timer
 def h_v_lines() -> None:
     """Menu für horizontale und vertikale Linien"""
 
-    with st.sidebar:
-        with st.expander("horizontale / vertikale Linien", False):
-            with st.form("horizontale / vertikale Linien"):
-                st.markdown("__horizontale Linie einfügen__")
+    with st.sidebar, st.expander(
+        "horizontale / vertikale Linien", expanded=False
+    ), st.form("horizontale / vertikale Linien"):
+        st.markdown("__horizontale Linie einfügen__")
 
-                st.text_input(label="Bezeichnung", value="", key="ti_hor")
+        st.text_input(label="Bezeichnung", value="", key="ti_hor")
 
-                st.number_input(
-                    value=0.0,
-                    label="y-Wert",
-                    format="%f",
-                    help=(
-                        """
+        st.number_input(
+            value=0.0,
+            label="y-Wert",
+            format="%f",
+            help=(
+                """
                         Bei diesem Wert wird eine horizontale Linie eingezeichnet.  \n
                         _(Zum Löschen einfach "0" eingeben und Knöpfle drücken.)_
                         """
-                    ),
-                    key="ni_hor",
-                    step=1.0,
-                )
+            ),
+            key="ni_hor",
+            step=1.0,
+        )
 
-                # st.multiselect(
-                #     label= 'ausfüllen',
-                #     options= [
-                #         line.name for line in fig_base.data
-                #         if len(line.x) > 0 and
-                #         not any([ex in line.name for ex in fuan.exclude])
-                #     ],
-                #     help=(
-                #         'Diese Linie(n) wird (werden) zwischen X-Achse und hozizontaler Linie ausgefüllt.'
-                #     ),
-                #     key= 'ms_fil'
-                # )
+        # st.multiselect(
+        #     label= 'ausfüllen',
+        #     options= [
+        #         line.name for line in fig_base.data
+        #         if len(line.x) > 0 and
+        #         not any([ex in line.name for ex in fuan.exclude])
+        #     ],
+        #     help=(
+        #         'Diese Linie(n) wird (werden) zwischen X-Achse und hozizontaler Linie ausgefüllt.'
+        #     ),
+        #     key= 'ms_fil'
+        # )
 
-                st.checkbox(
-                    label="gestrichelt",
-                    help=("Soll die horizontale Linie gestrichelt sein?"),
-                    value=True,
-                    key="cb_hor_dash",
-                )
+        st.checkbox(
+            label="gestrichelt",
+            help=("Soll die horizontale Linie gestrichelt sein?"),
+            value=True,
+            key="cb_hor_dash",
+        )
 
-                st.markdown("###")
+        st.markdown("###")
 
-                st.session_state["but_h_v_lines"] = st.form_submit_button("Knöpfle")
+        st.session_state["but_h_v_lines"] = st.form_submit_button("Knöpfle")
 
 
 @func_timer
-def display_options_main_col_settings() -> Dict[str, Dict]:
+def display_options_main_col_settings() -> dict[str, dict]:
     """Settings for the columns of the main display options (controlling line color, type, etc.)
 
     Returns:
-        Dict[str, Dict]: "Title" -> column header with hover-text | "width" -> width of the column
+        dict[str, dict]: "Title" -> column header with hover-text | "width" -> width of the column
             - "name" -> name of line
             - "vis" -> visibility of line (show line or not)
             - "colour" -> line colour
@@ -624,112 +614,107 @@ def display_options_main_col_settings() -> Dict[str, Dict]:
 def display_options_main() -> bool:
     """Hauptmenu für die Darstellungsoptionen (Linienfarben, Füllung, etc.)"""
 
-    with st.expander("Anzeigeoptionen", False):
-        with st.form("Anzeigeoptionen"):
-            # columns
-            columns: Dict[str, Dict] = display_options_main_col_settings()
-            cols: List = st.columns([col["width"] for col in columns.values()])
+    with st.expander("Anzeigeoptionen", expanded=False), st.form("Anzeigeoptionen"):
+        # columns
+        columns: dict[str, dict] = display_options_main_col_settings()
+        cols: list = st.columns([col["width"] for col in columns.values()])
 
-            # Überschriften
-            for count, col in enumerate(columns):
-                with cols[count]:
-                    st.markdown("###")
-                    st.markdown(columns[col]["Title"], unsafe_allow_html=True)
+        # Überschriften
+        for count, col in enumerate(columns):
+            with cols[count]:
+                st.markdown("###")
+                st.markdown(columns[col]["Title"], unsafe_allow_html=True)
 
-            # Check Boxes for line visibility, fill and color
-            fig: go.Figure = st.session_state["fig_base"]
-            fig_data: Dict[str, Dict[str, Any]] = fgf.fig_data_as_dic(fig)
-            fig_layout: Dict[str, Any] = fgf.fig_layout_as_dic(fig)
-            colorway: List[str] = get_colorway(fig)
-            lines: List[Dict] = [
-                line
-                for line in fig_data.values()
-                if all(ex not in line["name"] for ex in cont.EXCLUDE)
-            ]
+        # Check Boxes for line visibility, fill and color
+        fig: go.Figure = st.session_state["fig_base"]
+        fig_data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
+        fig_layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
+        colorway: list[str] = get_colorway(fig)
+        lines: list[dict] = [
+            line
+            for line in fig_data.values()
+            if all(ex not in line["name"] for ex in cont.EXCLUDE)
+        ]
 
-            for count, line in enumerate(lines):
-                cols: List = st.columns([col["width"] for col in columns.values()])
-                line_name: str = line["name"]
-                line_color: str = colorway[count]
-                if (
-                    len(line["x"]) > 0
-                    and line_name is not None
-                    and line_color is not None
+        for count, line in enumerate(lines):
+            cols: list = st.columns([col["width"] for col in columns.values()])
+            line_name: str = line["name"]
+            line_color: str = colorway[count]
+            if len(line["x"]) > 0 and line_name is not None and line_color is not None:
+                with cols[list(columns).index("name")]:
+                    st.markdown(line_name)
+                with cols[list(columns).index("vis")]:
+                    st.checkbox(
+                        label=line_name,
+                        value=all(
+                            part not in line_name
+                            for part in [
+                                cont.SMOOTH_SUFFIX,
+                                cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"],
+                            ]
+                        ),
+                        key=f"cb_vis_{line_name}",
+                        label_visibility="collapsed",
+                    )
+                with cols[list(columns).index("type")]:
+                    st.selectbox(
+                        label=line_name,
+                        key=f"sb_line_dash_{line_name}",
+                        label_visibility="collapsed",
+                        options=list(cont.LINE_TYPES),
+                    )
+                with cols[list(columns).index("colour")]:
+                    st.color_picker(
+                        label=line_name,
+                        value=line_color,
+                        key=f"cp_{line_name}",
+                        label_visibility="collapsed",
+                    )
+
+                with cols[list(columns).index("fill")]:
+                    st.selectbox(
+                        label=line_name,
+                        key=f"sb_fill_{line_name}",
+                        label_visibility="collapsed",
+                        options=cont.TRANSPARENCY_OPTIONS,
+                    )
+
+                # Check Boxes for annotations
+                anno_name: str = ""
+                for anno in [
+                    anno["name"]
+                    for anno in fig_layout["annotations"]
+                    if all(string not in anno["name"] for string in cont.EXCLUDE)
+                    and all(string not in line_name for string in cont.EXCLUDE)
+                ]:
+                    if line_name in anno:
+                        anno_name = anno.split(": ")[0]
+                show: bool = True
+                if any(
+                    suff in line_name
+                    for suff in cont.ARBEIT_LEISTUNG["suffix"].values()
                 ):
-                    with cols[list(columns).index("name")]:
-                        st.markdown(line_name)
-                    with cols[list(columns).index("vis")]:
-                        st.checkbox(
-                            label=line_name,
-                            value=all(
-                                part not in line_name
-                                for part in [
-                                    cont.SMOOTH_SUFFIX,
-                                    cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"],
-                                ]
-                            ),
-                            key=f"cb_vis_{line_name}",
-                            label_visibility="collapsed",
-                        )
-                    with cols[list(columns).index("type")]:
-                        st.selectbox(
-                            label=line_name,
-                            key=f"sb_line_dash_{line_name}",
-                            label_visibility="collapsed",
-                            options=list(cont.LINE_TYPES),
-                        )
-                    with cols[list(columns).index("colour")]:
-                        st.color_picker(
-                            label=line_name,
-                            value=line_color,
-                            key=f"cp_{line_name}",
-                            label_visibility="collapsed",
-                        )
-
-                    with cols[list(columns).index("fill")]:
-                        st.selectbox(
-                            label=line_name,
-                            key=f"sb_fill_{line_name}",
-                            label_visibility="collapsed",
-                            options=cont.TRANSPARENCY_OPTIONS,
-                        )
-
-                    # Check Boxes for annotations
-                    anno_name: str = ""
-                    for anno in [
-                        anno["name"]
-                        for anno in fig_layout["annotations"]
-                        if all(string not in anno["name"] for string in cont.EXCLUDE)
-                        and all(string not in line_name for string in cont.EXCLUDE)
-                    ]:
-                        if line_name in anno:
-                            anno_name = anno.split(": ")[0]
-                    show: bool = True
-                    if any(
-                        suff in line_name
+                    suff: str = [
+                        suff
                         for suff in cont.ARBEIT_LEISTUNG["suffix"].values()
-                    ):
-                        suff: str = [
-                            suff
-                            for suff in cont.ARBEIT_LEISTUNG["suffix"].values()
-                            if suff in line_name
-                        ][0]
-                        anno_name: str = anno_name.replace(suff, "")
-                        if "first_suff" not in st.session_state:
-                            st.session_state["first_suff"] = suff
-                        if suff != st.session_state["first_suff"]:
-                            show = False
+                        if suff in line_name
+                    ][0]
+                    anno_name: str = anno_name.replace(suff, "")
+                    if "first_suff" not in st.session_state:
+                        st.session_state["first_suff"] = suff
+                    if suff != st.session_state["first_suff"]:
+                        show = False
 
-                    if show:
-                        with cols[list(columns).index("anno")]:
-                            st.checkbox(
-                                label=anno_name,
-                                value=False,
-                                key=f"cb_anno_{anno_name}",
-                            )
+                if show:
+                    with cols[list(columns).index("anno")]:
+                        st.checkbox(
+                            label=anno_name,
+                            value=False,
+                            key=f"cb_anno_{anno_name}",
+                        )
 
-            st.markdown("###")
-            but_upd_main: bool = st.form_submit_button("Knöpfle")
+        st.markdown("###")
+        but_upd_main: bool = st.form_submit_button("Knöpfle")
 
     return but_upd_main
 
@@ -738,105 +723,106 @@ def display_options_main() -> bool:
 def display_smooth_main() -> bool:
     """Hauptmenu für die Darstellungsoptionen (Linienfarben, Füllung, etc.)"""
 
-    with st.expander("Anzeigeoptionen für geglättete Linien", False):
-        with st.form("Anzeigeoptionen für geglättete Linien"):
-            col_general: List = st.columns([3, 1])
-            with col_general[0]:
-                st.slider(
-                    label="Glättung",
-                    min_value=1,
-                    max_value=st.session_state["smooth_max_val"],
-                    value=st.session_state["smooth_start_val"],
-                    format="%i",
-                    step=2,
-                    help=(
-                        """
+    with st.expander("Anzeigeoptionen für geglättete Linien", expanded=False), st.form(
+        "Anzeigeoptionen für geglättete Linien"
+    ):
+        col_general: list = st.columns([3, 1])
+        with col_general[0]:
+            st.slider(
+                label="Glättung",
+                min_value=1,
+                max_value=st.session_state["smooth_max_val"],
+                value=st.session_state["smooth_start_val"],
+                format="%i",
+                step=2,
+                help=(
+                    """
                         Je niedriger die Zahl, 
                         desto weniger wird die Ursprungskurve geglättet.
                         """
-                    ),
-                    key="gl_win",
-                )
-            with col_general[1]:
-                st.number_input(
-                    label="Polynom",
-                    value=3,
-                    format="%i",
-                    help=(
-                        """
+                ),
+                key="gl_win",
+            )
+        with col_general[1]:
+            st.number_input(
+                label="Polynom",
+                value=3,
+                format="%i",
+                help=(
+                    """
                         Grad der polinomischen Linie  \n
                         _(normalerweise passen 2 oder 3 ganz gut)_
                         """
-                    ),
-                    key="gl_deg",
-                )
+                ),
+                key="gl_deg",
+            )
 
-            st.markdown("---")
+        st.markdown("---")
 
-            # columns
-            columns: Dict[str, Dict] = display_options_main_col_settings()
-            cols: List = st.columns([col["width"] for col in columns.values()])
+        # columns
+        columns: dict[str, dict] = display_options_main_col_settings()
+        cols: list = st.columns([col["width"] for col in columns.values()])
 
-            # Überschriften
-            for count, col in enumerate(columns):
-                if count < 4:
-                    with cols[count]:
-                        st.markdown("###")
-                        st.markdown(columns[col]["Title"], unsafe_allow_html=True)
+        # Überschriften
+        for count, col in enumerate(columns):
+            if count < 4:
+                with cols[count]:
+                    st.markdown("###")
+                    st.markdown(columns[col]["Title"], unsafe_allow_html=True)
 
-            # Check Boxes for line visibility, fill and color
-            fig: go.Figure = st.session_state["fig_base"]
-            fig_data: Dict[str, Dict[str, Any]] = fgf.fig_data_as_dic(fig)
-            colorway: List[str] = get_colorway(fig)
-            lines: List[Dict] = [
-                line
-                for line in fig_data.values()
-                if all(ex not in line["name"] for ex in cont.EXCLUDE)
-            ]
+        # Check Boxes for line visibility, fill and color
+        fig: go.Figure = st.session_state["fig_base"]
+        fig_data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
+        colorway: list[str] = get_colorway(fig)
+        lines: list[dict] = [
+            line
+            for line in fig_data.values()
+            if all(ex not in line["name"] for ex in cont.EXCLUDE)
+        ]
 
-            for count, line in enumerate(lines):
-                cols: List = st.columns([col["width"] for col in columns.values()])
-                line_name: str = f'{line["name"]}{cont.SMOOTH_SUFFIX}'
-                line_color: str = colorway[count + len(lines)]
-                if (
-                    len(line["x"]) > 0
-                    and "hline" not in line_name
-                    and line_name is not None
-                    and line_color is not None
-                ):
-                    with cols[list(columns).index("name")]:
-                        st.markdown(line_name)
-                    with cols[list(columns).index("vis")]:
-                        st.checkbox(
-                            label=line_name,
-                            value=False,
-                            key=f"cb_vis_{line_name}",
-                            label_visibility="collapsed",
-                        )
-                    with cols[list(columns).index("type")]:
-                        st.selectbox(
-                            label=line_name,
-                            key=f"sb_line_dash_{line_name}",
-                            label_visibility="collapsed",
-                            options=list(cont.LINE_TYPES),
-                            index=1,
-                        )
-                    with cols[list(columns).index("colour")]:
-                        st.color_picker(
-                            label=line_name,
-                            value=line_color,
-                            key=f"cp_{line_name}",
-                            label_visibility="collapsed",
-                        )
+        for count, line in enumerate(lines):
+            cols: list = st.columns([col["width"] for col in columns.values()])
+            line_name: str = f'{line["name"]}{cont.SMOOTH_SUFFIX}'
+            line_color: str = colorway[count + len(lines)]
+            if (
+                len(line["x"]) > 0
+                and "hline" not in line_name
+                and line_name is not None
+                and line_color is not None
+            ):
+                with cols[list(columns).index("name")]:
+                    st.markdown(line_name)
+                with cols[list(columns).index("vis")]:
+                    st.checkbox(
+                        label=line_name,
+                        value=False,
+                        key=f"cb_vis_{line_name}",
+                        label_visibility="collapsed",
+                    )
+                with cols[list(columns).index("type")]:
+                    st.selectbox(
+                        label=line_name,
+                        key=f"sb_line_dash_{line_name}",
+                        label_visibility="collapsed",
+                        options=list(cont.LINE_TYPES),
+                        index=1,
+                    )
+                with cols[list(columns).index("colour")]:
+                    st.color_picker(
+                        label=line_name,
+                        value=line_color,
+                        key=f"cp_{line_name}",
+                        label_visibility="collapsed",
+                    )
 
-                    with cols[list(columns).index("fill")]:
-                        st.empty()
+                with cols[list(columns).index("fill")]:
+                    st.empty()
 
-                    with cols[list(columns).index("anno")]:
-                        st.empty()
+                with cols[list(columns).index("anno")]:
+                    st.empty()
 
-            st.markdown("###")
-            but_smooth: bool = st.form_submit_button("Knöpfle")
+        st.markdown("###")
+        but_smooth: bool = st.form_submit_button("Knöpfle")
 
     st.markdown("###")
 
@@ -886,7 +872,7 @@ def downloads(page: str = "graph") -> None:
         with st.spinner("Momentle bitte - html-Datei wird erzeugt..."):
             fig_cr.html_exp()
 
-        cols: List = st.columns(3)
+        cols: list = st.columns(3)
 
         with cols[1]:
             f_pn = "export/interaktive_grafische_Auswertung.html"
@@ -918,7 +904,7 @@ def downloads(page: str = "graph") -> None:
     ):
         with st.spinner("Momentle bitte - Excel-Datei wird erzeugt..."):
             if page in ("graph"):
-                dic_df_ex: Dict = {
+                dic_df_ex: dict = {
                     x.name: {
                         "df": pd.DataFrame(data=x.y, index=x.x, columns=[x.name]),
                         "unit": st.session_state["metadata"][x.name].get("unit"),
@@ -940,7 +926,7 @@ def downloads(page: str = "graph") -> None:
 
             dat = ex.excel_download(df_ex, page)
 
-        cols: List = st.columns(3)
+        cols: list = st.columns(3)
 
         with cols[1]:
             st.download_button(

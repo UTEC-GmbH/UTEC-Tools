@@ -1,7 +1,7 @@
 """Sample Data for Tests"""
 
 import json
-from typing import Any, Dict, List, Literal
+from typing import Any, Literal, dict, list
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -52,8 +52,8 @@ def sample_df(
     return df
 
 
-def sample_dic_meta(**kwargs) -> Dict:
-    """Create a Dictionary with metadata for the sample DataFrames
+def sample_dic_meta(**kwargs) -> dict:
+    """Create a dictionary with metadata for the sample DataFrames
 
     - kwargs: df (pd.DataFrame)
 
@@ -71,7 +71,7 @@ def sample_dic_meta(**kwargs) -> Dict:
 
     """
     with open("tests/sample_data/dic_meta.json") as json_file:
-        meta: Dict[str, Dict[str, Any]] = json.load(json_file)
+        meta: dict[str, dict[str, Any]] = json.load(json_file)
 
     meta["index"] = {"datetime": False, "years": []}
 
@@ -101,7 +101,7 @@ def sample_dic_meta(**kwargs) -> Dict:
 
 def sample_fig(
     index_type: Literal["datetime", "int"] = "datetime",
-    lines: List[str] | None = None,
+    lines: list[str] | None = None,
     **kwargs,
 ) -> go.Figure:
     """Create a Plotly line graph from sample data
@@ -110,14 +110,14 @@ def sample_fig(
         - df (pd.DataFrame, optional): Sample Data.
         - index_type (Literal[datetime, int], optional):
             Der Index des DataFrames kann entweder als datetime belassen oder in int umgewandelt werden. Defaults to "datetime".
-        - lines (List[str] | None, optional): If set to None, all columns of the df are used. Defaults to None.
+        - lines (list[str] | None, optional): If set to None, all columns of the df are used. Defaults to None.
 
     Returns:
         go.Figure: Plotly Plot
     """
 
     df: pd.DataFrame = kwargs.get("df") or sample_df("single", "h")
-    metadata: Dict = sample_dic_meta(data_frame=df)
+    metadata: dict = sample_dic_meta(data_frame=df)
 
     if index_type == "int":
         df = df.reset_index(drop=True)
@@ -129,7 +129,7 @@ def sample_fig(
         {"title": title, "meta": {"title": title, "units": ["kWh", "kW", "°C"]}}
     )
 
-    used_lines: List[str] = lines or df.columns.to_list()
+    used_lines: list[str] = lines or df.columns.to_list()
 
     for line in used_lines:
         fig.add_trace(

@@ -1,23 +1,22 @@
-"""
-General Purpose Functions
-"""
+"""General Purpose Functions"""
 
 import base64
 import datetime as dt
 import json
 import time
 from collections import Counter
-from typing import Any, Callable, Dict, List
+from collections.abc import Callable
+from typing import Any
 
 import streamlit as st
 from loguru import logger
 
 from modules import constants as cont
-from modules.classes import LogLevel
+from modules.logger_setup import LogLevel, logger_setup
 
 
 def func_timer(func: Callable) -> Callable:
-    """Decorator for measuring the execution time of a function.
+    """Create Decorator for measuring the execution time of a function.
 
     The execution time is writen in the streamlit session state
     and printed in the logs.
@@ -28,6 +27,11 @@ def func_timer(func: Callable) -> Callable:
 
     def wrapper(*args, **kwargs) -> Any:
         start_time: float = time.monotonic()
+
+        try:
+            logger.level(LogLevel.FUNC_START.name)
+        except ValueError:
+            logger_setup()
         logger.log(LogLevel.FUNC_START.name, f"function '{func.__name__}' started")
 
         if "dic_exe_time" not in st.session_state:
@@ -58,14 +62,14 @@ def st_add(key: str, value: Any) -> None:
         st.session_state[key] = value
 
 
-def load_lottie_file(path: str) -> Dict:
+def load_lottie_file(path: str) -> dict:
     """Load a Lottie-animation by providing a json-file.
 
     Args:
         - path (str): path to json-file
 
     Returns:
-        - Dict: animation
+        - dict: animation
     """
     with open(path) as file:
         return json.load(file)
@@ -84,22 +88,22 @@ def del_session_state_entry(key: str) -> None:
         logger.warning(f"st.session_state Eintrag {key} gelöscht")
 
 
-def sort_list_by_occurance(list_of_stuff: List[Any]) -> List[Any]:
+def sort_list_by_occurance(list_of_stuff: list[Any]) -> list[Any]:
     """Given a list of stuff, which can have multiple same elements,
     this function returns a list sorted by the number of occurances
     of same elements, where same elements are combined.
 
-    Example: List_of_stuff = ["kW", "kWh", "kWh", "°C"]
+    Example: list_of_stuff = ["kW", "kWh", "kWh", "°C"]
     returns: ['kWh', 'kW', '°C']
 
     -> 'kWh' is first, because it's in the original list twice
 
 
     Args:
-        - list_of_stuff (List): List with multiple same elements
+        - list_of_stuff (list): list with multiple same elements
 
     Returns:
-        - List: Set in list form, sorted by number of occurances
+        - list: Set in list form, sorted by number of occurances
     """
 
     return sorted(Counter(list_of_stuff), key=list_of_stuff.count, reverse=True)
@@ -110,7 +114,8 @@ def render_svg(svg_path: str = "logo/UTEC_logo_text.svg") -> str:
     """SVG-Bild wird so codiert, dass es in Streamlit und html dargestellt werden kann.
 
     Args:
-        - svg_path (str, optional): relativer Pfad zur svg-Datei. Defaults to "logo/UTEC_logo_text.svg".
+        - svg_path (str, optional): relativer Pfad zur svg-Datei. 
+            Defaults to "logo/UTEC_logo_text.svg".
 
     Returns:
         - str: Bild in string-format

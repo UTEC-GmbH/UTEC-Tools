@@ -1,8 +1,7 @@
 """Bearbeitung der Daten"""
 
 
-import datetime as dt
-from typing import Any, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 import numpy as np
 import pandas as pd
@@ -12,6 +11,9 @@ from loguru import logger
 from modules import constants as cont
 from modules.general_functions import func_timer
 from modules.logger_setup import LogLevel
+
+if TYPE_CHECKING:
+    import datetime as dt
 
 
 @func_timer

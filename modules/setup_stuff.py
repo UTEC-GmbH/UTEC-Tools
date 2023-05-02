@@ -129,24 +129,27 @@ def page_header_setup(page: str) -> None:
             st.session_state["com_msg"] = get_commit_message_date()["com_msg"]
         with columns[1]:
             st.write(
-                f"""
-                    <i><span style="line-height: 110%; font-size: 12px; float:right; text-align:right">
-                        letzte Änderungen:<br>
-                        {st.session_state["com_date"]:%d.%m.%Y}   {st.session_state["com_date"]:%H:%M}<br><br>
-                        "{st.session_state["com_msg"]}"
-                    </span></i>
-                """,
+                (
+                    '<i><span style="line-height: 110%; font-size: 12px; '
+                    'float:right; text-align:right">'
+                    "letzte Änderungen:<br>"
+                    f'{st.session_state["com_date"]:%d.%m.%Y}   '
+                    f'{st.session_state["com_date"]:%H:%M}<br><br>'
+                    f'{st.session_state["com_msg"]}'
+                    "</span></i>"
+                ),
                 unsafe_allow_html=True,
             )
 
             access_lvl_user: str | list | None = st.session_state.get("access_lvl")
             if isinstance(access_lvl_user, str) and access_lvl_user in ("god"):
                 st.write(
-                    f"""
-                        <i><span style="line-height: 110%; font-size: 12px; float:right; text-align:right">
-                            (Python version {sys.version.split()[0]})
-                        </span></i>
-                    """,
+                    (
+                        '<i><span style="line-height: 110%; font-size: 12px; '
+                        'float:right; text-align:right">'
+                        f"(Python version {sys.version.split()[0]})"
+                        "</span></i>"
+                    ),
                     unsafe_allow_html=True,
                 )
 

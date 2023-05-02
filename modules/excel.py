@@ -165,7 +165,7 @@ def meta_from_index(df: pd.DataFrame) -> dict[str, Any]:
 
     if isinstance(df.index, pd.DatetimeIndex):
         dic_index["datetime"] = True
-        dic_index["td_mean"] = df.index.to_series().diff().mean().round("min")  # type: ignore
+        dic_index["td_mean"] = df.index.to_series().diff().mean().round("min")  
         if dic_index["td_mean"] == pd.Timedelta(minutes=15):
             dic_index["td_int"] = "15min"
         elif dic_index["td_mean"] == pd.Timedelta(hours=1):

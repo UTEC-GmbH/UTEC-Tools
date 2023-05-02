@@ -1,4 +1,4 @@
-"""login page"""
+"""login page"""  # noqa: N999
 
 from datetime import date, datetime
 from typing import Any

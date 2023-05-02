@@ -1,6 +1,7 @@
 """user authentication"""
 
 import os
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from typing import Any
 
@@ -13,6 +14,42 @@ from loguru import logger
 from modules.general_functions import func_timer
 
 
+@dataclass(frozen=True)
+class ErrorLog:
+    no_login: str = "not logged in"
+    no_access: str = "no access to page (module)"
+    too_late: str = "access for user expired"
+
+
+class ErrorMessage:
+    no_login: str = "Bitte anmelden! (login auf der linken Seite)"
+    no_access: str = (
+        "Mit diesem Benutzerkonto haben Sie keinen Zugriff auf dieses Modul. \n\n"
+        "Bitte nehmen Sie Kontakt mit UTEC auf."
+    )
+    too_late: str = (
+        f"Zugriff war nur bis {until} gestattet.  \n  \n"
+        "Bitte nehmen Sie Kontakt mit UTEC auf."
+    )
+    access_utec: str = (
+        "Du bist mit dem allgemeinen UTEC-Account angemeldet.  \n  \n"
+        "Viel Spaß mit den Tools!"
+    )
+    access_other: str = f"Angemeldet als '{st.session_state.get('name')}'."
+    access_until: str = (
+        "Mit diesem Account kann auf folgende Module bis zum "
+        f"{until} zugegriffen werden:"
+    )
+    access_level: str = (
+        "Mit diesem Account kann auf folgende Module zugegriffen werden:"
+    )
+
+
+def warnings(type: str) -> str:
+    logger.error(getattr(ErrorLog, type, None))
+    st.error(getattr(ErrorMessage, type, None), type)
+
+
 def infos_warnings_errors(key: str) -> str:
     """Messages concerning user authentication"""
     until: str | None = (
@@ -23,7 +60,7 @@ def infos_warnings_errors(key: str) -> str:
     dic: dict[str, dict[str, str]] = {
         "no_access": {
             "message": """
-                Mit diesem Benutzerkonto haben Sie keinen Zugriff auf dieses Modul.  \n  \n
+                Mit diesem Benutzerkonto haben Sie keinen Zugriff auf dieses Modul. \n\n
                 Bitte nehmen Sie Kontakt mit UTEC auf.
             """,
             "log": "no access to page (module)",
@@ -163,20 +200,24 @@ def format_user_credentials() -> dict[str, dict[str, Any]]:
 
 @func_timer
 def insert_new_user(
-    username: str,
-    name: str,
-    email: str,
-    password: str,
-    access_lvl: str | list,
-    access_until: str = "",
+    username: str, password: str, access_lvl: str | list, **kwargs
 ) -> None:
     """Neuen Benutzer hinzufügen.
 
     Bei Aufrufen der Funktion, Passwort als Klartext angeben -> wird in hash umgewandelt
-    """
-    access_until = access_until or str(date.today() + timedelta(weeks=3))
 
-    # password muss eine liste sein, 
+    kwargs:
+        name: str,
+        email: str,
+        access_until: str = "",
+    """
+    access_until: str = kwargs.get("access_until") or str(
+        date.today() + timedelta(weeks=3)
+    )
+    name: str = kwargs.get("name") or username.replace("_", " ").title()
+    email: str = kwargs.get("email") or ""
+
+    # password muss eine liste sein,
     # deshalb wird hier für einezelnen user das pw in eine liste geschrieben
     hashed_pw: list = stauth.Hasher([password]).generate()
     deta_db: Any = connect_database()
@@ -186,20 +227,20 @@ def insert_new_user(
             "name": name,  # Klartext name
             "email": email,  # e-Mail-Adresse
             "password": hashed_pw[0],  # erstes Element aus der Passwort-"liste"
-            "access_lvl": access_lvl,  # "god" | "full" | list of allowed pages e.g. ["graph", "meteo"] ...page options: dics.pages.keys()
+            "access_lvl": access_lvl,  # "god" or "full" or list of allowed pages
+            # e.g. ["graph", "meteo"] ...page options: dics.pages.keys()
             "access_until": access_until,
         }
     )
 
     st.markdown("###")
     st.info(
-        f"""
-        Benutzer "{st.session_state.get('new_user_username')}" zur Datenbank hinzugefügt.
-        ("{st.session_state.get("new_user_name")}" hat Zugriff bis zum 
-        {st.session_state.get("new_user_until"):%d.%m.%Y})  \n
-        Achtung: Passwort merken (wird nicht wieder angezeigt):  \n
-        __{st.session_state.get('new_user_pw')}__
-        """
+        f'Benutzer "{st.session_state.get("new_user_username")}" '
+        "zur Datenbank hinzugefügt."
+        f'("{st.session_state.get("new_user_name")}" hat Zugriff bis zum'
+        f'{st.session_state.get("new_user_until"):%d.%m.%Y})  \n'
+        "Achtung: Passwort merken (wird nicht wieder angezeigt):  \n"
+        f"__{st.session_state.get('new_user_pw')}__"
     )
 
     st.button("ok", key="insert_ok_butt")
@@ -261,7 +302,10 @@ def delete_user(usernames: str | None = None) -> None:
         st.markdown("###")
 
         if len(del_users) > 1:
-            lis_u: str = f"  \n- {del_users[0]} ({[user['name'] for user in all_users if user['key'] == del_users[0]][0]})"
+            users = {
+                [user["name"] for user in all_users if user["key"] == del_users[0]][0]
+            }
+            lis_u: str = f"  \n- {del_users[0]} {users})"
             for inst in range(1, len(del_users)):
                 lis_u += f"  \n- {del_users[inst]} ({[user['name'] for user in all_users if user['key'] == del_users[inst]][0]})"
 
@@ -282,9 +326,12 @@ def delete_user(usernames: str | None = None) -> None:
     st.button("ok", key="del_ok_butt")
 
 
-# neuer Benutzer: Kommentar einer der Funktionen entfernen, Passwort (als Klartext) nicht vergessen und Datei in Terminal ausführen - neuer Benutzer wird in Datenbank geschrieben
+# neuer Benutzer: Kommentar einer der Funktionen entfernen,
+# Passwort (als Klartext) nicht vergessen und
+# Datei in Terminal ausführen
+# -> neuer Benutzer wird in Datenbank geschrieben
 
-# insert_new_user("utec", "UTEC allgemein", "", "full")
+# insert_new_user(username="utec", name="UTEC allgemein", password="", access_lvl="full")
 # insert_new_user("fl", "Florian", "", "god")
 
 # insert_new_user("some_username", "some_name", "some_password", ["meteo"])

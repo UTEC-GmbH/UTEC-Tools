@@ -62,6 +62,11 @@ def st_add(key: str, value: Any) -> None:
         st.session_state[key] = value
 
 
+def st_get(key: str) -> Any:
+    """Shorter version of st.session_state.get(key)"""
+    return st.session_state.get(key)
+
+
 def load_lottie_file(path: str) -> dict:
     """Load a Lottie-animation by providing a json-file.
 
@@ -114,7 +119,7 @@ def render_svg(svg_path: str = "logo/UTEC_logo_text.svg") -> str:
     """SVG-Bild wird so codiert, dass es in Streamlit und html dargestellt werden kann.
 
     Args:
-        - svg_path (str, optional): relativer Pfad zur svg-Datei. 
+        - svg_path (str, optional): relativer Pfad zur svg-Datei.
             Defaults to "logo/UTEC_logo_text.svg".
 
     Returns:

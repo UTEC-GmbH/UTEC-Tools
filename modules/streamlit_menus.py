@@ -3,10 +3,9 @@
 import datetime
 import secrets
 from glob import glob
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
-import plotly.graph_objects as go
 import streamlit as st
 
 from modules import constants as cont
@@ -20,6 +19,9 @@ from modules.general_functions import (
     func_timer,
     text_with_hover,
 )
+
+if TYPE_CHECKING:
+    import plotly.graph_objects as go
 
 
 @func_timer

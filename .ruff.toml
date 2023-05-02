@@ -4,6 +4,7 @@ ignore = [
     "ANN101",
     "ANN002",
     "ANN003",
+    "ANN401",
     "COM812",
     "D202",
     "D205",
@@ -21,11 +22,4 @@ ignore = [
     "W291",
     "W292",
     "W293",
-]
-
-[pep8-naming]
-ignore-names = [
-    "00_🔑_login",
-    "01_📈_Grafische_Datenauswertung",
-    "02_⛅_Meteorologische_Daten",
 ]

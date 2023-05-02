@@ -103,7 +103,7 @@ def line_plot_y_overlay(
         - dic_df (dict): dictionary mit df für jedes Jahr
         - meta (dict): dictionary mit Metadaten für jedes Jahr
         - years (list): liste der Jahre
-        - lines (list | None, optional): liste der Linien - wenn None werden 
+        - lines (list | None, optional): liste der Linien - wenn None werden
             alle Linien der df verwendet. Defaults to None.
         - title (str, optional): Titel der Grafik. Defaults to "".
         - var_name (str, optional): Variablenname für Metadaten. Defaults to "".
@@ -288,7 +288,8 @@ def map_dwd_all() -> go.Figure:
             marker={
                 "size": 4,
                 "color": "blue",
-                # "colorscale": "Portland",  # Blackbody,Bluered,Blues,Cividis,Earth,Electric,Greens,Greys,Hot,Jet,Picnic,Portland,Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd
+                # "colorscale": "Portland",  # Blackbody,Bluered,Blues,Cividis,Earth,
+                #   Electric,Greens,Greys,Hot,Jet,Picnic,Portland,Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd
                 # "colorbar": {
                 #     "title": "Entfernung<br>DWD-Station<br>Adresse<br> ----- ",
                 #     "bgcolor": "rgba(255,255,255,0.5)",
@@ -380,7 +381,9 @@ def map_weatherstations() -> go.Figure:
                 "sizemin": 2,
                 "allowoverlap": True,
                 "color": list(all_sta["distance"]),
-                "colorscale": "Blues",  # Blackbody,Bluered,Blues,Cividis,Earth,Electric,Greens,Greys,Hot,Jet,Picnic,Portland,Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd
+                "colorscale": "Blues",  # Blackbody,Bluered,Blues,Cividis,Earth,
+                # Electric,Greens,Greys,Hot,Jet,Picnic,
+                # Portland,Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd
                 "colorbar": {
                     "title": "Entfernung<br> ----- ",
                     "bgcolor": "rgba(255,255,255,0.5)",
@@ -392,7 +395,10 @@ def map_weatherstations() -> go.Figure:
                 "cmax": meteo.WEATHERSTATIONS_MAX_DISTANCE,
                 "cmin": 0,
             },
-            hovertemplate="<b>%{text}</b> <i>(Entfernung: %{customdata:,.1f} km)</i><extra></extra>",
+            hovertemplate=(
+                "<b>%{text}</b> <i>(Entfernung: "
+                "%{customdata:,.1f} km)</i><extra></extra>"
+            ),
         )
     )
 
@@ -418,7 +424,10 @@ def map_weatherstations() -> go.Figure:
             lon=[clo_sta.loc[clo_sta.index[0], "longitude"]],
             customdata=[clo_sta.loc[clo_sta.index[0], "distance"]],
             text=[f"{clo_sta.loc[clo_sta.index[0], 'name']}"],
-            hovertemplate="<b>%{text}</b> <i>(Entfernung: %{customdata:,.1f} km)</i><br>→ nächstgelgene Wetterstation<extra></extra>",
+            hovertemplate=(
+                "<b>%{text}</b> <i>(Entfernung: %{customdata:,.1f} km)"
+                "</i><br>→ nächstgelgene Wetterstation<extra></extra>"
+            ),
             mode="markers",
             marker={
                 "size": 12,
@@ -435,7 +444,11 @@ def map_weatherstations() -> go.Figure:
                     lat=[used_sta.loc[ind, "latitude"]],
                     lon=[used_sta.loc[ind, "longitude"]],
                     customdata=[
-                        f'<i>(Entfernung: {used_sta.loc[ind, "distance"]:,.1f} km)</i><br>→ nächstgelgene Wetterstation für Parameter<br>{", ".join(used_sta.loc[ind, "params"])}'
+                        (
+                            f'<i>(Entfernung: {used_sta.loc[ind, "distance"]:,.1f} km)'
+                            f"</i><br>→ nächstgelgene Wetterstation für Parameter<br>"
+                            f'{", ".join(used_sta.loc[ind, "params"])}'
+                        )
                     ],
                     text=[used_sta.loc[ind, "name"]],
                     hovertemplate="<b>%{text}</b> %{customdata}<extra></extra>",

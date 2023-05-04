@@ -14,40 +14,73 @@ from loguru import logger
 from modules.general_functions import func_timer
 
 
-@dataclass(frozen=True)
-class ErrorLog:
-    no_login: str = "not logged in"
-    no_access: str = "no access to page (module)"
-    too_late: str = "access for user expired"
+@dataclass
+class MessageLog:
+    """Represents an access type with a message and an optional until date."""
+
+    message: str
+    log: str | None = None
+    until: str | None = (
+        (
+            st.session_state.get("access_until")
+            or f"{st.session_state['access_until']:%d.%m.%Y}"
+        )
+        if st.session_state.get("access_until")
+        else None
+    )
 
 
-class ErrorMessage:
-    no_login: str = "Bitte anmelden! (login auf der linken Seite)"
-    no_access: str = (
-        "Mit diesem Benutzerkonto haben Sie keinen Zugriff auf dieses Modul. \n\n"
-        "Bitte nehmen Sie Kontakt mit UTEC auf."
+class Err:
+    """Contains instances of the Access class for each access type."""
+
+    no_access: MessageLog = MessageLog(
+        message=(
+            "Mit diesem Benutzerkonto haben Sie keinen Zugriff auf dieses Modul."
+            "\n\n"
+            "Bitte nehmen Sie Kontakt mit UTEC auf."
+        ),
+        log="no access to page (module)",
     )
-    too_late: str = (
-        f"Zugriff war nur bis {until} gestattet.  \n  \n"
-        "Bitte nehmen Sie Kontakt mit UTEC auf."
+
+    no_login: MessageLog = MessageLog(
+        message="Bitte anmelden! (login auf der linken Seite)", log="not logged in"
     )
-    access_utec: str = (
-        "Du bist mit dem allgemeinen UTEC-Account angemeldet.  \n  \n"
-        "Viel Spaß mit den Tools!"
+    too_late: MessageLog = MessageLog(
+        message=(
+            f"""
+                Zugriff war nur bis {MessageLog.until} gestattet.  \n  \n
+                Bitte nehmen Sie Kontakt mit UTEC auf.
+            """
+        ),
+        log="access for user expired",
     )
-    access_other: str = f"Angemeldet als '{st.session_state.get('name')}'."
-    access_until: str = (
-        "Mit diesem Account kann auf folgende Module bis zum "
-        f"{until} zugegriffen werden:"
+    access_UTEC: MessageLog = MessageLog(
+        message=(
+            """
+                Du bist mit dem allgemeinen UTEC-Account angemeldet.  \n  \n
+                Viel Spaß mit den Tools!
+            """
+        )
     )
-    access_level: str = (
-        "Mit diesem Account kann auf folgende Module zugegriffen werden:"
+    access_other: MessageLog = MessageLog(
+        message=(f"Angemeldet als '{st.session_state.get('name')}'.")
+    )
+    access_until: MessageLog = MessageLog(
+        message=(
+            f"""
+                Mit diesem Account kann auf folgende Module bis zum 
+                {MessageLog.until} zugegriffen werden:
+            """
+        )
+    )
+    access_level: MessageLog = MessageLog(
+        message=("Mit diesem Account kann auf folgende Module zugegriffen werden:")
     )
 
 
 def warnings(type: str) -> str:
-    logger.error(getattr(ErrorLog, type, None))
-    st.error(getattr(ErrorMessage, type, None), type)
+    logger.error(getattr(Err, type, None).log)
+    st.error(getattr(Err, type, None).message, type)
 
 
 def infos_warnings_errors(key: str) -> str:

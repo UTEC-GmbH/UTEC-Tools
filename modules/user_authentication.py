@@ -16,24 +16,32 @@ from modules.general_functions import func_timer
 
 @dataclass
 class MessageLog:
-    """Represents an access type with a message and an optional until date."""
+    """Represents an Error with a message and an optional log message."""
 
     message: str
     log: str | None = None
-    until: str | None = (
-        (
-            st.session_state.get("access_until")
+
+    def show_error(self) -> None:
+        """Writes a log message and a streamlit error for a specified error type."""
+
+        if self.log:
+            logger.error(self.log)
+        st.error(self.message)
+
+
+@dataclass
+class CustomError:
+    """Contains instances of the MessageLog class for each error type."""
+
+    if "access_until" in st.session_state:
+        until: str | None = (
+            st.session_state["access_until"]
             or f"{st.session_state['access_until']:%d.%m.%Y}"
         )
-        if st.session_state.get("access_until")
-        else None
-    )
+    else:
+        until = None
 
-
-class Err:
-    """Contains instances of the Access class for each access type."""
-
-    no_access: MessageLog = MessageLog(
+    no_access = MessageLog(
         message=(
             "Mit diesem Benutzerkonto haben Sie keinen Zugriff auf dieses Modul."
             "\n\n"
@@ -42,110 +50,54 @@ class Err:
         log="no access to page (module)",
     )
 
-    no_login: MessageLog = MessageLog(
+    no_login = MessageLog(
         message="Bitte anmelden! (login auf der linken Seite)", log="not logged in"
     )
-    too_late: MessageLog = MessageLog(
+
+    too_late = MessageLog(
         message=(
-            f"""
-                Zugriff war nur bis {MessageLog.until} gestattet.  \n  \n
-                Bitte nehmen Sie Kontakt mit UTEC auf.
-            """
+            "Zugriff war nur bis {until} gestattet."
+            "\n\n"
+            "Bitte nehmen Sie Kontakt mit UTEC auf."
         ),
         log="access for user expired",
     )
-    access_UTEC: MessageLog = MessageLog(
+
+    access_utec = MessageLog(
         message=(
-            """
-                Du bist mit dem allgemeinen UTEC-Account angemeldet.  \n  \n
-                Viel Spaß mit den Tools!
-            """
+            "Du bist mit dem allgemeinen UTEC-Account angemeldet."
+            "\n\n"
+            "Viel Spaß mit den Tools!"
         )
     )
-    access_other: MessageLog = MessageLog(
+
+    access_other = MessageLog(
         message=(f"Angemeldet als '{st.session_state.get('name')}'.")
     )
-    access_until: MessageLog = MessageLog(
+
+    access_until = MessageLog(
         message=(
-            f"""
-                Mit diesem Account kann auf folgende Module bis zum 
-                {MessageLog.until} zugegriffen werden:
-            """
+            "Mit diesem Account kann auf folgende Module bis zum "
+            f"{until} zugegriffen werden:"
         )
     )
-    access_level: MessageLog = MessageLog(
+
+    access_level = MessageLog(
         message=("Mit diesem Account kann auf folgende Module zugegriffen werden:")
     )
-
-
-def warnings(type: str) -> str:
-    logger.error(getattr(Err, type, None).log)
-    st.error(getattr(Err, type, None).message, type)
-
-
-def infos_warnings_errors(key: str) -> str:
-    """Messages concerning user authentication"""
-    until: str | None = (
-        st.session_state.get("access_until")
-        or f"{st.session_state['access_until']:%d.%m.%Y}"
-    )
-
-    dic: dict[str, dict[str, str]] = {
-        "no_access": {
-            "message": """
-                Mit diesem Benutzerkonto haben Sie keinen Zugriff auf dieses Modul. \n\n
-                Bitte nehmen Sie Kontakt mit UTEC auf.
-            """,
-            "log": "no access to page (module)",
-        },
-        "no_login": {
-            "message": "Bitte anmelden! (login auf der linken Seite)",
-            "log": "not logged in",
-        },
-        "too_late": {
-            "message": f"""
-                Zugriff war nur bis {until} gestattet.  \n  \n
-                Bitte nehmen Sie Kontakt mit UTEC auf.
-            """,
-            "log": "access for user expired",
-        },
-        "access_UTEC": {
-            "message": """
-                Du bist mit dem allgemeinen UTEC-Account angemeldet.  \n  \n
-                Viel Spaß mit den Tools!
-            """
-        },
-        "access_other": {
-            "message": f"Angemeldet als '{st.session_state.get('name')}'."
-        },
-        "access_until": {
-            "message": f"""
-                Mit diesem Account kann auf folgende Module bis zum 
-                {until} zugegriffen werden:
-            """
-        },
-        "access_level": {
-            "message": "Mit diesem Account kann auf folgende Module zugegriffen werden:"
-        },
-    }
-
-    if dic[key].get("log"):
-        logger.error(dic[key]["log"])
-
-    return dic[key]["message"]
 
 
 def authentication(page: str) -> bool:
     """Authentication object"""
 
     if not st.session_state.get("authentication_status"):
-        st.warning(infos_warnings_errors("no_login"))
+        CustomError.no_login.show_error()
         return False
     if page not in st.session_state["access_pages"]:
-        st.error(infos_warnings_errors("no_access"))
+        CustomError.no_access.show_error()
         return False
     if st.session_state["access_until"] < date.today():
-        st.error(infos_warnings_errors("too_late"))
+        CustomError.too_late.show_error()
         return False
 
     return True

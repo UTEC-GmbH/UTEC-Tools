@@ -21,7 +21,7 @@ class MessageLogLvl2:
     message: str
     log: str | None = None
 
-    def show_error(self) -> None:
+    def show_message(self) -> None:
         """Writes a log message and a streamlit error for a specified error type."""
 
         if self.log:
@@ -33,8 +33,9 @@ class MessageLogLvl2:
 class MessageLog:
     """Contains instances of the MessageLog class for each error type."""
 
+    until: str | None
     if "access_until" in st.session_state:
-        until: str | None = (
+        until = (
             st.session_state["access_until"]
             or f"{st.session_state['access_until']:%d.%m.%Y}"
         )
@@ -96,13 +97,13 @@ def authentication(page: str) -> bool:
     """Authentication object"""
 
     if not st.session_state.get("authentication_status"):
-        MessageLog.no_login.show_error()
+        MessageLog.no_login.show_message()
         return False
     if page not in st.session_state["access_pages"]:
-        MessageLog.no_access.show_error()
+        MessageLog.no_access.show_message()
         return False
     if st.session_state["access_until"] < date.today():
-        MessageLog.too_late.show_error()
+        MessageLog.too_late.show_message()
         return False
 
     return True
@@ -257,7 +258,7 @@ def delete_user(usernames: str | None = None) -> None:
         )
         or (usernames is not None and any(user in ["utec", "fl"] for user in usernames))
     ):
-        MessageLog.del_admin.show_error()
+        MessageLog.del_admin.show_message()
 
     if usernames is not None:
         del_users: list[str] = [

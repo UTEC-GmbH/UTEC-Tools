@@ -15,7 +15,7 @@ from modules.general_functions import func_timer
 
 
 @dataclass
-class MessageLog:
+class MessageLogLvl2:
     """Represents an Error with a message and an optional log message."""
 
     message: str
@@ -30,7 +30,7 @@ class MessageLog:
 
 
 @dataclass
-class CustomError:
+class MessageLog:
     """Contains instances of the MessageLog class for each error type."""
 
     if "access_until" in st.session_state:
@@ -41,7 +41,7 @@ class CustomError:
     else:
         until = None
 
-    no_access = MessageLog(
+    no_access = MessageLogLvl2(
         message=(
             "Mit diesem Benutzerkonto haben Sie keinen Zugriff auf dieses Modul."
             "\n\n"
@@ -50,20 +50,20 @@ class CustomError:
         log="no access to page (module)",
     )
 
-    no_login = MessageLog(
+    no_login = MessageLogLvl2(
         message="Bitte anmelden! (login auf der linken Seite)", log="not logged in"
     )
 
-    too_late = MessageLog(
+    too_late = MessageLogLvl2(
         message=(
-            "Zugriff war nur bis {until} gestattet."
+            f"Zugriff war nur bis {until} gestattet."
             "\n\n"
             "Bitte nehmen Sie Kontakt mit UTEC auf."
         ),
         log="access for user expired",
     )
 
-    access_utec = MessageLog(
+    access_utec = MessageLogLvl2(
         message=(
             "Du bist mit dem allgemeinen UTEC-Account angemeldet."
             "\n\n"
@@ -71,19 +71,24 @@ class CustomError:
         )
     )
 
-    access_other = MessageLog(
+    access_other = MessageLogLvl2(
         message=(f"Angemeldet als '{st.session_state.get('name')}'.")
     )
 
-    access_until = MessageLog(
+    access_until = MessageLogLvl2(
         message=(
             "Mit diesem Account kann auf folgende Module bis zum "
             f"{until} zugegriffen werden:"
         )
     )
 
-    access_level = MessageLog(
+    access_level = MessageLogLvl2(
         message=("Mit diesem Account kann auf folgende Module zugegriffen werden:")
+    )
+
+    del_admin = MessageLogLvl2(
+        message="Admin-Konten können nicht gelöscht werden!",
+        log="tried to delete admin account",
     )
 
 
@@ -91,13 +96,13 @@ def authentication(page: str) -> bool:
     """Authentication object"""
 
     if not st.session_state.get("authentication_status"):
-        CustomError.no_login.show_error()
+        MessageLog.no_login.show_error()
         return False
     if page not in st.session_state["access_pages"]:
-        CustomError.no_access.show_error()
+        MessageLog.no_access.show_error()
         return False
     if st.session_state["access_until"] < date.today():
-        CustomError.too_late.show_error()
+        MessageLog.too_late.show_error()
         return False
 
     return True
@@ -252,8 +257,7 @@ def delete_user(usernames: str | None = None) -> None:
         )
         or (usernames is not None and any(user in ["utec", "fl"] for user in usernames))
     ):
-        st.warning("Admin-Konten können nicht gelöscht werden!")
-        logger.error("tried to delete admin account")
+        MessageLog.del_admin.show_error()
 
     if usernames is not None:
         del_users: list[str] = [
@@ -266,17 +270,6 @@ def delete_user(usernames: str | None = None) -> None:
             if f"{user['key']} ({user['name']})" in st.session_state["ms_del_user"]
             and user["key"] not in ["utec", "fl"]
         ]
-
-    # del_users = (
-    #     [user for user in usernames if user not in ["utec", "fl"]]
-    #     if usernames is not None
-    #     else [
-    #         user["key"]
-    #         for user in all_users
-    #         if f"{user['key']} ({user['name']})" in st.session_state.get("ms_del_user")
-    #         and user["key"] not in ["utec", "fl"]
-    #     ]
-    # )
 
     if not del_users:
         st.error("Es wurden keine Benutzerkonten gelöscht.")

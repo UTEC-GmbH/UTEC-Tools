@@ -104,15 +104,15 @@ def access_granted() -> None:
         )
 
     if st.session_state.get("username") in ["utec"]:
-        st.markdown(uauth.infos_warnings_errors("access_UTEC"))
+        st.markdown(uauth.MessageLog.access_utec.message)
 
     else:
-        st.markdown(uauth.infos_warnings_errors("access_other"))
+        st.markdown(uauth.MessageLog.access_other.message)
 
         if st.session_state["access_until"] < date.max:
-            st.markdown(uauth.infos_warnings_errors("access_until"))
+            st.markdown(uauth.MessageLog.access_until.message)
         else:
-            st.markdown(uauth.infos_warnings_errors("access_level"))
+            st.markdown(uauth.MessageLog.access_level.message)
 
         for page in st.session_state["access_pages"]:
             if page != "login":
@@ -131,12 +131,12 @@ def god_mode() -> None:
     if st.session_state.get("butt_sub_new_user"):
         with st.spinner("Momentle bitte, Benutzer wird hinzugefügt..."):
             uauth.insert_new_user(
-                st.session_state["new_user_user"],
-                st.session_state["new_user_name"],
-                st.session_state["new_user_email"],
-                st.session_state["new_user_pw"],
-                st.session_state["new_user_access"],
-                str(st.session_state["new_user_until"]),
+                username=st.session_state["new_user_user"],
+                name=st.session_state["new_user_name"],
+                email=st.session_state["new_user_email"],
+                password=st.session_state["new_user_pw"],
+                access_lvl=st.session_state["new_user_access"],
+                access_until=str(st.session_state["new_user_until"]),
             )
 
     # Benutzer löschen

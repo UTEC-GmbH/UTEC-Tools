@@ -1,5 +1,5 @@
 {
-    "python.formatting.provider": "black",
+    "python.formatting.provider": "none",
     "python.testing.pytestArgs": [
         "tests"
     ],
@@ -7,5 +7,8 @@
     "python.testing.pytestEnabled": true,
     "autoDocstring.customTemplatePath": ".vscode\\autoDocstring_google_modified.mustache",
     "ruff.organizeImports": false,
-    "ruff.logLevel": "warn"
+    "ruff.logLevel": "warn",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    }
 }

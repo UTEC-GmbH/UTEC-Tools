@@ -30,9 +30,7 @@ WEATHERSTATIONS_MAX_DISTANCE = 700
 
 @func_timer
 def start_end_time(**kwargs) -> tuple[dt | None, dt | None]:
-    """
-    Zeitraum für Daten-Download
-    """
+    """Zeitraum für Daten-Download"""
 
     page: str = str(kwargs.get("page")) or st.session_state.get("page")
 
@@ -84,14 +82,12 @@ def start_end_time(**kwargs) -> tuple[dt | None, dt | None]:
 
 
 if "page" in st.session_state:
-    start, end = start_end_time(st.session_state.get("page"))
+    start, end = start_end_time(page=st.session_state.get("page"))
 
 
 @func_timer
 def geo(address: str) -> dict:
-    """
-    geographische daten (Längengrad, Breitengrad) aus eingegebener Adresse
-    """
+    """Geographische daten (Längengrad, Breitengrad) aus eingegebener Adresse"""
     geolocator = geopy.geocoders.Nominatim(user_agent=os.getenv("GEO_USER_AGENT"))
     location = geolocator.geocode(address)
     dic_geo = {

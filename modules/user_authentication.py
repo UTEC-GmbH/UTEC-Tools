@@ -87,11 +87,6 @@ class MessageLog:
         message=("Mit diesem Account kann auf folgende Module zugegriffen werden:")
     )
 
-    del_admin = MessageLogLvl2(
-        message="Admin-Konten können nicht gelöscht werden!",
-        log="tried to delete admin account",
-    )
-
 
 def authentication(page: str) -> bool:
     """Authentication object"""
@@ -132,7 +127,7 @@ def connect_database(database: str = "UTEC_users") -> Any:
 
 
 @func_timer
-def get_all_user_data() -> dict[str, dict[str, Any]]:
+def get_all_user_data() -> dict[str, dict[str, str]]:
     """Liste aller gespeicherter Benutzerdaten - je Benutzer ein dictionary
 
     Returns:
@@ -197,10 +192,10 @@ def insert_new_user(
 
     Bei Aufrufen der Funktion, Passwort als Klartext angeben -> wird in hash umgewandelt
 
-    kwargs:
-        name: str,
-        email: str,
-        access_until: str = "",
+    - kwargs:
+        - name: str,
+        - email: str,
+        - access_until: str = "",
     """
     access_until: str = kwargs.get("access_until") or str(
         date.today() + timedelta(weeks=3)
@@ -226,12 +221,12 @@ def insert_new_user(
 
     st.markdown("###")
     st.info(
-        f'Benutzer "{st.session_state.get("new_user_username")}" '
-        "zur Datenbank hinzugefügt."
-        f'("{st.session_state.get("new_user_name")}" hat Zugriff bis zum'
-        f'{st.session_state.get("new_user_until"):%d.%m.%Y})  \n'
+        f'Benutzer "{username}" '
+        "zur Datenbank hinzugefügt.  \n"
+        f'("{name}" hat Zugriff bis zum '
+        f"{access_until})  \n  \n"
         "Achtung: Passwort merken (wird nicht wieder angezeigt):  \n"
-        f"__{st.session_state.get('new_user_pw')}__"
+        f"__{password}__"
     )
 
     st.button("ok", key="insert_ok_butt")
@@ -245,76 +240,37 @@ def update_user(username: str, updates: dict) -> Any:
 
 
 @func_timer
-def delete_user(usernames: str | None = None) -> None:
+def delete_user() -> None:
     """Benutzer löschen"""
-    deta_db: Any = connect_database()
-    all_users: list[dict[str, Any]] = st.session_state["all_user_data"]
+    if not st.session_state.get("ms_del_users"):
+        return
 
-    if (
-        usernames is None
-        and any(
-            admin in st.session_state["ms_del_user"]
-            for admin in ["utec (UTEC Allgemein)", "fl (Florian)"]
-        )
-        or (usernames is not None and any(user in ["utec", "fl"] for user in usernames))
-    ):
-        MessageLog.del_admin.show_message()
-
-    if usernames is not None:
-        del_users: list[str] = [
-            user for user in usernames if user not in ["utec", "fl"]
-        ]
-    else:
-        del_users = [
-            user["key"]
-            for user in all_users
-            if f"{user['key']} ({user['name']})" in st.session_state["ms_del_user"]
-            and user["key"] not in ["utec", "fl"]
-        ]
-
-    if not del_users:
-        st.error("Es wurden keine Benutzerkonten gelöscht.")
-    else:
+    all_users: dict[str, dict[str, str]] = get_all_user_data()
+    ms_del_users: list[str] = st.session_state["ms_del_users"]
+    if del_users := [
+        user["key"]
+        for user in all_users.values()
+        if f"{user['key']} ({user['name']})" in ms_del_users
+        and user["key"] not in ["utec", "fl"]
+    ]:
+        deta_db: Any = connect_database()
         for user in del_users:
             deta_db.delete(user)
 
         st.markdown("###")
 
-        if len(del_users) > 1:
-            users = {
-                [user["name"] for user in all_users if user["key"] == del_users[0]][0]
-            }
-            lis_u: str = f"  \n- {del_users[0]} {users})"
-            for inst in range(1, len(del_users)):
-                lis_u += f"  \n- {del_users[inst]} ({[user['name'] for user in all_users if user['key'] == del_users[inst]][0]})"
-
+        if len(ms_del_users) > 1:
             st.info(
-                f"""
-                Folgende Benutzer wurden aus der Datenbank entfernt: {lis_u}"
-                """
+                "Folgende Benutzer wurden aus der Datenbank entfernt:  \n"
+                "  \n".join(ms_del_users)
             )
         else:
             st.info(
-                f"""
-                Der Benutzer 
-                {del_users[0]} ({[user['name'] for user in all_users if user['key'] == del_users[0]][0]}) 
-                wurde aus der Datenbank entfernt.
-                """
+                "Der Benutzer  \n"
+                f"{ms_del_users[0]}  \n"
+                "wurde aus der Datenbank entfernt."
             )
 
+    else:
+        st.error("Es wurden keine Benutzerkonten gelöscht.")
     st.button("ok", key="del_ok_butt")
-
-
-# neuer Benutzer: Kommentar einer der Funktionen entfernen,
-# Passwort (als Klartext) nicht vergessen und
-# Datei in Terminal ausführen
-# -> neuer Benutzer wird in Datenbank geschrieben
-
-# insert_new_user(username="utec", name="UTEC allgemein", password="", access_lvl="full")
-# insert_new_user("fl", "Florian", "", "god")
-
-# insert_new_user("some_username", "some_name", "some_password", ["meteo"])
-
-
-# update_user("fl", {"access_until": str(datetime.date.max)})
-# update_user("utec", {"access_until": str(datetime.date.max)})

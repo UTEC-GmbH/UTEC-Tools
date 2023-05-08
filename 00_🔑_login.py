@@ -67,7 +67,7 @@ def login_section() -> None:
     if st.session_state["authentication_status"]:
         access_granted()
 
-        st.markdown("###")
+        st.markdown("---")
         authenticator.logout("Logout", "main")
 
     elif st.session_state["authentication_status"] is None:

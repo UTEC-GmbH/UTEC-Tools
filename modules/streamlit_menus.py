@@ -19,6 +19,7 @@ from modules.general_functions import (
     func_timer,
     text_with_hover,
 )
+from modules.user_authentication import get_all_user_data
 
 if TYPE_CHECKING:
     import plotly.graph_objects as go
@@ -31,19 +32,18 @@ def user_accounts() -> None:
     st.markdown("###")
     st.markdown("---")
 
-    lis_butt = [
+    lis_butt: list[str] = [
         "butt_add_new_user",
         "butt_del_user",
     ]
 
     # Knöpfle für neuen Benutzer, Benutzer löschen...
     if not any(st.session_state.get(butt) for butt in lis_butt):
-        st.button("liste aller Konten", "butt_list_all")
-        st.button("neuen Benutzer hinzufügen", "butt_add_new_user")
+        st.button("Liste aller Konten", "butt_list_all")
+        st.button("Neuen Benutzer hinzufügen", "butt_add_new_user")
         st.button("Benutzer löschen", "butt_del_user")
         st.button("Benutzerdaten ändern", "butt_change_user", disabled=True)
-
-        st.markdown("---")
+        st.markdown("###")
 
     # Menu für neuen Benutzer
     if st.session_state.get("butt_add_new_user"):
@@ -62,6 +62,7 @@ def user_accounts() -> None:
     )
 
     if st.session_state.get("butt_list_all"):
+        st.markdown("---")
         list_all_accounts()
 
 
@@ -69,15 +70,16 @@ def user_accounts() -> None:
 def delete_user_form() -> None:
     """Benutzer löschen"""
 
+    users: dict[str, dict[str, str]] = get_all_user_data()
     with st.form("Benutzer löschen"):
         st.multiselect(
             label="Benutzer wählen, die gelöscht werden sollen",
             options=[
                 f"{user['key']} ({user['name']})"
-                for user in st.session_state["all_user_data"]
+                for user in users.values()
                 if user["key"] not in ("utec", "fl")
             ],
-            key="ms_del_user",
+            key="ms_del_users",
         )
 
         st.markdown("###")
@@ -105,11 +107,17 @@ def new_user_form() -> None:
             min_value=datetime.date.today(),
             value=datetime.date.today() + datetime.timedelta(weeks=3),
         )
-
         st.text_input(
             label="Name oder Firma",
             key="new_user_name",
             help=("z.B. Florian"),
+            value="UTEC",
+        )
+        st.text_input(
+            label="E-Mail Adresse",
+            key="new_user_email",
+            help=("z.B. info@utec-bremen.de"),
+            value="info@utec-bremen.de",
         )
         st.multiselect(
             label="Zugriffsrechte",
@@ -126,12 +134,13 @@ def new_user_form() -> None:
 @func_timer
 def list_all_accounts() -> None:
     """Liste aller Benutzerkonten"""
-    users: list[dict[str, Any]] = st.session_state["all_user_data"]
+    users: dict[str, dict[str, str]] = get_all_user_data()
+
     df_users = pd.DataFrame()
-    df_users["Benutzername"] = [user["key"] for user in users]
-    df_users["Name"] = [user["name"] for user in users]
-    df_users["Verfallsdatum"] = [user["access_until"] for user in users]
-    df_users["Zugriffsrechte"] = [str(user["access_lvl"]) for user in users]
+    df_users["Benutzername"] = [user["key"] for user in users.values()]
+    df_users["Name"] = [user["name"] for user in users.values()]
+    df_users["Verfallsdatum"] = [user["access_until"] for user in users.values()]
+    df_users["Zugriffsrechte"] = [str(user["access_lvl"]) for user in users.values()]
 
     st.dataframe(df_users)
     st.button("ok")

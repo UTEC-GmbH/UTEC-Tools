@@ -1,0 +1,742 @@
+
+
+09:18:59 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+
+
+09:18:59 👉 function 'general_setup' started 👈 
+
+09:19:04 👉 function 'render_svg' started 👈 
+09:19:04 ⏱ execution time of 'render_svg': 0.0150 s ⏱ 
+
+09:19:05 👉 function 'get_commit_message_date' started 👈 
+09:19:10 ⏱ execution time of 'get_commit_message_date': 4.5000 s ⏱ 
+
+09:19:10 👉 function 'get_all_user_data' started 👈 
+
+09:19:10 👉 function 'connect_database' started 👈 
+09:19:10 🥳 user_authentication -> connect_database -> line: 124 | Deta-Database connection established 🥳 
+09:19:10 ⏱ execution time of 'connect_database': 0.0160 s ⏱ 
+09:19:10 🥳 user_authentication -> get_all_user_data -> line: 158 | Collected all user data from Database 🥳 
+09:19:10 ⏱ execution time of 'get_all_user_data': 0.1720 s ⏱ 
+
+09:19:10 🦤🦤🦤 Initial Setup Complete 🦤🦤🦤 
+
+09:19:10 ⏱ execution time of 'general_setup': 11.4220 s ⏱ 
+
+09:19:10 👉 function 'page_header_setup' started 👈 
+
+09:19:10 👉 function 'render_svg' started 👈 
+09:19:10 ⏱ execution time of 'render_svg': 0.0160 s ⏱ 
+09:19:10 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'login' created 👟 
+09:19:10 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+09:19:10 👉 function 'display_login_page' started 👈 
+
+09:19:10 👉 function 'login_section' started 👈 
+09:19:10 ⏱ execution time of 'login_section': 0.0150 s ⏱ 
+09:19:10 ⏱ execution time of 'display_login_page': 0.0310 s ⏱ 
+09:19:10 🥳 00_🔑_login -> <module> -> line: 149 | Login Page Loaded 🥳 
+
+
+09:19:17 ✨ NEW RUN ✨ 
+
+09:19:17 👉 function 'page_header_setup' started 👈 
+
+09:19:17 👉 function 'render_svg' started 👈 
+09:19:17 ⏱ execution time of 'render_svg': 0.0150 s ⏱ 
+09:19:17 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'login' created 👟 
+09:19:17 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+09:19:17 👉 function 'display_login_page' started 👈 
+
+09:19:17 👉 function 'login_section' started 👈 
+
+09:19:17 👉 function 'access_granted' started 👈 
+09:19:17 🥳 00_🔑_login -> access_granted -> line: 92 | logged in as: fl, access level: god 🥳 
+
+09:19:17 👉 function 'god_mode' started 👈 
+
+09:19:17 👉 function 'user_accounts' started 👈 
+09:19:17 ⏱ execution time of 'user_accounts': 0.0160 s ⏱ 
+09:19:17 ⏱ execution time of 'god_mode': 0.0160 s ⏱ 
+09:19:17 ⏱ execution time of 'access_granted': 0.0160 s ⏱ 
+09:19:17 ⏱ execution time of 'login_section': 0.0160 s ⏱ 
+09:19:17 ⏱ execution time of 'display_login_page': 0.0160 s ⏱ 
+09:19:17 🥳 00_🔑_login -> <module> -> line: 149 | Login Page Loaded 🥳 
+
+
+09:19:17 ✨ NEW RUN ✨ 
+
+09:19:17 👉 function 'page_header_setup' started 👈 
+
+09:19:17 👉 function 'render_svg' started 👈 
+09:19:17 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+09:19:17 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'login' created 👟 
+09:19:17 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+09:19:17 👉 function 'display_login_page' started 👈 
+
+09:19:17 👉 function 'login_section' started 👈 
+
+09:19:17 👉 function 'access_granted' started 👈 
+
+09:19:17 👉 function 'god_mode' started 👈 
+
+09:19:17 👉 function 'user_accounts' started 👈 
+09:19:17 ⏱ execution time of 'user_accounts': 0.0000 s ⏱ 
+09:19:17 ⏱ execution time of 'god_mode': 0.0000 s ⏱ 
+09:19:17 ⏱ execution time of 'access_granted': 0.0000 s ⏱ 
+09:19:17 ⏱ execution time of 'login_section': 0.0160 s ⏱ 
+09:19:17 ⏱ execution time of 'display_login_page': 0.0160 s ⏱ 
+09:19:17 🥳 00_🔑_login -> <module> -> line: 149 | Login Page Loaded 🥳 
+
+09:19:21 👉 function 'page_header_setup' started 👈 
+
+09:19:21 👉 function 'render_svg' started 👈 
+09:19:21 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+09:19:21 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'graph' created 👟 
+09:19:21 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+09:19:21 👉 function 'sidebar_file_upload' started 👈 
+09:19:21 ⏱ execution time of 'sidebar_file_upload': 0.0780 s ⏱ 
+
+09:19:48 👉 function 'page_header_setup' started 👈 
+
+09:19:49 👉 function 'render_svg' started 👈 
+09:19:49 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+09:19:49 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'graph' created 👟 
+09:19:49 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+09:19:49 👉 function 'sidebar_file_upload' started 👈 
+09:19:49 ⏱ execution time of 'sidebar_file_upload': 0.0630 s ⏱ 
+
+09:19:49 👉 function 'import_prefab_excel' started 👈 
+09:19:51 🐞 excel -> import_prefab_excel -> line: 30 | df_messy 🐞 
+     Unnamed: 0 Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4 Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8 Unnamed: 9
+0         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+1         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+2         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+3         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+4         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+5         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+6         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+7         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+8         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+9         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN  
+
+
+09:19:51 👉 function 'edit_df_after_import' started 👈 
+09:19:51 🐞 classes -> get_marker_position -> line: 72 | (array([16], dtype=int64), array([1], dtype=int64)) 🐞 
+09:19:51 🥳 classes -> get_marker_position -> line: 82 | Marker ↓ Index ↓ found in row 16, column 1 🥳 
+
+09:19:51 👉 function 'clean_up_daylight_savings' started 👈 
+09:19:51 ⚠ df_manip -> clean_up_daylight_savings -> line: 144 | Data deleted due to daylight savings. ️ 
+  16                   Bedarf  Strombedarf  Produktion Alle  Produktion SW  Eigen Alle  Eigen SW  Einspei Alle  Einspei SW
+↓ Index ↓                                                                                                               
+2021-03-28 02:00:00     256         64.0              0.0            0.0         0.0       0.0           0.0         0.0
+2021-03-28 02:15:00     252         63.0              0.0            0.0         0.0       0.0           0.0         0.0
+2021-03-28 02:30:00     256         64.0              0.0            0.0         0.0       0.0           0.0         0.0
+2021-03-28 02:45:00     252         63.0              0.0            0.0         0.0       0.0           0.0         0.0
+2021-10-25 02:00:00     328         82.0              0.0            0.0         0.0       0.0           0.0         0.0
+2021-10-25 02:15:00     328         82.0              0.0            0.0         0.0       0.0           0.0         0.0
+2021-10-25 02:30:00     328         82.0              0.0            0.0         0.0       0.0           0.0         0.0
+2021-10-25 02:45:00     260         65.0              0.0            0.0         0.0       0.0           0.0         0.0  
+
+09:19:51 ⏱ execution time of 'clean_up_daylight_savings': 0.0310 s ⏱ 
+09:19:51 ⏱ execution time of 'edit_df_after_import': 0.1880 s ⏱ 
+09:19:51 🐞 excel -> import_prefab_excel -> line: 33 | clean df 🐞 
+  16                   Bedarf  Strombedarf  Produktion Alle  Produktion SW  Eigen Alle  Eigen SW  Einspei Alle  Einspei SW              orgidx
+↓ Index ↓                                                                                                                                   
+2021-01-01 00:00:00     252         63.0              0.0            0.0         0.0       0.0           0.0         0.0 2021-01-01 00:00:00
+2021-01-01 00:15:00     252         63.0              0.0            0.0         0.0       0.0           0.0         0.0 2021-01-01 00:15:00
+2021-01-01 00:30:00     256         64.0              0.0            0.0         0.0       0.0           0.0         0.0 2021-01-01 00:30:00
+2021-01-01 00:45:00     256         64.0              0.0            0.0         0.0       0.0           0.0         0.0 2021-01-01 00:45:00
+2021-01-01 01:00:00     252         63.0              0.0            0.0         0.0       0.0           0.0         0.0 2021-01-01 01:00:00  
+
+
+09:19:51 👉 function 'units_from_messy_df' started 👈 
+09:19:51 🐞 classes -> get_marker_position -> line: 72 | (array([16], dtype=int64), array([1], dtype=int64)) 🐞 
+09:19:51 🥳 classes -> get_marker_position -> line: 82 | Marker ↓ Index ↓ found in row 16, column 1 🥳 
+09:19:52 🐞 classes -> get_marker_position -> line: 72 | (array([15], dtype=int64), array([1], dtype=int64)) 🐞 
+09:19:52 🥳 classes -> get_marker_position -> line: 82 | Marker → Einheit → found in row 15, column 1 🥳 
+09:19:52 ⏱ execution time of 'units_from_messy_df': 0.0150 s ⏱ 
+
+09:19:52 👉 function 'meta_from_index' started 👈 
+09:19:52 🐞 excel -> meta_from_index -> line: 182 | Zeitliche Auflösung des DataFrame: 0 days 00:15:00 🐞 
+09:19:52 ⏱ execution time of 'meta_from_index': 0.0310 s ⏱ 
+
+09:19:52 👉 function 'meta_from_col_title' started 👈 
+09:19:52 ⏱ execution time of 'meta_from_col_title': 0.0000 s ⏱ 
+
+09:19:52 👉 function 'convert_15min_kwh_to_kw' started 👈 
+
+09:19:52 👉 function 'insert_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'insert_column_arbeit_leistung': 0.0000 s ⏱ 
+
+09:19:52 👉 function 'rename_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'rename_column_arbeit_leistung': 0.0000 s ⏱ 
+09:19:52 🥳 excel -> convert_15min_kwh_to_kw -> line: 283 | Arbeit und Leistung aufgeteilt 🥳 
+
+09:19:52 👉 function 'insert_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'insert_column_arbeit_leistung': 0.0160 s ⏱ 
+
+09:19:52 👉 function 'rename_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'rename_column_arbeit_leistung': 0.0000 s ⏱ 
+09:19:52 🥳 excel -> convert_15min_kwh_to_kw -> line: 283 | Arbeit und Leistung aufgeteilt 🥳 
+
+09:19:52 👉 function 'insert_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'insert_column_arbeit_leistung': 0.0000 s ⏱ 
+
+09:19:52 👉 function 'rename_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'rename_column_arbeit_leistung': 0.0000 s ⏱ 
+09:19:52 🥳 excel -> convert_15min_kwh_to_kw -> line: 283 | Arbeit und Leistung aufgeteilt 🥳 
+
+09:19:52 👉 function 'insert_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'insert_column_arbeit_leistung': 0.0000 s ⏱ 
+
+09:19:52 👉 function 'rename_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'rename_column_arbeit_leistung': 0.0160 s ⏱ 
+09:19:52 🥳 excel -> convert_15min_kwh_to_kw -> line: 283 | Arbeit und Leistung aufgeteilt 🥳 
+
+09:19:52 👉 function 'insert_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'insert_column_arbeit_leistung': 0.0000 s ⏱ 
+
+09:19:52 👉 function 'rename_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'rename_column_arbeit_leistung': 0.0000 s ⏱ 
+09:19:52 🥳 excel -> convert_15min_kwh_to_kw -> line: 283 | Arbeit und Leistung aufgeteilt 🥳 
+
+09:19:52 👉 function 'insert_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'insert_column_arbeit_leistung': 0.0150 s ⏱ 
+
+09:19:52 👉 function 'rename_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'rename_column_arbeit_leistung': 0.0000 s ⏱ 
+09:19:52 🥳 excel -> convert_15min_kwh_to_kw -> line: 283 | Arbeit und Leistung aufgeteilt 🥳 
+
+09:19:52 👉 function 'insert_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'insert_column_arbeit_leistung': 0.0000 s ⏱ 
+
+09:19:52 👉 function 'rename_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'rename_column_arbeit_leistung': 0.0000 s ⏱ 
+09:19:52 🥳 excel -> convert_15min_kwh_to_kw -> line: 283 | Arbeit und Leistung aufgeteilt 🥳 
+
+09:19:52 👉 function 'insert_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'insert_column_arbeit_leistung': 0.0000 s ⏱ 
+
+09:19:52 👉 function 'rename_column_arbeit_leistung' started 👈 
+09:19:52 ⏱ execution time of 'rename_column_arbeit_leistung': 0.0000 s ⏱ 
+09:19:52 🥳 excel -> convert_15min_kwh_to_kw -> line: 283 | Arbeit und Leistung aufgeteilt 🥳 
+09:19:52 ⏱ execution time of 'convert_15min_kwh_to_kw': 0.0630 s ⏱ 
+
+09:19:52 👉 function 'set_y_axis_for_lines' started 👈 
+09:19:52 ⏱ execution time of 'set_y_axis_for_lines': 0.0000 s ⏱ 
+09:19:52 🥳 excel -> import_prefab_excel -> line: 60 | file imported and metadata extracted 🥳 
+  16                   Bedarf  Strombedarf  Produktion Alle  Produktion SW  ...  Eigen Alle → Leistung  Eigen SW → Leistung  Einspei Alle → Leistung  Einspei SW → Leistung
+↓ Index ↓                                                                 ...                                                                                            
+2021-01-01 00:00:00     252         63.0              0.0            0.0  ...                    0.0                  0.0                      0.0                    0.0
+2021-01-01 00:15:00     252         63.0              0.0            0.0  ...                    0.0                  0.0                      0.0                    0.0
+2021-01-01 00:30:00     256         64.0              0.0            0.0  ...                    0.0                  0.0                      0.0                    0.0
+2021-01-01 00:45:00     256         64.0              0.0            0.0  ...                    0.0                  0.0                      0.0                    0.0
+2021-01-01 01:00:00     252         63.0              0.0            0.0  ...                    0.0                  0.0                      0.0                    0.0
+
+[5 rows x 17 columns]  
+
+09:19:52 ⏱ execution time of 'import_prefab_excel': 3.0000 s ⏱ 
+
+09:19:52 👉 function 'base_settings' started 👈 
+09:19:52 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+
+09:19:52 👉 function 'select_graphs' started 👈 
+09:19:52 ⏱ execution time of 'select_graphs': 0.0000 s ⏱ 
+
+09:19:52 👉 function 'meteo_sidebar' started 👈 
+09:19:52 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+09:19:52 👉 function 'jdl' started 👈 
+
+09:19:52 👉 function 'h_from_other' started 👈 
+09:19:52 🥳 df_manip -> h_from_other -> line: 301 | DataFrame mit Stundenwerten erstellt. 🥳 
+                       Bedarf *h  Strombedarf *h  Produktion Alle *h  Produktion SW *h  Eigen Alle *h  Eigen SW *h  Einspei Alle *h  Einspei SW *h              orgidx
+↓ Index ↓                                                                                                                                                           
+2021-01-01 00:00:00      254.0           254.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 00:00:00
+2021-01-01 01:00:00      182.0           182.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 01:00:00
+2021-01-01 02:00:00      144.0           144.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 02:00:00
+2021-01-01 03:00:00      240.0           240.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 03:00:00
+2021-01-01 04:00:00      250.0           250.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 04:00:00  
+
+09:19:52 ⏱ execution time of 'h_from_other': 0.0470 s ⏱ 
+09:19:52 🥳 df_manip -> jdl -> line: 375 | DataFrame für Jahresdauerlinie erstellt. 🥳 
+     Bedarf *h  Strombedarf *h  Produktion Alle *h  Produktion SW *h  ...  Eigen Alle *h_orgidx  Eigen SW *h_orgidx  Einspei Alle *h_orgidx  Einspei SW *h_orgidx
+1      782.0           782.0          100.527752         64.871117  ...   2021-08-02 13:00:00 2021-08-02 14:00:00     2021-02-26 12:00:00   2021-02-26 13:00:00
+2      756.0           756.0           99.310962         64.473690  ...   2021-07-08 13:00:00 2021-08-02 13:00:00     2021-02-26 13:00:00   2021-02-26 12:00:00
+3      744.0           744.0           97.791084         63.306832  ...   2021-08-02 14:00:00 2021-07-08 13:00:00     2021-02-26 11:00:00   2021-02-26 11:00:00
+4      741.0           741.0           97.502664         63.236532  ...   2021-06-10 11:00:00 2021-07-08 14:00:00     2021-02-26 10:00:00   2021-02-26 10:00:00
+5      740.0           740.0           97.441557         60.928697  ...   2021-07-08 12:00:00 2021-08-02 15:00:00     2021-03-04 12:00:00   2021-03-04 12:00:00
+
+[5 rows x 16 columns]  
+
+09:19:52 ⏱ execution time of 'jdl': 0.0620 s ⏱ 
+
+09:19:52 👉 function 'mon' started 👈 
+
+09:19:52 👉 function 'h_from_other' started 👈 
+09:19:52 🥳 df_manip -> h_from_other -> line: 301 | DataFrame mit Stundenwerten erstellt. 🥳 
+                       Bedarf *h  Strombedarf *h  Produktion Alle *h  Produktion SW *h  Eigen Alle *h  Eigen SW *h  Einspei Alle *h  Einspei SW *h              orgidx
+↓ Index ↓                                                                                                                                                           
+2021-01-01 00:00:00      254.0           254.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 00:00:00
+2021-01-01 01:00:00      182.0           182.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 01:00:00
+2021-01-01 02:00:00      144.0           144.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 02:00:00
+2021-01-01 03:00:00      240.0           240.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 03:00:00
+2021-01-01 04:00:00      250.0           250.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 04:00:00  
+
+09:19:52 ⏱ execution time of 'h_from_other': 0.0160 s ⏱ 
+09:19:52 🥳 df_manip -> mon -> line: 417 | DataFrame mit Monatswerten erstellt. 🥳 
+              Bedarf *mon  Strombedarf *mon  Produktion Alle *mon  Produktion SW *mon  Eigen Alle *mon  Eigen SW *mon  Einspei Alle *mon  Einspei SW *mon     orgidx
+↓ Index ↓                                                                                                                                                         
+2021-01-15     258092.0          258092.0           2268.408446         1796.850736      2268.408446    1796.850736           0.000000         0.000000 2021-01-15
+2021-02-15     221019.0          221019.0           4111.082558         2976.560660      3856.692932    2805.463968         254.389626       171.096692 2021-02-15
+2021-03-15     248727.0          248727.0           8952.706892         6008.414264      8652.900542    5829.455373         299.806350       178.958891 2021-03-15
+2021-04-15     304818.0          304818.0          14164.062357         8982.021196     14164.062357    8982.021196           0.000000         0.000000 2021-04-15
+2021-05-15     318491.0          318491.0          16922.018094        10295.749258     16922.018094   10295.749258           0.000000         0.000000 2021-05-15  
+
+09:19:52 ⏱ execution time of 'mon': 0.0470 s ⏱ 
+
+09:19:52 👉 function 'cr_fig_base' started 👈 
+
+09:19:52 👉 function 'line_plot' started 👈 
+09:19:56 ⏱ execution time of 'line_plot': 4.7350 s ⏱ 
+
+09:19:58 👉 function 'add_arrows_min_max' started 👈 
+
+09:19:58 👉 function 'middle_xaxis' started 👈 
+09:19:58 💡 fig_annotations -> middle_xaxis -> line: 48 | middle of x-axis: 2021-07-02 12:52:30 💡 
+09:19:58 ⏱ execution time of 'middle_xaxis': 0.0310 s ⏱ 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Bedarf hinzugefügt 💡 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombedarf hinzugefügt 💡 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion Alle hinzugefügt 💡 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion SW hinzugefügt 💡 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen Alle hinzugefügt 💡 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen SW hinzugefügt 💡 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei Alle hinzugefügt 💡 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei SW hinzugefügt 💡 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Bedarf → Arbeit hinzugefügt 💡 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombedarf → Leistung hinzugefügt 💡 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion Alle → Leistung hinzugefügt 💡 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion SW → Leistung hinzugefügt 💡 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen Alle → Leistung hinzugefügt 💡 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen SW → Leistung hinzugefügt 💡 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei Alle → Leistung hinzugefügt 💡 
+09:19:58 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei SW → Leistung hinzugefügt 💡 
+09:19:58 🥳 fig_annotations -> add_arrows_min_max -> line: 181 | Max / Min arrows added to figure 🥳 
+09:19:58 ⏱ execution time of 'add_arrows_min_max': 0.3440 s ⏱ 
+
+09:19:58 👉 function 'standard_axes_and_layout' started 👈 
+
+09:19:58 👉 function 'standard_xaxis' started 👈 
+
+09:19:58 👉 function 'format_tickstops' started 👈 
+09:19:58 ⏱ execution time of 'format_tickstops': 0.0000 s ⏱ 
+09:19:58 ⏱ execution time of 'standard_xaxis': 0.0930 s ⏱ 
+
+09:19:58 👉 function 'standard_yaxis' started 👈 
+09:19:58 ⏱ execution time of 'standard_yaxis': 0.0470 s ⏱ 
+
+09:19:58 👉 function 'standard_layout' started 👈 
+09:19:58 ⏱ execution time of 'standard_layout': 0.1100 s ⏱ 
+09:19:58 ⏱ execution time of 'standard_axes_and_layout': 0.2660 s ⏱ 
+09:19:58 🥳 fig_creation_export -> cr_fig_base -> line: 90 | fig_base created 🥳 
+09:19:58 ⏱ execution time of 'cr_fig_base': 6.6880 s ⏱ 
+
+09:19:58 👉 function 'cr_fig_jdl' started 👈 
+
+09:19:58 👉 function 'line_plot' started 👈 
+09:19:59 ⏱ execution time of 'line_plot': 0.2970 s ⏱ 
+
+09:19:59 👉 function 'add_arrows_min_max' started 👈 
+
+09:19:59 👉 function 'middle_xaxis' started 👈 
+09:19:59 💡 fig_annotations -> middle_xaxis -> line: 51 | middle of x-axis: 4380.5 💡 
+09:19:59 ⏱ execution time of 'middle_xaxis': 0.0160 s ⏱ 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Bedarf hinzugefügt 💡 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombedarf → Leistung hinzugefügt 💡 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion Alle → Leistung hinzugefügt 💡 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion SW → Leistung hinzugefügt 💡 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen Alle → Leistung hinzugefügt 💡 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen SW → Leistung hinzugefügt 💡 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei Alle → Leistung hinzugefügt 💡 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei SW → Leistung hinzugefügt 💡 
+09:19:59 🥳 fig_annotations -> add_arrows_min_max -> line: 181 | Max / Min arrows added to figure 🥳 
+09:19:59 ⏱ execution time of 'add_arrows_min_max': 0.0780 s ⏱ 
+
+09:19:59 👉 function 'standard_axes_and_layout' started 👈 
+
+09:19:59 👉 function 'standard_xaxis' started 👈 
+09:19:59 ⏱ execution time of 'standard_xaxis': 0.0160 s ⏱ 
+
+09:19:59 👉 function 'standard_yaxis' started 👈 
+09:19:59 ⏱ execution time of 'standard_yaxis': 0.0000 s ⏱ 
+
+09:19:59 👉 function 'standard_layout' started 👈 
+09:19:59 ⏱ execution time of 'standard_layout': 0.0160 s ⏱ 
+09:19:59 ⏱ execution time of 'standard_axes_and_layout': 0.0320 s ⏱ 
+09:19:59 🥳 fig_creation_export -> cr_fig_jdl -> line: 135 | fig_jdl created 🥳 
+09:19:59 ⏱ execution time of 'cr_fig_jdl': 0.4070 s ⏱ 
+
+09:19:59 👉 function 'cr_fig_mon' started 👈 
+
+09:19:59 👉 function 'line_plot' started 👈 
+09:19:59 ⏱ execution time of 'line_plot': 0.0150 s ⏱ 
+
+09:19:59 👉 function 'add_arrows_min_max' started 👈 
+
+09:19:59 👉 function 'middle_xaxis' started 👈 
+09:19:59 💡 fig_annotations -> middle_xaxis -> line: 48 | middle of x-axis: 2021-07-01 01:00:00 💡 
+09:19:59 ⏱ execution time of 'middle_xaxis': 0.0000 s ⏱ 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Bedarf hinzugefügt 💡 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombedarf → Leistung hinzugefügt 💡 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion Alle → Leistung hinzugefügt 💡 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion SW → Leistung hinzugefügt 💡 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen Alle → Leistung hinzugefügt 💡 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen SW → Leistung hinzugefügt 💡 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei Alle → Leistung hinzugefügt 💡 
+09:19:59 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei SW → Leistung hinzugefügt 💡 
+09:19:59 🥳 fig_annotations -> add_arrows_min_max -> line: 181 | Max / Min arrows added to figure 🥳 
+09:19:59 ⏱ execution time of 'add_arrows_min_max': 0.0310 s ⏱ 
+
+09:19:59 👉 function 'standard_axes_and_layout' started 👈 
+
+09:19:59 👉 function 'standard_xaxis' started 👈 
+
+09:19:59 👉 function 'format_tickstops' started 👈 
+09:19:59 ⏱ execution time of 'format_tickstops': 0.0000 s ⏱ 
+09:19:59 ⏱ execution time of 'standard_xaxis': 0.0160 s ⏱ 
+
+09:19:59 👉 function 'standard_yaxis' started 👈 
+09:19:59 ⏱ execution time of 'standard_yaxis': 0.0000 s ⏱ 
+
+09:19:59 👉 function 'standard_layout' started 👈 
+09:19:59 ⏱ execution time of 'standard_layout': 0.0000 s ⏱ 
+09:19:59 ⏱ execution time of 'standard_axes_and_layout': 0.0320 s ⏱ 
+09:19:59 🥳 fig_creation_export -> cr_fig_mon -> line: 185 | fig_mon created 🥳 
+09:19:59 ⏱ execution time of 'cr_fig_mon': 0.0930 s ⏱ 
+
+09:19:59 👉 function 'h_v_lines' started 👈 
+09:19:59 ⏱ execution time of 'h_v_lines': 0.0160 s ⏱ 
+
+09:19:59 👉 function 'clean_outliers' started 👈 
+09:19:59 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+09:19:59 👉 function 'display_options_main' started 👈 
+
+09:19:59 👉 function 'display_options_main_col_settings' started 👈 
+09:19:59 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+09:19:59 ⏱ execution time of 'display_options_main': 0.1250 s ⏱ 
+
+09:19:59 👉 function 'display_smooth_main' started 👈 
+
+09:19:59 👉 function 'display_options_main_col_settings' started 👈 
+09:19:59 ⏱ execution time of 'display_options_main_col_settings': 0.0160 s ⏱ 
+09:19:59 ⏱ execution time of 'display_smooth_main': 0.0620 s ⏱ 
+
+09:19:59 👉 function 'update_main' started 👈 
+
+09:19:59 👉 function 'show_traces' started 👈 
+
+09:19:59 👉 function 'smooth' started 👈 
+09:19:59 ⏱ execution time of 'smooth': 0.0160 s ⏱ 
+09:19:59 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+09:19:59 👉 function 'format_traces' started 👈 
+09:19:59 ⏱ execution time of 'format_traces': 0.0310 s ⏱ 
+
+09:19:59 👉 function 'show_y_axes' started 👈 
+09:19:59 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+09:19:59 ⏱ execution time of 'update_main': 0.0790 s ⏱ 
+
+09:19:59 👉 function 'update_main' started 👈 
+
+09:19:59 👉 function 'show_traces' started 👈 
+09:19:59 ⏱ execution time of 'show_traces': 0.0000 s ⏱ 
+
+09:19:59 👉 function 'format_traces' started 👈 
+09:19:59 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+09:19:59 👉 function 'show_y_axes' started 👈 
+09:19:59 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+09:19:59 ⏱ execution time of 'update_main': 0.0310 s ⏱ 
+
+09:19:59 👉 function 'update_main' started 👈 
+
+09:19:59 👉 function 'show_traces' started 👈 
+09:19:59 ⏱ execution time of 'show_traces': 0.0150 s ⏱ 
+
+09:19:59 👉 function 'format_traces' started 👈 
+09:19:59 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+09:19:59 👉 function 'show_y_axes' started 👈 
+09:19:59 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+09:19:59 ⏱ execution time of 'update_main': 0.0470 s ⏱ 
+
+09:19:59 👉 function 'plot_figs' started 👈 
+09:20:05 ⏱ execution time of 'plot_figs': 5.7500 s ⏱ 
+
+09:20:05 👉 function 'downloads' started 👈 
+09:20:05 ⏱ execution time of 'downloads': 0.0000 s ⏱ 
+
+09:21:09 👉 function 'page_header_setup' started 👈 
+
+09:21:09 👉 function 'render_svg' started 👈 
+09:21:09 ⏱ execution time of 'render_svg': 0.0160 s ⏱ 
+09:21:09 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'graph' created 👟 
+09:21:09 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+09:21:13 👉 function 'sidebar_file_upload' started 👈 
+09:21:13 ⏱ execution time of 'sidebar_file_upload': 0.0780 s ⏱ 
+
+09:21:13 👉 function 'base_settings' started 👈 
+09:21:13 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+09:21:13 ⚠ general_functions -> del_session_state_entry -> line: 93 | st.session_state Eintrag fig_base gelöscht ️ 
+09:21:13 ⚠ general_functions -> del_session_state_entry -> line: 93 | st.session_state Eintrag fig_jdl gelöscht ️ 
+09:21:13 ⚠ general_functions -> del_session_state_entry -> line: 93 | st.session_state Eintrag fig_mon gelöscht ️ 
+09:21:13 ⚠ general_functions -> del_session_state_entry -> line: 93 | st.session_state Eintrag df_jdl gelöscht ️ 
+09:21:13 ⚠ general_functions -> del_session_state_entry -> line: 93 | st.session_state Eintrag df_mon gelöscht ️ 
+
+09:21:13 👉 function 'select_graphs' started 👈 
+09:21:13 ⏱ execution time of 'select_graphs': 0.0000 s ⏱ 
+
+09:21:13 👉 function 'meteo_sidebar' started 👈 
+09:21:13 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+09:21:13 👉 function 'h_from_other' started 👈 
+09:21:13 🥳 df_manip -> h_from_other -> line: 301 | DataFrame mit Stundenwerten erstellt. 🥳 
+                       Bedarf *h  Strombedarf *h  Produktion Alle *h  Produktion SW *h  Eigen Alle *h  Eigen SW *h  Einspei Alle *h  Einspei SW *h              orgidx
+↓ Index ↓                                                                                                                                                           
+2021-01-01 00:00:00      254.0           254.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 00:00:00
+2021-01-01 01:00:00      182.0           182.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 01:00:00
+2021-01-01 02:00:00      144.0           144.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 02:00:00
+2021-01-01 03:00:00      240.0           240.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 03:00:00
+2021-01-01 04:00:00      250.0           250.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 04:00:00  
+
+09:21:13 ⏱ execution time of 'h_from_other': 0.0320 s ⏱ 
+
+09:21:13 👉 function 'jdl' started 👈 
+
+09:21:13 👉 function 'h_from_other' started 👈 
+09:21:13 🥳 df_manip -> h_from_other -> line: 301 | DataFrame mit Stundenwerten erstellt. 🥳 
+                       Bedarf *h  Strombedarf *h  Produktion Alle *h  Produktion SW *h  Eigen Alle *h  Eigen SW *h  Einspei Alle *h  Einspei SW *h              orgidx
+↓ Index ↓                                                                                                                                                           
+2021-01-01 00:00:00      254.0           254.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 00:00:00
+2021-01-01 01:00:00      182.0           182.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 01:00:00
+2021-01-01 02:00:00      144.0           144.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 02:00:00
+2021-01-01 03:00:00      240.0           240.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 03:00:00
+2021-01-01 04:00:00      250.0           250.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 04:00:00  
+
+09:21:13 ⏱ execution time of 'h_from_other': 0.0310 s ⏱ 
+09:21:13 🥳 df_manip -> jdl -> line: 375 | DataFrame für Jahresdauerlinie erstellt. 🥳 
+     Bedarf *h  Strombedarf *h  Produktion Alle *h  Produktion SW *h  ...  Eigen Alle *h_orgidx  Eigen SW *h_orgidx  Einspei Alle *h_orgidx  Einspei SW *h_orgidx
+1      782.0           782.0          100.527752         64.871117  ...   2021-08-02 13:00:00 2021-08-02 14:00:00     2021-02-26 12:00:00   2021-02-26 13:00:00
+2      756.0           756.0           99.310962         64.473690  ...   2021-07-08 13:00:00 2021-08-02 13:00:00     2021-02-26 13:00:00   2021-02-26 12:00:00
+3      744.0           744.0           97.791084         63.306832  ...   2021-08-02 14:00:00 2021-07-08 13:00:00     2021-02-26 11:00:00   2021-02-26 11:00:00
+4      741.0           741.0           97.502664         63.236532  ...   2021-06-10 11:00:00 2021-07-08 14:00:00     2021-02-26 10:00:00   2021-02-26 10:00:00
+5      740.0           740.0           97.441557         60.928697  ...   2021-07-08 12:00:00 2021-08-02 15:00:00     2021-03-04 12:00:00   2021-03-04 12:00:00
+
+[5 rows x 16 columns]  
+
+09:21:13 ⏱ execution time of 'jdl': 0.0460 s ⏱ 
+
+09:21:13 👉 function 'mon' started 👈 
+
+09:21:13 👉 function 'h_from_other' started 👈 
+09:21:13 🥳 df_manip -> h_from_other -> line: 301 | DataFrame mit Stundenwerten erstellt. 🥳 
+                       Bedarf *h  Strombedarf *h  Produktion Alle *h  Produktion SW *h  Eigen Alle *h  Eigen SW *h  Einspei Alle *h  Einspei SW *h              orgidx
+↓ Index ↓                                                                                                                                                           
+2021-01-01 00:00:00      254.0           254.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 00:00:00
+2021-01-01 01:00:00      182.0           182.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 01:00:00
+2021-01-01 02:00:00      144.0           144.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 02:00:00
+2021-01-01 03:00:00      240.0           240.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 03:00:00
+2021-01-01 04:00:00      250.0           250.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 04:00:00  
+
+09:21:13 ⏱ execution time of 'h_from_other': 0.0310 s ⏱ 
+09:21:13 🥳 df_manip -> mon -> line: 417 | DataFrame mit Monatswerten erstellt. 🥳 
+              Bedarf *mon  Strombedarf *mon  Produktion Alle *mon  Produktion SW *mon  Eigen Alle *mon  Eigen SW *mon  Einspei Alle *mon  Einspei SW *mon     orgidx
+↓ Index ↓                                                                                                                                                         
+2021-01-15     258092.0          258092.0           2268.408446         1796.850736      2268.408446    1796.850736           0.000000         0.000000 2021-01-15
+2021-02-15     221019.0          221019.0           4111.082558         2976.560660      3856.692932    2805.463968         254.389626       171.096692 2021-02-15
+2021-03-15     248727.0          248727.0           8952.706892         6008.414264      8652.900542    5829.455373         299.806350       178.958891 2021-03-15
+2021-04-15     304818.0          304818.0          14164.062357         8982.021196     14164.062357    8982.021196           0.000000         0.000000 2021-04-15
+2021-05-15     318491.0          318491.0          16922.018094        10295.749258     16922.018094   10295.749258           0.000000         0.000000 2021-05-15  
+
+09:21:13 ⏱ execution time of 'mon': 0.0630 s ⏱ 
+
+09:21:13 👉 function 'cr_fig_base' started 👈 
+
+09:21:13 👉 function 'line_plot' started 👈 
+09:21:13 ⏱ execution time of 'line_plot': 0.6250 s ⏱ 
+
+09:21:13 👉 function 'add_arrows_min_max' started 👈 
+
+09:21:14 👉 function 'middle_xaxis' started 👈 
+09:21:14 💡 fig_annotations -> middle_xaxis -> line: 48 | middle of x-axis: 2021-07-02 12:30:00 💡 
+09:21:14 ⏱ execution time of 'middle_xaxis': 0.0000 s ⏱ 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Bedarf hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombedarf → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion Alle → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion SW → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen Alle → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen SW → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei Alle → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei SW → Leistung hinzugefügt 💡 
+09:21:14 🥳 fig_annotations -> add_arrows_min_max -> line: 181 | Max / Min arrows added to figure 🥳 
+09:21:14 ⏱ execution time of 'add_arrows_min_max': 0.0780 s ⏱ 
+
+09:21:14 👉 function 'standard_axes_and_layout' started 👈 
+
+09:21:14 👉 function 'standard_xaxis' started 👈 
+
+09:21:14 👉 function 'format_tickstops' started 👈 
+09:21:14 ⏱ execution time of 'format_tickstops': 0.0000 s ⏱ 
+09:21:14 ⏱ execution time of 'standard_xaxis': 0.0150 s ⏱ 
+
+09:21:14 👉 function 'standard_yaxis' started 👈 
+09:21:14 ⏱ execution time of 'standard_yaxis': 0.0000 s ⏱ 
+
+09:21:14 👉 function 'standard_layout' started 👈 
+09:21:14 ⏱ execution time of 'standard_layout': 0.0000 s ⏱ 
+09:21:14 ⏱ execution time of 'standard_axes_and_layout': 0.0150 s ⏱ 
+09:21:14 🥳 fig_creation_export -> cr_fig_base -> line: 90 | fig_base created 🥳 
+09:21:14 ⏱ execution time of 'cr_fig_base': 0.7500 s ⏱ 
+
+09:21:14 👉 function 'cr_fig_jdl' started 👈 
+
+09:21:14 👉 function 'line_plot' started 👈 
+09:21:14 ⏱ execution time of 'line_plot': 0.3280 s ⏱ 
+
+09:21:14 👉 function 'add_arrows_min_max' started 👈 
+
+09:21:14 👉 function 'middle_xaxis' started 👈 
+09:21:14 💡 fig_annotations -> middle_xaxis -> line: 51 | middle of x-axis: 4380.5 💡 
+09:21:14 ⏱ execution time of 'middle_xaxis': 0.0000 s ⏱ 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Bedarf hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombedarf → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion Alle → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion SW → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen Alle → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen SW → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei Alle → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei SW → Leistung hinzugefügt 💡 
+09:21:14 🥳 fig_annotations -> add_arrows_min_max -> line: 181 | Max / Min arrows added to figure 🥳 
+09:21:14 ⏱ execution time of 'add_arrows_min_max': 0.0780 s ⏱ 
+
+09:21:14 👉 function 'standard_axes_and_layout' started 👈 
+
+09:21:14 👉 function 'standard_xaxis' started 👈 
+09:21:14 ⏱ execution time of 'standard_xaxis': 0.0000 s ⏱ 
+
+09:21:14 👉 function 'standard_yaxis' started 👈 
+09:21:14 ⏱ execution time of 'standard_yaxis': 0.0000 s ⏱ 
+
+09:21:14 👉 function 'standard_layout' started 👈 
+09:21:14 ⏱ execution time of 'standard_layout': 0.0000 s ⏱ 
+09:21:14 ⏱ execution time of 'standard_axes_and_layout': 0.0160 s ⏱ 
+09:21:14 🥳 fig_creation_export -> cr_fig_jdl -> line: 135 | fig_jdl created 🥳 
+09:21:14 ⏱ execution time of 'cr_fig_jdl': 0.4370 s ⏱ 
+
+09:21:14 👉 function 'cr_fig_mon' started 👈 
+
+09:21:14 👉 function 'line_plot' started 👈 
+09:21:14 ⏱ execution time of 'line_plot': 0.0000 s ⏱ 
+
+09:21:14 👉 function 'add_arrows_min_max' started 👈 
+
+09:21:14 👉 function 'middle_xaxis' started 👈 
+09:21:14 💡 fig_annotations -> middle_xaxis -> line: 48 | middle of x-axis: 2021-07-01 01:00:00 💡 
+09:21:14 ⏱ execution time of 'middle_xaxis': 0.0000 s ⏱ 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Bedarf hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombedarf → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion Alle → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion SW → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen Alle → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen SW → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei Alle → Leistung hinzugefügt 💡 
+09:21:14 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei SW → Leistung hinzugefügt 💡 
+09:21:14 🥳 fig_annotations -> add_arrows_min_max -> line: 181 | Max / Min arrows added to figure 🥳 
+09:21:14 ⏱ execution time of 'add_arrows_min_max': 0.0470 s ⏱ 
+
+09:21:14 👉 function 'standard_axes_and_layout' started 👈 
+
+09:21:14 👉 function 'standard_xaxis' started 👈 
+
+09:21:14 👉 function 'format_tickstops' started 👈 
+09:21:14 ⏱ execution time of 'format_tickstops': 0.0000 s ⏱ 
+09:21:14 ⏱ execution time of 'standard_xaxis': 0.0160 s ⏱ 
+
+09:21:14 👉 function 'standard_yaxis' started 👈 
+09:21:14 ⏱ execution time of 'standard_yaxis': 0.0000 s ⏱ 
+
+09:21:14 👉 function 'standard_layout' started 👈 
+09:21:14 ⏱ execution time of 'standard_layout': 0.0000 s ⏱ 
+09:21:14 ⏱ execution time of 'standard_axes_and_layout': 0.0320 s ⏱ 
+09:21:14 🥳 fig_creation_export -> cr_fig_mon -> line: 185 | fig_mon created 🥳 
+09:21:14 ⏱ execution time of 'cr_fig_mon': 0.0790 s ⏱ 
+
+09:21:14 👉 function 'h_v_lines' started 👈 
+09:21:14 ⏱ execution time of 'h_v_lines': 0.0000 s ⏱ 
+
+09:21:14 👉 function 'clean_outliers' started 👈 
+09:21:14 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+09:21:14 👉 function 'display_options_main' started 👈 
+
+09:21:14 👉 function 'display_options_main_col_settings' started 👈 
+09:21:14 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+09:21:14 ⏱ execution time of 'display_options_main': 0.0470 s ⏱ 
+
+09:21:14 👉 function 'display_smooth_main' started 👈 
+
+09:21:14 👉 function 'display_options_main_col_settings' started 👈 
+09:21:14 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+09:21:14 ⏱ execution time of 'display_smooth_main': 0.0470 s ⏱ 
+
+09:21:14 👉 function 'update_main' started 👈 
+
+09:21:14 👉 function 'show_traces' started 👈 
+
+09:21:14 👉 function 'smooth' started 👈 
+09:21:14 ⏱ execution time of 'smooth': 0.0000 s ⏱ 
+09:21:14 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+09:21:14 👉 function 'format_traces' started 👈 
+09:21:14 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+09:21:14 👉 function 'show_y_axes' started 👈 
+09:21:14 ⏱ execution time of 'show_y_axes': 0.0150 s ⏱ 
+09:21:14 ⏱ execution time of 'update_main': 0.0780 s ⏱ 
+
+09:21:14 👉 function 'update_main' started 👈 
+
+09:21:14 👉 function 'show_traces' started 👈 
+09:21:14 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+09:21:14 👉 function 'format_traces' started 👈 
+09:21:14 ⏱ execution time of 'format_traces': 0.0000 s ⏱ 
+
+09:21:14 👉 function 'show_y_axes' started 👈 
+09:21:14 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+09:21:14 ⏱ execution time of 'update_main': 0.0470 s ⏱ 
+
+09:21:14 👉 function 'update_main' started 👈 
+
+09:21:14 👉 function 'show_traces' started 👈 
+09:21:14 ⏱ execution time of 'show_traces': 0.0000 s ⏱ 
+
+09:21:14 👉 function 'format_traces' started 👈 
+09:21:14 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+09:21:14 👉 function 'show_y_axes' started 👈 
+09:21:14 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+09:21:14 ⏱ execution time of 'update_main': 0.0310 s ⏱ 
+
+09:21:14 👉 function 'plot_figs' started 👈 
+09:21:16 ⏱ execution time of 'plot_figs': 1.1400 s ⏱ 
+
+09:21:16 👉 function 'downloads' started 👈 
+09:21:16 ⏱ execution time of 'downloads': 0.0000 s ⏱ 

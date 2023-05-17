@@ -120,8 +120,12 @@ def clean_up_daylight_savings(df: pd.DataFrame) -> CleanUpDLS:
             - "df_clean": edited DataFrame
             - "df_deleted": deleted data
     """
-    ind: pd.DatetimeIndex = pd.DatetimeIndex(data=df.index).round("s")
-
+    # ind: pd.DatetimeIndex = pd.DatetimeIndex(data=df.index).round("s")
+    ind: pd.DatetimeIndex = (
+        df.index
+        if isinstance(df.index, pd.DatetimeIndex)
+        else pd.to_datetime(df.index, dayfirst=True)
+    )
     # Sommerzeitumstellung: letzter Sonntag im Maerz - von 2h auf 3h
     summer: np.ndarray = (
         (ind.month == 3)  # Monat = 3 ---> März

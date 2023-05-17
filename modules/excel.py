@@ -30,6 +30,8 @@ def import_prefab_excel(file: Any) -> None:
     logger.debug("df_messy")
     logger.log(LogLevel.DATA_FRAME.name, df_messy.head(10))
     df: pd.DataFrame = edit_df_after_import(df_messy)
+    logger.debug("clean df")
+    logger.log(LogLevel.DATA_FRAME.name, df.head())
 
     # Metadaten
     units: dict[str, str] = units_from_messy_df(df_messy)
@@ -78,7 +80,9 @@ def units_from_messy_df(df_messy: pd.DataFrame) -> dict[str, str]:
     p_un: MarkerPosition = ExcelMarkers(MarkerType.UNITS).get_marker_position(df_messy)
 
     column_names: list[str] = df_messy.iloc[p_in.row, p_in.col :].to_list()
-    units: list[str] = df_messy.iloc[p_un.row, p_un.col :].to_list()
+    units: list[str] = [
+        str(uni) for uni in df_messy.iloc[p_un.row, p_un.col :].to_list()
+    ] or [" "] * len(column_names)
 
     # leerzeichen vor Einheit
     for ind, unit in enumerate(units):
@@ -119,18 +123,20 @@ def edit_df_after_import(df_messy: pd.DataFrame) -> pd.DataFrame:
 
     # fix index and delete unneeded and empty cells
     df: pd.DataFrame = df_messy.iloc[p_in.row + 1 :, p_in.col :]
-    df = df.set_index("↓ Index ↓")
-    pd.to_datetime(df.index, dayfirst=True)
-    df = df.infer_objects()
     df = df.dropna(how="all")
     df = df.dropna(axis="columns", how="all")
+    df = df.set_index("↓ Index ↓")
+    df = df.infer_objects()
 
     # Index ohne Jahreszahl
-    if not isinstance(df.index, pd.DatetimeIndex) and "01.01. " in str(df.index[0]):
-        df.index = pd.to_datetime(
-            [f"{x.split()[0]}2020 {x.split()[1]}" for x in df.index.to_numpy()],
-            dayfirst=True,
-        )
+    if not isinstance(df.index, pd.DatetimeIndex):
+        if "01.01. " in str(df.index[0]):
+            df.index = pd.to_datetime(
+                [f"{x.split()[0]}2020 {x.split()[1]}" for x in df.index.to_numpy()],
+                dayfirst=True,
+            )
+        else:
+            df.index = pd.to_datetime(df.index, dayfirst=True)
 
     # delete duplicates in index (day light savings)
     dls: CleanUpDLS = clean_up_daylight_savings(df)
@@ -161,11 +167,21 @@ def meta_from_index(df: pd.DataFrame) -> dict[str, Any]:
             - years: list of years in index
     """
 
-    dic_index: dict[str, Any] = {"datetime": False, "years": []}
-
-    if isinstance(df.index, pd.DatetimeIndex):
+    dic_index: dict[str, Any] = {
+        "datetime": False,
+        "years": [],
+        "td_int": "unbekannt",
+        "td_mean": "unbekannt",
+    }
+    if not isinstance(df.index, pd.DatetimeIndex):
+        logger.error("Kein Zeitindex gefunden!!!")
+    else:
         dic_index["datetime"] = True
-        dic_index["td_mean"] = df.index.to_series().diff().mean().round("min")  
+        td_mean: pd.Timedelta = df.index.to_series().diff().mean().round("min")
+
+        logger.debug(f"Zeitliche Auflösung des DataFrame: {td_mean}")
+
+        dic_index["td_mean"] = td_mean
         if dic_index["td_mean"] == pd.Timedelta(minutes=15):
             dic_index["td_int"] = "15min"
         elif dic_index["td_mean"] == pd.Timedelta(hours=1):
@@ -282,7 +298,7 @@ def rename_column_arbeit_leistung(
 
 
     Args:
-        - original_data (Literal['Arbeit', 'Leistung']): 
+        - original_data (Literal['Arbeit', 'Leistung']):
             Sind die Daten "Arbeit" oder "Leistung"
         - df (pd.DataFrame): DataFrame für neue Spalte
         - meta (cont.DicStrNest): dictionar der Metadaten
@@ -306,7 +322,7 @@ def insert_column_arbeit_leistung(
 
 
     Args:
-        - original_data (Literal['Arbeit', 'Leistung']): 
+        - original_data (Literal['Arbeit', 'Leistung']):
             Sind die Daten "Arbeit" oder "Leistung"
         - df (pd.DataFrame): DataFrame für neue Spalte
         - meta (cont.DicStrNest): dictionar der Metadaten

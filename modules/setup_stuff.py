@@ -4,6 +4,7 @@ import datetime as dt
 import locale
 import os
 import sys
+from pathlib import Path
 from typing import Any
 
 import plotly.io as pio
@@ -110,6 +111,13 @@ def general_setup() -> None:
         st.session_state["com_msg"] = commit["com_msg"]
 
     st_add("all_user_data", get_all_user_data())
+
+    exp_dir: str = "/export"
+    if Path.exists(exp_dir):
+        logger.info(f"Pfad '{exp_dir}' für die Ausgabe vorhanden")
+    else:
+        Path.mkdir(exp_dir)
+        logger.info(f"Pfad '{exp_dir}' für die Ausgabe erstellt")
 
     st.session_state["initial_setup"] = True
     logger.log(LogLevel.ONCE_PER_SESSION.name, "Initial Setup Complete")

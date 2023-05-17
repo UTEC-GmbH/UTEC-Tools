@@ -843,6 +843,7 @@ def display_smooth_main() -> bool:
 @func_timer
 def downloads(page: str = "graph") -> None:
     """Dateidownloads"""
+
     if "meteo" in page:
         if st.session_state["meteo_start_year"] == st.session_state["meteo_end_year"]:
             xl_file_name: str = (

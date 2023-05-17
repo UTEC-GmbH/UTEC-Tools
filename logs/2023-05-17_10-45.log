@@ -1,0 +1,1316 @@
+
+
+10:45:28 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+
+
+10:45:28 👉 function 'general_setup' started 👈 
+
+10:45:29 👉 function 'render_svg' started 👈 
+10:45:29 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+
+10:45:29 👉 function 'get_commit_message_date' started 👈 
+10:45:30 ⏱ execution time of 'get_commit_message_date': 1.2190 s ⏱ 
+
+10:45:30 👉 function 'get_all_user_data' started 👈 
+
+10:45:30 👉 function 'connect_database' started 👈 
+10:45:30 🥳 user_authentication -> connect_database -> line: 124 | Deta-Database connection established 🥳 
+10:45:30 ⏱ execution time of 'connect_database': 0.0150 s ⏱ 
+10:45:30 🥳 user_authentication -> get_all_user_data -> line: 158 | Collected all user data from Database 🥳 
+10:45:30 ⏱ execution time of 'get_all_user_data': 0.3120 s ⏱ 
+
+10:45:30 🦤🦤🦤 Initial Setup Complete 🦤🦤🦤 
+
+10:45:30 ⏱ execution time of 'general_setup': 2.1870 s ⏱ 
+
+10:45:30 👉 function 'page_header_setup' started 👈 
+
+10:45:30 👉 function 'render_svg' started 👈 
+10:45:30 ⏱ execution time of 'render_svg': 0.0160 s ⏱ 
+10:45:30 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'login' created 👟 
+10:45:30 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+10:45:30 👉 function 'display_login_page' started 👈 
+
+10:45:30 👉 function 'login_section' started 👈 
+10:45:30 ⏱ execution time of 'login_section': 0.0000 s ⏱ 
+10:45:30 ⏱ execution time of 'display_login_page': 0.0310 s ⏱ 
+10:45:30 🥳 00_🔑_login -> <module> -> line: 149 | Login Page Loaded 🥳 
+
+
+10:45:31 ✨ NEW RUN ✨ 
+
+10:45:31 👉 function 'page_header_setup' started 👈 
+
+10:45:31 👉 function 'render_svg' started 👈 
+10:45:31 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+10:45:31 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'login' created 👟 
+10:45:31 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+10:45:31 👉 function 'display_login_page' started 👈 
+
+10:45:31 👉 function 'login_section' started 👈 
+
+10:45:31 👉 function 'access_granted' started 👈 
+10:45:31 🥳 00_🔑_login -> access_granted -> line: 92 | logged in as: fl, access level: god 🥳 
+
+10:45:31 👉 function 'god_mode' started 👈 
+
+10:45:31 👉 function 'user_accounts' started 👈 
+10:45:31 ⏱ execution time of 'user_accounts': 0.0160 s ⏱ 
+10:45:31 ⏱ execution time of 'god_mode': 0.0160 s ⏱ 
+10:45:31 ⏱ execution time of 'access_granted': 0.0160 s ⏱ 
+10:45:31 ⏱ execution time of 'login_section': 0.0160 s ⏱ 
+10:45:31 ⏱ execution time of 'display_login_page': 0.0470 s ⏱ 
+10:45:31 🥳 00_🔑_login -> <module> -> line: 149 | Login Page Loaded 🥳 
+
+
+10:45:32 ✨ NEW RUN ✨ 
+
+10:45:32 👉 function 'page_header_setup' started 👈 
+
+10:45:32 👉 function 'render_svg' started 👈 
+10:45:32 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+10:45:32 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'login' created 👟 
+10:45:32 ⏱ execution time of 'page_header_setup': 0.0310 s ⏱ 
+
+10:45:32 👉 function 'display_login_page' started 👈 
+
+10:45:32 👉 function 'login_section' started 👈 
+
+10:45:32 👉 function 'access_granted' started 👈 
+
+10:45:32 👉 function 'god_mode' started 👈 
+
+10:45:32 👉 function 'user_accounts' started 👈 
+10:45:32 ⏱ execution time of 'user_accounts': 0.0160 s ⏱ 
+10:45:32 ⏱ execution time of 'god_mode': 0.0160 s ⏱ 
+10:45:32 ⏱ execution time of 'access_granted': 0.0160 s ⏱ 
+10:45:32 ⏱ execution time of 'login_section': 0.0160 s ⏱ 
+10:45:32 ⏱ execution time of 'display_login_page': 0.0310 s ⏱ 
+10:45:32 🥳 00_🔑_login -> <module> -> line: 149 | Login Page Loaded 🥳 
+
+10:45:36 👉 function 'page_header_setup' started 👈 
+
+10:45:36 👉 function 'render_svg' started 👈 
+10:45:36 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+10:45:36 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'graph' created 👟 
+10:45:36 ⏱ execution time of 'page_header_setup': 0.0320 s ⏱ 
+
+10:45:36 👉 function 'sidebar_file_upload' started 👈 
+10:45:36 ⏱ execution time of 'sidebar_file_upload': 0.0160 s ⏱ 
+
+10:45:41 👉 function 'page_header_setup' started 👈 
+
+10:45:41 👉 function 'render_svg' started 👈 
+10:45:41 ⏱ execution time of 'render_svg': 0.0160 s ⏱ 
+10:45:41 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'graph' created 👟 
+10:45:41 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+10:45:41 👉 function 'sidebar_file_upload' started 👈 
+10:45:41 ⏱ execution time of 'sidebar_file_upload': 0.0160 s ⏱ 
+
+10:45:41 👉 function 'import_prefab_excel' started 👈 
+10:45:44 🐞 excel -> import_prefab_excel -> line: 30 | df_messy 🐞 
+     Unnamed: 0 Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4 Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8 Unnamed: 9
+0         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+1         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+2         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+3         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+4         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+5         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+6         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+7         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+8         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN
+9         NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN  
+
+
+10:45:44 👉 function 'edit_df_after_import' started 👈 
+10:45:44 🐞 classes -> get_marker_position -> line: 72 | (array([16], dtype=int64), array([1], dtype=int64)) 🐞 
+10:45:45 🥳 classes -> get_marker_position -> line: 82 | Marker ↓ Index ↓ found in row 16, column 1 🥳 
+
+10:45:45 👉 function 'clean_up_daylight_savings' started 👈 
+10:45:45 ⚠ df_manip -> clean_up_daylight_savings -> line: 144 | Data deleted due to daylight savings. ️ 
+  16                   Bedarf  Strombedarf  Produktion Alle  Produktion SW  Eigen Alle  Eigen SW  Einspei Alle  Einspei SW
+↓ Index ↓                                                                                                               
+2021-03-28 02:00:00     256         64.0              0.0            0.0         0.0       0.0           0.0         0.0
+2021-03-28 02:15:00     252         63.0              0.0            0.0         0.0       0.0           0.0         0.0
+2021-03-28 02:30:00     256         64.0              0.0            0.0         0.0       0.0           0.0         0.0
+2021-03-28 02:45:00     252         63.0              0.0            0.0         0.0       0.0           0.0         0.0
+2021-10-25 02:00:00     328         82.0              0.0            0.0         0.0       0.0           0.0         0.0
+2021-10-25 02:15:00     328         82.0              0.0            0.0         0.0       0.0           0.0         0.0
+2021-10-25 02:30:00     328         82.0              0.0            0.0         0.0       0.0           0.0         0.0
+2021-10-25 02:45:00     260         65.0              0.0            0.0         0.0       0.0           0.0         0.0  
+
+10:45:45 ⏱ execution time of 'clean_up_daylight_savings': 0.0320 s ⏱ 
+10:45:45 ⏱ execution time of 'edit_df_after_import': 0.3600 s ⏱ 
+10:45:45 🐞 excel -> import_prefab_excel -> line: 33 | clean df 🐞 
+  16                   Bedarf  Strombedarf  Produktion Alle  Produktion SW  Eigen Alle  Eigen SW  Einspei Alle  Einspei SW              orgidx
+↓ Index ↓                                                                                                                                   
+2021-01-01 00:00:00     252         63.0              0.0            0.0         0.0       0.0           0.0         0.0 2021-01-01 00:00:00
+2021-01-01 00:15:00     252         63.0              0.0            0.0         0.0       0.0           0.0         0.0 2021-01-01 00:15:00
+2021-01-01 00:30:00     256         64.0              0.0            0.0         0.0       0.0           0.0         0.0 2021-01-01 00:30:00
+2021-01-01 00:45:00     256         64.0              0.0            0.0         0.0       0.0           0.0         0.0 2021-01-01 00:45:00
+2021-01-01 01:00:00     252         63.0              0.0            0.0         0.0       0.0           0.0         0.0 2021-01-01 01:00:00  
+
+
+10:45:45 👉 function 'units_from_messy_df' started 👈 
+10:45:45 🐞 classes -> get_marker_position -> line: 72 | (array([16], dtype=int64), array([1], dtype=int64)) 🐞 
+10:45:45 🥳 classes -> get_marker_position -> line: 82 | Marker ↓ Index ↓ found in row 16, column 1 🥳 
+10:45:45 🐞 classes -> get_marker_position -> line: 72 | (array([15], dtype=int64), array([1], dtype=int64)) 🐞 
+10:45:45 🥳 classes -> get_marker_position -> line: 82 | Marker → Einheit → found in row 15, column 1 🥳 
+10:45:45 💡 excel -> units_from_messy_df -> line: 95 | Bedarf: ' kW' 💡 
+10:45:45 💡 excel -> units_from_messy_df -> line: 95 | Strombedarf: ' kWh' 💡 
+10:45:45 💡 excel -> units_from_messy_df -> line: 95 | Produktion Alle: ' kWh' 💡 
+10:45:45 💡 excel -> units_from_messy_df -> line: 95 | Produktion SW: ' kWh' 💡 
+10:45:45 💡 excel -> units_from_messy_df -> line: 95 | Eigen Alle: ' kWh' 💡 
+10:45:45 💡 excel -> units_from_messy_df -> line: 95 | Eigen SW: ' kWh' 💡 
+10:45:45 💡 excel -> units_from_messy_df -> line: 95 | Einspei Alle: ' kWh' 💡 
+10:45:45 💡 excel -> units_from_messy_df -> line: 95 | Einspei SW: ' kWh' 💡 
+10:45:45 ⏱ execution time of 'units_from_messy_df': 0.0470 s ⏱ 
+
+10:45:45 👉 function 'meta_from_index' started 👈 
+10:45:45 🐞 excel -> meta_from_index -> line: 187 | Zeitliche Auflösung des DataFrame: 0 days 00:15:00 🐞 
+10:45:45 💡 excel -> meta_from_index -> line: 192 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
+10:45:45 ⏱ execution time of 'meta_from_index': 0.0160 s ⏱ 
+
+10:45:45 👉 function 'meta_from_col_title' started 👈 
+10:45:45 ⏱ execution time of 'meta_from_col_title': 0.0000 s ⏱ 
+
+10:45:45 👉 function 'convert_15min_kwh_to_kw' started 👈 
+10:45:45 💡 excel -> insert_column_arbeit_leistung -> line: 352 | Spalte 'Bedarf → Arbeit' mit Einheit ' kWh' eingefügt 💡 
+10:45:45 💡 excel -> rename_column_arbeit_leistung -> line: 318 | Spalte 'Bedarf' umbenannt in 'Bedarf → Leistung' 💡 
+10:45:45 🥳 excel -> convert_15min_kwh_to_kw -> line: 290 | Arbeit und Leistung für Spalte 'Bedarf' aufgeteilt 🥳 
+10:45:45 💡 excel -> insert_column_arbeit_leistung -> line: 352 | Spalte 'Strombedarf → Leistung' mit Einheit ' kW' eingefügt 💡 
+10:45:45 💡 excel -> rename_column_arbeit_leistung -> line: 318 | Spalte 'Strombedarf' umbenannt in 'Strombedarf → Arbeit' 💡 
+10:45:45 🥳 excel -> convert_15min_kwh_to_kw -> line: 290 | Arbeit und Leistung für Spalte 'Strombedarf' aufgeteilt 🥳 
+10:45:45 💡 excel -> insert_column_arbeit_leistung -> line: 352 | Spalte 'Produktion Alle → Leistung' mit Einheit ' kW' eingefügt 💡 
+10:45:45 💡 excel -> rename_column_arbeit_leistung -> line: 318 | Spalte 'Produktion Alle' umbenannt in 'Produktion Alle → Arbeit' 💡 
+10:45:45 🥳 excel -> convert_15min_kwh_to_kw -> line: 290 | Arbeit und Leistung für Spalte 'Produktion Alle' aufgeteilt 🥳 
+10:45:45 💡 excel -> insert_column_arbeit_leistung -> line: 352 | Spalte 'Produktion SW → Leistung' mit Einheit ' kW' eingefügt 💡 
+10:45:45 💡 excel -> rename_column_arbeit_leistung -> line: 318 | Spalte 'Produktion SW' umbenannt in 'Produktion SW → Arbeit' 💡 
+10:45:45 🥳 excel -> convert_15min_kwh_to_kw -> line: 290 | Arbeit und Leistung für Spalte 'Produktion SW' aufgeteilt 🥳 
+10:45:45 💡 excel -> insert_column_arbeit_leistung -> line: 352 | Spalte 'Eigen Alle → Leistung' mit Einheit ' kW' eingefügt 💡 
+10:45:45 💡 excel -> rename_column_arbeit_leistung -> line: 318 | Spalte 'Eigen Alle' umbenannt in 'Eigen Alle → Arbeit' 💡 
+10:45:45 🥳 excel -> convert_15min_kwh_to_kw -> line: 290 | Arbeit und Leistung für Spalte 'Eigen Alle' aufgeteilt 🥳 
+10:45:45 💡 excel -> insert_column_arbeit_leistung -> line: 352 | Spalte 'Eigen SW → Leistung' mit Einheit ' kW' eingefügt 💡 
+10:45:45 💡 excel -> rename_column_arbeit_leistung -> line: 318 | Spalte 'Eigen SW' umbenannt in 'Eigen SW → Arbeit' 💡 
+10:45:45 🥳 excel -> convert_15min_kwh_to_kw -> line: 290 | Arbeit und Leistung für Spalte 'Eigen SW' aufgeteilt 🥳 
+10:45:45 💡 excel -> insert_column_arbeit_leistung -> line: 352 | Spalte 'Einspei Alle → Leistung' mit Einheit ' kW' eingefügt 💡 
+10:45:45 💡 excel -> rename_column_arbeit_leistung -> line: 318 | Spalte 'Einspei Alle' umbenannt in 'Einspei Alle → Arbeit' 💡 
+10:45:45 🥳 excel -> convert_15min_kwh_to_kw -> line: 290 | Arbeit und Leistung für Spalte 'Einspei Alle' aufgeteilt 🥳 
+10:45:45 💡 excel -> insert_column_arbeit_leistung -> line: 352 | Spalte 'Einspei SW → Leistung' mit Einheit ' kW' eingefügt 💡 
+10:45:45 💡 excel -> rename_column_arbeit_leistung -> line: 318 | Spalte 'Einspei SW' umbenannt in 'Einspei SW → Arbeit' 💡 
+10:45:45 🥳 excel -> convert_15min_kwh_to_kw -> line: 290 | Arbeit und Leistung für Spalte 'Einspei SW' aufgeteilt 🥳 
+10:45:45 ⏱ execution time of 'convert_15min_kwh_to_kw': 0.0620 s ⏱ 
+10:45:45 🐞 excel -> import_prefab_excel -> line: 45 | Metadaten nach 15min-Konvertierung: 
+{'Bedarf': {'orig_tit': 'Bedarf', 'tit': 'Bedarf', 'unit': ' kW'}, 'Strombedarf': {'orig_tit': 'Strombedarf', 'tit': 'Strombedarf', 'unit': ' kWh'}, 'Produktion Alle': {'orig_tit': 'Produktion Alle', 'tit': 'Produktion Alle', 'unit': ' kWh'}, 'Produktion SW': {'orig_tit': 'Produktion SW', 'tit': 'Produktion SW', 'unit': ' kWh'}, 'Eigen Alle': {'orig_tit': 'Eigen Alle', 'tit': 'Eigen Alle', 'unit': ' kWh'}, 'Eigen SW': {'orig_tit': 'Eigen SW', 'tit': 'Eigen SW', 'unit': ' kWh'}, 'Einspei Alle': {'orig_tit': 'Einspei Alle', 'tit': 'Einspei Alle', 'unit': ' kWh'}, 'Einspei SW': {'orig_tit': 'Einspei SW', 'tit': 'Einspei SW', 'unit': ' kWh'}, 'orgidx': {'orig_tit': 'orgidx', 'tit': 'orgidx', 'unit': ''}, 'index': {'datetime': True, 'years': [2021], 'td_int': '15min', 'td_mean': Timedelta('0 days 00:15:00')}, 'Bedarf → Arbeit': {'orig_tit': 'Bedarf', 'tit': 'Bedarf → Arbeit', 'unit': ' kWh'}, 'Bedarf → Leistung': {'orig_tit': 'Bedarf', 'tit': 'Bedarf → Leistung', 'unit': ' kW'}, 'Strombedarf → Leistung': {'orig_tit': 'Strombedarf', 'tit': 'Strombedarf → Leistung', 'unit': ' kW'}, 'Strombedarf → Arbeit': {'orig_tit': 'Strombedarf', 'tit': 'Strombedarf → Arbeit', 'unit': ' kWh'}, 'Produktion Alle → Leistung': {'orig_tit': 'Produktion Alle', 'tit': 'Produktion Alle → Leistung', 'unit': ' kW'}, 'Produktion Alle → Arbeit': {'orig_tit': 'Produktion Alle', 'tit': 'Produktion Alle → Arbeit', 'unit': ' kWh'}, 'Produktion SW → Leistung': {'orig_tit': 'Produktion SW', 'tit': 'Produktion SW → Leistung', 'unit': ' kW'}, 'Produktion SW → Arbeit': {'orig_tit': 'Produktion SW', 'tit': 'Produktion SW → Arbeit', 'unit': ' kWh'}, 'Eigen Alle → Leistung': {'orig_tit': 'Eigen Alle', 'tit': 'Eigen Alle → Leistung', 'unit': ' kW'}, 'Eigen Alle → Arbeit': {'orig_tit': 'Eigen Alle', 'tit': 'Eigen Alle → Arbeit', 'unit': ' kWh'}, 'Eigen SW → Leistung': {'orig_tit': 'Eigen SW', 'tit': 'Eigen SW → Leistung', 'unit': ' kW'}, 'Eigen SW → Arbeit': {'orig_tit': 'Eigen SW', 'tit': 'Eigen SW → Arbeit', 'unit': ' kWh'}, 'Einspei Alle → Leistung': {'orig_tit': 'Einspei Alle', 'tit': 'Einspei Alle → Leistung', 'unit': ' kW'}, 'Einspei Alle → Arbeit': {'orig_tit': 'Einspei Alle', 'tit': 'Einspei Alle → Arbeit', 'unit': ' kWh'}, 'Einspei SW → Leistung': {'orig_tit': 'Einspei SW', 'tit': 'Einspei SW → Leistung', 'unit': ' kW'}, 'Einspei SW → Arbeit': {'orig_tit': 'Einspei SW', 'tit': 'Einspei SW → Arbeit', 'unit': ' kWh'}} 🐞 
+
+10:45:45 👉 function 'set_y_axis_for_lines' started 👈 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Bedarf: Y-Achse y2 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Strombedarf: Y-Achse y 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Produktion Alle: Y-Achse y 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Produktion SW: Y-Achse y 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Eigen Alle: Y-Achse y 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Eigen SW: Y-Achse y 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Einspei Alle: Y-Achse y 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Einspei SW: Y-Achse y 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Bedarf → Arbeit: Y-Achse y 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Bedarf → Leistung: Y-Achse y2 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Strombedarf → Leistung: Y-Achse y2 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Strombedarf → Arbeit: Y-Achse y 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Produktion Alle → Leistung: Y-Achse y2 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Produktion Alle → Arbeit: Y-Achse y 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Produktion SW → Leistung: Y-Achse y2 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Produktion SW → Arbeit: Y-Achse y 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Eigen Alle → Leistung: Y-Achse y2 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Eigen Alle → Arbeit: Y-Achse y 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Eigen SW → Leistung: Y-Achse y2 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Eigen SW → Arbeit: Y-Achse y 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Einspei Alle → Leistung: Y-Achse y2 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Einspei Alle → Arbeit: Y-Achse y 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Einspei SW → Leistung: Y-Achse y2 💡 
+10:45:45 💡 excel -> set_y_axis_for_lines -> line: 109 | Einspei SW → Arbeit: Y-Achse y 💡 
+10:45:45 ⏱ execution time of 'set_y_axis_for_lines': 0.0470 s ⏱ 
+10:45:45 🥳 excel -> import_prefab_excel -> line: 61 | file imported and metadata extracted 🥳 
+  16                   Bedarf → Leistung  Strombedarf → Arbeit  Produktion Alle → Arbeit  ...  Eigen SW → Leistung  Einspei Alle → Leistung  Einspei SW → Leistung
+↓ Index ↓                                                                               ...                                                                     
+2021-01-01 00:00:00                252                  63.0                       0.0  ...                  0.0                      0.0                    0.0
+2021-01-01 00:15:00                252                  63.0                       0.0  ...                  0.0                      0.0                    0.0
+2021-01-01 00:30:00                256                  64.0                       0.0  ...                  0.0                      0.0                    0.0
+2021-01-01 00:45:00                256                  64.0                       0.0  ...                  0.0                      0.0                    0.0
+2021-01-01 01:00:00                252                  63.0                       0.0  ...                  0.0                      0.0                    0.0
+
+[5 rows x 17 columns]  
+
+10:45:45 ⏱ execution time of 'import_prefab_excel': 3.7340 s ⏱ 
+
+10:45:45 👉 function 'base_settings' started 👈 
+10:45:45 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+
+10:45:45 👉 function 'select_graphs' started 👈 
+10:45:45 ⏱ execution time of 'select_graphs': 0.0160 s ⏱ 
+
+10:45:45 👉 function 'meteo_sidebar' started 👈 
+10:45:45 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+10:45:45 👉 function 'jdl' started 👈 
+
+10:45:45 👉 function 'h_from_other' started 👈 
+10:45:45 🥳 df_manip -> h_from_other -> line: 301 | DataFrame mit Stundenwerten erstellt. 🥳 
+                       Bedarf *h  Strombedarf *h  Produktion Alle *h  Produktion SW *h  Eigen Alle *h  Eigen SW *h  Einspei Alle *h  Einspei SW *h              orgidx
+↓ Index ↓                                                                                                                                                           
+2021-01-01 00:00:00      254.0           254.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 00:00:00
+2021-01-01 01:00:00      182.0           182.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 01:00:00
+2021-01-01 02:00:00      144.0           144.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 02:00:00
+2021-01-01 03:00:00      240.0           240.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 03:00:00
+2021-01-01 04:00:00      250.0           250.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 04:00:00  
+
+10:45:45 ⏱ execution time of 'h_from_other': 0.0630 s ⏱ 
+10:45:45 🥳 df_manip -> jdl -> line: 375 | DataFrame für Jahresdauerlinie erstellt. 🥳 
+     Bedarf *h  Strombedarf *h  Produktion Alle *h  Produktion SW *h  Eigen Alle *h  ...  Produktion SW *h_orgidx  Eigen Alle *h_orgidx  Eigen SW *h_orgidx Einspei Alle *h_orgidx Einspei SW *h_orgidx
+1      782.0           782.0          100.527752         64.871117     100.527752  ...      2021-08-02 14:00:00   2021-08-02 13:00:00 2021-08-02 14:00:00    2021-02-26 12:00:00  2021-02-26 13:00:00
+2      756.0           756.0           99.310962         64.473690      99.310962  ...      2021-08-02 13:00:00   2021-07-08 13:00:00 2021-08-02 13:00:00    2021-02-26 13:00:00  2021-02-26 12:00:00
+3      744.0           744.0           97.791084         63.306832      97.791084  ...      2021-07-08 13:00:00   2021-08-02 14:00:00 2021-07-08 13:00:00    2021-02-26 11:00:00  2021-02-26 11:00:00
+4      741.0           741.0           97.502664         63.236532      97.502664  ...      2021-07-08 14:00:00   2021-06-10 11:00:00 2021-07-08 14:00:00    2021-02-26 10:00:00  2021-02-26 10:00:00
+5      740.0           740.0           97.441557         60.928697      97.441557  ...      2021-08-02 15:00:00   2021-07-08 12:00:00 2021-08-02 15:00:00    2021-03-04 12:00:00  2021-03-04 12:00:00
+
+[5 rows x 16 columns]  
+
+10:45:45 ⏱ execution time of 'jdl': 0.1100 s ⏱ 
+
+10:45:45 👉 function 'mon' started 👈 
+
+10:45:45 👉 function 'h_from_other' started 👈 
+10:45:45 🥳 df_manip -> h_from_other -> line: 301 | DataFrame mit Stundenwerten erstellt. 🥳 
+                       Bedarf *h  Strombedarf *h  Produktion Alle *h  Produktion SW *h  Eigen Alle *h  Eigen SW *h  Einspei Alle *h  Einspei SW *h              orgidx
+↓ Index ↓                                                                                                                                                           
+2021-01-01 00:00:00      254.0           254.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 00:00:00
+2021-01-01 01:00:00      182.0           182.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 01:00:00
+2021-01-01 02:00:00      144.0           144.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 02:00:00
+2021-01-01 03:00:00      240.0           240.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 03:00:00
+2021-01-01 04:00:00      250.0           250.0                 0.0               0.0            0.0          0.0              0.0            0.0 2021-01-01 04:00:00  
+
+10:45:45 ⏱ execution time of 'h_from_other': 0.0460 s ⏱ 
+10:45:45 🥳 df_manip -> mon -> line: 417 | DataFrame mit Monatswerten erstellt. 🥳 
+              Bedarf *mon  Strombedarf *mon  Produktion Alle *mon  Produktion SW *mon  Eigen Alle *mon  Eigen SW *mon  Einspei Alle *mon  Einspei SW *mon     orgidx
+↓ Index ↓                                                                                                                                                         
+2021-01-15     258092.0          258092.0           2268.408446         1796.850736      2268.408446    1796.850736           0.000000         0.000000 2021-01-15
+2021-02-15     221019.0          221019.0           4111.082558         2976.560660      3856.692932    2805.463968         254.389626       171.096692 2021-02-15
+2021-03-15     248727.0          248727.0           8952.706892         6008.414264      8652.900542    5829.455373         299.806350       178.958891 2021-03-15
+2021-04-15     304818.0          304818.0          14164.062357         8982.021196     14164.062357    8982.021196           0.000000         0.000000 2021-04-15
+2021-05-15     318491.0          318491.0          16922.018094        10295.749258     16922.018094   10295.749258           0.000000         0.000000 2021-05-15  
+
+10:45:45 ⏱ execution time of 'mon': 0.0620 s ⏱ 
+
+10:45:45 👉 function 'cr_fig_base' started 👈 
+
+10:45:45 👉 function 'line_plot' started 👈 
+10:45:53 ⏱ execution time of 'line_plot': 7.8280 s ⏱ 
+
+10:45:53 👉 function 'add_arrows_min_max' started 👈 
+
+10:45:53 👉 function 'middle_xaxis' started 👈 
+10:45:53 💡 fig_annotations -> middle_xaxis -> line: 48 | middle of x-axis: 2021-07-02 12:52:30 💡 
+10:45:53 ⏱ execution time of 'middle_xaxis': 0.0160 s ⏱ 
+10:45:53 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Bedarf → Leistung hinzugefügt 💡 
+10:45:53 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombedarf → Arbeit hinzugefügt 💡 
+10:45:53 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion Alle → Arbeit hinzugefügt 💡 
+10:45:53 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion SW → Arbeit hinzugefügt 💡 
+10:45:53 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen Alle → Arbeit hinzugefügt 💡 
+10:45:53 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen SW → Arbeit hinzugefügt 💡 
+10:45:53 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei Alle → Arbeit hinzugefügt 💡 
+10:45:53 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei SW → Arbeit hinzugefügt 💡 
+10:45:53 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Bedarf → Arbeit hinzugefügt 💡 
+10:45:53 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombedarf → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion Alle → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion SW → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen Alle → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen SW → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei Alle → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei SW → Leistung hinzugefügt 💡 
+10:45:54 🥳 fig_annotations -> add_arrows_min_max -> line: 181 | Max / Min arrows added to figure 🥳 
+10:45:54 ⏱ execution time of 'add_arrows_min_max': 0.3750 s ⏱ 
+
+10:45:54 👉 function 'standard_axes_and_layout' started 👈 
+
+10:45:54 👉 function 'standard_xaxis' started 👈 
+
+10:45:54 👉 function 'format_tickstops' started 👈 
+10:45:54 ⏱ execution time of 'format_tickstops': 0.0000 s ⏱ 
+10:45:54 ⏱ execution time of 'standard_xaxis': 0.0460 s ⏱ 
+
+10:45:54 👉 function 'standard_yaxis' started 👈 
+10:45:54 ⏱ execution time of 'standard_yaxis': 0.0160 s ⏱ 
+
+10:45:54 👉 function 'standard_layout' started 👈 
+10:45:54 ⏱ execution time of 'standard_layout': 0.0470 s ⏱ 
+10:45:54 ⏱ execution time of 'standard_axes_and_layout': 0.1250 s ⏱ 
+10:45:54 🥳 fig_creation_export -> cr_fig_base -> line: 90 | fig_base created 🥳 
+10:45:54 ⏱ execution time of 'cr_fig_base': 8.5780 s ⏱ 
+
+10:45:54 👉 function 'cr_fig_jdl' started 👈 
+
+10:45:54 👉 function 'line_plot' started 👈 
+10:45:54 ⏱ execution time of 'line_plot': 0.5150 s ⏱ 
+
+10:45:54 👉 function 'add_arrows_min_max' started 👈 
+
+10:45:54 👉 function 'middle_xaxis' started 👈 
+10:45:54 💡 fig_annotations -> middle_xaxis -> line: 51 | middle of x-axis: 4380.5 💡 
+10:45:54 ⏱ execution time of 'middle_xaxis': 0.0160 s ⏱ 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Bedarf → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombedarf → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion Alle → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion SW → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen Alle → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen SW → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei Alle → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei SW → Leistung hinzugefügt 💡 
+10:45:54 🥳 fig_annotations -> add_arrows_min_max -> line: 181 | Max / Min arrows added to figure 🥳 
+10:45:54 ⏱ execution time of 'add_arrows_min_max': 0.0790 s ⏱ 
+
+10:45:54 👉 function 'standard_axes_and_layout' started 👈 
+
+10:45:54 👉 function 'standard_xaxis' started 👈 
+10:45:54 ⏱ execution time of 'standard_xaxis': 0.0150 s ⏱ 
+
+10:45:54 👉 function 'standard_yaxis' started 👈 
+10:45:54 ⏱ execution time of 'standard_yaxis': 0.0000 s ⏱ 
+
+10:45:54 👉 function 'standard_layout' started 👈 
+10:45:54 ⏱ execution time of 'standard_layout': 0.0160 s ⏱ 
+10:45:54 ⏱ execution time of 'standard_axes_and_layout': 0.0310 s ⏱ 
+10:45:54 🥳 fig_creation_export -> cr_fig_jdl -> line: 135 | fig_jdl created 🥳 
+10:45:54 ⏱ execution time of 'cr_fig_jdl': 0.6400 s ⏱ 
+
+10:45:54 👉 function 'cr_fig_mon' started 👈 
+
+10:45:54 👉 function 'line_plot' started 👈 
+10:45:54 ⏱ execution time of 'line_plot': 0.0160 s ⏱ 
+
+10:45:54 👉 function 'add_arrows_min_max' started 👈 
+
+10:45:54 👉 function 'middle_xaxis' started 👈 
+10:45:54 💡 fig_annotations -> middle_xaxis -> line: 48 | middle of x-axis: 2021-07-01 01:00:00 💡 
+10:45:54 ⏱ execution time of 'middle_xaxis': 0.0000 s ⏱ 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Bedarf → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombedarf → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion Alle → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Produktion SW → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen Alle → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Eigen SW → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei Alle → Leistung hinzugefügt 💡 
+10:45:54 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Einspei SW → Leistung hinzugefügt 💡 
+10:45:54 🥳 fig_annotations -> add_arrows_min_max -> line: 181 | Max / Min arrows added to figure 🥳 
+10:45:54 ⏱ execution time of 'add_arrows_min_max': 0.0310 s ⏱ 
+
+10:45:54 👉 function 'standard_axes_and_layout' started 👈 
+
+10:45:54 👉 function 'standard_xaxis' started 👈 
+
+10:45:54 👉 function 'format_tickstops' started 👈 
+10:45:54 ⏱ execution time of 'format_tickstops': 0.0000 s ⏱ 
+10:45:54 ⏱ execution time of 'standard_xaxis': 0.0000 s ⏱ 
+
+10:45:54 👉 function 'standard_yaxis' started 👈 
+10:45:54 ⏱ execution time of 'standard_yaxis': 0.0160 s ⏱ 
+
+10:45:54 👉 function 'standard_layout' started 👈 
+10:45:54 ⏱ execution time of 'standard_layout': 0.0000 s ⏱ 
+10:45:54 ⏱ execution time of 'standard_axes_and_layout': 0.0160 s ⏱ 
+10:45:54 🥳 fig_creation_export -> cr_fig_mon -> line: 185 | fig_mon created 🥳 
+10:45:54 ⏱ execution time of 'cr_fig_mon': 0.0940 s ⏱ 
+
+10:45:54 👉 function 'h_v_lines' started 👈 
+10:45:54 ⏱ execution time of 'h_v_lines': 0.0000 s ⏱ 
+
+10:45:54 👉 function 'clean_outliers' started 👈 
+10:45:54 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+10:45:54 👉 function 'display_options_main' started 👈 
+
+10:45:54 👉 function 'display_options_main_col_settings' started 👈 
+10:45:54 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:45:55 ⏱ execution time of 'display_options_main': 0.2030 s ⏱ 
+
+10:45:55 👉 function 'display_smooth_main' started 👈 
+
+10:45:55 👉 function 'display_options_main_col_settings' started 👈 
+10:45:55 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:45:55 ⏱ execution time of 'display_smooth_main': 0.1250 s ⏱ 
+
+10:45:55 👉 function 'update_main' started 👈 
+
+10:45:55 👉 function 'show_traces' started 👈 
+
+10:45:55 👉 function 'smooth' started 👈 
+10:45:55 ⏱ execution time of 'smooth': 0.0160 s ⏱ 
+10:45:55 ⏱ execution time of 'show_traces': 0.0310 s ⏱ 
+
+10:45:55 👉 function 'format_traces' started 👈 
+10:45:55 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+10:45:55 👉 function 'show_y_axes' started 👈 
+10:45:55 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+10:45:55 ⏱ execution time of 'update_main': 0.1090 s ⏱ 
+
+10:45:55 👉 function 'update_main' started 👈 
+
+10:45:55 👉 function 'show_traces' started 👈 
+10:45:55 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+10:45:55 👉 function 'format_traces' started 👈 
+10:45:55 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+10:45:55 👉 function 'show_y_axes' started 👈 
+10:45:55 ⏱ execution time of 'show_y_axes': 0.0150 s ⏱ 
+10:45:55 ⏱ execution time of 'update_main': 0.0630 s ⏱ 
+
+10:45:55 👉 function 'update_main' started 👈 
+
+10:45:55 👉 function 'show_traces' started 👈 
+10:45:55 ⏱ execution time of 'show_traces': 0.0150 s ⏱ 
+
+10:45:55 👉 function 'format_traces' started 👈 
+10:45:55 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+10:45:55 👉 function 'show_y_axes' started 👈 
+10:45:55 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+10:45:55 ⏱ execution time of 'update_main': 0.0620 s ⏱ 
+
+10:45:55 👉 function 'plot_figs' started 👈 
+10:46:06 ⏱ execution time of 'plot_figs': 10.8130 s ⏱ 
+
+10:46:06 👉 function 'downloads' started 👈 
+10:46:06 ⏱ execution time of 'downloads': 0.0000 s ⏱ 
+
+10:48:08 👉 function 'page_header_setup' started 👈 
+
+10:48:08 👉 function 'render_svg' started 👈 
+10:48:08 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+10:48:08 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'graph' created 👟 
+10:48:08 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+10:48:14 👉 function 'sidebar_file_upload' started 👈 
+10:48:14 ⏱ execution time of 'sidebar_file_upload': 0.0160 s ⏱ 
+
+10:48:14 👉 function 'base_settings' started 👈 
+10:48:15 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+
+10:48:15 👉 function 'select_graphs' started 👈 
+10:48:15 ⏱ execution time of 'select_graphs': 0.0150 s ⏱ 
+
+10:48:15 👉 function 'meteo_sidebar' started 👈 
+10:48:15 ⏱ execution time of 'meteo_sidebar': 0.0160 s ⏱ 
+
+10:48:15 👉 function 'h_v_lines' started 👈 
+10:48:15 ⏱ execution time of 'h_v_lines': 0.0160 s ⏱ 
+
+10:48:15 👉 function 'clean_outliers' started 👈 
+10:48:15 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+10:48:15 👉 function 'display_options_main' started 👈 
+
+10:48:15 👉 function 'display_options_main_col_settings' started 👈 
+10:48:15 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:48:15 ⏱ execution time of 'display_options_main': 0.2030 s ⏱ 
+
+10:48:15 👉 function 'display_smooth_main' started 👈 
+
+10:48:15 👉 function 'display_options_main_col_settings' started 👈 
+10:48:15 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:48:15 ⏱ execution time of 'display_smooth_main': 0.1250 s ⏱ 
+
+10:48:15 👉 function 'update_main' started 👈 
+
+10:48:15 👉 function 'show_traces' started 👈 
+
+10:48:15 👉 function 'smooth' started 👈 
+10:48:15 ⏱ execution time of 'smooth': 0.0150 s ⏱ 
+10:48:15 ⏱ execution time of 'show_traces': 0.0310 s ⏱ 
+
+10:48:15 👉 function 'format_traces' started 👈 
+10:48:15 ⏱ execution time of 'format_traces': 0.0310 s ⏱ 
+
+10:48:15 👉 function 'show_y_axes' started 👈 
+10:48:15 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+10:48:15 ⏱ execution time of 'update_main': 0.1250 s ⏱ 
+
+10:48:15 👉 function 'update_main' started 👈 
+
+10:48:15 👉 function 'show_traces' started 👈 
+10:48:15 ⏱ execution time of 'show_traces': 0.0150 s ⏱ 
+
+10:48:15 👉 function 'format_traces' started 👈 
+10:48:15 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+10:48:15 👉 function 'show_y_axes' started 👈 
+10:48:15 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+10:48:15 ⏱ execution time of 'update_main': 0.0620 s ⏱ 
+
+10:48:15 👉 function 'update_main' started 👈 
+
+10:48:15 👉 function 'show_traces' started 👈 
+10:48:15 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+10:48:15 👉 function 'format_traces' started 👈 
+10:48:15 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+10:48:15 👉 function 'show_y_axes' started 👈 
+10:48:15 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+10:48:15 ⏱ execution time of 'update_main': 0.0470 s ⏱ 
+
+10:48:15 👉 function 'plot_figs' started 👈 
+10:48:26 ⏱ execution time of 'plot_figs': 10.6720 s ⏱ 
+
+10:48:26 👉 function 'downloads' started 👈 
+10:48:26 ⏱ execution time of 'downloads': 0.0160 s ⏱ 
+
+10:49:39 👉 function 'page_header_setup' started 👈 
+
+10:49:39 👉 function 'render_svg' started 👈 
+10:49:39 ⏱ execution time of 'render_svg': 0.0160 s ⏱ 
+10:49:39 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'graph' created 👟 
+10:49:39 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+10:49:45 👉 function 'sidebar_file_upload' started 👈 
+10:49:45 ⏱ execution time of 'sidebar_file_upload': 0.0160 s ⏱ 
+
+10:49:45 👉 function 'base_settings' started 👈 
+10:49:45 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+
+10:49:45 👉 function 'select_graphs' started 👈 
+10:49:45 ⏱ execution time of 'select_graphs': 0.0160 s ⏱ 
+
+10:49:45 👉 function 'meteo_sidebar' started 👈 
+10:49:45 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+10:49:45 👉 function 'h_v_lines' started 👈 
+10:49:45 ⏱ execution time of 'h_v_lines': 0.0150 s ⏱ 
+
+10:49:45 👉 function 'clean_outliers' started 👈 
+10:49:45 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+10:49:45 👉 function 'display_options_main' started 👈 
+
+10:49:45 👉 function 'display_options_main_col_settings' started 👈 
+10:49:45 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:49:45 ⏱ execution time of 'display_options_main': 0.1870 s ⏱ 
+
+10:49:45 👉 function 'display_smooth_main' started 👈 
+
+10:49:45 👉 function 'display_options_main_col_settings' started 👈 
+10:49:45 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:49:45 ⏱ execution time of 'display_smooth_main': 0.1090 s ⏱ 
+
+10:49:45 👉 function 'update_main' started 👈 
+
+10:49:45 👉 function 'show_traces' started 👈 
+
+10:49:45 👉 function 'smooth' started 👈 
+10:49:45 💡 fig_annotations -> calculate_smooth_values -> line: 371 | Geglättete y-Werte für 'Strombedarf → Leistung' werden neu berechnet. 💡 
+10:49:46 💡 fig_annotations -> calculate_smooth_values -> line: 371 | Geglättete y-Werte für 'Produktion Alle → Leistung' werden neu berechnet. 💡 
+10:49:46 💡 fig_annotations -> calculate_smooth_values -> line: 371 | Geglättete y-Werte für 'Produktion SW → Leistung' werden neu berechnet. 💡 
+10:49:46 ⏱ execution time of 'smooth': 0.9840 s ⏱ 
+10:49:46 ⏱ execution time of 'show_traces': 1.0320 s ⏱ 
+
+10:49:46 👉 function 'format_traces' started 👈 
+10:49:46 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+10:49:46 👉 function 'show_y_axes' started 👈 
+10:49:46 ⏱ execution time of 'show_y_axes': 0.0320 s ⏱ 
+10:49:46 ⏱ execution time of 'update_main': 1.1100 s ⏱ 
+
+10:49:46 👉 function 'update_main' started 👈 
+
+10:49:46 👉 function 'show_traces' started 👈 
+10:49:46 ⏱ execution time of 'show_traces': 0.0000 s ⏱ 
+
+10:49:46 👉 function 'format_traces' started 👈 
+10:49:46 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+10:49:46 👉 function 'show_y_axes' started 👈 
+10:49:46 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+10:49:46 ⏱ execution time of 'update_main': 0.0620 s ⏱ 
+
+10:49:46 👉 function 'update_main' started 👈 
+
+10:49:46 👉 function 'show_traces' started 👈 
+10:49:46 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+10:49:46 👉 function 'format_traces' started 👈 
+10:49:46 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+10:49:46 👉 function 'show_y_axes' started 👈 
+10:49:46 ⏱ execution time of 'show_y_axes': 0.0150 s ⏱ 
+10:49:46 ⏱ execution time of 'update_main': 0.0630 s ⏱ 
+
+10:49:46 👉 function 'plot_figs' started 👈 
+10:49:57 ⏱ execution time of 'plot_figs': 10.6400 s ⏱ 
+
+10:49:57 👉 function 'downloads' started 👈 
+10:49:57 ⏱ execution time of 'downloads': 0.0000 s ⏱ 
+
+10:50:49 👉 function 'page_header_setup' started 👈 
+
+10:50:49 👉 function 'render_svg' started 👈 
+10:50:49 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+10:50:49 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'graph' created 👟 
+10:50:49 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+10:50:56 👉 function 'sidebar_file_upload' started 👈 
+10:50:56 ⏱ execution time of 'sidebar_file_upload': 0.0160 s ⏱ 
+
+10:50:56 👉 function 'base_settings' started 👈 
+10:50:56 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+
+10:50:56 👉 function 'select_graphs' started 👈 
+10:50:56 ⏱ execution time of 'select_graphs': 0.0150 s ⏱ 
+
+10:50:56 👉 function 'meteo_sidebar' started 👈 
+10:50:56 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+10:50:56 👉 function 'h_v_lines' started 👈 
+10:50:56 ⏱ execution time of 'h_v_lines': 0.0000 s ⏱ 
+
+10:50:56 👉 function 'clean_outliers' started 👈 
+10:50:56 ⏱ execution time of 'clean_outliers': 0.0160 s ⏱ 
+
+10:50:56 👉 function 'display_options_main' started 👈 
+
+10:50:56 👉 function 'display_options_main_col_settings' started 👈 
+10:50:56 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:50:56 ⏱ execution time of 'display_options_main': 0.1560 s ⏱ 
+
+10:50:56 👉 function 'display_smooth_main' started 👈 
+
+10:50:56 👉 function 'display_options_main_col_settings' started 👈 
+10:50:56 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:50:56 ⏱ execution time of 'display_smooth_main': 0.1100 s ⏱ 
+
+10:50:56 👉 function 'update_main' started 👈 
+
+10:50:56 👉 function 'show_traces' started 👈 
+
+10:50:56 👉 function 'smooth' started 👈 
+10:50:56 ⏱ execution time of 'smooth': 0.0150 s ⏱ 
+10:50:56 ⏱ execution time of 'show_traces': 0.0310 s ⏱ 
+
+10:50:56 👉 function 'format_traces' started 👈 
+10:50:56 ⏱ execution time of 'format_traces': 0.0310 s ⏱ 
+
+10:50:56 👉 function 'show_y_axes' started 👈 
+10:50:56 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+10:50:56 ⏱ execution time of 'update_main': 0.1400 s ⏱ 
+
+10:50:56 👉 function 'update_main' started 👈 
+
+10:50:56 👉 function 'show_traces' started 👈 
+10:50:56 ⏱ execution time of 'show_traces': 0.0000 s ⏱ 
+
+10:50:56 👉 function 'format_traces' started 👈 
+10:50:56 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+10:50:56 👉 function 'show_y_axes' started 👈 
+10:50:56 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+10:50:56 ⏱ execution time of 'update_main': 0.0470 s ⏱ 
+
+10:50:56 👉 function 'update_main' started 👈 
+
+10:50:56 👉 function 'show_traces' started 👈 
+10:50:56 ⏱ execution time of 'show_traces': 0.0000 s ⏱ 
+
+10:50:56 👉 function 'format_traces' started 👈 
+10:50:56 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+10:50:56 👉 function 'show_y_axes' started 👈 
+10:50:56 ⏱ execution time of 'show_y_axes': 0.0150 s ⏱ 
+10:50:56 ⏱ execution time of 'update_main': 0.0630 s ⏱ 
+
+10:50:56 👉 function 'plot_figs' started 👈 
+10:51:07 ⏱ execution time of 'plot_figs': 11.2500 s ⏱ 
+
+10:51:07 👉 function 'downloads' started 👈 
+10:51:07 ⏱ execution time of 'downloads': 0.0000 s ⏱ 
+
+10:51:31 👉 function 'page_header_setup' started 👈 
+
+10:51:31 👉 function 'render_svg' started 👈 
+10:51:31 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+10:51:31 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'graph' created 👟 
+10:51:31 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+10:51:38 👉 function 'sidebar_file_upload' started 👈 
+10:51:38 ⏱ execution time of 'sidebar_file_upload': 0.0310 s ⏱ 
+
+10:51:38 👉 function 'base_settings' started 👈 
+10:51:38 ⏱ execution time of 'base_settings': 0.0160 s ⏱ 
+
+10:51:38 👉 function 'select_graphs' started 👈 
+10:51:38 ⏱ execution time of 'select_graphs': 0.0150 s ⏱ 
+
+10:51:38 👉 function 'meteo_sidebar' started 👈 
+10:51:38 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+10:51:38 👉 function 'h_v_lines' started 👈 
+10:51:38 ⏱ execution time of 'h_v_lines': 0.0160 s ⏱ 
+
+10:51:38 👉 function 'clean_outliers' started 👈 
+10:51:38 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+10:51:38 👉 function 'display_options_main' started 👈 
+
+10:51:38 👉 function 'display_options_main_col_settings' started 👈 
+10:51:38 ⏱ execution time of 'display_options_main_col_settings': 0.0160 s ⏱ 
+10:51:38 ⏱ execution time of 'display_options_main': 0.2030 s ⏱ 
+
+10:51:38 👉 function 'display_smooth_main' started 👈 
+
+10:51:38 👉 function 'display_options_main_col_settings' started 👈 
+10:51:38 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:51:38 ⏱ execution time of 'display_smooth_main': 0.1090 s ⏱ 
+
+10:51:38 👉 function 'update_main' started 👈 
+
+10:51:38 👉 function 'show_traces' started 👈 
+
+10:51:38 👉 function 'smooth' started 👈 
+10:51:38 ⏱ execution time of 'smooth': 0.0160 s ⏱ 
+10:51:38 ⏱ execution time of 'show_traces': 0.0310 s ⏱ 
+
+10:51:38 👉 function 'format_traces' started 👈 
+10:51:38 ⏱ execution time of 'format_traces': 0.0320 s ⏱ 
+
+10:51:38 👉 function 'show_y_axes' started 👈 
+10:51:38 ⏱ execution time of 'show_y_axes': 0.0150 s ⏱ 
+10:51:38 ⏱ execution time of 'update_main': 0.1410 s ⏱ 
+
+10:51:38 👉 function 'update_main' started 👈 
+
+10:51:38 👉 function 'show_traces' started 👈 
+10:51:38 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+10:51:38 👉 function 'format_traces' started 👈 
+10:51:39 ⏱ execution time of 'format_traces': 0.0000 s ⏱ 
+
+10:51:39 👉 function 'show_y_axes' started 👈 
+10:51:39 ⏱ execution time of 'show_y_axes': 0.0150 s ⏱ 
+10:51:39 ⏱ execution time of 'update_main': 0.0470 s ⏱ 
+
+10:51:39 👉 function 'update_main' started 👈 
+
+10:51:39 👉 function 'show_traces' started 👈 
+10:51:39 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+10:51:39 👉 function 'format_traces' started 👈 
+10:51:39 ⏱ execution time of 'format_traces': 0.0310 s ⏱ 
+
+10:51:39 👉 function 'show_y_axes' started 👈 
+10:51:39 ⏱ execution time of 'show_y_axes': 0.0150 s ⏱ 
+10:51:39 ⏱ execution time of 'update_main': 0.0780 s ⏱ 
+
+10:51:39 👉 function 'plot_figs' started 👈 
+10:51:50 ⏱ execution time of 'plot_figs': 11.3120 s ⏱ 
+
+10:51:50 👉 function 'downloads' started 👈 
+10:51:50 ⏱ execution time of 'downloads': 0.0000 s ⏱ 
+
+10:52:48 👉 function 'page_header_setup' started 👈 
+
+10:52:48 👉 function 'render_svg' started 👈 
+10:52:48 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+10:52:48 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'graph' created 👟 
+10:52:48 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+10:52:54 👉 function 'sidebar_file_upload' started 👈 
+10:52:54 ⏱ execution time of 'sidebar_file_upload': 0.0150 s ⏱ 
+
+10:52:54 👉 function 'base_settings' started 👈 
+10:52:54 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+
+10:52:54 👉 function 'select_graphs' started 👈 
+10:52:54 ⏱ execution time of 'select_graphs': 0.0150 s ⏱ 
+
+10:52:54 👉 function 'meteo_sidebar' started 👈 
+10:52:54 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+10:52:54 👉 function 'h_v_lines' started 👈 
+10:52:54 ⏱ execution time of 'h_v_lines': 0.0160 s ⏱ 
+
+10:52:54 👉 function 'clean_outliers' started 👈 
+10:52:54 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+10:52:54 👉 function 'display_options_main' started 👈 
+
+10:52:54 👉 function 'display_options_main_col_settings' started 👈 
+10:52:54 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:52:55 ⏱ execution time of 'display_options_main': 0.1880 s ⏱ 
+
+10:52:55 👉 function 'display_smooth_main' started 👈 
+
+10:52:55 👉 function 'display_options_main_col_settings' started 👈 
+10:52:55 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:52:55 ⏱ execution time of 'display_smooth_main': 0.1090 s ⏱ 
+
+10:52:55 👉 function 'update_main' started 👈 
+
+10:52:55 👉 function 'show_traces' started 👈 
+
+10:52:55 👉 function 'smooth' started 👈 
+10:52:55 ⏱ execution time of 'smooth': 0.0000 s ⏱ 
+10:52:55 ⏱ execution time of 'show_traces': 0.0470 s ⏱ 
+
+10:52:55 👉 function 'format_traces' started 👈 
+10:52:55 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+10:52:55 👉 function 'show_y_axes' started 👈 
+10:52:55 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+10:52:55 ⏱ execution time of 'update_main': 0.1250 s ⏱ 
+
+10:52:55 👉 function 'update_main' started 👈 
+
+10:52:55 👉 function 'show_traces' started 👈 
+10:52:55 ⏱ execution time of 'show_traces': 0.0000 s ⏱ 
+
+10:52:55 👉 function 'format_traces' started 👈 
+10:52:55 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+10:52:55 👉 function 'show_y_axes' started 👈 
+10:52:55 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+10:52:55 ⏱ execution time of 'update_main': 0.0620 s ⏱ 
+
+10:52:55 👉 function 'update_main' started 👈 
+
+10:52:55 👉 function 'show_traces' started 👈 
+10:52:55 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+10:52:55 👉 function 'format_traces' started 👈 
+10:52:55 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+10:52:55 👉 function 'show_y_axes' started 👈 
+10:52:55 ⏱ execution time of 'show_y_axes': 0.0150 s ⏱ 
+10:52:55 ⏱ execution time of 'update_main': 0.0470 s ⏱ 
+
+10:52:55 👉 function 'plot_figs' started 👈 
+10:53:06 ⏱ execution time of 'plot_figs': 11.5000 s ⏱ 
+
+10:53:06 👉 function 'downloads' started 👈 
+10:53:06 ⏱ execution time of 'downloads': 0.0000 s ⏱ 
+
+10:53:27 👉 function 'page_header_setup' started 👈 
+
+10:53:27 👉 function 'render_svg' started 👈 
+10:53:27 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+10:53:27 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'graph' created 👟 
+10:53:27 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+10:53:34 👉 function 'sidebar_file_upload' started 👈 
+10:53:34 ⏱ execution time of 'sidebar_file_upload': 0.0150 s ⏱ 
+
+10:53:34 👉 function 'base_settings' started 👈 
+10:53:34 ⏱ execution time of 'base_settings': 0.0160 s ⏱ 
+
+10:53:34 👉 function 'select_graphs' started 👈 
+10:53:34 ⏱ execution time of 'select_graphs': 0.0150 s ⏱ 
+
+10:53:34 👉 function 'meteo_sidebar' started 👈 
+10:53:34 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+10:53:34 👉 function 'h_v_lines' started 👈 
+10:53:34 ⏱ execution time of 'h_v_lines': 0.0160 s ⏱ 
+
+10:53:34 👉 function 'clean_outliers' started 👈 
+10:53:34 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+10:53:34 👉 function 'display_options_main' started 👈 
+
+10:53:34 👉 function 'display_options_main_col_settings' started 👈 
+10:53:34 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:53:34 ⏱ execution time of 'display_options_main': 0.2190 s ⏱ 
+
+10:53:34 👉 function 'display_smooth_main' started 👈 
+
+10:53:34 👉 function 'display_options_main_col_settings' started 👈 
+10:53:34 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:53:34 ⏱ execution time of 'display_smooth_main': 0.1090 s ⏱ 
+
+10:53:34 👉 function 'update_main' started 👈 
+
+10:53:34 👉 function 'show_traces' started 👈 
+
+10:53:34 👉 function 'smooth' started 👈 
+10:53:34 ⏱ execution time of 'smooth': 0.0000 s ⏱ 
+10:53:34 ⏱ execution time of 'show_traces': 0.0310 s ⏱ 
+
+10:53:34 👉 function 'format_traces' started 👈 
+10:53:34 ⏱ execution time of 'format_traces': 0.0310 s ⏱ 
+
+10:53:34 👉 function 'show_y_axes' started 👈 
+10:53:34 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+10:53:34 ⏱ execution time of 'update_main': 0.1410 s ⏱ 
+
+10:53:34 👉 function 'update_main' started 👈 
+
+10:53:34 👉 function 'show_traces' started 👈 
+10:53:34 ⏱ execution time of 'show_traces': 0.0150 s ⏱ 
+
+10:53:34 👉 function 'format_traces' started 👈 
+10:53:34 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+10:53:34 👉 function 'show_y_axes' started 👈 
+10:53:34 ⏱ execution time of 'show_y_axes': 0.0150 s ⏱ 
+10:53:34 ⏱ execution time of 'update_main': 0.0620 s ⏱ 
+
+10:53:34 👉 function 'update_main' started 👈 
+
+10:53:34 👉 function 'show_traces' started 👈 
+10:53:34 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+10:53:34 👉 function 'format_traces' started 👈 
+10:53:34 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+10:53:34 👉 function 'show_y_axes' started 👈 
+10:53:34 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+10:53:34 ⏱ execution time of 'update_main': 0.0470 s ⏱ 
+
+10:53:34 👉 function 'plot_figs' started 👈 
+10:53:46 ⏱ execution time of 'plot_figs': 11.7030 s ⏱ 
+
+10:53:46 👉 function 'downloads' started 👈 
+10:53:46 ⏱ execution time of 'downloads': 0.0000 s ⏱ 
+
+10:54:13 👉 function 'page_header_setup' started 👈 
+
+10:54:13 👉 function 'render_svg' started 👈 
+10:54:13 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+10:54:13 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'graph' created 👟 
+10:54:13 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+10:54:20 👉 function 'sidebar_file_upload' started 👈 
+10:54:20 ⏱ execution time of 'sidebar_file_upload': 0.0000 s ⏱ 
+
+10:54:20 👉 function 'base_settings' started 👈 
+10:54:20 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+
+10:54:20 👉 function 'select_graphs' started 👈 
+10:54:20 ⏱ execution time of 'select_graphs': 0.0160 s ⏱ 
+
+10:54:20 👉 function 'meteo_sidebar' started 👈 
+10:54:20 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+10:54:20 👉 function 'h_v_lines' started 👈 
+10:54:20 ⏱ execution time of 'h_v_lines': 0.0150 s ⏱ 
+
+10:54:20 👉 function 'clean_outliers' started 👈 
+10:54:20 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+10:54:20 👉 function 'display_options_main' started 👈 
+
+10:54:20 👉 function 'display_options_main_col_settings' started 👈 
+10:54:20 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:54:20 ⏱ execution time of 'display_options_main': 0.1560 s ⏱ 
+
+10:54:20 👉 function 'display_smooth_main' started 👈 
+
+10:54:20 👉 function 'display_options_main_col_settings' started 👈 
+10:54:20 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:54:20 ⏱ execution time of 'display_smooth_main': 0.1250 s ⏱ 
+
+10:54:20 👉 function 'update_main' started 👈 
+
+10:54:20 👉 function 'show_traces' started 👈 
+
+10:54:20 👉 function 'smooth' started 👈 
+10:54:20 ⏱ execution time of 'smooth': 0.0160 s ⏱ 
+10:54:20 ⏱ execution time of 'show_traces': 0.0470 s ⏱ 
+
+10:54:20 👉 function 'format_traces' started 👈 
+10:54:20 ⏱ execution time of 'format_traces': 0.0310 s ⏱ 
+
+10:54:20 👉 function 'show_y_axes' started 👈 
+10:54:20 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+10:54:20 ⏱ execution time of 'update_main': 0.1410 s ⏱ 
+
+10:54:20 👉 function 'update_main' started 👈 
+
+10:54:20 👉 function 'show_traces' started 👈 
+10:54:20 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+10:54:20 👉 function 'format_traces' started 👈 
+10:54:20 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+10:54:20 👉 function 'show_y_axes' started 👈 
+10:54:20 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+10:54:20 ⏱ execution time of 'update_main': 0.0470 s ⏱ 
+
+10:54:20 👉 function 'update_main' started 👈 
+
+10:54:20 👉 function 'show_traces' started 👈 
+10:54:20 ⏱ execution time of 'show_traces': 0.0000 s ⏱ 
+
+10:54:20 👉 function 'format_traces' started 👈 
+10:54:20 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+10:54:20 👉 function 'show_y_axes' started 👈 
+10:54:20 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+10:54:20 ⏱ execution time of 'update_main': 0.0620 s ⏱ 
+
+10:54:20 👉 function 'plot_figs' started 👈 
+10:54:31 ⏱ execution time of 'plot_figs': 11.3600 s ⏱ 
+
+10:54:31 👉 function 'downloads' started 👈 
+
+10:54:32 👉 function 'html_exp' started 👈 
+
+10:55:33 👉 function 'page_header_setup' started 👈 
+
+10:55:33 👉 function 'render_svg' started 👈 
+10:55:33 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+10:55:33 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'graph' created 👟 
+10:55:33 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+10:55:40 👉 function 'sidebar_file_upload' started 👈 
+10:55:40 ⏱ execution time of 'sidebar_file_upload': 0.0150 s ⏱ 
+
+10:55:40 👉 function 'base_settings' started 👈 
+10:55:40 ⏱ execution time of 'base_settings': 0.0160 s ⏱ 
+
+10:55:40 👉 function 'select_graphs' started 👈 
+10:55:40 ⏱ execution time of 'select_graphs': 0.0000 s ⏱ 
+
+10:55:40 👉 function 'meteo_sidebar' started 👈 
+10:55:40 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+10:55:40 👉 function 'h_v_lines' started 👈 
+10:55:40 ⏱ execution time of 'h_v_lines': 0.0150 s ⏱ 
+
+10:55:40 👉 function 'clean_outliers' started 👈 
+10:55:40 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+10:55:40 👉 function 'display_options_main' started 👈 
+
+10:55:40 👉 function 'display_options_main_col_settings' started 👈 
+10:55:40 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:55:40 ⏱ execution time of 'display_options_main': 0.1880 s ⏱ 
+
+10:55:40 👉 function 'display_smooth_main' started 👈 
+
+10:55:40 👉 function 'display_options_main_col_settings' started 👈 
+10:55:40 ⏱ execution time of 'display_options_main_col_settings': 0.0150 s ⏱ 
+10:55:40 ⏱ execution time of 'display_smooth_main': 0.1250 s ⏱ 
+
+10:55:40 👉 function 'update_main' started 👈 
+
+10:55:40 👉 function 'show_traces' started 👈 
+
+10:55:40 👉 function 'smooth' started 👈 
+10:55:40 ⏱ execution time of 'smooth': 0.0150 s ⏱ 
+10:55:40 ⏱ execution time of 'show_traces': 0.0310 s ⏱ 
+
+10:55:40 👉 function 'format_traces' started 👈 
+10:55:40 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+10:55:40 👉 function 'show_y_axes' started 👈 
+10:55:40 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+10:55:40 ⏱ execution time of 'update_main': 0.1400 s ⏱ 
+
+10:55:40 👉 function 'update_main' started 👈 
+
+10:55:40 👉 function 'show_traces' started 👈 
+10:55:40 ⏱ execution time of 'show_traces': 0.0000 s ⏱ 
+
+10:55:40 👉 function 'format_traces' started 👈 
+10:55:40 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+10:55:40 👉 function 'show_y_axes' started 👈 
+10:55:40 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+10:55:40 ⏱ execution time of 'update_main': 0.0470 s ⏱ 
+
+10:55:40 👉 function 'update_main' started 👈 
+
+10:55:40 👉 function 'show_traces' started 👈 
+10:55:40 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+10:55:40 👉 function 'format_traces' started 👈 
+10:55:40 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+10:55:40 👉 function 'show_y_axes' started 👈 
+10:55:40 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+10:55:40 ⏱ execution time of 'update_main': 0.0470 s ⏱ 
+
+10:55:40 👉 function 'plot_figs' started 👈 
+10:55:51 ⏱ execution time of 'plot_figs': 10.7500 s ⏱ 
+
+10:55:51 👉 function 'downloads' started 👈 
+10:55:51 ⏱ execution time of 'downloads': 0.0000 s ⏱ 
+
+10:56:02 👉 function 'page_header_setup' started 👈 
+
+10:56:02 👉 function 'render_svg' started 👈 
+10:56:02 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+10:56:02 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'graph' created 👟 
+10:56:02 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+10:56:08 👉 function 'sidebar_file_upload' started 👈 
+10:56:08 ⏱ execution time of 'sidebar_file_upload': 0.0310 s ⏱ 
+
+10:56:08 👉 function 'base_settings' started 👈 
+10:56:08 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+
+10:56:08 👉 function 'select_graphs' started 👈 
+10:56:08 ⏱ execution time of 'select_graphs': 0.0150 s ⏱ 
+
+10:56:08 👉 function 'meteo_sidebar' started 👈 
+10:56:08 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+10:56:08 👉 function 'h_v_lines' started 👈 
+10:56:08 ⏱ execution time of 'h_v_lines': 0.0160 s ⏱ 
+
+10:56:08 👉 function 'clean_outliers' started 👈 
+10:56:08 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+10:56:08 👉 function 'display_options_main' started 👈 
+
+10:56:08 👉 function 'display_options_main_col_settings' started 👈 
+10:56:08 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:56:08 ⏱ execution time of 'display_options_main': 0.1710 s ⏱ 
+
+10:56:08 👉 function 'display_smooth_main' started 👈 
+
+10:56:08 👉 function 'display_options_main_col_settings' started 👈 
+10:56:08 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:56:08 ⏱ execution time of 'display_smooth_main': 0.1100 s ⏱ 
+
+10:56:08 👉 function 'update_main' started 👈 
+
+10:56:08 👉 function 'show_traces' started 👈 
+
+10:56:08 👉 function 'smooth' started 👈 
+10:56:08 ⏱ execution time of 'smooth': 0.0150 s ⏱ 
+10:56:08 ⏱ execution time of 'show_traces': 0.0470 s ⏱ 
+
+10:56:08 👉 function 'format_traces' started 👈 
+10:56:09 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+10:56:09 👉 function 'show_y_axes' started 👈 
+10:56:09 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+10:56:09 ⏱ execution time of 'update_main': 0.1560 s ⏱ 
+
+10:56:09 👉 function 'update_main' started 👈 
+
+10:56:09 👉 function 'show_traces' started 👈 
+10:56:09 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+10:56:09 👉 function 'format_traces' started 👈 
+10:56:09 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+10:56:09 👉 function 'show_y_axes' started 👈 
+10:56:09 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+10:56:09 ⏱ execution time of 'update_main': 0.0470 s ⏱ 
+
+10:56:09 👉 function 'update_main' started 👈 
+
+10:56:09 👉 function 'show_traces' started 👈 
+10:56:09 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+10:56:09 👉 function 'format_traces' started 👈 
+10:56:09 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+10:56:09 👉 function 'show_y_axes' started 👈 
+10:56:09 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+10:56:09 ⏱ execution time of 'update_main': 0.0940 s ⏱ 
+
+10:56:09 👉 function 'plot_figs' started 👈 
+10:56:19 ⏱ execution time of 'plot_figs': 10.4220 s ⏱ 
+
+10:56:19 👉 function 'downloads' started 👈 
+
+10:56:19 👉 function 'html_exp' started 👈 
+
+10:56:19 👉 function 'render_svg' started 👈 
+10:56:19 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+10:56:30 ⏱ execution time of 'html_exp': 10.5310 s ⏱ 
+10:56:32 ⏱ execution time of 'downloads': 13.1250 s ⏱ 
+
+10:56:44 👉 function 'page_header_setup' started 👈 
+
+10:56:44 👉 function 'render_svg' started 👈 
+10:56:44 ⏱ execution time of 'render_svg': 0.0150 s ⏱ 
+10:56:44 👟 setup_stuff -> page_header_setup -> line: 165 | page header for page 'graph' created 👟 
+10:56:44 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+10:56:51 👉 function 'sidebar_file_upload' started 👈 
+10:56:51 ⏱ execution time of 'sidebar_file_upload': 0.0150 s ⏱ 
+
+10:56:51 👉 function 'base_settings' started 👈 
+10:56:51 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+
+10:56:51 👉 function 'select_graphs' started 👈 
+10:56:51 ⏱ execution time of 'select_graphs': 0.0150 s ⏱ 
+
+10:56:51 👉 function 'meteo_sidebar' started 👈 
+10:56:51 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+10:56:51 👉 function 'h_v_lines' started 👈 
+10:56:51 ⏱ execution time of 'h_v_lines': 0.0000 s ⏱ 
+
+10:56:51 👉 function 'clean_outliers' started 👈 
+10:56:51 ⏱ execution time of 'clean_outliers': 0.0160 s ⏱ 
+
+10:56:51 👉 function 'display_options_main' started 👈 
+
+10:56:51 👉 function 'display_options_main_col_settings' started 👈 
+10:56:51 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:56:51 ⏱ execution time of 'display_options_main': 0.1870 s ⏱ 
+
+10:56:51 👉 function 'display_smooth_main' started 👈 
+
+10:56:51 👉 function 'display_options_main_col_settings' started 👈 
+10:56:51 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+10:56:51 ⏱ execution time of 'display_smooth_main': 0.1250 s ⏱ 
+
+10:56:51 👉 function 'update_main' started 👈 
+
+10:56:51 👉 function 'show_traces' started 👈 
+
+10:56:51 👉 function 'smooth' started 👈 
+10:56:51 ⏱ execution time of 'smooth': 0.0000 s ⏱ 
+10:56:51 ⏱ execution time of 'show_traces': 0.0470 s ⏱ 
+
+10:56:51 👉 function 'format_traces' started 👈 
+10:56:51 ⏱ execution time of 'format_traces': 0.0310 s ⏱ 
+
+10:56:51 👉 function 'show_y_axes' started 👈 
+10:56:51 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+10:56:51 ⏱ execution time of 'update_main': 0.1410 s ⏱ 
+
+10:56:51 👉 function 'update_main' started 👈 
+
+10:56:51 👉 function 'show_traces' started 👈 
+10:56:51 ⏱ execution time of 'show_traces': 0.0150 s ⏱ 
+
+10:56:51 👉 function 'format_traces' started 👈 
+10:56:51 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+10:56:51 👉 function 'show_y_axes' started 👈 
+10:56:51 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+10:56:51 ⏱ execution time of 'update_main': 0.0620 s ⏱ 
+
+10:56:51 👉 function 'update_main' started 👈 
+
+10:56:51 👉 function 'show_traces' started 👈 
+10:56:51 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+10:56:51 👉 function 'format_traces' started 👈 
+10:56:51 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+10:56:51 👉 function 'show_y_axes' started 👈 
+10:56:51 ⏱ execution time of 'show_y_axes': 0.0150 s ⏱ 
+10:56:51 ⏱ execution time of 'update_main': 0.0630 s ⏱ 
+
+10:56:51 👉 function 'plot_figs' started 👈 
+10:57:02 ⏱ execution time of 'plot_figs': 10.6250 s ⏱ 
+
+10:57:02 👉 function 'downloads' started 👈 
+10:57:02 ⏱ execution time of 'downloads': 0.0000 s ⏱ 

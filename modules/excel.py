@@ -42,6 +42,7 @@ def import_prefab_excel(file: Any) -> None:
 
     # 15min und kWh
     df, meta = convert_15min_kwh_to_kw(df, meta)
+    logger.debug(f"Metadaten nach 15min-Konvertierung: \n{meta}")
     units = {col: meta[col]["unit"] for col in meta if meta[col].get("unit")}
 
     # write stuff in session state
@@ -79,9 +80,9 @@ def units_from_messy_df(df_messy: pd.DataFrame) -> dict[str, str]:
     p_in: MarkerPosition = ExcelMarkers(MarkerType.INDEX).get_marker_position(df_messy)
     p_un: MarkerPosition = ExcelMarkers(MarkerType.UNITS).get_marker_position(df_messy)
 
-    column_names: list[str] = df_messy.iloc[p_in.row, p_in.col :].to_list()
+    column_names: list[str] = df_messy.iloc[p_in.row, p_in.col + 1 :].to_list()
     units: list[str] = [
-        str(uni) for uni in df_messy.iloc[p_un.row, p_un.col :].to_list()
+        str(uni) for uni in df_messy.iloc[p_un.row, p_un.col + 1 :].to_list()
     ] or [" "] * len(column_names)
 
     # leerzeichen vor Einheit
@@ -89,7 +90,11 @@ def units_from_messy_df(df_messy: pd.DataFrame) -> dict[str, str]:
         if not unit.startswith(" ") and unit not in ["", None]:
             units[ind] = f" {unit}"
 
-    return dict(zip(column_names, units, strict=False))
+    cols_units: dict[str, str] = dict(zip(column_names, units, strict=False))
+    for key, value in cols_units.items():
+        logger.info(f"{key}: '{value}'")
+
+    return cols_units
 
 
 @func_timer
@@ -101,14 +106,14 @@ def set_y_axis_for_lines() -> None:
     for line in lines_with_units:
         ind: int = meta["units"]["set"].index(meta[line]["unit"])
         meta[line]["y_axis"] = f"y{ind + 1}" if ind > 0 else "y"
-
+        logger.info(f"{line}: Y-Achse {meta[line]['y_axis']}")
     st.session_state["metadata"] = meta
 
 
 @func_timer
 @st.cache_data(show_spinner=False)
 def edit_df_after_import(df_messy: pd.DataFrame) -> pd.DataFrame:
-    """Get the units out of the imported (messy) df and clean up the df
+    """Clean up the df
 
     Args:
         - df (pd.DataFrame): messy df right after import
@@ -184,8 +189,10 @@ def meta_from_index(df: pd.DataFrame) -> dict[str, Any]:
         dic_index["td_mean"] = td_mean
         if dic_index["td_mean"] == pd.Timedelta(minutes=15):
             dic_index["td_int"] = "15min"
+            logger.info("Index mit zeitlicher Auflösung von 15 Minuten erkannt.")
         elif dic_index["td_mean"] == pd.Timedelta(hours=1):
             dic_index["td_int"] = "h"
+            logger.info("Index mit zeitlicher Auflösung von 1 Stunde erkannt.")
 
         cut_off: int = 50
         dic_index["years"].extend(
@@ -277,21 +284,20 @@ def convert_15min_kwh_to_kw(
                 if meta[col]["unit"].strip() in cont.ARBEIT_LEISTUNG["units"]["Arbeit"]
                 else "Leistung"
             )
-            insert_column_arbeit_leistung(original_data, df, meta, col)
-            rename_column_arbeit_leistung(original_data, df, meta, col)
+            df, meta = insert_column_arbeit_leistung(original_data, df, meta, col)
+            df, meta = rename_column_arbeit_leistung(original_data, df, meta, col)
 
-            logger.success("Arbeit und Leistung aufgeteilt")
+            logger.success(f"Arbeit und Leistung für Spalte '{col}' aufgeteilt")
 
     return df, meta
 
 
-@func_timer
 def rename_column_arbeit_leistung(
     original_data: Literal["Arbeit", "Leistung"],
     df: pd.DataFrame,
     meta: cont.DicStrNest,
     col: str,
-) -> None:
+) -> tuple[pd.DataFrame, cont.DicStrNest]:
     """Wenn Daten als Arbeit oder Leistung in 15-Minuten-Auflösung
     vorliegen, wird die Originalspalte umbenannt (mit Suffix "Arbeit" oder "Leistung")
     und in den Metadaten ein Eintrag für den neuen Spaltennamen eingefügt.
@@ -309,14 +315,17 @@ def rename_column_arbeit_leistung(
     meta[col_name] = meta[col].copy()
     meta[col_name]["tit"] = col_name
 
+    logger.info(f"Spalte '{col}' umbenannt in '{col_name}'")
 
-@func_timer
+    return df, meta
+
+
 def insert_column_arbeit_leistung(
     original_data: Literal["Arbeit", "Leistung"],
     df: pd.DataFrame,
     meta: cont.DicStrNest,
     col: str,
-) -> None:
+) -> tuple[pd.DataFrame, cont.DicStrNest]:
     """Wenn Daten als Arbeit oder Leistung in 15-Minuten-Auflösung
     vorliegen, wird eine neue Spalte mit dem jeweils andern Typ eingefügt.
 
@@ -339,6 +348,10 @@ def insert_column_arbeit_leistung(
     meta[col_name]["unit"] = (
         meta[col]["unit"][:-1] if original_data == "Arbeit" else f'{meta[col]["unit"]}h'
     )
+
+    logger.info(f"Spalte '{col_name}' mit Einheit '{meta[col_name]['unit']}' eingefügt")
+
+    return df, meta
 
 
 @func_timer

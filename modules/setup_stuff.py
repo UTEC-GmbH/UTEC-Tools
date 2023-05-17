@@ -112,7 +112,7 @@ def general_setup() -> None:
 
     st_add("all_user_data", get_all_user_data())
 
-    exp_dir: str = "/export"
+    exp_dir: Path = Path(f"{Path.cwd()}/export")
     if Path.exists(exp_dir):
         logger.info(f"Pfad '{exp_dir}' für die Ausgabe vorhanden")
     else:

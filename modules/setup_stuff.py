@@ -4,6 +4,7 @@ import datetime as dt
 import locale
 import os
 import sys
+from pathlib import Path
 from typing import Any
 
 import plotly.io as pio
@@ -21,7 +22,7 @@ from modules.user_authentication import get_all_user_data
 
 
 @func_timer
-@st.cache_data
+@st.cache_data(show_spinner=False)
 def get_commit_message_date() -> dict[str, dt.datetime | str]:
     """Commit message and date from GitHub to show in the header.
 
@@ -33,8 +34,14 @@ def get_commit_message_date() -> dict[str, dt.datetime | str]:
     Returns:
         - dict[str, dt.datetime | str]:
             - "com_date" (dt.datetime): date of commit
-            - "com_mst" (str): commit message
+            - "com_msg" (str): commit message
     """
+
+    if all(com in st.session_state for com in ["com_date", "com_msg"]):
+        return {
+            "com_date": st.session_state["com_date"],
+            "com_msg": st.session_state["com_msg"],
+        }
 
     utc: BaseTzInfo = timezone("UTC")
     eur: BaseTzInfo = timezone("Europe/Berlin")
@@ -105,6 +112,13 @@ def general_setup() -> None:
 
     st_add("all_user_data", get_all_user_data())
 
+    exp_dir: Path = Path(f"{Path.cwd()}/export")
+    if Path.exists(exp_dir):
+        logger.info(f"Pfad '{exp_dir}' für die Ausgabe bereits vorhanden")
+    else:
+        Path.mkdir(exp_dir)
+        logger.info(f"Pfad '{exp_dir}' für die Ausgabe erstellt")
+
     st.session_state["initial_setup"] = True
     logger.log(LogLevel.ONCE_PER_SESSION.name, "Initial Setup Complete")
 
@@ -129,24 +143,27 @@ def page_header_setup(page: str) -> None:
             st.session_state["com_msg"] = get_commit_message_date()["com_msg"]
         with columns[1]:
             st.write(
-                f"""
-                    <i><span style="line-height: 110%; font-size: 12px; float:right; text-align:right">
-                        letzte Änderungen:<br>
-                        {st.session_state["com_date"]:%d.%m.%Y}   {st.session_state["com_date"]:%H:%M}<br><br>
-                        "{st.session_state["com_msg"]}"
-                    </span></i>
-                """,
+                (
+                    '<i><span style="line-height: 110%; font-size: 12px; '
+                    'float:right; text-align:right">'
+                    "letzte Änderungen:<br>"
+                    f'{st.session_state["com_date"]:%d.%m.%Y}   '
+                    f'{st.session_state["com_date"]:%H:%M}<br><br>'
+                    f'{st.session_state["com_msg"]}'
+                    "</span></i>"
+                ),
                 unsafe_allow_html=True,
             )
 
             access_lvl_user: str | list | None = st.session_state.get("access_lvl")
             if isinstance(access_lvl_user, str) and access_lvl_user in ("god"):
                 st.write(
-                    f"""
-                        <i><span style="line-height: 110%; font-size: 12px; float:right; text-align:right">
-                            (Python version {sys.version.split()[0]})
-                        </span></i>
-                    """,
+                    (
+                        '<i><span style="line-height: 110%; font-size: 12px; '
+                        'float:right; text-align:right">'
+                        f"(Python version {sys.version.split()[0]})"
+                        "</span></i>"
+                    ),
                     unsafe_allow_html=True,
                 )
 

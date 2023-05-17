@@ -69,8 +69,13 @@ class ExcelMarkers:
             - MarkerPosition: row (int), col (int)
         """
         pos: tuple = np.where(df == self.marker_string)
+        logger.debug(pos)
         if any([len(pos[0]) < 1, len(pos[1]) < 1]):
-            raise ValueError(self.error_not_found)
+            logger.error(self.error_not_found)
+            if self.marker_type == MarkerType.UNITS:
+                pos = np.where(df == "↓ Index ↓")
+                pos[0][0] = max(pos[0][0] - 1, 0)
+
         if any([len(pos[0]) > 1, len(pos[1]) > 1]):
             raise ValueError(self.error_multiple)
 

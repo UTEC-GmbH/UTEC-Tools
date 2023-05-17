@@ -1,6 +1,4 @@
-"""
-Seite Meteorologische Daten
-"""
+"""Seite Meteorologische Daten"""  # noqa: N999
 
 import streamlit as st
 
@@ -19,7 +17,7 @@ page_header_setup(PAGE)
 
 if uauth.authentication(PAGE):
     st.warning("temporär außer Betrieb")
-    
+
     # Auswahl Ort
     with st.sidebar:
         sm.meteo_sidebar(PAGE)
@@ -78,7 +76,6 @@ if uauth.authentication(PAGE):
 
             tab_info, tab_down = st.tabs(["Information", "Excel-Download"])
             with tab_info:
-
                 st.markdown("###")
                 st.subheader("verwendete Wetterstationen")
                 st.dataframe(gv.df_used_stations)
@@ -98,7 +95,6 @@ if uauth.authentication(PAGE):
                 sm.downloads(PAGE)
 
     else:
-
         col1, col2 = st.columns([4, 3], gap="medium")
         with col1:
             st.markdown("###")
@@ -121,4 +117,3 @@ if uauth.authentication(PAGE):
 
         st.markdown("###")
         sm.meteo_params_main()
-    

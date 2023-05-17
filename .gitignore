@@ -145,6 +145,6 @@ cython_debug/
 
 # other
 .streamlit/secrets.toml
-export/interaktive_grafische_Auswertung.html
+export/
 
 

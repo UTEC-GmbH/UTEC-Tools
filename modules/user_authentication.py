@@ -1,6 +1,7 @@
 """user authentication"""
 
 import os
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from typing import Any
 
@@ -13,69 +14,91 @@ from loguru import logger
 from modules.general_functions import func_timer
 
 
-def infos_warnings_errors(key: str) -> str:
-    """Messages concerning user authentication"""
-    until: str | None = (
-        st.session_state.get("access_until")
-        or f"{st.session_state['access_until']:%d.%m.%Y}"
+@dataclass
+class MessageLogLvl2:
+    """Represents an Error with a message and an optional log message."""
+
+    message: str
+    log: str | None = None
+
+    def show_message(self) -> None:
+        """Writes a log message and a streamlit error for a specified error type."""
+
+        if self.log:
+            logger.error(self.log)
+        st.error(self.message)
+
+
+@dataclass
+class MessageLog:
+    """Contains instances of the MessageLog class for each error type."""
+
+    until: str | None
+    if "access_until" in st.session_state:
+        until = (
+            st.session_state["access_until"]
+            or f"{st.session_state['access_until']:%d.%m.%Y}"
+        )
+    else:
+        until = None
+
+    no_access = MessageLogLvl2(
+        message=(
+            "Mit diesem Benutzerkonto haben Sie keinen Zugriff auf dieses Modul."
+            "\n\n"
+            "Bitte nehmen Sie Kontakt mit UTEC auf."
+        ),
+        log="no access to page (module)",
     )
 
-    dic: dict[str, dict[str, str]] = {
-        "no_access": {
-            "message": """
-                Mit diesem Benutzerkonto haben Sie keinen Zugriff auf dieses Modul.  \n  \n
-                Bitte nehmen Sie Kontakt mit UTEC auf.
-            """,
-            "log": "no access to page (module)",
-        },
-        "no_login": {
-            "message": "Bitte anmelden! (login auf der linken Seite)",
-            "log": "not logged in",
-        },
-        "too_late": {
-            "message": f"""
-                Zugriff war nur bis {until} gestattet.  \n  \n
-                Bitte nehmen Sie Kontakt mit UTEC auf.
-            """,
-            "log": "access for user expired",
-        },
-        "access_UTEC": {
-            "message": """
-                Du bist mit dem allgemeinen UTEC-Account angemeldet.  \n  \n
-                Viel Spaß mit den Tools!
-            """
-        },
-        "access_other": {
-            "message": f"Angemeldet als '{st.session_state.get('name')}'."
-        },
-        "access_until": {
-            "message": f"""
-                Mit diesem Account kann auf folgende Module bis zum 
-                {until} zugegriffen werden:
-            """
-        },
-        "access_level": {
-            "message": "Mit diesem Account kann auf folgende Module zugegriffen werden:"
-        },
-    }
+    no_login = MessageLogLvl2(
+        message="Bitte anmelden! (login auf der linken Seite)", log="not logged in"
+    )
 
-    if dic[key].get("log"):
-        logger.error(dic[key]["log"])
+    too_late = MessageLogLvl2(
+        message=(
+            f"Zugriff war nur bis {until} gestattet."
+            "\n\n"
+            "Bitte nehmen Sie Kontakt mit UTEC auf."
+        ),
+        log="access for user expired",
+    )
 
-    return dic[key]["message"]
+    access_utec = MessageLogLvl2(
+        message=(
+            "Du bist mit dem allgemeinen UTEC-Account angemeldet."
+            "\n\n"
+            "Viel Spaß mit den Tools!"
+        )
+    )
+
+    access_other = MessageLogLvl2(
+        message=(f"Angemeldet als '{st.session_state.get('name')}'.")
+    )
+
+    access_until = MessageLogLvl2(
+        message=(
+            "Mit diesem Account kann auf folgende Module bis zum "
+            f"{until} zugegriffen werden:"
+        )
+    )
+
+    access_level = MessageLogLvl2(
+        message=("Mit diesem Account kann auf folgende Module zugegriffen werden:")
+    )
 
 
 def authentication(page: str) -> bool:
     """Authentication object"""
 
     if not st.session_state.get("authentication_status"):
-        st.warning(infos_warnings_errors("no_login"))
+        MessageLog.no_login.show_message()
         return False
     if page not in st.session_state["access_pages"]:
-        st.error(infos_warnings_errors("no_access"))
+        MessageLog.no_access.show_message()
         return False
     if st.session_state["access_until"] < date.today():
-        st.error(infos_warnings_errors("too_late"))
+        MessageLog.too_late.show_message()
         return False
 
     return True
@@ -104,7 +127,7 @@ def connect_database(database: str = "UTEC_users") -> Any:
 
 
 @func_timer
-def get_all_user_data() -> dict[str, dict[str, Any]]:
+def get_all_user_data() -> dict[str, dict[str, str]]:
     """Liste aller gespeicherter Benutzerdaten - je Benutzer ein dictionary
 
     Returns:
@@ -163,20 +186,24 @@ def format_user_credentials() -> dict[str, dict[str, Any]]:
 
 @func_timer
 def insert_new_user(
-    username: str,
-    name: str,
-    email: str,
-    password: str,
-    access_lvl: str | list,
-    access_until: str = "",
+    username: str, password: str, access_lvl: str | list, **kwargs
 ) -> None:
     """Neuen Benutzer hinzufügen.
 
     Bei Aufrufen der Funktion, Passwort als Klartext angeben -> wird in hash umgewandelt
-    """
-    access_until = access_until or str(date.today() + timedelta(weeks=3))
 
-    # password muss eine liste sein, 
+    - kwargs:
+        - name: str,
+        - email: str,
+        - access_until: str = "",
+    """
+    access_until: str = kwargs.get("access_until") or str(
+        date.today() + timedelta(weeks=3)
+    )
+    name: str = kwargs.get("name") or username.replace("_", " ").title()
+    email: str = kwargs.get("email") or ""
+
+    # password muss eine liste sein,
     # deshalb wird hier für einezelnen user das pw in eine liste geschrieben
     hashed_pw: list = stauth.Hasher([password]).generate()
     deta_db: Any = connect_database()
@@ -186,20 +213,20 @@ def insert_new_user(
             "name": name,  # Klartext name
             "email": email,  # e-Mail-Adresse
             "password": hashed_pw[0],  # erstes Element aus der Passwort-"liste"
-            "access_lvl": access_lvl,  # "god" | "full" | list of allowed pages e.g. ["graph", "meteo"] ...page options: dics.pages.keys()
+            "access_lvl": access_lvl,  # "god" or "full" or list of allowed pages
+            # e.g. ["graph", "meteo"] ...page options: dics.pages.keys()
             "access_until": access_until,
         }
     )
 
     st.markdown("###")
     st.info(
-        f"""
-        Benutzer "{st.session_state.get('new_user_username')}" zur Datenbank hinzugefügt.
-        ("{st.session_state.get("new_user_name")}" hat Zugriff bis zum 
-        {st.session_state.get("new_user_until"):%d.%m.%Y})  \n
-        Achtung: Passwort merken (wird nicht wieder angezeigt):  \n
-        __{st.session_state.get('new_user_pw')}__
-        """
+        f'Benutzer "{username}" '
+        "zur Datenbank hinzugefügt.  \n"
+        f'("{name}" hat Zugriff bis zum '
+        f"{access_until})  \n  \n"
+        "Achtung: Passwort merken (wird nicht wieder angezeigt):  \n"
+        f"__{password}__"
     )
 
     st.button("ok", key="insert_ok_butt")
@@ -213,82 +240,37 @@ def update_user(username: str, updates: dict) -> Any:
 
 
 @func_timer
-def delete_user(usernames: str | None = None) -> None:
+def delete_user() -> None:
     """Benutzer löschen"""
-    deta_db: Any = connect_database()
-    all_users: list[dict[str, Any]] = st.session_state["all_user_data"]
+    if not st.session_state.get("ms_del_users"):
+        return
 
-    if (
-        usernames is None
-        and any(
-            admin in st.session_state["ms_del_user"]
-            for admin in ["utec (UTEC Allgemein)", "fl (Florian)"]
-        )
-        or (usernames is not None and any(user in ["utec", "fl"] for user in usernames))
-    ):
-        st.warning("Admin-Konten können nicht gelöscht werden!")
-        logger.error("tried to delete admin account")
-
-    if usernames is not None:
-        del_users: list[str] = [
-            user for user in usernames if user not in ["utec", "fl"]
-        ]
-    else:
-        del_users = [
-            user["key"]
-            for user in all_users
-            if f"{user['key']} ({user['name']})" in st.session_state["ms_del_user"]
-            and user["key"] not in ["utec", "fl"]
-        ]
-
-    # del_users = (
-    #     [user for user in usernames if user not in ["utec", "fl"]]
-    #     if usernames is not None
-    #     else [
-    #         user["key"]
-    #         for user in all_users
-    #         if f"{user['key']} ({user['name']})" in st.session_state.get("ms_del_user")
-    #         and user["key"] not in ["utec", "fl"]
-    #     ]
-    # )
-
-    if not del_users:
-        st.error("Es wurden keine Benutzerkonten gelöscht.")
-    else:
+    all_users: dict[str, dict[str, str]] = get_all_user_data()
+    ms_del_users: list[str] = st.session_state["ms_del_users"]
+    if del_users := [
+        user["key"]
+        for user in all_users.values()
+        if f"{user['key']} ({user['name']})" in ms_del_users
+        and user["key"] not in ["utec", "fl"]
+    ]:
+        deta_db: Any = connect_database()
         for user in del_users:
             deta_db.delete(user)
 
         st.markdown("###")
 
-        if len(del_users) > 1:
-            lis_u: str = f"  \n- {del_users[0]} ({[user['name'] for user in all_users if user['key'] == del_users[0]][0]})"
-            for inst in range(1, len(del_users)):
-                lis_u += f"  \n- {del_users[inst]} ({[user['name'] for user in all_users if user['key'] == del_users[inst]][0]})"
-
+        if len(ms_del_users) > 1:
             st.info(
-                f"""
-                Folgende Benutzer wurden aus der Datenbank entfernt: {lis_u}"
-                """
+                "Folgende Benutzer wurden aus der Datenbank entfernt:  \n"
+                "  \n".join(ms_del_users)
             )
         else:
             st.info(
-                f"""
-                Der Benutzer 
-                {del_users[0]} ({[user['name'] for user in all_users if user['key'] == del_users[0]][0]}) 
-                wurde aus der Datenbank entfernt.
-                """
+                "Der Benutzer  \n"
+                f"{ms_del_users[0]}  \n"
+                "wurde aus der Datenbank entfernt."
             )
 
+    else:
+        st.error("Es wurden keine Benutzerkonten gelöscht.")
     st.button("ok", key="del_ok_butt")
-
-
-# neuer Benutzer: Kommentar einer der Funktionen entfernen, Passwort (als Klartext) nicht vergessen und Datei in Terminal ausführen - neuer Benutzer wird in Datenbank geschrieben
-
-# insert_new_user("utec", "UTEC allgemein", "", "full")
-# insert_new_user("fl", "Florian", "", "god")
-
-# insert_new_user("some_username", "some_name", "some_password", ["meteo"])
-
-
-# update_user("fl", {"access_until": str(datetime.date.max)})
-# update_user("utec", {"access_until": str(datetime.date.max)})

@@ -8,7 +8,10 @@ import pandas.io.formats.excel
 
 pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
 
-FOLDER: str = "P:\\Haustechnik\\861 Focke Wulf Siedlung West\\8. LP 1-2 Vorplanung\\Kesseldimensionierung\\WMZ-Daten"
+FOLDER: str = (
+    "P:\\Haustechnik\\861 Focke Wulf Siedlung West\\"
+    "8. LP 1-2 Vorplanung\\Kesseldimensionierung\\WMZ-Daten"
+)
 
 
 def import_files_in_folder(folder: str = FOLDER) -> dict[str, pd.DataFrame]:
@@ -23,10 +26,10 @@ def import_files_in_folder(folder: str = FOLDER) -> dict[str, pd.DataFrame]:
 
     dic = {file: pd.read_excel(f"{folder}\\{file}") for file in files}
 
-    for df in dic.values():
+    for file_name,df in dic.items():
         for col_head in df.columns:
             if all(col not in col_head for col in cols):
-                df.drop(col_head, axis=1, inplace=True)
+                dic[file_name] = df.drop(col_head, axis=1)
 
     return dic
 
@@ -94,7 +97,7 @@ def fix_bullshit_index(df: pd.DataFrame, bs_name: str = "Zeitstempel") -> pd.Dat
 
 
 def excel_hourly(dic: dict[str, pd.DataFrame]) -> None:
-    """create Excel-file
+    """Create Excel-file
 
     Args:
         dic (dict[str, pd.DataFrame]): _description_

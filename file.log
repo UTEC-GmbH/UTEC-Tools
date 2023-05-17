@@ -1,6 +1,0 @@
-2023-04-28 14:32:51.086 | SUCCESS  | modules.user_authentication:connect_database:101 - Deta-Database connection established
-2023-04-28 14:32:51.225 | SUCCESS  | modules.user_authentication:get_all_user_data:134 - Collected all user data from Database
-2023-04-28 14:32:51.298 | SUCCESS  | __main__:<module>:149 - Login Page Loaded
-2023-04-28 14:32:58.344 | SUCCESS  | __main__:access_granted:92 - logged in as: fl, access level: god
-2023-04-28 14:32:58.366 | SUCCESS  | __main__:<module>:149 - Login Page Loaded
-2023-04-28 14:32:58.690 | SUCCESS  | __main__:<module>:149 - Login Page Loaded

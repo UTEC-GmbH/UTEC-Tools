@@ -1,4 +1,4 @@
-"""Seite Grafische Datenauswertung"""
+"""Seite Grafische Datenauswertung"""  # noqa: N999
 
 from typing import Any, Literal
 

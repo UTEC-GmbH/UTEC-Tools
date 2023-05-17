@@ -157,6 +157,11 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
                 if line["meta"]["negativ"]
                 else np.nanmax(line["y"])
             )
+
+            if pd.isna(y_val):
+                logger.debug(f"Annotation for {line['name']} SKIPPED")
+                continue
+
             x_val: datetime | float = line["x"][np.where(line["y"] == y_val)[0][0]]
             unit: str = line["meta"]["unit"]
             tit: str = line["name"]
@@ -171,6 +176,7 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
                 yaxis=line["yaxis"],
                 middle_xaxis=middle_x,
             )
+            logger.info(f"Pfeil für {line['name']} hinzugefügt")
 
     logger.success("Max / Min arrows added to figure")
 

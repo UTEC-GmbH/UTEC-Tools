@@ -1,8 +1,7 @@
 """Bearbeitung der Daten"""
 
 
-import datetime as dt
-from typing import Any, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 import numpy as np
 import pandas as pd
@@ -12,6 +11,9 @@ from loguru import logger
 from modules import constants as cont
 from modules.general_functions import func_timer
 from modules.logger_setup import LogLevel
+
+if TYPE_CHECKING:
+    import datetime as dt
 
 
 @func_timer
@@ -118,8 +120,12 @@ def clean_up_daylight_savings(df: pd.DataFrame) -> CleanUpDLS:
             - "df_clean": edited DataFrame
             - "df_deleted": deleted data
     """
-    ind: pd.DatetimeIndex = pd.DatetimeIndex(data=df.index).round("s")
-
+    # ind: pd.DatetimeIndex = pd.DatetimeIndex(data=df.index).round("s")
+    ind: pd.DatetimeIndex = (
+        df.index
+        if isinstance(df.index, pd.DatetimeIndex)
+        else pd.to_datetime(df.index, dayfirst=True)
+    )
     # Sommerzeitumstellung: letzter Sonntag im Maerz - von 2h auf 3h
     summer: np.ndarray = (
         (ind.month == 3)  # Monat = 3 ---> März

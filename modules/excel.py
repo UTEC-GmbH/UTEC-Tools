@@ -404,8 +404,7 @@ def format_worksheet(
     worksheet: Any,
     df: pd.DataFrame,
     number_formats: dict[str, str],
-    offset_col: int = 2,
-    offset_row: int = 4,
+    **kwargs: Any,
 ) -> None:
     """Edit the formatting of the worksheet in the output excel-file
 
@@ -414,7 +413,12 @@ def format_worksheet(
         - wks (Any): Worksheet
         - df (pd.DataFrame): main pd.DataFrame
         - dic_num_formats (dict): dictionary {col: number format}
+    KWArgs:
+        - offset_col (int): Spalte, in der die Daten eingefügt weren
+        - offset_row (int): Reihe, in der die Daten eingefügt weren
     """
+    offset_col: int = kwargs.get("offset_col") or 2
+    offset_row: int = kwargs.get("offset_row") or 4
 
     cols: list[str] = [str(col) for col in df.columns]
 

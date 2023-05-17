@@ -32,15 +32,18 @@ def func_timer(func: Callable) -> Callable:
             logger.level(LogLevel.FUNC_START.name)
         except ValueError:
             logger_setup()
-        logger.log(LogLevel.FUNC_START.name, f"function '{func.__name__}' started")
 
-        if "dic_exe_time" not in st.session_state:
-            st.session_state["dic_exe_time"] = {}
+        logger.log(LogLevel.FUNC_START.name, f"function '{func.__name__}' started")
 
         result: Any = func(*args, **kwargs)
 
         exe_time: float = time.monotonic() - start_time
-        st.session_state["dic_exe_time"][func.__name__] = exe_time
+
+        if "dic_exe_time" not in st.session_state:
+            st.session_state["dic_exe_time"] = {}
+        if "dic_exe_time" in st.session_state:
+            st.session_state["dic_exe_time"][func.__name__] = exe_time
+
         logger.log(
             LogLevel.TIMER.name,
             f"execution time of '{func.__name__}': {exe_time:.4f} s",

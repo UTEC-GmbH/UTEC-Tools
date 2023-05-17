@@ -1,0 +1,451 @@
+
+
+14:09:57 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+
+
+14:09:57 👉 function 'general_setup' started 👈 
+
+14:09:58 👉 function 'render_svg' started 👈 
+14:09:58 ⏱ execution time of 'render_svg': 0.0160 s ⏱ 
+
+14:09:58 👉 function 'get_commit_message_date' started 👈 
+14:09:59 ⏱ execution time of 'get_commit_message_date': 1.3280 s ⏱ 
+
+14:09:59 👉 function 'get_all_user_data' started 👈 
+
+14:09:59 👉 function 'connect_database' started 👈 
+14:09:59 🥳 user_authentication -> connect_database -> line: 124 | Deta-Database connection established 🥳 
+14:09:59 ⏱ execution time of 'connect_database': 0.0000 s ⏱ 
+14:10:00 🥳 user_authentication -> get_all_user_data -> line: 158 | Collected all user data from Database 🥳 
+14:10:00 ⏱ execution time of 'get_all_user_data': 0.3600 s ⏱ 
+14:10:00 💡 setup_stuff -> general_setup -> line: 117 | Pfad 'C:\Users\Flo\Documents\GitHub_Repos\UTEC-Tools\export' für die Ausgabe bereits vorhanden 💡 
+
+14:10:00 🦤🦤🦤 Initial Setup Complete 🦤🦤🦤 
+
+14:10:00 ⏱ execution time of 'general_setup': 2.3130 s ⏱ 
+
+14:10:00 👉 function 'page_header_setup' started 👈 
+
+14:10:00 👉 function 'render_svg' started 👈 
+14:10:00 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+14:10:00 👟 setup_stuff -> page_header_setup -> line: 173 | page header for page 'login' created 👟 
+14:10:00 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+14:10:00 👉 function 'display_login_page' started 👈 
+
+14:10:00 👉 function 'login_section' started 👈 
+14:10:00 ⏱ execution time of 'login_section': 0.0160 s ⏱ 
+14:10:00 ⏱ execution time of 'display_login_page': 0.0310 s ⏱ 
+14:10:00 🥳 00_🔑_login -> <module> -> line: 149 | Login Page Loaded 🥳 
+
+
+14:10:00 ✨ NEW RUN ✨ 
+
+14:10:00 👉 function 'page_header_setup' started 👈 
+
+14:10:00 👉 function 'render_svg' started 👈 
+14:10:00 ⏱ execution time of 'render_svg': 0.0150 s ⏱ 
+14:10:00 👟 setup_stuff -> page_header_setup -> line: 173 | page header for page 'login' created 👟 
+14:10:00 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+14:10:00 👉 function 'display_login_page' started 👈 
+
+14:10:00 👉 function 'login_section' started 👈 
+
+14:10:00 👉 function 'access_granted' started 👈 
+14:10:00 🥳 00_🔑_login -> access_granted -> line: 92 | logged in as: fl, access level: god 🥳 
+
+14:10:00 👉 function 'god_mode' started 👈 
+
+14:10:00 👉 function 'user_accounts' started 👈 
+14:10:00 ⏱ execution time of 'user_accounts': 0.0000 s ⏱ 
+14:10:00 ⏱ execution time of 'god_mode': 0.0160 s ⏱ 
+14:10:00 ⏱ execution time of 'access_granted': 0.0160 s ⏱ 
+14:10:00 ⏱ execution time of 'login_section': 0.0320 s ⏱ 
+14:10:00 ⏱ execution time of 'display_login_page': 0.0470 s ⏱ 
+14:10:00 🥳 00_🔑_login -> <module> -> line: 149 | Login Page Loaded 🥳 
+
+
+14:10:01 ✨ NEW RUN ✨ 
+
+14:10:01 👉 function 'page_header_setup' started 👈 
+
+14:10:01 👉 function 'render_svg' started 👈 
+14:10:01 ⏱ execution time of 'render_svg': 0.0160 s ⏱ 
+14:10:01 👟 setup_stuff -> page_header_setup -> line: 173 | page header for page 'login' created 👟 
+14:10:01 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+14:10:01 👉 function 'display_login_page' started 👈 
+
+14:10:01 👉 function 'login_section' started 👈 
+
+14:10:01 👉 function 'access_granted' started 👈 
+
+14:10:01 👉 function 'god_mode' started 👈 
+
+14:10:01 👉 function 'user_accounts' started 👈 
+14:10:01 ⏱ execution time of 'user_accounts': 0.0000 s ⏱ 
+14:10:01 ⏱ execution time of 'god_mode': 0.0160 s ⏱ 
+14:10:01 ⏱ execution time of 'access_granted': 0.0160 s ⏱ 
+14:10:01 ⏱ execution time of 'login_section': 0.0310 s ⏱ 
+14:10:01 ⏱ execution time of 'display_login_page': 0.0470 s ⏱ 
+14:10:01 🥳 00_🔑_login -> <module> -> line: 149 | Login Page Loaded 🥳 
+
+14:10:09 👉 function 'page_header_setup' started 👈 
+
+14:10:09 👉 function 'render_svg' started 👈 
+14:10:09 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+14:10:09 👟 setup_stuff -> page_header_setup -> line: 173 | page header for page 'graph' created 👟 
+14:10:09 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+14:10:09 👉 function 'sidebar_file_upload' started 👈 
+14:10:09 ⏱ execution time of 'sidebar_file_upload': 0.0160 s ⏱ 
+
+14:10:13 👉 function 'page_header_setup' started 👈 
+
+14:10:13 👉 function 'render_svg' started 👈 
+14:10:13 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+14:10:13 👟 setup_stuff -> page_header_setup -> line: 173 | page header for page 'graph' created 👟 
+14:10:13 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+14:10:13 👉 function 'sidebar_file_upload' started 👈 
+14:10:13 ⏱ execution time of 'sidebar_file_upload': 0.0000 s ⏱ 
+
+14:10:13 👉 function 'import_prefab_excel' started 👈 
+14:10:17 🐞 excel -> import_prefab_excel -> line: 30 | df_messy 🐞 
+     Unnamed: 0           Unnamed: 1   Unnamed: 2     Unnamed: 3       Unnamed: 4       Unnamed: 5            Unnamed: 6
+0         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+1         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+2         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+3         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+4         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+5         NaN                  NaN          NaN            NaN              NaN              NaN                   NaN
+6         NaN          → Einheit →          kWh            kWh              kWh              kWh                   kWh
+7         NaN            ↓ Index ↓  Strombedarf  PV Produktion  Netzeinspeisung  PV Eigennutzung  Strombez. 1-1:1.29.0
+8         NaN  2021-01-01 00:00:00          3.4              0                0                0                   3.4
+9         NaN  2021-01-01 00:15:00        3.225              0                0                0                 3.225  
+
+
+14:10:17 👉 function 'edit_df_after_import' started 👈 
+14:10:17 🐞 classes -> get_marker_position -> line: 72 | (array([7], dtype=int64), array([1], dtype=int64)) 🐞 
+14:10:17 🥳 classes -> get_marker_position -> line: 82 | Marker ↓ Index ↓ found in row 7, column 1 🥳 
+
+14:10:17 👉 function 'clean_up_daylight_savings' started 👈 
+14:10:17 ⚠ df_manip -> clean_up_daylight_savings -> line: 144 | Data deleted due to daylight savings. ️ 
+  7                    Strombedarf  PV Produktion  Netzeinspeisung  PV Eigennutzung  Strombez. 1-1:1.29.0
+↓ Index ↓                                                                                              
+2021-10-31 02:00:00        2.475            0.0              0.0              0.0                 2.475
+2021-10-31 02:15:00        2.550            0.0              0.0              0.0                 2.550
+2021-10-31 02:30:00        2.175            0.0              0.0              0.0                 2.175
+2021-10-31 02:45:00        2.075            0.0              0.0              0.0                 2.075  
+
+14:10:17 ⏱ execution time of 'clean_up_daylight_savings': 0.0160 s ⏱ 
+14:10:17 ⏱ execution time of 'edit_df_after_import': 0.2660 s ⏱ 
+14:10:17 🐞 excel -> import_prefab_excel -> line: 33 | clean df 🐞 
+  7                    Strombedarf  PV Produktion  Netzeinspeisung  PV Eigennutzung  Strombez. 1-1:1.29.0              orgidx
+↓ Index ↓                                                                                                                  
+2021-01-01 00:00:00        3.400            0.0              0.0              0.0                 3.400 2021-01-01 00:00:00
+2021-01-01 00:15:00        3.225            0.0              0.0              0.0                 3.225 2021-01-01 00:15:00
+2021-01-01 00:30:00        3.150            0.0              0.0              0.0                 3.150 2021-01-01 00:30:00
+2021-01-01 00:45:00        3.550            0.0              0.0              0.0                 3.550 2021-01-01 00:45:00
+2021-01-01 01:00:00        4.300            0.0              0.0              0.0                 4.300 2021-01-01 01:00:00  
+
+
+14:10:17 👉 function 'units_from_messy_df' started 👈 
+14:10:17 🐞 classes -> get_marker_position -> line: 72 | (array([7], dtype=int64), array([1], dtype=int64)) 🐞 
+14:10:17 🥳 classes -> get_marker_position -> line: 82 | Marker ↓ Index ↓ found in row 7, column 1 🥳 
+14:10:17 🐞 classes -> get_marker_position -> line: 72 | (array([6], dtype=int64), array([1], dtype=int64)) 🐞 
+14:10:17 🥳 classes -> get_marker_position -> line: 82 | Marker → Einheit → found in row 6, column 1 🥳 
+14:10:17 💡 excel -> units_from_messy_df -> line: 95 | Strombedarf: ' kWh' 💡 
+14:10:17 💡 excel -> units_from_messy_df -> line: 95 | PV Produktion: ' kWh' 💡 
+14:10:17 💡 excel -> units_from_messy_df -> line: 95 | Netzeinspeisung: ' kWh' 💡 
+14:10:17 💡 excel -> units_from_messy_df -> line: 95 | PV Eigennutzung: ' kWh' 💡 
+14:10:17 💡 excel -> units_from_messy_df -> line: 95 | Strombez. 1-1:1.29.0: ' kWh' 💡 
+14:10:17 ⏱ execution time of 'units_from_messy_df': 0.0310 s ⏱ 
+
+14:10:17 👉 function 'meta_from_index' started 👈 
+14:10:17 🐞 excel -> meta_from_index -> line: 187 | Zeitliche Auflösung des DataFrame: 0 days 00:15:00 🐞 
+14:10:17 💡 excel -> meta_from_index -> line: 192 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
+14:10:17 ⏱ execution time of 'meta_from_index': 0.0160 s ⏱ 
+
+14:10:17 👉 function 'meta_from_col_title' started 👈 
+14:10:17 ⏱ execution time of 'meta_from_col_title': 0.0000 s ⏱ 
+
+14:10:17 👉 function 'convert_15min_kwh_to_kw' started 👈 
+14:10:17 💡 excel -> insert_column_arbeit_leistung -> line: 352 | Spalte 'Strombedarf → Leistung' mit Einheit ' kW' eingefügt 💡 
+14:10:17 💡 excel -> rename_column_arbeit_leistung -> line: 318 | Spalte 'Strombedarf' umbenannt in 'Strombedarf → Arbeit' 💡 
+14:10:17 🥳 excel -> convert_15min_kwh_to_kw -> line: 290 | Arbeit und Leistung für Spalte 'Strombedarf' aufgeteilt 🥳 
+14:10:17 💡 excel -> insert_column_arbeit_leistung -> line: 352 | Spalte 'PV Produktion → Leistung' mit Einheit ' kW' eingefügt 💡 
+14:10:17 💡 excel -> rename_column_arbeit_leistung -> line: 318 | Spalte 'PV Produktion' umbenannt in 'PV Produktion → Arbeit' 💡 
+14:10:17 🥳 excel -> convert_15min_kwh_to_kw -> line: 290 | Arbeit und Leistung für Spalte 'PV Produktion' aufgeteilt 🥳 
+14:10:17 💡 excel -> insert_column_arbeit_leistung -> line: 352 | Spalte 'Netzeinspeisung → Leistung' mit Einheit ' kW' eingefügt 💡 
+14:10:17 💡 excel -> rename_column_arbeit_leistung -> line: 318 | Spalte 'Netzeinspeisung' umbenannt in 'Netzeinspeisung → Arbeit' 💡 
+14:10:17 🥳 excel -> convert_15min_kwh_to_kw -> line: 290 | Arbeit und Leistung für Spalte 'Netzeinspeisung' aufgeteilt 🥳 
+14:10:17 💡 excel -> insert_column_arbeit_leistung -> line: 352 | Spalte 'PV Eigennutzung → Leistung' mit Einheit ' kW' eingefügt 💡 
+14:10:17 💡 excel -> rename_column_arbeit_leistung -> line: 318 | Spalte 'PV Eigennutzung' umbenannt in 'PV Eigennutzung → Arbeit' 💡 
+14:10:17 🥳 excel -> convert_15min_kwh_to_kw -> line: 290 | Arbeit und Leistung für Spalte 'PV Eigennutzung' aufgeteilt 🥳 
+14:10:17 💡 excel -> insert_column_arbeit_leistung -> line: 352 | Spalte 'Strombez. 1-1:1.29.0 → Leistung' mit Einheit ' kW' eingefügt 💡 
+14:10:17 💡 excel -> rename_column_arbeit_leistung -> line: 318 | Spalte 'Strombez. 1-1:1.29.0' umbenannt in 'Strombez. 1-1:1.29.0 → Arbeit' 💡 
+14:10:17 🥳 excel -> convert_15min_kwh_to_kw -> line: 290 | Arbeit und Leistung für Spalte 'Strombez. 1-1:1.29.0' aufgeteilt 🥳 
+14:10:17 ⏱ execution time of 'convert_15min_kwh_to_kw': 0.0470 s ⏱ 
+14:10:17 🐞 excel -> import_prefab_excel -> line: 45 | Metadaten nach 15min-Konvertierung: 
+{'Strombedarf': {'orig_tit': 'Strombedarf', 'tit': 'Strombedarf', 'unit': ' kWh'}, 'PV Produktion': {'orig_tit': 'PV Produktion', 'tit': 'PV Produktion', 'unit': ' kWh'}, 'Netzeinspeisung': {'orig_tit': 'Netzeinspeisung', 'tit': 'Netzeinspeisung', 'unit': ' kWh'}, 'PV Eigennutzung': {'orig_tit': 'PV Eigennutzung', 'tit': 'PV Eigennutzung', 'unit': ' kWh'}, 'Strombez. 1-1:1.29.0': {'orig_tit': 'Strombez. 1-1:1.29.0', 'tit': 'Bezug (1-1:1.29)', 'unit': ' kWh', 'obis_code': '1-1:1.29', 'messgroesse': 'Wirkleistung (+)', 'messart': 'Zeit Integral 5 - Lastprofil Aufzeichnungsperiode 1'}, 'Bezug (1-1:1.29)': {'orig_tit': 'Strombez. 1-1:1.29.0', 'tit': 'Bezug (1-1:1.29)', 'unit': ' kWh', 'obis_code': '1-1:1.29', 'messgroesse': 'Wirkleistung (+)', 'messart': 'Zeit Integral 5 - Lastprofil Aufzeichnungsperiode 1'}, 'orgidx': {'orig_tit': 'orgidx', 'tit': 'orgidx', 'unit': ''}, 'index': {'datetime': True, 'years': [2021], 'td_int': '15min', 'td_mean': Timedelta('0 days 00:15:00')}, 'Strombedarf → Leistung': {'orig_tit': 'Strombedarf', 'tit': 'Strombedarf → Leistung', 'unit': ' kW'}, 'Strombedarf → Arbeit': {'orig_tit': 'Strombedarf', 'tit': 'Strombedarf → Arbeit', 'unit': ' kWh'}, 'PV Produktion → Leistung': {'orig_tit': 'PV Produktion', 'tit': 'PV Produktion → Leistung', 'unit': ' kW'}, 'PV Produktion → Arbeit': {'orig_tit': 'PV Produktion', 'tit': 'PV Produktion → Arbeit', 'unit': ' kWh'}, 'Netzeinspeisung → Leistung': {'orig_tit': 'Netzeinspeisung', 'tit': 'Netzeinspeisung → Leistung', 'unit': ' kW'}, 'Netzeinspeisung → Arbeit': {'orig_tit': 'Netzeinspeisung', 'tit': 'Netzeinspeisung → Arbeit', 'unit': ' kWh'}, 'PV Eigennutzung → Leistung': {'orig_tit': 'PV Eigennutzung', 'tit': 'PV Eigennutzung → Leistung', 'unit': ' kW'}, 'PV Eigennutzung → Arbeit': {'orig_tit': 'PV Eigennutzung', 'tit': 'PV Eigennutzung → Arbeit', 'unit': ' kWh'}, 'Strombez. 1-1:1.29.0 → Leistung': {'orig_tit': 'Strombez. 1-1:1.29.0', 'tit': 'Strombez. 1-1:1.29.0 → Leistung', 'unit': ' kW', 'obis_code': '1-1:1.29', 'messgroesse': 'Wirkleistung (+)', 'messart': 'Zeit Integral 5 - Lastprofil Aufzeichnungsperiode 1'}, 'Strombez. 1-1:1.29.0 → Arbeit': {'orig_tit': 'Strombez. 1-1:1.29.0', 'tit': 'Strombez. 1-1:1.29.0 → Arbeit', 'unit': ' kWh', 'obis_code': '1-1:1.29', 'messgroesse': 'Wirkleistung (+)', 'messart': 'Zeit Integral 5 - Lastprofil Aufzeichnungsperiode 1'}} 🐞 
+
+14:10:17 👉 function 'set_y_axis_for_lines' started 👈 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | Strombedarf: Y-Achse y 💡 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | PV Produktion: Y-Achse y 💡 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | Netzeinspeisung: Y-Achse y 💡 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | PV Eigennutzung: Y-Achse y 💡 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | Strombez. 1-1:1.29.0: Y-Achse y 💡 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | Bezug (1-1:1.29): Y-Achse y 💡 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | Strombedarf → Leistung: Y-Achse y2 💡 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | Strombedarf → Arbeit: Y-Achse y 💡 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | PV Produktion → Leistung: Y-Achse y2 💡 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | PV Produktion → Arbeit: Y-Achse y 💡 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | Netzeinspeisung → Leistung: Y-Achse y2 💡 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | Netzeinspeisung → Arbeit: Y-Achse y 💡 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | PV Eigennutzung → Leistung: Y-Achse y2 💡 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | PV Eigennutzung → Arbeit: Y-Achse y 💡 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | Strombez. 1-1:1.29.0 → Leistung: Y-Achse y2 💡 
+14:10:17 💡 excel -> set_y_axis_for_lines -> line: 109 | Strombez. 1-1:1.29.0 → Arbeit: Y-Achse y 💡 
+14:10:17 ⏱ execution time of 'set_y_axis_for_lines': 0.0160 s ⏱ 
+14:10:17 🥳 excel -> import_prefab_excel -> line: 61 | file imported and metadata extracted 🥳 
+  7                    Strombedarf → Arbeit  PV Produktion → Arbeit  Netzeinspeisung → Arbeit  ...  Netzeinspeisung → Leistung  PV Eigennutzung → Leistung Strombez. 1-1:1.29.0 → Leistung
+↓ Index ↓                                                                                    ...                                                                                        
+2021-01-01 00:00:00                 3.400                     0.0                       0.0  ...                         0.0                         0.0                            13.6
+2021-01-01 00:15:00                 3.225                     0.0                       0.0  ...                         0.0                         0.0                            12.9
+2021-01-01 00:30:00                 3.150                     0.0                       0.0  ...                         0.0                         0.0                            12.6
+2021-01-01 00:45:00                 3.550                     0.0                       0.0  ...                         0.0                         0.0                            14.2
+2021-01-01 01:00:00                 4.300                     0.0                       0.0  ...                         0.0                         0.0                            17.2
+
+[5 rows x 11 columns]  
+
+14:10:17 ⏱ execution time of 'import_prefab_excel': 4.5000 s ⏱ 
+
+14:10:17 👉 function 'base_settings' started 👈 
+14:10:17 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+
+14:10:17 👉 function 'select_graphs' started 👈 
+14:10:17 ⏱ execution time of 'select_graphs': 0.0150 s ⏱ 
+
+14:10:17 👉 function 'meteo_sidebar' started 👈 
+14:10:17 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+14:10:17 👉 function 'jdl' started 👈 
+
+14:10:17 👉 function 'h_from_other' started 👈 
+14:10:17 🥳 df_manip -> h_from_other -> line: 301 | DataFrame mit Stundenwerten erstellt. 🥳 
+                       Strombedarf *h  PV Produktion *h  Netzeinspeisung *h  PV Eigennutzung *h  Strombez. 1-1:1.29.0 *h              orgidx
+↓ Index ↓                                                                                                                                 
+2021-01-01 00:00:00          13.325               0.0                 0.0                 0.0                   13.325 2021-01-01 00:00:00
+2021-01-01 01:00:00          14.550               0.0                 0.0                 0.0                   14.550 2021-01-01 01:00:00
+2021-01-01 02:00:00          11.350               0.0                 0.0                 0.0                   11.350 2021-01-01 02:00:00
+2021-01-01 03:00:00          10.725               0.0                 0.0                 0.0                   10.725 2021-01-01 03:00:00
+2021-01-01 04:00:00           9.300               0.0                 0.0                 0.0                    9.300 2021-01-01 04:00:00  
+
+14:10:17 ⏱ execution time of 'h_from_other': 0.0470 s ⏱ 
+14:10:17 🥳 df_manip -> jdl -> line: 375 | DataFrame für Jahresdauerlinie erstellt. 🥳 
+     Strombedarf *h  PV Produktion *h  Netzeinspeisung *h  PV Eigennutzung *h  ...  PV Produktion *h_orgidx Netzeinspeisung *h_orgidx PV Eigennutzung *h_orgidx Strombez. 1-1:1.29.0 *h_orgidx
+1          36.225            43.350              27.025              24.975  ...      2021-04-27 13:00:00       2021-04-27 13:00:00       2021-04-24 15:00:00            2021-11-18 19:00:00
+2          34.650            42.175              24.850              24.600  ...      2021-04-13 13:00:00       2021-04-26 13:00:00       2021-04-24 16:00:00            2021-01-30 17:00:00
+3          34.550            40.375              23.100              23.600  ...      2021-05-30 14:00:00       2021-04-28 15:00:00       2021-04-24 13:00:00            2021-01-23 18:00:00
+4          34.450            40.350              22.975              23.475  ...      2021-04-27 12:00:00       2021-04-13 13:00:00       2021-05-30 11:00:00            2021-02-07 19:00:00
+5          34.450            39.700              22.100              23.400  ...      2021-04-26 13:00:00       2021-05-06 13:00:00       2021-04-17 13:00:00            2021-01-19 18:00:00
+
+[5 rows x 10 columns]  
+
+14:10:17 ⏱ execution time of 'jdl': 0.0780 s ⏱ 
+
+14:10:17 👉 function 'mon' started 👈 
+
+14:10:17 👉 function 'h_from_other' started 👈 
+14:10:17 🥳 df_manip -> h_from_other -> line: 301 | DataFrame mit Stundenwerten erstellt. 🥳 
+                       Strombedarf *h  PV Produktion *h  Netzeinspeisung *h  PV Eigennutzung *h  Strombez. 1-1:1.29.0 *h              orgidx
+↓ Index ↓                                                                                                                                 
+2021-01-01 00:00:00          13.325               0.0                 0.0                 0.0                   13.325 2021-01-01 00:00:00
+2021-01-01 01:00:00          14.550               0.0                 0.0                 0.0                   14.550 2021-01-01 01:00:00
+2021-01-01 02:00:00          11.350               0.0                 0.0                 0.0                   11.350 2021-01-01 02:00:00
+2021-01-01 03:00:00          10.725               0.0                 0.0                 0.0                   10.725 2021-01-01 03:00:00
+2021-01-01 04:00:00           9.300               0.0                 0.0                 0.0                    9.300 2021-01-01 04:00:00  
+
+14:10:17 ⏱ execution time of 'h_from_other': 0.0470 s ⏱ 
+14:10:17 🥳 df_manip -> mon -> line: 417 | DataFrame mit Monatswerten erstellt. 🥳 
+              Strombedarf *mon  PV Produktion *mon  Netzeinspeisung *mon  PV Eigennutzung *mon  Strombez. 1-1:1.29.0 *mon     orgidx
+↓ Index ↓                                                                                                                         
+2021-01-15         13100.800             801.150                 1.950                799.20                  12301.600 2021-01-15
+2021-02-15         11460.800            1629.025                83.775               1545.25                   9915.550 2021-02-15
+2021-03-15         12272.500            3948.400               730.800               3217.60                   9054.900 2021-03-15
+2021-04-15         11587.775            6171.075              1820.375               4350.70                   7237.075 2021-04-15
+2021-05-15         11830.100            6227.375              1592.225               4635.15                   7194.950 2021-05-15  
+
+14:10:17 ⏱ execution time of 'mon': 0.0630 s ⏱ 
+
+14:10:18 👉 function 'cr_fig_base' started 👈 
+
+14:10:18 👉 function 'line_plot' started 👈 
+14:10:22 ⏱ execution time of 'line_plot': 4.8900 s ⏱ 
+
+14:10:23 👉 function 'add_arrows_min_max' started 👈 
+
+14:10:23 👉 function 'middle_xaxis' started 👈 
+14:10:23 💡 fig_annotations -> middle_xaxis -> line: 48 | middle of x-axis: 2021-07-02 12:52:30 💡 
+14:10:23 ⏱ execution time of 'middle_xaxis': 0.0150 s ⏱ 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombedarf → Arbeit hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für PV Produktion → Arbeit hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Netzeinspeisung → Arbeit hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für PV Eigennutzung → Arbeit hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombez. 1-1:1.29.0 → Arbeit hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombedarf → Leistung hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für PV Produktion → Leistung hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Netzeinspeisung → Leistung hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für PV Eigennutzung → Leistung hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombez. 1-1:1.29.0 → Leistung hinzugefügt 💡 
+14:10:23 🥳 fig_annotations -> add_arrows_min_max -> line: 181 | Max / Min arrows added to figure 🥳 
+14:10:23 ⏱ execution time of 'add_arrows_min_max': 0.2500 s ⏱ 
+
+14:10:23 👉 function 'standard_axes_and_layout' started 👈 
+
+14:10:23 👉 function 'standard_xaxis' started 👈 
+
+14:10:23 👉 function 'format_tickstops' started 👈 
+14:10:23 ⏱ execution time of 'format_tickstops': 0.0000 s ⏱ 
+14:10:23 ⏱ execution time of 'standard_xaxis': 0.0470 s ⏱ 
+
+14:10:23 👉 function 'standard_yaxis' started 👈 
+14:10:23 ⏱ execution time of 'standard_yaxis': 0.0310 s ⏱ 
+
+14:10:23 👉 function 'standard_layout' started 👈 
+14:10:23 ⏱ execution time of 'standard_layout': 0.0320 s ⏱ 
+14:10:23 ⏱ execution time of 'standard_axes_and_layout': 0.1100 s ⏱ 
+14:10:23 🥳 fig_creation_export -> cr_fig_base -> line: 90 | fig_base created 🥳 
+14:10:23 ⏱ execution time of 'cr_fig_base': 5.4530 s ⏱ 
+
+14:10:23 👉 function 'cr_fig_jdl' started 👈 
+
+14:10:23 👉 function 'line_plot' started 👈 
+14:10:23 ⏱ execution time of 'line_plot': 0.2820 s ⏱ 
+
+14:10:23 👉 function 'add_arrows_min_max' started 👈 
+
+14:10:23 👉 function 'middle_xaxis' started 👈 
+14:10:23 💡 fig_annotations -> middle_xaxis -> line: 51 | middle of x-axis: 4380.5 💡 
+14:10:23 ⏱ execution time of 'middle_xaxis': 0.0150 s ⏱ 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombedarf → Leistung hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für PV Produktion → Leistung hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Netzeinspeisung → Leistung hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für PV Eigennutzung → Leistung hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombez. 1-1:1.29.0 → Leistung hinzugefügt 💡 
+14:10:23 🥳 fig_annotations -> add_arrows_min_max -> line: 181 | Max / Min arrows added to figure 🥳 
+14:10:23 ⏱ execution time of 'add_arrows_min_max': 0.0470 s ⏱ 
+
+14:10:23 👉 function 'standard_axes_and_layout' started 👈 
+
+14:10:23 👉 function 'standard_xaxis' started 👈 
+14:10:23 ⏱ execution time of 'standard_xaxis': 0.0150 s ⏱ 
+
+14:10:23 👉 function 'standard_yaxis' started 👈 
+14:10:23 ⏱ execution time of 'standard_yaxis': 0.0000 s ⏱ 
+
+14:10:23 👉 function 'standard_layout' started 👈 
+14:10:23 ⏱ execution time of 'standard_layout': 0.0160 s ⏱ 
+14:10:23 ⏱ execution time of 'standard_axes_and_layout': 0.0310 s ⏱ 
+14:10:23 🥳 fig_creation_export -> cr_fig_jdl -> line: 135 | fig_jdl created 🥳 
+14:10:23 ⏱ execution time of 'cr_fig_jdl': 0.3910 s ⏱ 
+
+14:10:23 👉 function 'cr_fig_mon' started 👈 
+
+14:10:23 👉 function 'line_plot' started 👈 
+14:10:23 ⏱ execution time of 'line_plot': 0.0160 s ⏱ 
+
+14:10:23 👉 function 'add_arrows_min_max' started 👈 
+
+14:10:23 👉 function 'middle_xaxis' started 👈 
+14:10:23 💡 fig_annotations -> middle_xaxis -> line: 48 | middle of x-axis: 2021-07-01 01:00:00 💡 
+14:10:23 ⏱ execution time of 'middle_xaxis': 0.0000 s ⏱ 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombedarf → Leistung hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für PV Produktion → Leistung hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Netzeinspeisung → Leistung hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für PV Eigennutzung → Leistung hinzugefügt 💡 
+14:10:23 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für Strombez. 1-1:1.29.0 → Leistung hinzugefügt 💡 
+14:10:23 🥳 fig_annotations -> add_arrows_min_max -> line: 181 | Max / Min arrows added to figure 🥳 
+14:10:23 ⏱ execution time of 'add_arrows_min_max': 0.0310 s ⏱ 
+
+14:10:23 👉 function 'standard_axes_and_layout' started 👈 
+
+14:10:23 👉 function 'standard_xaxis' started 👈 
+
+14:10:23 👉 function 'format_tickstops' started 👈 
+14:10:23 ⏱ execution time of 'format_tickstops': 0.0000 s ⏱ 
+14:10:23 ⏱ execution time of 'standard_xaxis': 0.0150 s ⏱ 
+
+14:10:23 👉 function 'standard_yaxis' started 👈 
+14:10:23 ⏱ execution time of 'standard_yaxis': 0.0000 s ⏱ 
+
+14:10:23 👉 function 'standard_layout' started 👈 
+14:10:23 ⏱ execution time of 'standard_layout': 0.0160 s ⏱ 
+14:10:23 ⏱ execution time of 'standard_axes_and_layout': 0.0310 s ⏱ 
+14:10:23 🥳 fig_creation_export -> cr_fig_mon -> line: 185 | fig_mon created 🥳 
+14:10:23 ⏱ execution time of 'cr_fig_mon': 0.1090 s ⏱ 
+
+14:10:23 👉 function 'h_v_lines' started 👈 
+14:10:23 ⏱ execution time of 'h_v_lines': 0.0000 s ⏱ 
+
+14:10:23 👉 function 'clean_outliers' started 👈 
+14:10:23 ⏱ execution time of 'clean_outliers': 0.0160 s ⏱ 
+
+14:10:23 👉 function 'display_options_main' started 👈 
+
+14:10:23 👉 function 'display_options_main_col_settings' started 👈 
+14:10:23 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+14:10:24 ⏱ execution time of 'display_options_main': 0.1250 s ⏱ 
+
+14:10:24 👉 function 'display_smooth_main' started 👈 
+
+14:10:24 👉 function 'display_options_main_col_settings' started 👈 
+14:10:24 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+14:10:24 ⏱ execution time of 'display_smooth_main': 0.0780 s ⏱ 
+
+14:10:24 👉 function 'update_main' started 👈 
+
+14:10:24 👉 function 'show_traces' started 👈 
+
+14:10:24 👉 function 'smooth' started 👈 
+14:10:24 ⏱ execution time of 'smooth': 0.0160 s ⏱ 
+14:10:24 ⏱ execution time of 'show_traces': 0.0310 s ⏱ 
+
+14:10:24 👉 function 'format_traces' started 👈 
+14:10:24 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+14:10:24 👉 function 'show_y_axes' started 👈 
+14:10:24 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+14:10:24 ⏱ execution time of 'update_main': 0.0780 s ⏱ 
+
+14:10:24 👉 function 'update_main' started 👈 
+
+14:10:24 👉 function 'show_traces' started 👈 
+14:10:24 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+14:10:24 👉 function 'format_traces' started 👈 
+14:10:24 ⏱ execution time of 'format_traces': 0.0000 s ⏱ 
+
+14:10:24 👉 function 'show_y_axes' started 👈 
+14:10:24 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+14:10:24 ⏱ execution time of 'update_main': 0.0320 s ⏱ 
+
+14:10:24 👉 function 'update_main' started 👈 
+
+14:10:24 👉 function 'show_traces' started 👈 
+14:10:24 ⏱ execution time of 'show_traces': 0.0000 s ⏱ 
+
+14:10:24 👉 function 'format_traces' started 👈 
+14:10:24 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+14:10:24 👉 function 'show_y_axes' started 👈 
+14:10:24 ⏱ execution time of 'show_y_axes': 0.0150 s ⏱ 
+14:10:24 ⏱ execution time of 'update_main': 0.0310 s ⏱ 
+
+14:10:24 👉 function 'plot_figs' started 👈 
+14:10:30 ⏱ execution time of 'plot_figs': 5.9070 s ⏱ 
+
+14:10:30 👉 function 'downloads' started 👈 
+14:10:30 ⏱ execution time of 'downloads': 0.0000 s ⏱ 

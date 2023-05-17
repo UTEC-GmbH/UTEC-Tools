@@ -162,9 +162,9 @@ def sidebar_file_upload() -> Any:
             ],
             help=(
                 """
-                    Bitte eine der Beispieldateien (egal welche) herunterladen
-                     und mit den zu untersuchenden Daten füllen.
-                    """
+                Bitte eine der Beispieldateien (egal welche) herunterladen
+                und mit den zu untersuchenden Daten füllen.
+                """
             ),
         )
 
@@ -201,9 +201,9 @@ def sidebar_file_upload() -> Any:
                 accept_multiple_files=False,
                 help=(
                     """
-                        Das Arbeitsblatt "Daten" in der Datei muss
-                        wie eine der Beispieldateien aufgebaut sein.
-                        """
+                    Das Arbeitsblatt "Daten" in der Datei muss
+                    wie eine der Beispieldateien aufgebaut sein.
+                    """
                 ),
                 key="f_up",
             )
@@ -228,9 +228,11 @@ def base_settings() -> None:
                     label="Umrechnung in Stundenwerte",
                     help=(
                         """
-                            Die Werte aus der Excel-Tabelle werden in Stundenwerte umgewandelt.  \n
-                            _(abhängig von der angebenen Einheit entweder per Summe oder Mittelwert)_
-                            """
+                        Die Werte aus der Excel-Tabelle werden 
+                        in Stundenwerte umgewandelt.  \n
+                        _(abhängig von der angebenen Einheit 
+                        entweder per Summe oder Mittelwert)_
+                        """
                     ),
                     value=False,
                     disabled=False,
@@ -242,9 +244,9 @@ def base_settings() -> None:
                     label="mehrere Jahre übereinander",
                     help=(
                         """
-                            Die Werte in der Excel-Tabelle werden in Jahre 
-                            gruppiert und übereinander gezeichnet.
-                            """
+                        Die Werte in der Excel-Tabelle werden in Jahre 
+                        gruppiert und übereinander gezeichnet.
+                        """
                     ),
                     value=True,
                     key="cb_multi_year",
@@ -264,10 +266,12 @@ def select_graphs() -> None:
             label="geordnete Jahresdauerlinie",
             help=(
                 """
-                        Die Werte aus der Excel-Tabelle werden nach Größe sortiert ausgegeben.  \n
-                        _(Werden mehrere Jahre übereinander dargestellt, werden auch hier 
-                        die Werte in Jahre gruppiert und übereinander dargestellt.)_
-                        """
+                Die Werte aus der Excel-Tabelle werden 
+                nach Größe sortiert ausgegeben.  \n
+                _(Werden mehrere Jahre übereinander dargestellt, 
+                werden auch hier die Werte in Jahre gruppiert 
+                und übereinander dargestellt.)_
+                """
             ),
             value=True,
             key="cb_jdl",
@@ -277,10 +281,12 @@ def select_graphs() -> None:
             label="Monatswerte",
             help=(
                 """
-                        Aus den gegebenen Werten werden Monatswerte (je nach gegebener Einheit) 
-                        entweder durch Aufsummieren oder durch Bilden von Mittelwerten erzeugt 
-                        und als Liniengrafik dargestellt.
-                        """
+                Aus den gegebenen Werten werden Monatswerte 
+                (je nach gegebener Einheit) 
+                entweder durch Aufsummieren oder 
+                durch Bilden von Mittelwerten erzeugt 
+                und als Liniengrafik dargestellt.
+                """
             ),
             value=True,
             key="cb_mon",
@@ -294,9 +300,11 @@ def select_graphs() -> None:
             label="Tagesvergleich",
             help=(
                 """
-                        Hier können Tage gewählt werden, die übereinander als Liniengrafik dargestellt werden sollen.  \n
-                        _(z.B. zum Vergleich eines Wintertags mit einem Sommertag oder Woche - Wochenende, etc.)_
-                        """
+                Hier können Tage gewählt werden, 
+                die übereinander als Liniengrafik dargestellt werden sollen.  \n
+                _(z.B. zum Vergleich eines Wintertags mit 
+                einem Sommertag oder Woche - Wochenende, etc.)_
+                """
             ),
             value=False,
             key="cb_days",
@@ -310,21 +318,21 @@ def select_graphs() -> None:
             format="%i",
             help=(
                 """
-                        Wieveile Tage sollen verglichen werden?  \n
-                        _(Wird die Anzahl geändert muss auf "aktualisieren" 
-                        geklickt werden um weitere Felder anzuzeigen)_
-                        """
+                Wieveile Tage sollen verglichen werden?  \n
+                _(Wird die Anzahl geändert muss auf "aktualisieren" 
+                geklickt werden um weitere Felder anzuzeigen)_
+                """
             ),
             key="ni_days",
         )
 
         for num in range(int(st.session_state["ni_days"])):
             st.date_input(
-                label=f"Tag {str(num + 1)}",
+                label=f"Tag {num + 1!s}",
                 min_value=st.session_state["df"].index.min(),
                 max_value=st.session_state["df"].index.max(),
                 value=st.session_state["df"].index.min() + pd.DateOffset(days=num),
-                key=f"day_{str(num)}",
+                key=f"day_{num!s}",
             )
 
         st.markdown("---")
@@ -362,7 +370,8 @@ def meteo_sidebar(page: str) -> None:
                 value=2020,
                 help=(
                     """
-                    Falls nur ein Jahr ausgegeben werden soll, in beide Felder das gleiche Jahr eingeben.
+                    Falls nur ein Jahr ausgegeben werden soll, 
+                    in beide Felder das gleiche Jahr eingeben.
                     """
                 ),
                 key="meteo_start_year",
@@ -417,6 +426,7 @@ def meteo_params_main() -> None:
 
     with st.expander("Datenauswahl", expanded=False), st.form("Meteo Datenauswahl"):
         columns: list = st.columns(4)
+        float_align: str = "; float:left; text-align:left;"
 
         for cnt, col in enumerate(columns):
             with col:
@@ -425,7 +435,7 @@ def meteo_params_main() -> None:
                     f"""
                         <html>
                             <body>
-                                <span style="{cont.CSS_LABEL_1[1:-1]}; float:left; text-align:left;">
+                                <span style="{cont.CSS_LABEL_1[1:-1]}{float_align}">
                                     <div>{cats[cnt]}</div>
                             </body>
                         </html>
@@ -467,9 +477,10 @@ def clean_outliers() -> None:
             format="%.0f",
             help=(
                 """
-                        Ist ein Wert in den Daten höher als der hier eingegebene, 
-                        wird dieser Datenpunkt aus der Reihe gelöscht und die Lücke interpoliert.
-                        """
+                Ist ein Wert in den Daten höher als der hier eingegebene, 
+                wird dieser Datenpunkt aus der Reihe gelöscht 
+                und die Lücke interpoliert.
+                """
             ),
             key="ni_outl",
             disabled=True,
@@ -502,9 +513,9 @@ def smooth() -> None:
             step=2,
             help=(
                 """
-                        Je niedriger die Zahl, 
-                        desto weniger wird die Ursprungskurve geglättet.
-                        """
+                Je niedriger die Zahl, 
+                desto weniger wird die Ursprungskurve geglättet.
+                """
             ),
             key="gl_win",
         )
@@ -515,9 +526,9 @@ def smooth() -> None:
             format="%i",
             help=(
                 """
-                        Grad der polinomischen Linie  \n
-                        _(normalerweise passen 2 oder 3 ganz gut)_
-                        """
+                Grad der polinomischen Linie  \n
+                _(normalerweise passen 2 oder 3 ganz gut)_
+                """
             ),
             key="gl_deg",
         )
@@ -544,9 +555,9 @@ def h_v_lines() -> None:
             format="%f",
             help=(
                 """
-                        Bei diesem Wert wird eine horizontale Linie eingezeichnet.  \n
-                        _(Zum Löschen einfach "0" eingeben und Knöpfle drücken.)_
-                        """
+                Bei diesem Wert wird eine horizontale Linie eingezeichnet.  \n
+                _(Zum Löschen einfach "0" eingeben und Knöpfle drücken.)_
+                """
             ),
             key="ni_hor",
             step=1.0,
@@ -560,7 +571,8 @@ def h_v_lines() -> None:
         #         not any([ex in line.name for ex in fuan.exclude])
         #     ],
         #     help=(
-        #         'Diese Linie(n) wird (werden) zwischen X-Achse und hozizontaler Linie ausgefüllt.'
+        #         '''Diese Linie(n) wird (werden) zwischen X-Achse und
+        #           hozizontaler Linie ausgefüllt.'''
         #     ),
         #     key= 'ms_fil'
         # )
@@ -579,16 +591,18 @@ def h_v_lines() -> None:
 
 @func_timer
 def display_options_main_col_settings() -> dict[str, dict]:
-    """Settings for the columns of the main display options (controlling line color, type, etc.)
+    """Settings for the columns of the main display options
+    (controlling line color, type, etc.)
 
     Returns:
-        dict[str, dict]: "Title" -> column header with hover-text | "width" -> width of the column
-            - "name" -> name of line
-            - "vis" -> visibility of line (show line or not)
-            - "colour" -> line colour
-            - "type" -> line type (e.g. solid, dashed, etc.)
-            - "fill" -> weater to fill the line to y=0 and how transparent the fill should be
-            - "anno" -> show an arrow pointing to the maximim value of the line
+        dict[str, dict]:
+            - "Title" -> column header with hover-text | "width" -> width of the column
+                - "name" -> name of line
+                - "vis" -> visibility of line (show line or not)
+                - "colour" -> line colour
+                - "type" -> line type (e.g. solid, dashed, etc.)
+                - "fill" -> fill the line to y=0 and transparency of the fill
+                - "anno" -> show an arrow pointing to the maximim value of the line
     """
     return {
         "name": {
@@ -748,9 +762,9 @@ def display_smooth_main() -> bool:
                 step=2,
                 help=(
                     """
-                        Je niedriger die Zahl, 
-                        desto weniger wird die Ursprungskurve geglättet.
-                        """
+                    Je niedriger die Zahl, 
+                    desto weniger wird die Ursprungskurve geglättet.
+                    """
                 ),
                 key="gl_win",
             )
@@ -761,9 +775,9 @@ def display_smooth_main() -> bool:
                 format="%i",
                 help=(
                     """
-                        Grad der polinomischen Linie  \n
-                        _(normalerweise passen 2 oder 3 ganz gut)_
-                        """
+                    Grad der polinomischen Linie  \n
+                    _(normalerweise passen 2 oder 3 ganz gut)_
+                    """
                 ),
                 key="gl_deg",
             )
@@ -870,14 +884,16 @@ def downloads(page: str = "graph") -> None:
         st.button(
             label="html-Datei erzeugen",
             key="but_html",
-            help="Nach dem Erzeugen der html-Datei erscheint ein Knöpfle zum herunterladen.",
+            help="""Nach dem Erzeugen der html-Datei 
+            erscheint ein Knöpfle zum herunterladen.""",
         )
 
         # Excel-Datei
         st.button(
             "Excel-Datei erzeugen",
             key="but_xls",
-            help="Nach dem Erzeugen der Excel-Datei erscheint ein Knöpfle zum herunterladen.",
+            help="""Nach dem Erzeugen der Excel-Datei erscheint 
+            ein Knöpfle zum herunterladen.""",
         )
 
     if st.session_state.get("but_html"):

@@ -114,7 +114,7 @@ def general_setup() -> None:
 
     exp_dir: Path = Path(f"{Path.cwd()}/export")
     if Path.exists(exp_dir):
-        logger.info(f"Pfad '{exp_dir}' für die Ausgabe vorhanden")
+        logger.info(f"Pfad '{exp_dir}' für die Ausgabe bereits vorhanden")
     else:
         Path.mkdir(exp_dir)
         logger.info(f"Pfad '{exp_dir}' für die Ausgabe erstellt")

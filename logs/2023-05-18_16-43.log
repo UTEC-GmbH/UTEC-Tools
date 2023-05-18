@@ -1,0 +1,10 @@
+
+
+16:43:43 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+
+
+16:43:43 👉 function 'import_prefab_excel' started 👈 
+16:43:45 💡 <ipython-input-1-32281e4d07e4> -> import_prefab_excel -> line: 32 | Index-marker found in column 'column_2' 💡 
+
+16:44:18 👉 function 'import_prefab_excel' started 👈 
+16:44:21 💡 <ipython-input-1-32281e4d07e4> -> import_prefab_excel -> line: 32 | Index-marker found in column 'column_2' 💡 

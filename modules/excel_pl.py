@@ -3,8 +3,8 @@
 import io
 import random
 from pathlib import Path
+from typing import NamedTuple
 
-import numpy as np
 import polars as pl
 from loguru import logger
 
@@ -47,10 +47,8 @@ def import_prefab_excel(
         read_csv_options={"has_header": False, "try_parse_dates": False},
     )  # type: ignore
 
-    # remove empty rows and columns
+    # remove empty rows and columns and rename columns
     df = remove_empty(df)
-
-    # rename columns
     df = rename_columns(df, mark_index)
 
     # extract units and set y-axis accordingly
@@ -60,10 +58,60 @@ def import_prefab_excel(
 
     # clean up DataFrame
     df = clean_up_df(df, mark_index)
+    df = clean_up_daylight_savings(df, mark_index).df_clean
+
+    # copy index in separate column to preserve if index is changed (multi year)
+    df = df.with_columns(pl.col(mark_index).alias("orgidx"))
+
+    # meta Zeit
+    meta = temporal_metadata(df, mark_index, meta)
+
     los.log_df(df)
     logger.success("Excel-Datei importiert.")
 
     return df, meta
+
+
+def remove_empty(df: pl.DataFrame, **kwargs) -> pl.DataFrame:
+    """Remove empty rows and / or columns
+
+    Args:
+        - df (pl.DataFrame): DataFrame to edit
+        - row (bool): Optional keyword argument.
+            Set to False if empty rows should not be removed
+        - col (bool): Optional keyword argument.
+            Set to False if empty columns should not be removed
+
+    Returns:
+        - pl.DataFrame: DataFrame without empty rows / columns
+    """
+
+    row: bool = kwargs.get("row") or True
+    col: bool = kwargs.get("col") or True
+
+    # remove rows where all values are 'null'
+    if row:
+        df = df.filter(~pl.all(pl.all().is_null()))
+
+    # remove columns where all values are 'null'
+    if col:
+        df = df[[col.name for col in df if col.null_count() != df.height]]
+
+    return df
+
+
+def rename_columns(df: pl.DataFrame, mark_ind: str) -> pl.DataFrame:
+    """Rename the columns of the DataFrame"""
+
+    # find index marker
+    ind_col: str = [str(col) for col in df.columns if mark_ind in df.get_column(col)][0]
+    logger.info(f"Index-marker found in column '{ind_col}'")
+
+    # rename columns
+    cols: tuple = df.row(by_predicate=pl.col(ind_col) == mark_ind)
+    df.columns = [str(col) for col in cols]
+
+    return df
 
 
 def get_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> dict:
@@ -145,71 +193,64 @@ def clean_up_daylight_savings(df: pl.DataFrame, mark_index: str) -> CleanUpDLS:
             - "df_clean": edited DataFrame
             - "df_deleted": deleted data
     """
+
     # Sommerzeitumstellung: letzter Sonntag im Maerz - von 2h auf 3h
-    # Monat = 3 ---> März
-    # letzte Woche (Tag > 31-7)
-    # Wochentag = 6 ---> Sonntag
-    # Stunde 2 wird ausgelassen
+    month: int = 3  # Monat = 3 -> März
+    day: int = 31 - 7  # letzte Woche (Tag > 31-7)
+    weekday: int = 6  # Wochentag = 6 -> Sonntag
+    hour: int = 2  # Stunde 2 wird ausgelassen
 
-    summer = df.filter(
-        (pl.col(mark_index).dt.month() == 3)
-        & (pl.col(mark_index).dt.day() > (31 - 7))
-        & (pl.col(mark_index).dt.weekday() == 6)
-        & (pl.col(mark_index).dt.hour() == 2)
+    date_col: pl.Series = df.get_column(mark_index)
+    summer: pl.Series = df.filter(
+        (date_col.dt.month() == month)
+        & (date_col.dt.day() > day)
+        & (date_col.dt.weekday() == weekday)
+        & (date_col.dt.hour() == hour)
+    ).get_column(mark_index)
+
+    # Winterzeitumstellung: doppelte Stunde -> Duplikate löschen
+
+    df_clean: pl.DataFrame = df.filter(~pl.col(mark_index).is_in(summer)).unique(
+        subset=mark_index, keep="first", maintain_order=True
     )
+    df_deleted: pl.DataFrame = df.filter(
+        pl.col(mark_index).is_in(summer) | pl.col(mark_index).is_duplicated()
+    ).unique(subset=mark_index, keep="last", maintain_order=True)
 
-    # Winterzeitumstellung: doppelte Stunde
-    winter: np.ndarray = df.index.duplicated(keep="first")
-
-    df_clean: pd.DataFrame = df[~summer & ~winter]
-    df_deleted: pd.DataFrame = df[summer | winter]
-
-    if len(df_deleted.index) > 0:
+    if df_deleted.height > 0:
         logger.warning("Data deleted due to daylight savings.")
-        logger.log(LogLevel.DATA_FRAME.name, df_deleted)
+        logger.log(los.LogLevel.DATA_FRAME.name, df_deleted)
     else:
         logger.info("No data deleted due to daylight savings")
 
     return CleanUpDLS(df_clean=df_clean, df_deleted=df_deleted)
 
 
-def rename_columns(df: pl.DataFrame, mark_ind: str) -> pl.DataFrame:
-    """Rename the columns of the DataFrame"""
+def temporal_metadata(df: pl.DataFrame, mark_index: str, meta: dict) -> dict:
+    viertel: int = 15
+    std: int = 60
 
-    # find index marker
-    ind_col: str = [str(col) for col in df.columns if mark_ind in df.get_column(col)][0]
-    logger.info(f"Index-marker found in column '{ind_col}'")
+    meta["datetime"] = False
+    meta["years"] = []
+    meta["td_int"] = "unbekannt"
+    meta["td_mean"] = "unbekannt"
 
-    # rename columns
-    cols: tuple = df.row(by_predicate=pl.col(ind_col) == mark_ind)
-    df.columns = [str(col) for col in cols]
+    if not df.get_column(mark_index).is_temporal():
+        logger.error("Kein Zeitindex gefunden!!!")
+    else:
+        meta["datetime"] = True
 
-    return df
+    td_mean: int = int(
+        df.select(pl.col(mark_index).diff().dt.minutes().drop_nulls().mean()).item()
+    )
+    logger.debug(f"Zeitliche Auflösung des DataFrame: {td_mean} Minuten")
 
+    meta["td_mean"] = td_mean
+    if meta["td_mean"] == viertel:
+        meta["td_int"] = "15min"
+        logger.info("Index mit zeitlicher Auflösung von 15 Minuten erkannt.")
+    elif meta["td_mean"] == std:
+        meta["td_int"] = "h"
+        logger.info("Index mit zeitlicher Auflösung von 1 Stunde erkannt.")
 
-def remove_empty(df: pl.DataFrame, **kwargs) -> pl.DataFrame:
-    """Remove empty rows and / or columns
-
-    Args:
-        - df (pl.DataFrame): DataFrame to edit
-        - row (bool): Optional keyword argument.
-            Set to False if empty rows should not be removed
-        - col (bool): Optional keyword argument.
-            Set to False if empty columns should not be removed
-
-    Returns:
-        - pl.DataFrame: DataFrame without empty rows / columns
-    """
-
-    row: bool = kwargs.get("row") or True
-    col: bool = kwargs.get("col") or True
-
-    # remove rows where all values are 'null'
-    if row:
-        df = df.filter(~pl.all(pl.all().is_null()))
-
-    # remove columns where all values are 'null'
-    if col:
-        df = df[[col.name for col in df if col.null_count() != df.height]]
-
-    return df
+    return meta

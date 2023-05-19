@@ -90,7 +90,10 @@ class LogLevel:
 
 def log_df(df: pl.DataFrame) -> None:
     """Put the head of the DataFrame in the log"""
-    logger.log(LogLevel.DATA_FRAME.name, f"{df.head()} \n{df.describe()}")
+    logger.log(
+        LogLevel.DATA_FRAME.name,
+        f"DataFrame head: \n{df.head()} \n\nDataFrame properties: \n{df.describe()}",
+    )
 
 
 def logger_setup() -> None:

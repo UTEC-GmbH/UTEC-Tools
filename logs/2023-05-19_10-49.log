@@ -1,10 +1,21 @@
 
 
-09:14:38 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+10:49:47 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
 
 
-09:14:38 👉 function 'import_prefab_excel' started 👈 
-09:14:41 💡 <ipython-input-1-7dee84c58785> -> rename_columns -> line: 77 | Index-marker found in column 'column_2' 💡 
+10:49:47 👉 function 'import_prefab_excel' started 👈 
+10:49:50 💡 <ipython-input-1-1dae4a5772bc> -> rename_columns -> line: 141 | Index-marker found in column 'column_2' 💡 
+10:49:50 💡 <ipython-input-1-1dae4a5772bc> -> get_units -> line: 69 | Strombedarf: Einheit ' kWh' 💡 
+10:49:50 💡 <ipython-input-1-1dae4a5772bc> -> get_units -> line: 69 | PV Produktion: Einheit ' kWh' 💡 
+10:49:50 💡 <ipython-input-1-1dae4a5772bc> -> get_units -> line: 69 | Netzeinspeisung: Einheit ' kWh' 💡 
+10:49:50 💡 <ipython-input-1-1dae4a5772bc> -> get_units -> line: 69 | PV Eigennutzung: Einheit ' kWh' 💡 
+10:49:50 💡 <ipython-input-1-1dae4a5772bc> -> get_units -> line: 69 | Strombez. 1-1:1.29.0: Einheit ' kWh' 💡 
+10:49:50 💡 <ipython-input-1-1dae4a5772bc> -> set_y_axis_for_lines -> line: 80 | Strombedarf: Y-Achse 'y' 💡 
+10:49:50 💡 <ipython-input-1-1dae4a5772bc> -> set_y_axis_for_lines -> line: 80 | PV Produktion: Y-Achse 'y' 💡 
+10:49:50 💡 <ipython-input-1-1dae4a5772bc> -> set_y_axis_for_lines -> line: 80 | Netzeinspeisung: Y-Achse 'y' 💡 
+10:49:50 💡 <ipython-input-1-1dae4a5772bc> -> set_y_axis_for_lines -> line: 80 | PV Eigennutzung: Y-Achse 'y' 💡 
+10:49:50 💡 <ipython-input-1-1dae4a5772bc> -> set_y_axis_for_lines -> line: 80 | Strombez. 1-1:1.29.0: Y-Achse 'y' 💡 
+10:49:50 💡 <ipython-input-1-1dae4a5772bc> -> import_prefab_excel -> line: 45 | {'units': {'all': [' kWh', ' kWh', ' kWh', ' kWh', ' kWh'], 'set': [' kWh']}, 'Strombedarf': {'unit': ' kWh', 'y_axis': 'y'}, 'PV Produktion': {'unit': ' kWh', 'y_axis': 'y'}, 'Netzeinspeisung': {'unit': ' kWh', 'y_axis': 'y'}, 'PV Eigennutzung': {'unit': ' kWh', 'y_axis': 'y'}, 'Strombez. 1-1:1.29.0': {'unit': ' kWh', 'y_axis': 'y'}} 💡 
   shape: (5, 6)
 ┌──────────────┬─────────────┬───────────────┬────────────────────┬───────────────────┬────────────┐
 │ ↓ Index ↓    ┆ Strombedarf ┆ PV Produktion ┆ Netzeinspeisung    ┆ PV Eigennutzung   ┆ Strombez.  │
@@ -43,9 +54,5 @@ shape: (7, 7)
 │ median     ┆ null       ┆ 4.08        ┆ 0.0        ┆ 0.0           ┆ 0.0          ┆ 2.73         │
 └────────────┴────────────┴─────────────┴────────────┴───────────────┴──────────────┴──────────────┘  
 
-09:14:41 ⏱ execution time of 'import_prefab_excel': 2.7190 s ⏱ 
-09:21:33 💡 <ipython-input-10-5cf734b01280> -> <module> -> line: 12 | Strombedarf: Y-Achse y 💡 
-09:21:33 💡 <ipython-input-10-5cf734b01280> -> <module> -> line: 12 | PV Produktion: Y-Achse y 💡 
-09:21:33 💡 <ipython-input-10-5cf734b01280> -> <module> -> line: 12 | Netzeinspeisung: Y-Achse y 💡 
-09:21:33 💡 <ipython-input-10-5cf734b01280> -> <module> -> line: 12 | PV Eigennutzung: Y-Achse y 💡 
-09:21:33 💡 <ipython-input-10-5cf734b01280> -> <module> -> line: 12 | Strombez. 1-1:1.29.0: Y-Achse y 💡 
+10:49:50 🥳 <ipython-input-1-1dae4a5772bc> -> import_prefab_excel -> line: 49 | Excel-Datei importiert. 🥳 
+10:49:50 ⏱ execution time of 'import_prefab_excel': 2.6570 s ⏱ 

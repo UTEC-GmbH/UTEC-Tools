@@ -156,6 +156,7 @@ def set_y_axis_for_lines(meta: dict) -> dict:
 
 def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
     """Clean up the DataFrame and adjust the data types"""
+
     ind_row: int = (
         df.with_row_count().filter(pl.col(mark_index) == mark_index).row(0)[0]
     )
@@ -227,23 +228,20 @@ def clean_up_daylight_savings(df: pl.DataFrame, mark_index: str) -> CleanUpDLS:
 
 
 def temporal_metadata(df: pl.DataFrame, mark_index: str, meta: dict) -> dict:
-    viertel: int = 15
-    std: int = 60
-
-    meta["datetime"] = False
-    meta["years"] = []
-    meta["td_int"] = "unbekannt"
-    meta["td_mean"] = "unbekannt"
+    """Get information about the time index."""
 
     if not df.get_column(mark_index).is_temporal():
         logger.error("Kein Zeitindex gefunden!!!")
-    else:
-        meta["datetime"] = True
+        return meta
+
+    viertel: int = 15
+    std: int = 60
+    meta["datetime"] = True
+    meta["years"] = df.get_column(mark_index).dt.year().unique().sort().to_list()
 
     td_mean: int = int(
         df.select(pl.col(mark_index).diff().dt.minutes().drop_nulls().mean()).item()
     )
-    logger.debug(f"Zeitliche Auflösung des DataFrame: {td_mean} Minuten")
 
     meta["td_mean"] = td_mean
     if meta["td_mean"] == viertel:
@@ -252,5 +250,7 @@ def temporal_metadata(df: pl.DataFrame, mark_index: str, meta: dict) -> dict:
     elif meta["td_mean"] == std:
         meta["td_int"] = "h"
         logger.info("Index mit zeitlicher Auflösung von 1 Stunde erkannt.")
+    else:
+        logger.debug(f"Mittlere zeitliche Auflösung des DataFrame: {td_mean} Minuten")
 
     return meta

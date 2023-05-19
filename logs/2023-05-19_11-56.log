@@ -66,3 +66,4 @@ shape: (7, 6)
 
 11:56:28 🥳 <ipython-input-1-0942cf8f06ff> -> import_prefab_excel -> line: 50 | Excel-Datei importiert. 🥳 
 11:56:28 ⏱ execution time of 'import_prefab_excel': 6.3600 s ⏱ 
+12:32:29 🐞 <ipython-input-27-3a17d4c29058> -> <module> -> line: 4 | Zeitliche Auflösung des DataFrame: 15 Minuten 🐞 

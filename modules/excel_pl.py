@@ -1,18 +1,22 @@
 """Import und Download von Excel-Dateien"""
 
 import io
+import random
+from pathlib import Path
 
+import numpy as np
 import polars as pl
 from loguru import logger
 
 import modules.classes as cl
 import modules.general_functions as gf
+import modules.logger_setup as los
 
 
 @gf.func_timer
 def import_prefab_excel(
     file: io.BytesIO | None = None,
-) -> tuple[pl.DataFrame, dict[str, str]]:
+) -> tuple[pl.DataFrame, dict]:
     """Import and download Excel files.
 
     Args:
@@ -21,15 +25,16 @@ def import_prefab_excel(
         If None, a default example file will be used (for testing).
 
     Returns:
-    - tuple[pl.DataFrame, dict[str, str]]: A tuple containing the imported DataFrame
-        and a dictionary mapping column names to units extracted from the Excel file.
+    - tuple[pl.DataFrame, dict]: A tuple containing the imported DataFrame
+        and a dictionary with metadata extracted from the Excel file.
     """
 
-    phil: io.BytesIO | str = (
-        file or "example_files/Auswertung Stromlastgang - einzelnes Jahr.xlsx"
-    )
+    example_files: list[Path] = list(Path(f"{Path.cwd()}/example_files").glob("*.xlsx"))
 
-    mark_ind: str = cl.ExcelMarkers(cl.MarkerType.INDEX).marker_string
+    phil: io.BytesIO | Path = file or random.choice(example_files)  # noqa: S311
+
+    mark_index: str = cl.ExcelMarkers(cl.MarkerType.INDEX).marker_string
+    mark_units: str = cl.ExcelMarkers(cl.MarkerType.UNITS).marker_string
 
     df: pl.DataFrame = pl.read_excel(
         phil,
@@ -46,28 +51,126 @@ def import_prefab_excel(
     df = remove_empty(df)
 
     # rename columns
-    df = rename_columns(df, mark_ind)
+    df = rename_columns(df, mark_index)
 
-    # extract units
-    units: dict[str, str] = df.select(
-        [col for col in df.columns if col != mark_ind]
-    ).row(0, named=True)
+    # extract units and set y-axis accordingly
+    meta: dict = get_units(df, mark_index, mark_units)
+    meta = set_y_axis_for_lines(meta)
+    logger.info(meta)
 
     # clean up DataFrame
-    df = clean_up_df(df, mark_ind)
-    logger.info(df.head())
+    df = clean_up_df(df, mark_index)
+    los.log_df(df)
+    logger.success("Excel-Datei importiert.")
 
-    return df, units
+    return df, meta
 
 
-def clean_up_df(df: pl.DataFrame, mark_ind: str) -> pl.DataFrame:
+def get_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> dict:
+    """Get units from imported Excel-file"""
+
+    units: dict[str, str] = (
+        df.filter(pl.col(mark_index) == mark_units)
+        .select([col for col in df.columns if col != mark_index])
+        .row(0, named=True)
+    )
+
+    # leerzeichen vor Einheit
+    units = {line: f" {unit.strip()}" for line, unit in units.items()}
+
+    meta: dict = {
+        "units": {
+            "all": list(units.values()),
+            "set": gf.sort_list_by_occurance(list(units.values())),
+        }
+    }
+    for line, unit in units.items():
+        meta[line] = {"unit": unit}
+        logger.info(f"{line}: Einheit '{meta[line]['unit']}'")
+
+    return meta
+
+
+def set_y_axis_for_lines(meta: dict) -> dict:
+    """Y-Achsen der Linien"""
+
+    lines_with_units: dict[str, str] = {
+        line: meta[line].get("unit") for line in meta if "unit" in meta[line]
+    }
+
+    for line, unit in lines_with_units.items():
+        ind: int = meta["units"]["set"].index(unit)
+        meta[line]["y_axis"] = f"y{ind + 1}" if ind > 0 else "y"
+        logger.info(f"{line}: Y-Achse '{meta[line]['y_axis']}'")
+
+    return meta
+
+
+def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
     """Clean up the DataFrame and adjust the data types"""
-    df = df.slice(2)
+    ind_row: int = (
+        df.with_row_count().filter(pl.col(mark_index) == mark_index).row(0)[0]
+    )
+    df = df.slice(ind_row + 1)
     df = df.select(
-        [pl.col(mark_ind).str.strptime(pl.Datetime, "%d.%m.%Y %T")]
-        + [pl.col(col).cast(pl.Float32) for col in df.columns if col != mark_ind]
+        [pl.col(mark_index).str.strptime(pl.Datetime, "%d.%m.%Y %T")]
+        + [pl.col(col).cast(pl.Float32) for col in df.columns if col != mark_index]
     )
     return df
+
+
+class CleanUpDLS(NamedTuple):
+    """Named Tuple for return value of following function"""
+
+    df_clean: pl.DataFrame
+    df_deleted: pl.DataFrame
+
+
+def clean_up_daylight_savings(df: pl.DataFrame, mark_index: str) -> CleanUpDLS:
+    """Zeitumstellung
+
+    Bei der Zeitumstellung auf Sommerzeit wird die Uhr eine Stunde vor gestellt,
+    sodass in der Zeitreihe eine Stunde fehlt. Falls das DataFrame diese Stunde
+    enthält (z.B. mit nullen in der Stunde), werden diese Zeilen gelöscht.
+
+    Bei der Zeitumstellung auf Winterzeit wird die Uhr eine Sunde zurück gestellt.
+    Dadurch gibt es die Stunde doppelt in der Zeitreihe. Das erste Auftreten der
+    doppelten Stunde wird gelöscht.
+
+    Args:
+        - df (pd.DataFrame): DataFrame to edit
+
+    Returns:
+        - dict[str, pd.DataFrame]:
+            - "df_clean": edited DataFrame
+            - "df_deleted": deleted data
+    """
+    # Sommerzeitumstellung: letzter Sonntag im Maerz - von 2h auf 3h
+    # Monat = 3 ---> März
+    # letzte Woche (Tag > 31-7)
+    # Wochentag = 6 ---> Sonntag
+    # Stunde 2 wird ausgelassen
+
+    summer = df.filter(
+        (pl.col(mark_index).dt.month() == 3)
+        & (pl.col(mark_index).dt.day() > (31 - 7))
+        & (pl.col(mark_index).dt.weekday() == 6)
+        & (pl.col(mark_index).dt.hour() == 2)
+    )
+
+    # Winterzeitumstellung: doppelte Stunde
+    winter: np.ndarray = df.index.duplicated(keep="first")
+
+    df_clean: pd.DataFrame = df[~summer & ~winter]
+    df_deleted: pd.DataFrame = df[summer | winter]
+
+    if len(df_deleted.index) > 0:
+        logger.warning("Data deleted due to daylight savings.")
+        logger.log(LogLevel.DATA_FRAME.name, df_deleted)
+    else:
+        logger.info("No data deleted due to daylight savings")
+
+    return CleanUpDLS(df_clean=df_clean, df_deleted=df_deleted)
 
 
 def rename_columns(df: pl.DataFrame, mark_ind: str) -> pl.DataFrame:
@@ -78,7 +181,7 @@ def rename_columns(df: pl.DataFrame, mark_ind: str) -> pl.DataFrame:
     logger.info(f"Index-marker found in column '{ind_col}'")
 
     # rename columns
-    cols: tuple = df.row(by_predicate=pl.col(ind_col) == "↓ Index ↓")
+    cols: tuple = df.row(by_predicate=pl.col(ind_col) == mark_ind)
     df.columns = [str(col) for col in cols]
 
     return df

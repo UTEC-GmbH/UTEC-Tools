@@ -4,6 +4,7 @@
 import sys
 from dataclasses import dataclass
 
+import polars as pl
 import streamlit as st
 from loguru import logger
 
@@ -29,12 +30,12 @@ class LevelProperties:
         info: str = self.info
         time: str = self.time
         if len(self.icon) == 2:
-            ic_0: str = self.icon[0]
-            ic_1: str = self.icon[1]
+            icon_0: str = self.icon[0]
+            icon_1: str = self.icon[1]
         else:
-            ic_0: str = self.icon
-            ic_1: str = ic_0
-        return f"{nl_0}{time} {ic_0} {info}{{message}} {ic_1} {nl_1}"
+            icon_0: str = self.icon
+            icon_1: str = icon_0
+        return f"{nl_0}{time} {icon_0} {info}{{message}} {icon_1} {nl_1}"
 
 
 @dataclass
@@ -85,6 +86,11 @@ class LogLevel:
         blank_lines_before=1,
         blank_lines_after=1,
     )
+
+
+def log_df(df: pl.DataFrame) -> None:
+    """Put the head of the DataFrame in the log"""
+    logger.log(LogLevel.DATA_FRAME.name, f"{df.head()} \n{df.describe()}")
 
 
 def logger_setup() -> None:

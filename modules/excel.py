@@ -392,7 +392,12 @@ def excel_download(df: pd.DataFrame, page: str = "graph") -> bytes:
         worksheet: Any = writer.sheets[ws_name]
 
         format_worksheet(
-            workbook, worksheet, df, num_formats, column_offset, row_offset
+            workbook,
+            worksheet,
+            df,
+            num_formats,
+            offset_col=column_offset,
+            offset_row=row_offset,
         )
 
     return output.getvalue()

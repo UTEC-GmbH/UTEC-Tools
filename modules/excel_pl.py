@@ -90,7 +90,7 @@ def remove_empty(df: pl.DataFrame, **kwargs) -> pl.DataFrame:
 
     # remove rows where all values are 'null'
     if row:
-        df = df.filter(~pl.all(pl.all().is_null()))
+        df = df.filter(~pl.all(pl.all().is_null()))  # pylint: disable=E1130
 
     # remove columns where all values are 'null'
     if col:

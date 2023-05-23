@@ -621,6 +621,12 @@ def display_options_main_col_settings() -> dict[str, dict]:
             "Title": text_with_hover("Linientyp", "Linie gestrichelt darstellen?"),
             "width": 2,
         },
+        "markers": {
+            "Title": text_with_hover(
+                "Punkte", "Markierung (Punkt) an jedem Datenpunkt und deren Größe"
+            ),
+            "width": 2,
+        },
         "fill": {
             "Title": text_with_hover(
                 "Füllen (Transparenz)",
@@ -681,13 +687,6 @@ def display_options_main() -> bool:
                         key=f"cb_vis_{line_name}",
                         label_visibility="collapsed",
                     )
-                with cols[list(columns).index("type")]:
-                    st.selectbox(
-                        label=line_name,
-                        key=f"sb_line_dash_{line_name}",
-                        label_visibility="collapsed",
-                        options=list(cont.LINE_TYPES),
-                    )
                 with cols[list(columns).index("colour")]:
                     st.color_picker(
                         label=line_name,
@@ -695,7 +694,29 @@ def display_options_main() -> bool:
                         key=f"cp_{line_name}",
                         label_visibility="collapsed",
                     )
-
+                with cols[list(columns).index("type")]:
+                    st.selectbox(
+                        label=line_name,
+                        key=f"sb_line_dash_{line_name}",
+                        label_visibility="collapsed",
+                        options=list(cont.LINE_TYPES),
+                    )
+                with cols[list(columns).index("markers")]:
+                    lvl2_1, lvl2_2 = st.columns([1, 3])
+                    with lvl2_1:
+                        st.checkbox(
+                            label="Punkte",
+                            value=False,
+                            key=f"cb_markers_{line_name}",
+                            label_visibility="collapsed",
+                        )
+                    with lvl2_2:
+                        st.number_input(
+                            label="Punkte",
+                            value=7,
+                            key=f"ni_markers_{line_name}",
+                            label_visibility="collapsed",
+                        )
                 with cols[list(columns).index("fill")]:
                     st.selectbox(
                         label=line_name,

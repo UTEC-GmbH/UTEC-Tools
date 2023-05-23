@@ -1,22 +1,16 @@
 
 
-09:08:47 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+15:26:10 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
 
 
-09:08:47 👉 function 'import_prefab_excel' started 👈 
-09:08:48 💡 excel_pl -> rename_columns -> line: 109 | Index-marker found in column 'column_2' 💡 
-09:08:48 💡 excel_pl -> get_units -> line: 138 | Strombedarf: Einheit ' kWh' 💡 
-09:08:48 💡 excel_pl -> get_units -> line: 138 | PV Produktion: Einheit ' kWh' 💡 
-09:08:48 💡 excel_pl -> get_units -> line: 138 | Netzeinspeisung: Einheit ' kWh' 💡 
-09:08:48 💡 excel_pl -> get_units -> line: 138 | PV Eigennutzung: Einheit ' kWh' 💡 
-09:08:48 💡 excel_pl -> get_units -> line: 138 | Strombez. 1-1:1.29.0: Einheit ' kWh' 💡 
-09:08:48 💡 excel_pl -> set_y_axis_for_lines -> line: 153 | Strombedarf: Y-Achse 'y' 💡 
-09:08:48 💡 excel_pl -> set_y_axis_for_lines -> line: 153 | PV Produktion: Y-Achse 'y' 💡 
-09:08:48 💡 excel_pl -> set_y_axis_for_lines -> line: 153 | Netzeinspeisung: Y-Achse 'y' 💡 
-09:08:48 💡 excel_pl -> set_y_axis_for_lines -> line: 153 | PV Eigennutzung: Y-Achse 'y' 💡 
-09:08:48 💡 excel_pl -> set_y_axis_for_lines -> line: 153 | Strombez. 1-1:1.29.0: Y-Achse 'y' 💡 
-09:08:48 💡 excel_pl -> import_prefab_excel -> line: 58 | {'units': {'all': [' kWh', ' kWh', ' kWh', ' kWh', ' kWh'], 'set': [' kWh']}, 'Strombedarf': {'unit': ' kWh', 'y_axis': 'y'}, 'PV Produktion': {'unit': ' kWh', 'y_axis': 'y'}, 'Netzeinspeisung': {'unit': ' kWh', 'y_axis': 'y'}, 'PV Eigennutzung': {'unit': ' kWh', 'y_axis': 'y'}, 'Strombez. 1-1:1.29.0': {'unit': ' kWh', 'y_axis': 'y'}} 💡 
-09:08:48 ⚠ excel_pl -> clean_up_daylight_savings -> line: 223 | Data deleted due to daylight savings. ️ 
+15:26:10 👉 function 'import_prefab_excel' started 👈 
+15:26:11 💡 excel_pl -> rename_columns -> line: 143 | Index-marker found in column 'column_2' 💡 
+15:26:11 💡 excel_pl -> set_y_axis_for_lines -> line: 184 | Strombedarf: Y-Achse 'y' 💡 
+15:26:11 💡 excel_pl -> set_y_axis_for_lines -> line: 184 | PV Produktion: Y-Achse 'y' 💡 
+15:26:11 💡 excel_pl -> set_y_axis_for_lines -> line: 184 | Netzeinspeisung: Y-Achse 'y' 💡 
+15:26:11 💡 excel_pl -> set_y_axis_for_lines -> line: 184 | PV Eigennutzung: Y-Achse 'y' 💡 
+15:26:11 💡 excel_pl -> set_y_axis_for_lines -> line: 184 | Strombez. 1-1:1.29.0: Y-Achse 'y' 💡 
+15:26:11 ⚠ excel_pl -> clean_up_daylight_savings -> line: 254 | Data deleted due to daylight savings. ️ 
   shape: (8, 6)
 ┌──────────────┬─────────────┬───────────────┬────────────────────┬───────────────────┬────────────┐
 │ ↓ Index ↓    ┆ Strombedarf ┆ PV Produktion ┆ Netzeinspeisung    ┆ PV Eigennutzung   ┆ Strombez.  │
@@ -42,7 +36,8 @@
 │ 02:45:00     ┆             ┆               ┆                    ┆                   ┆            │
 └──────────────┴─────────────┴───────────────┴────────────────────┴───────────────────┴────────────┘  
 
-09:08:48 💡 excel_pl -> temporal_metadata -> line: 250 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
+15:26:11 💡 excel_pl -> temporal_metadata -> line: 281 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
+15:26:11 💡 excel_pl -> import_prefab_excel -> line: 102 | MetaData(units=Units(all_units=[' kWh', ' kWh', ' kWh', ' kWh', ' kWh'], set_units=[' kWh']), lines=[Line(name='Strombedarf', unit=' kWh', y_axis='y'), Line(name='PV Produktion', unit=' kWh', y_axis='y'), Line(name='Netzeinspeisung', unit=' kWh', y_axis='y'), Line(name='PV Eigennutzung', unit=' kWh', y_axis='y'), Line(name='Strombez. 1-1:1.29.0', unit=' kWh', y_axis='y')], datetime=True, years=[2021], td_mean=15, td_interval='15min') 💡 
   DataFrame head: 
 shape: (5, 7)
 ┌────────────┬─────────────┬────────────┬────────────┬───────────────┬──────────────┬──────────────┐
@@ -87,25 +82,16 @@ shape: (9, 8)
 │ 75%      ┆ null       ┆ 5.17      ┆ 1.73       ┆ 0.0        ┆ 1.73       ┆ 4.28       ┆ null     │
 └──────────┴────────────┴───────────┴────────────┴────────────┴────────────┴────────────┴──────────┘  
 
-09:08:48 🥳 excel_pl -> import_prefab_excel -> line: 71 | Excel-Datei importiert. 🥳 
-09:08:48 ⏱ execution time of 'import_prefab_excel': 1.3590 s ⏱ 
+15:26:11 🥳 excel_pl -> import_prefab_excel -> line: 105 | Excel-Datei importiert. 🥳 
+15:26:11 ⏱ execution time of 'import_prefab_excel': 1.3120 s ⏱ 
 
-
-09:08:56 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
-
-
-09:08:56 👉 function 'import_prefab_excel' started 👈 
-09:08:59 💡 excel_pl -> rename_columns -> line: 109 | Index-marker found in column 'column_2' 💡 
-09:08:59 💡 excel_pl -> get_units -> line: 138 | Bezug (1-1:1.29.0): Einheit ' kW' 💡 
-09:08:59 💡 excel_pl -> get_units -> line: 138 | Einsp. (1-1:2.29.0): Einheit ' kW' 💡 
-09:08:59 💡 excel_pl -> get_units -> line: 138 | PV-Anlage: Einheit ' kWh' 💡 
-09:08:59 💡 excel_pl -> get_units -> line: 138 | Bedarf: Einheit ' kWh' 💡 
-09:08:59 💡 excel_pl -> set_y_axis_for_lines -> line: 153 | Bezug (1-1:1.29.0): Y-Achse 'y' 💡 
-09:08:59 💡 excel_pl -> set_y_axis_for_lines -> line: 153 | Einsp. (1-1:2.29.0): Y-Achse 'y' 💡 
-09:08:59 💡 excel_pl -> set_y_axis_for_lines -> line: 153 | PV-Anlage: Y-Achse 'y2' 💡 
-09:08:59 💡 excel_pl -> set_y_axis_for_lines -> line: 153 | Bedarf: Y-Achse 'y2' 💡 
-09:08:59 💡 excel_pl -> import_prefab_excel -> line: 58 | {'units': {'all': [' kW', ' kW', ' kWh', ' kWh'], 'set': [' kW', ' kWh']}, 'Bezug (1-1:1.29.0)': {'unit': ' kW', 'y_axis': 'y'}, 'Einsp. (1-1:2.29.0)': {'unit': ' kW', 'y_axis': 'y'}, 'PV-Anlage': {'unit': ' kWh', 'y_axis': 'y2'}, 'Bedarf': {'unit': ' kWh', 'y_axis': 'y2'}} 💡 
-09:08:59 ⚠ excel_pl -> clean_up_daylight_savings -> line: 223 | Data deleted due to daylight savings. ️ 
+15:26:11 👉 function 'import_prefab_excel' started 👈 
+15:26:14 💡 excel_pl -> rename_columns -> line: 143 | Index-marker found in column 'column_2' 💡 
+15:26:14 💡 excel_pl -> set_y_axis_for_lines -> line: 184 | Bezug (1-1:1.29.0): Y-Achse 'y' 💡 
+15:26:14 💡 excel_pl -> set_y_axis_for_lines -> line: 184 | Einsp. (1-1:2.29.0): Y-Achse 'y' 💡 
+15:26:14 💡 excel_pl -> set_y_axis_for_lines -> line: 184 | PV-Anlage: Y-Achse 'y2' 💡 
+15:26:14 💡 excel_pl -> set_y_axis_for_lines -> line: 184 | Bedarf: Y-Achse 'y2' 💡 
+15:26:14 ⚠ excel_pl -> clean_up_daylight_savings -> line: 254 | Data deleted due to daylight savings. ️ 
   shape: (24, 5)
 ┌─────────────────────┬────────────────────┬─────────────────────┬───────────┬────────┐
 │ ↓ Index ↓           ┆ Bezug (1-1:1.29.0) ┆ Einsp. (1-1:2.29.0) ┆ PV-Anlage ┆ Bedarf │
@@ -123,7 +109,8 @@ shape: (9, 8)
 │ 2019-10-27 03:00:00 ┆ 22.5               ┆ 0.0                 ┆ 0.0       ┆ 11.875 │
 └─────────────────────┴────────────────────┴─────────────────────┴───────────┴────────┘  
 
-09:08:59 💡 excel_pl -> temporal_metadata -> line: 250 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
+15:26:14 💡 excel_pl -> temporal_metadata -> line: 281 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
+15:26:14 💡 excel_pl -> import_prefab_excel -> line: 102 | MetaData(units=Units(all_units=[' kW', ' kW', ' kWh', ' kWh'], set_units=[' kW', ' kWh']), lines=[Line(name='Bezug (1-1:1.29.0)', unit=' kW', y_axis='y'), Line(name='Einsp. (1-1:2.29.0)', unit=' kW', y_axis='y'), Line(name='PV-Anlage', unit=' kWh', y_axis='y2'), Line(name='Bedarf', unit=' kWh', y_axis='y2')], datetime=True, years=[2017, 2018, 2019], td_mean=15, td_interval='15min') 💡 
   DataFrame head: 
 shape: (5, 6)
 ┌──────────────┬────────────────────┬──────────────┬───────────┬────────┬─────────────────────┐
@@ -165,5 +152,60 @@ shape: (9, 7)
 │ 75%        ┆ null          ┆ 27.5          ┆ 3.5           ┆ 1.725     ┆ 13.125   ┆ null         │
 └────────────┴───────────────┴───────────────┴───────────────┴───────────┴──────────┴──────────────┘  
 
-09:08:59 🥳 excel_pl -> import_prefab_excel -> line: 71 | Excel-Datei importiert. 🥳 
-09:08:59 ⏱ execution time of 'import_prefab_excel': 3.1560 s ⏱ 
+15:26:14 🥳 excel_pl -> import_prefab_excel -> line: 105 | Excel-Datei importiert. 🥳 
+15:26:14 ⏱ execution time of 'import_prefab_excel': 3.0160 s ⏱ 
+
+15:26:14 👉 function 'import_prefab_excel' started 👈 
+15:26:16 💡 excel_pl -> rename_columns -> line: 143 | Index-marker found in column 'column_2' 💡 
+15:26:16 💡 excel_pl -> set_y_axis_for_lines -> line: 184 | Wärmebedarf: Y-Achse 'y' 💡 
+15:26:16 💡 excel_pl -> set_y_axis_for_lines -> line: 184 | BHKW: Y-Achse 'y' 💡 
+15:26:16 💡 excel_pl -> set_y_axis_for_lines -> line: 184 | Temperatur: Y-Achse 'y2' 💡 
+15:26:16 ⚠ excel_pl -> clean_up_daylight_savings -> line: 254 | Data deleted due to daylight savings. ️ 
+  shape: (4, 4)
+┌─────────────────────┬─────────────┬───────────┬────────────┐
+│ ↓ Index ↓           ┆ Wärmebedarf ┆ BHKW      ┆ Temperatur │
+│ ---                 ┆ ---         ┆ ---       ┆ ---        │
+│ datetime[μs]        ┆ f32         ┆ f32       ┆ f32        │
+╞═════════════════════╪═════════════╪═══════════╪════════════╡
+│ 2016-03-26 02:00:00 ┆ 203.0       ┆ 69.599998 ┆ 4.7        │
+│ 2017-03-25 02:00:00 ┆ 249.199997  ┆ 69.599998 ┆ 1.7        │
+│ 2018-03-31 02:00:00 ┆ 162.300003  ┆ 69.599998 ┆ 5.8        │
+│ 2019-03-30 02:00:00 ┆ 205.699997  ┆ 69.599998 ┆ 3.7        │
+└─────────────────────┴─────────────┴───────────┴────────────┘  
+
+15:26:16 💡 excel_pl -> temporal_metadata -> line: 284 | Index mit zeitlicher Auflösung von 1 Stunde erkannt. 💡 
+15:26:16 💡 excel_pl -> import_prefab_excel -> line: 102 | MetaData(units=Units(all_units=[' kWh', ' kWh', ' °C'], set_units=[' kWh', ' °C']), lines=[Line(name='Wärmebedarf', unit=' kWh', y_axis='y'), Line(name='BHKW', unit=' kWh', y_axis='y'), Line(name='Temperatur', unit=' °C', y_axis='y2')], datetime=True, years=[2016, 2017, 2018, 2019], td_mean=60, td_interval='h') 💡 
+  DataFrame head: 
+shape: (5, 5)
+┌─────────────────────┬─────────────┬───────────┬────────────┬─────────────────────┐
+│ ↓ Index ↓           ┆ Wärmebedarf ┆ BHKW      ┆ Temperatur ┆ orgidx              │
+│ ---                 ┆ ---         ┆ ---       ┆ ---        ┆ ---                 │
+│ datetime[μs]        ┆ f32         ┆ f32       ┆ f32        ┆ datetime[μs]        │
+╞═════════════════════╪═════════════╪═══════════╪════════════╪═════════════════════╡
+│ 2016-01-01 00:00:00 ┆ 206.5       ┆ 69.599998 ┆ 2.4        ┆ 2016-01-01 00:00:00 │
+│ 2016-01-01 01:00:00 ┆ 207.800003  ┆ 69.599998 ┆ 2.3        ┆ 2016-01-01 01:00:00 │
+│ 2016-01-01 02:00:00 ┆ 210.5       ┆ 69.599998 ┆ 2.3        ┆ 2016-01-01 02:00:00 │
+│ 2016-01-01 03:00:00 ┆ 215.899994  ┆ 69.599998 ┆ 1.7        ┆ 2016-01-01 03:00:00 │
+│ 2016-01-01 04:00:00 ┆ 211.800003  ┆ 69.599998 ┆ 2.0        ┆ 2016-01-01 04:00:00 │
+└─────────────────────┴─────────────┴───────────┴────────────┴─────────────────────┘ 
+
+DataFrame properties: 
+shape: (9, 6)
+┌────────────┬─────────────────────┬─────────────┬───────────┬────────────┬─────────────────────┐
+│ describe   ┆ ↓ Index ↓           ┆ Wärmebedarf ┆ BHKW      ┆ Temperatur ┆ orgidx              │
+│ ---        ┆ ---                 ┆ ---         ┆ ---       ┆ ---        ┆ ---                 │
+│ str        ┆ str                 ┆ f64         ┆ f64       ┆ f64        ┆ str                 │
+╞════════════╪═════════════════════╪═════════════╪═══════════╪════════════╪═════════════════════╡
+│ count      ┆ 35036               ┆ 35036.0     ┆ 35036.0   ┆ 35036.0    ┆ 35036               │
+│ null_count ┆ 0                   ┆ 0.0         ┆ 0.0       ┆ 0.0        ┆ 0                   │
+│ mean       ┆ null                ┆ 140.687103  ┆ 61.512844 ┆ 10.589154  ┆ null                │
+│ std        ┆ null                ┆ 75.785156   ┆ 22.304039 ┆ 7.553053   ┆ null                │
+│ min        ┆ 2016-01-01 00:00:00 ┆ 0.0         ┆ 0.0       ┆ -11.2      ┆ 2016-01-01 00:00:00 │
+│ max        ┆ 2019-12-31 23:00:00 ┆ 387.100006  ┆ 69.599998 ┆ 36.900002  ┆ 2019-12-31 23:00:00 │
+│ median     ┆ null                ┆ 146.399994  ┆ 69.599998 ┆ 10.1       ┆ null                │
+│ 25%        ┆ null                ┆ 88.0        ┆ 69.599998 ┆ 5.0        ┆ null                │
+│ 75%        ┆ null                ┆ 194.399994  ┆ 69.599998 ┆ 16.1       ┆ null                │
+└────────────┴─────────────────────┴─────────────┴───────────┴────────────┴─────────────────────┘  
+
+15:26:16 🥳 excel_pl -> import_prefab_excel -> line: 105 | Excel-Datei importiert. 🥳 
+15:26:16 ⏱ execution time of 'import_prefab_excel': 1.4690 s ⏱ 

@@ -85,7 +85,10 @@ LINE_TYPES: dict[str, str] = {
     "gestrichelt 0,75%": "0.75%",
     "gestrichelt 1,0%": "1.0%",
     "gestrichelt 1,75%": "1.25%",
+    "keine": "solid",
 }
+
+LINE_MARKERS: dict[str, str] = {}
 
 # negative Werte für Lieferung ins Netz etc.
 NEGATIVE_VALUES: list[str] = [

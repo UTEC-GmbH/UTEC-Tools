@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import polars as pl
 
-from modules.excel_pl import import_prefab_excel
+from modules import excel_pl as ex
 
 
 @dataclass
@@ -21,7 +21,6 @@ class Asserts:
     df_type_data: str = r"{Float32}"
     df_orgidx: bool = True
     df_is_df: bool = True
-    meta_is_dic: bool = True
 
 
 @dataclass
@@ -67,7 +66,7 @@ class TestImportPrefabExcel:
         """Compare actual results to expected results"""
 
         file: str = expected.file_path
-        df, meta = import_prefab_excel(file)
+        df, meta = ex.import_prefab_excel(file)
 
         results: Asserts = Asserts(
             file_path=file,
@@ -85,10 +84,9 @@ class TestImportPrefabExcel:
                     }.values()
                 )
             ),
-            meta_is_dic=isinstance(meta, dict),
-            meta_years=meta["years"],
-            meta_temp_res=meta["td_mean"],
-            meta_units_set=meta["units"]["set"],
+            meta_years=meta.years,
+            meta_temp_res=meta.td_mean,
+            meta_units_set=meta.units.set_units,
         )
 
         assert results == expected

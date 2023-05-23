@@ -19,6 +19,7 @@ from modules.general_functions import (
     func_timer,
     last_day_of_month,
     sort_list_by_occurance,
+    st_get,
 )
 
 
@@ -381,6 +382,11 @@ def format_traces(fig: go.Figure) -> go.Figure:
 
     for trace in visible_traces:
         trace_name: str = trace["name"]
+        line_mode: str = "lines"
+        if st_get(f"cb_markers_{trace_name}"):
+            line_mode = "markers+lines"
+        if st_get(f"sb_line_dash_{trace_name}") == "keine":
+            line_mode = "markers"
 
         if f"cp_{trace_name}" not in st.session_state:
             suff: str = "Arbeit" if fig_type in {"mon"} else "Leistung"
@@ -409,6 +415,8 @@ def format_traces(fig: go.Figure) -> go.Figure:
                     "line_dash": cont.LINE_TYPES[
                         st.session_state[f"sb_line_dash_{trace_name}"]
                     ],
+                    "mode": line_mode,
+                    "marker_size": st_get(f"ni_markers_{trace_name}"),
                     "fill": line_fill,
                     "fillcolor": fill_color,
                 },

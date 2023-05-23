@@ -14,7 +14,7 @@ import modules.logger_setup as los
 @gf.func_timer
 def import_prefab_excel(
     file: io.BytesIO | str,
-) -> tuple[pl.DataFrame, dict]:
+) -> tuple[pl.DataFrame, cl.MetaData]:
     """Import and download Excel files.
 
     Args:
@@ -51,9 +51,9 @@ def import_prefab_excel(
     df = rename_columns(df, mark_index)
 
     # extract units and set y-axis accordingly
-    meta: dict = get_units(df, mark_index, mark_units)
+
+    meta: cl.MetaData = meta_units(df, mark_index, mark_units)
     meta = set_y_axis_for_lines(meta)
-    logger.info(meta)
 
     # clean up DataFrame
     df = clean_up_df(df, mark_index)
@@ -64,6 +64,7 @@ def import_prefab_excel(
 
     # meta Zeit
     meta = temporal_metadata(df, mark_index, meta)
+    logger.info(meta)
 
     los.log_df(df)
     logger.success("Excel-Datei importiert.")
@@ -113,8 +114,8 @@ def rename_columns(df: pl.DataFrame, mark_ind: str) -> pl.DataFrame:
     return df
 
 
-def get_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> dict:
-    """Get units from imported Excel-file"""
+def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cl.MetaData:
+    """Get units for dataclass"""
 
     units: dict[str, str] = (
         df.filter(pl.col(mark_index) == mark_units)
@@ -125,30 +126,27 @@ def get_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> dict:
     # leerzeichen vor Einheit
     units = {line: f" {unit.strip()}" for line, unit in units.items()}
 
-    meta: dict = {
-        "units": {
-            "all": list(units.values()),
-            "set": gf.sort_list_by_occurance(list(units.values())),
-        }
-    }
-    for line, unit in units.items():
-        meta[line] = {"unit": unit}
-        logger.info(f"{line}: Einheit '{meta[line]['unit']}'")
+    meta: cl.MetaData = cl.MetaData(
+        units=cl.MetaUnits(
+            all_units=list(units.values()),
+            set_units=gf.sort_list_by_occurance(list(units.values())),
+        ),
+        lines=[cl.MetaLine(name=line, unit=unit) for line, unit in units.items()],
+    )
 
     return meta
 
 
-def set_y_axis_for_lines(meta: dict) -> dict:
+def set_y_axis_for_lines(meta: cl.MetaData) -> cl.MetaData:
     """Y-Achsen der Linien"""
 
-    lines_with_units: dict[str, str] = {
-        line: meta[line].get("unit") for line in meta if "unit" in meta[line]
-    }
-
-    for line, unit in lines_with_units.items():
-        ind: int = meta["units"]["set"].index(unit)
-        meta[line]["y_axis"] = f"y{ind + 1}" if ind > 0 else "y"
-        logger.info(f"{line}: Y-Achse '{meta[line]['y_axis']}'")
+    for line in meta.lines:
+        if line.unit not in meta.units.set_units:
+            continue
+        index_unit: int = meta.units.set_units.index(line.unit)
+        if index_unit > 0:
+            meta.get_line(line.name).y_axis = f"y{index_unit + 1}"
+        logger.info(f"{line.name}: Y-Achse '{meta.get_line(line.name).y_axis}'")
 
     return meta
 
@@ -226,7 +224,9 @@ def clean_up_daylight_savings(df: pl.DataFrame, mark_index: str) -> CleanUpDLS:
     return CleanUpDLS(df_clean=df_clean, df_deleted=df_deleted)
 
 
-def temporal_metadata(df: pl.DataFrame, mark_index: str, meta: dict) -> dict:
+def temporal_metadata(
+    df: pl.DataFrame, mark_index: str, meta: cl.MetaData
+) -> cl.MetaData:
     """Get information about the time index."""
 
     if not df.get_column(mark_index).is_temporal():
@@ -235,21 +235,21 @@ def temporal_metadata(df: pl.DataFrame, mark_index: str, meta: dict) -> dict:
 
     viertel: int = 15
     std: int = 60
-    meta["datetime"] = True
-    meta["years"] = df.get_column(mark_index).dt.year().unique().sort().to_list()
 
-    td_mean: int = int(
+    meta.datetime = True
+    meta.years = df.get_column(mark_index).dt.year().unique().sort().to_list()
+
+    meta.td_mean = int(
         df.select(pl.col(mark_index).diff().dt.minutes().drop_nulls().mean()).item()
     )
 
-    meta["td_mean"] = td_mean
-    if meta["td_mean"] == viertel:
-        meta["td_int"] = "15min"
+    if meta.td_mean == viertel:
+        meta.td_interval = "15min"
         logger.info("Index mit zeitlicher Auflösung von 15 Minuten erkannt.")
-    elif meta["td_mean"] == std:
-        meta["td_int"] = "h"
+    elif meta.td_mean == std:
+        meta.td_interval = "h"
         logger.info("Index mit zeitlicher Auflösung von 1 Stunde erkannt.")
     else:
-        logger.debug(f"Mittlere zeitliche Auflösung des DataFrame: {td_mean} Minuten")
+        logger.debug(f"Mittlere zeitliche Auflösung des df: {meta.td_mean} Minuten")
 
     return meta

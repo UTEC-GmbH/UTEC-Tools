@@ -1,6 +1,7 @@
 """Import und Download von Excel-Dateien"""
 
 import io
+import re
 from typing import NamedTuple
 
 import polars as pl
@@ -9,6 +10,7 @@ from loguru import logger
 import modules.classes as cl
 import modules.general_functions as gf
 import modules.logger_setup as los
+from modules import constants as cont
 
 
 @gf.func_timer
@@ -64,6 +66,14 @@ def import_prefab_excel(
 
     # meta Zeit
     meta = temporal_metadata(df, mark_index, meta)
+
+    # meta data if obis code in column title
+    meta = meta_from_obis(df, meta)
+
+    for line in meta.lines:
+        if line.name != line.tit:
+            df = df.rename({line.name: line.tit})
+
     logger.info(meta)
 
     los.log_df(df)
@@ -131,7 +141,10 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cl.MetaDat
             all_units=list(units.values()),
             set_units=gf.sort_list_by_occurance(list(units.values())),
         ),
-        lines=[cl.MetaLine(name=line, unit=unit) for line, unit in units.items()],
+        lines=[
+            cl.MetaLine(name=line, orig_tit=line, tit=line, unit=unit)
+            for line, unit in units.items()
+        ],
     )
 
     return meta
@@ -251,5 +264,33 @@ def temporal_metadata(
         logger.info("Index mit zeitlicher Auflösung von 1 Stunde erkannt.")
     else:
         logger.debug(f"Mittlere zeitliche Auflösung des df: {meta.td_mean} Minuten")
+
+    return meta
+
+
+def meta_from_obis(df: pl.DataFrame, meta: cl.MetaData) -> cl.MetaData:
+    """Update the meta data if there is an obis code in a column title.
+
+    If there's an OBIS-code (e.g. 1-1:1.29.0), the following meta data is edited:
+    - obis -> instance of ObisElecgtrical class
+    - unit -> only if not given in Excel-File
+    - tite -> "alternative name (code)"
+
+    Args:
+        - df (pl.DataFrame): DataFrame to inspect
+        - meta (MetaData): MetaData dataclass
+
+    Returns:
+        - meta (MetaData): updated MetaData dataclass
+    """
+
+    for line in meta.lines:
+        name: str = line.name
+
+        # check if there is an OBIS-code in the column title
+        if match := re.search(cont.OBIS_PATTERN_EL, name):
+            line.obis = cl.ObisElectrical(match[0])
+            line.unit = line.unit or line.obis.unit
+            line.tit = line.obis.name
 
     return meta

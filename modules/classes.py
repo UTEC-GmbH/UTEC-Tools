@@ -29,39 +29,6 @@ class MarkerType(Enum):
 
 
 @dataclass
-class MetaUnits:
-    """Class for meta data of units"""
-
-    all_units: list[str]
-    set_units: list[str]
-
-
-@dataclass
-class MetaLine:
-    """Class for meta data of lines (traces)"""
-
-    name: str
-    unit: str | None = None
-    y_axis: str = "y"
-
-
-@dataclass
-class MetaData:
-    """Class for meta data"""
-
-    units: MetaUnits
-    lines: list[MetaLine]
-    datetime: bool = False
-    years: list[int] | None = None
-    td_mean: int | None = None
-    td_interval: str | None = None
-
-    def get_line(self, line_name: str) -> MetaLine:
-        """Get the line object from the string of the line name"""
-        return [line for line in self.lines if line.name == line_name][0]
-
-
-@dataclass
 class ExcelMarkers:
     """Name of Markers for Index and Units in the Excel-File"""
 
@@ -253,3 +220,39 @@ class FigAnno:
 
     fig: go.Figure
     anno_name: str
+
+
+@dataclass
+class MetaUnits:
+    """Class for meta data of units"""
+
+    all_units: list[str]
+    set_units: list[str]
+
+
+@dataclass
+class MetaLine:
+    """Class for meta data of lines (traces)"""
+
+    name: str
+    orig_tit: str
+    tit: str
+    unit: str | None = None
+    y_axis: str = "y"
+    obis: ObisElectrical | None = None
+
+
+@dataclass
+class MetaData:
+    """Class for meta data"""
+
+    units: MetaUnits
+    lines: list[MetaLine]
+    datetime: bool = False
+    years: list[int] | None = None
+    td_mean: int | None = None
+    td_interval: str | None = None
+
+    def get_line(self, line_name: str) -> MetaLine:
+        """Get the line object from the string of the line name"""
+        return [line for line in self.lines if line.name == line_name][0]

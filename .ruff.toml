@@ -25,3 +25,5 @@ ignore = [
     "W292",
     "W293",
 ]
+[per-file-ignores]
+"test*.py" = ["S101"]

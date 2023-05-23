@@ -1,6 +1,7 @@
 black
 deta
 geopy
+ipykernel
 loguru
 meteostat
 mypy

@@ -1,8 +1,6 @@
 """Import und Download von Excel-Dateien"""
 
 import io
-import random
-from pathlib import Path
 from typing import NamedTuple
 
 import polars as pl
@@ -15,7 +13,7 @@ import modules.logger_setup as los
 
 @gf.func_timer
 def import_prefab_excel(
-    file: io.BytesIO | None = None,
+    file: io.BytesIO | str,
 ) -> tuple[pl.DataFrame, dict]:
     """Import and download Excel files.
 
@@ -27,17 +25,18 @@ def import_prefab_excel(
     Returns:
     - tuple[pl.DataFrame, dict]: A tuple containing the imported DataFrame
         and a dictionary with metadata extracted from the Excel file.
+
+    Example files for testing:
+    - file = "example_files/Auswertung Stromlastgang - einzelnes Jahr.xlsx"
+    - file = "example_files/Stromlastgang - mehrere Jahre.xlsx"
+    - file = "example_files/Wärmelastgang - mehrere Jahre.xlsx"
     """
-
-    example_files: list[Path] = list(Path(f"{Path.cwd()}/example_files").glob("*.xlsx"))
-
-    phil: io.BytesIO | Path = file or random.choice(example_files)  # noqa: S311
 
     mark_index: str = cl.ExcelMarkers(cl.MarkerType.INDEX).marker_string
     mark_units: str = cl.ExcelMarkers(cl.MarkerType.UNITS).marker_string
 
     df: pl.DataFrame = pl.read_excel(
-        phil,
+        file,
         sheet_name="Daten",
         xlsx2csv_options={
             "skip_empty_lines": True,

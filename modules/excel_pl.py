@@ -2,7 +2,7 @@
 
 import io
 import re
-from typing import NamedTuple
+from typing import Literal, NamedTuple
 
 import polars as pl
 from loguru import logger
@@ -20,66 +20,72 @@ def import_prefab_excel(
     """Import and download Excel files.
 
     Args:
-    - file (io.BytesIO | None): Optional BytesIO object representing
-        the Excel file to import.
-        If None, a default example file will be used (for testing).
+    - file (io.BytesIO | str): BytesIO object or string
+        representing the Excel file to import.
 
     Returns:
-    - tuple[pl.DataFrame, dict]: A tuple containing the imported DataFrame
-        and a dictionary with metadata extracted from the Excel file.
+    - tuple[pl.DataFrame, MetaData]: A tuple containing the imported DataFrame
+        and metadata extracted from the Excel file.
 
     Example files for testing:
     - file = "example_files/Auswertung Stromlastgang - einzelnes Jahr.xlsx"
     - file = "example_files/Stromlastgang - mehrere Jahre.xlsx"
     - file = "example_files/Wärmelastgang - mehrere Jahre.xlsx"
+
+    Example test run:
+    file = "example_files/Auswertung Stromlastgang - einzelnes Jahr.xlsx"
+    df, meta = import_prefab_excel(file)
     """
 
     mark_index: str = cl.ExcelMarkers(cl.MarkerType.INDEX).marker_string
     mark_units: str = cl.ExcelMarkers(cl.MarkerType.UNITS).marker_string
 
-    df: pl.DataFrame = pl.read_excel(
-        file,
-        sheet_name="Daten",
-        xlsx2csv_options={
-            "skip_empty_lines": True,
-            "skip_trailing_columns": True,
-            "dateformat": "%d.%m.%Y %T",
-        },
-        read_csv_options={"has_header": False, "try_parse_dates": False},
-    )  # type: ignore
+    df: pl.DataFrame = get_df_from_excel(file)
 
     # remove empty rows and columns and rename columns
     df = remove_empty(df)
     df = rename_columns(df, mark_index)
 
-    # extract units and set y-axis accordingly
-
+    # extract units
     meta: cl.MetaData = meta_units(df, mark_index, mark_units)
-    meta = set_y_axis_for_lines(meta)
 
     # clean up DataFrame
     df = clean_up_df(df, mark_index)
-    df = clean_up_daylight_savings(df, mark_index).df_clean
-
-    # copy index in separate column to preserve if index is changed (multi year)
-    df = df.with_columns(pl.col(mark_index).alias("orgidx"))
-
-    # meta Zeit
-    meta = temporal_metadata(df, mark_index, meta)
 
     # meta data if obis code in column title
-    meta = meta_from_obis(df, meta)
+    df, meta = meta_from_obis(df, meta)
 
-    for line in meta.lines:
-        if line.name != line.tit:
-            df = df.rename({line.name: line.tit})
+    # Metadaten zum Zeitindex und zur y-Achse der Linien
+    meta = temporal_metadata(df, mark_index, meta)
+    meta = set_y_axis_for_lines(meta)
 
-    logger.info(meta)
+    # 15min und kWh
+    df, meta = convert_15min_kwh_to_kw(df, meta)
 
+    logger.info(meta.__dict__)
     los.log_df(df)
     logger.success("Excel-Datei importiert.")
 
     return df, meta
+
+
+def get_df_from_excel(file: io.BytesIO | str) -> pl.DataFrame:
+    """Excel Import via csv-conversion"""
+
+    sheet: str = "Daten"
+    xlsx_options: dict[str, str | bool] = {
+        "skip_empty_lines": True,
+        "skip_trailing_columns": True,
+        "dateformat": "%d.%m.%Y %T",
+    }
+    csv_options: dict[str, bool] = {"has_header": False, "try_parse_dates": False}
+
+    return pl.read_excel(
+        file,
+        sheet_name=sheet,
+        xlsx2csv_options=xlsx_options,
+        read_csv_options=csv_options,
+    )
 
 
 def remove_empty(df: pl.DataFrame, **kwargs) -> pl.DataFrame:
@@ -150,6 +156,16 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cl.MetaDat
     return meta
 
 
+def meta_units_update(meta: cl.MetaData) -> cl.MetaData:
+    """Update units with all units from metadata"""
+
+    all_units: list[str] = [str(line.unit) for line in meta.lines]
+    meta.units.all_units = all_units
+    meta.units.set_units = gf.sort_list_by_occurance(all_units)
+
+    return meta
+
+
 def set_y_axis_for_lines(meta: cl.MetaData) -> cl.MetaData:
     """Y-Achsen der Linien"""
 
@@ -158,8 +174,8 @@ def set_y_axis_for_lines(meta: cl.MetaData) -> cl.MetaData:
             continue
         index_unit: int = meta.units.set_units.index(line.unit)
         if index_unit > 0:
-            meta.get_line(line.name).y_axis = f"y{index_unit + 1}"
-        logger.info(f"{line.name}: Y-Achse '{meta.get_line(line.name).y_axis}'")
+            meta.get_line_by_name(line.name).y_axis = f"y{index_unit + 1}"
+        logger.info(f"{line.name}: Y-Achse '{meta.get_line_by_name(line.name).y_axis}'")
 
     return meta
 
@@ -175,6 +191,12 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
         [pl.col(mark_index).str.strptime(pl.Datetime, "%d.%m.%Y %T")]
         + [pl.col(col).cast(pl.Float32) for col in df.columns if col != mark_index]
     )
+
+    df = clean_up_daylight_savings(df, mark_index).df_clean
+
+    # copy index in separate column to preserve if index is changed (multi year)
+    df = df.with_columns(pl.col(mark_index).alias("orgidx"))
+
     return df
 
 
@@ -197,7 +219,7 @@ def clean_up_daylight_savings(df: pl.DataFrame, mark_index: str) -> CleanUpDLS:
     doppelten Stunde wird gelöscht.
 
     Args:
-        - df (pd.DataFrame): DataFrame to edit
+        - df (DataFrame): DataFrame to edit
 
     Returns:
         - dict[str, pd.DataFrame]:
@@ -268,8 +290,10 @@ def temporal_metadata(
     return meta
 
 
-def meta_from_obis(df: pl.DataFrame, meta: cl.MetaData) -> cl.MetaData:
-    """Update the meta data if there is an obis code in a column title.
+def meta_from_obis(
+    df: pl.DataFrame, meta: cl.MetaData
+) -> tuple[pl.DataFrame, cl.MetaData]:
+    """Update meta data and column name if there is an obis code in a column title.
 
     If there's an OBIS-code (e.g. 1-1:1.29.0), the following meta data is edited:
     - obis -> instance of ObisElecgtrical class
@@ -277,10 +301,11 @@ def meta_from_obis(df: pl.DataFrame, meta: cl.MetaData) -> cl.MetaData:
     - tite -> "alternative name (code)"
 
     Args:
-        - df (pl.DataFrame): DataFrame to inspect
+        - df (DataFrame): DataFrame to edit
         - meta (MetaData): MetaData dataclass
 
     Returns:
+        - df (DataFrame): updated DataFrame
         - meta (MetaData): updated MetaData dataclass
     """
 
@@ -290,7 +315,128 @@ def meta_from_obis(df: pl.DataFrame, meta: cl.MetaData) -> cl.MetaData:
         # check if there is an OBIS-code in the column title
         if match := re.search(cont.OBIS_PATTERN_EL, name):
             line.obis = cl.ObisElectrical(match[0])
-            line.unit = line.unit or line.obis.unit
+            line.name = line.obis.name
             line.tit = line.obis.name
+            line.unit = line.unit or line.obis.unit
 
-    return meta
+            df = df.rename({name: line.obis.name})
+
+    return df, meta_units_update(meta)
+
+
+def convert_15min_kwh_to_kw(
+    df: pl.DataFrame, meta: cl.MetaData
+) -> tuple[pl.DataFrame, cl.MetaData]:
+    """Falls die Daten als 15-Minuten-Daten vorliegen,
+    wird geprüft ob es sich um Verbrauchsdaten handelt.
+    Falls dem so ist, werden sie mit 4 multipliziert um
+    Leistungsdaten zu erhalten.
+
+    Die Leistungsdaten werden in neue Spalten im
+    DataFrame geschrieben.
+
+
+    Args:
+        - df (pl.DataFrame): Der zu untersuchende DataFrame
+        - meta (MetaData): Metadaten
+
+    Returns:
+        - tuple[pd.DataFrame, MetaData]: Aktualisierte df und Metadaten
+    """
+
+    if meta.td_interval not in ["15min"]:
+        logger.debug("Skipped 'convert_15min_kwh_to_kw'")
+        return df, meta
+
+    suffixes: list[str] = list(cont.ARBEIT_LEISTUNG["suffix"].values())
+
+    for col in meta.get_all_line_names():
+        unit: str = (meta.get_line_by_name(col).unit or "").strip()
+        suffix_not_in_col_name: bool = all(suffix not in col for suffix in suffixes)
+        unit_is_leistung_or_arbeit: bool = unit in (
+            cont.ARBEIT_LEISTUNG["units"]["Arbeit"]
+            + cont.ARBEIT_LEISTUNG["units"]["Leistung"]
+        )
+        if suffix_not_in_col_name and unit_is_leistung_or_arbeit:
+            originla_type: Literal["Arbeit", "Leistung"] = (
+                "Arbeit"
+                if unit in cont.ARBEIT_LEISTUNG["units"]["Arbeit"]
+                else "Leistung"
+            )
+            df, meta = insert_column_arbeit_leistung(originla_type, df, meta, col)
+            df, meta = rename_column_arbeit_leistung(originla_type, df, meta, col)
+
+            logger.success(f"Arbeit und Leistung für Spalte '{col}' aufgeteilt")
+
+    return df, meta_units_update(meta)
+
+
+def rename_column_arbeit_leistung(
+    original_data_type: Literal["Arbeit", "Leistung"],
+    df: pl.DataFrame,
+    meta: cl.MetaData,
+    col: str,
+) -> tuple[pl.DataFrame, cl.MetaData]:
+    """Wenn Daten als Arbeit oder Leistung in 15-Minuten-Auflösung
+    vorliegen, wird die Originalspalte umbenannt (mit Suffix "Arbeit" oder "Leistung")
+    und in den Metadaten ein Eintrag für den neuen Spaltennamen eingefügt.
+
+
+    Args:
+        - original_data_type (Literal['Arbeit', 'Leistung']):
+            Sind die Daten "Arbeit" oder "Leistung"
+        - df (DataFrame): DataFrame für neue Spalte
+        - meta (MetaData): Metadaten
+        - col (str): Name der (Original-) Spalte
+    """
+    new_name: str = f'{col}{cont.ARBEIT_LEISTUNG["suffix"][original_data_type]}'
+    df = df.rename({col: new_name})
+    old_line: cl.MetaLine = meta.get_line_by_name(col)
+    new_line: cl.MetaLine = cl.MetaLine(**vars(old_line))
+    new_line.name = new_name
+    new_line.tit = new_name
+    meta.lines += [new_line]
+
+    logger.info(f"Spalte '{col}' umbenannt in '{new_name}'")
+
+    return df, meta
+
+
+def insert_column_arbeit_leistung(
+    original_data: Literal["Arbeit", "Leistung"],
+    df: pl.DataFrame,
+    meta: cl.MetaData,
+    col: str,
+) -> tuple[pl.DataFrame, cl.MetaData]:
+    """Wenn Daten als Arbeit oder Leistung in 15-Minuten-Auflösung
+    vorliegen, wird eine neue Spalte mit dem jeweils andern Typ eingefügt.
+
+
+    Args:
+        - original_data (Literal['Arbeit', 'Leistung']):
+            Sind die Daten "Arbeit" oder "Leistung"
+        - df (DataFrame): DataFrame für neue Spalte
+        - meta (MetaData): Metadaten
+        - col (str): Name der (Original-) Spalte
+    """
+    new_col_type: str = "Arbeit" if original_data == "Leistung" else "Leistung"
+    new_col_name: str = f'{col}{cont.ARBEIT_LEISTUNG["suffix"][new_col_type]}'
+    old_line: cl.MetaLine = meta.get_line_by_name(col)
+    new_line: cl.MetaLine = cl.MetaLine(**vars(old_line))
+    new_line.name = new_col_name
+    new_line.tit = new_col_name
+    meta.lines += [new_line]
+
+    if original_data == "Arbeit":
+        df = df.with_columns((pl.col(col) * 4).alias(new_col_name))
+        old_unit: str = old_line.unit or " kWh"
+        new_unit: str = old_unit[:-1]
+    else:
+        df = df.with_columns((pl.col(col) / 4).alias(new_col_name))
+        old_unit = old_line.unit or " kW"
+        new_unit: str = f"{old_unit}h"
+
+    meta.change_line_attribute(new_col_name, "unit", new_unit)
+    logger.info(f"Spalte '{new_col_name}' mit Einheit '{new_unit}' eingefügt")
+
+    return df, meta

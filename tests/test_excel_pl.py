@@ -14,6 +14,7 @@ class Asserts:
     file_path: str
     df_height: int
     df_width: int
+    df_columns: list[str]
     meta_years: list[int]
     meta_temp_res: int
     meta_units_set: list[str]
@@ -39,15 +40,41 @@ class TestImportPrefabExcel:
         strom_einzel=Asserts(
             file_path="example_files/Auswertung Stromlastgang - einzelnes Jahr.xlsx",
             df_height=35032,
-            df_width=7,
+            df_width=12,
+            df_columns=[
+                "↓ Index ↓",
+                "Strombedarf → Arbeit",
+                "PV Produktion → Arbeit",
+                "Netzeinspeisung → Arbeit",
+                "PV Eigennutzung → Arbeit",
+                "Bezug (1-1:1.29) → Arbeit",
+                "orgidx",
+                "Strombedarf → Leistung",
+                "PV Produktion → Leistung",
+                "Netzeinspeisung → Leistung",
+                "PV Eigennutzung → Leistung",
+                "Bezug (1-1:1.29) → Leistung",
+            ],
             meta_years=[2021],
             meta_temp_res=15,
-            meta_units_set=[" kWh"],
+            meta_units_set=[" kWh", " kW"],
         ),
         strom_multi=Asserts(
             file_path="example_files/Stromlastgang - mehrere Jahre.xlsx",
             df_height=105107,
-            df_width=6,
+            df_width=10,
+            df_columns=[
+                "↓ Index ↓",
+                "Bezug (1-1:1.29) → Leistung",
+                "Lieferung (1-1:2.29) → Leistung",
+                "PV-Anlage → Arbeit",
+                "Bedarf → Arbeit",
+                "orgidx",
+                "Bezug (1-1:1.29) → Arbeit",
+                "Lieferung (1-1:2.29) → Arbeit",
+                "PV-Anlage → Leistung",
+                "Bedarf → Leistung",
+            ],
             meta_years=[2017, 2018, 2019],
             meta_temp_res=15,
             meta_units_set=[" kW", " kWh"],
@@ -56,6 +83,7 @@ class TestImportPrefabExcel:
             file_path="example_files/Wärmelastgang - mehrere Jahre.xlsx",
             df_height=35036,
             df_width=5,
+            df_columns=["↓ Index ↓", "Wärmebedarf", "BHKW", "Temperatur", "orgidx"],
             meta_years=[2016, 2017, 2018, 2019],
             meta_temp_res=60,
             meta_units_set=[" kWh", " °C"],
@@ -73,6 +101,7 @@ class TestImportPrefabExcel:
             df_is_df=isinstance(df, pl.DataFrame),
             df_height=df.height,
             df_width=df.width,
+            df_columns=df.columns,
             df_orgidx="orgidx" in df.columns,
             df_type_index_dt=df.schema["↓ Index ↓"] == pl.Datetime(),
             df_type_data=str(

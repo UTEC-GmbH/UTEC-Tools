@@ -1,5 +1,6 @@
 """Classes and such"""
 
+import pprint
 import re
 from dataclasses import dataclass, field
 from enum import Enum
@@ -12,6 +13,22 @@ import plotly.graph_objects as go
 from loguru import logger
 
 from modules.constants import OBIS_ELECTRICAL, ObisDic
+
+
+class LineNotFoundError(Exception):
+    """Error Message if Line not found (e.g. change_line_attribute)"""
+
+    def __init__(self, line_name: str) -> None:
+        """Initiate"""
+        super().__init__(f"Line '{line_name}' not found.")
+
+
+class MultipleLinesFoundError(Exception):
+    """Error Message if multiple lines were found (e.g. get_line_by_name)"""
+
+    def __init__(self, line_name: str) -> None:
+        """Initiate"""
+        super().__init__(f"Multiple lines with name '{line_name}' found.")
 
 
 class MarkerPosition(NamedTuple):
@@ -105,6 +122,10 @@ class ObisElectrical:
     name: str = field(init=False)
     name_kurz: str = field(init=False)
     name_lang: str = field(init=False)
+
+    def __repr__(self) -> str:
+        """Customize the representation to give a dictionary"""
+        return pprint.pformat(vars(self), sort_dicts=False)
 
     def __post_init__(self) -> None:
         """Check if code is valid and fill in the fields"""
@@ -229,6 +250,10 @@ class MetaUnits:
     all_units: list[str]
     set_units: list[str]
 
+    def __repr__(self) -> str:
+        """Customize the representation to give a dictionary"""
+        return pprint.pformat(vars(self), sort_dicts=False, compact=True)
+
 
 @dataclass
 class MetaLine:
@@ -240,6 +265,10 @@ class MetaLine:
     unit: str | None = None
     y_axis: str = "y"
     obis: ObisElectrical | None = None
+
+    def __repr__(self) -> str:
+        """Customize the representation to give a dictionary"""
+        return pprint.pformat(vars(self), sort_dicts=False)
 
 
 @dataclass
@@ -253,6 +282,29 @@ class MetaData:
     td_mean: int | None = None
     td_interval: str | None = None
 
-    def get_line(self, line_name: str) -> MetaLine:
+    def __repr__(self) -> str:
+        """Customize the representation to give a dictionary"""
+        return pprint.pformat(vars(self), sort_dicts=False)
+
+    def get_line_by_name(self, line_name: str) -> MetaLine:
         """Get the line object from the string of the line name"""
-        return [line for line in self.lines if line.name == line_name][0]
+        lines: list[MetaLine] = [line for line in self.lines if line.name == line_name]
+        if not lines:
+            raise LineNotFoundError(line_name)
+        if len(lines) > 1:
+            raise MultipleLinesFoundError(line_name)
+        return lines[0]
+
+    def get_all_line_names(self) -> list[str]:
+        """Return a list of all line names"""
+        return [line.name for line in self.lines]
+
+    def change_line_attribute(
+        self, line_name: str, attribute: str, new_value: Any
+    ) -> None:
+        """Change the value of a specific attribute for a line (trace)"""
+        for line in self.lines:
+            if line.name == line_name:
+                setattr(line, attribute, new_value)
+                return
+        raise LineNotFoundError(line_name)

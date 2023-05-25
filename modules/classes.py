@@ -265,6 +265,7 @@ class MetaLine:
     unit: str | None = None
     y_axis: str = "y"
     obis: ObisElectrical | None = None
+    excel_number_format: str | None = None
 
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""

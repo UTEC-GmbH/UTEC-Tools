@@ -38,24 +38,24 @@ def format_tickstops(fig: go.Figure) -> list[dict[str, Any]]:
 
     return [
         {
-            "dtickrange": [None, cont.DURATIONS_IN_MS["half_day"]],
+            "dtickrange": [None, cont.DurationMS.half_day],
             "value": "%H:%M\n%e. %b" if multi_y else "%H:%M\n%a %e. %b",
         },
         {
             "dtickrange": [
-                cont.DURATIONS_IN_MS["half_day"] + 1,
-                cont.DURATIONS_IN_MS["week"],
+                cont.DurationMS.half_day + 1,
+                cont.DurationMS.week,
             ],
             "value": "%e. %b" if multi_y else "%a\n%e. %b",
         },
         {
             "dtickrange": [
-                cont.DURATIONS_IN_MS["week"] + 1,
-                cont.DURATIONS_IN_MS["month"],
+                cont.DurationMS.week + 1,
+                cont.DurationMS.month,
             ],
             "value": "%e.\n%b",
         },
-        {"dtickrange": [cont.DURATIONS_IN_MS["month"] + 1, None], "value": "%b"},
+        {"dtickrange": [cont.DurationMS.month + 1, None], "value": "%b"},
     ]
 
 
@@ -211,7 +211,7 @@ def standard_xaxis(
         spikecolor="black",
         spikesnap="cursor",
         spikethickness=1,
-        fixedrange=cont.FIG_TITLES["mon"] in title,
+        fixedrange=cont.FIG_TITLES.mon in title,
     )
 
 
@@ -232,7 +232,7 @@ def standard_yaxis(
     )
 
     y_suffix: str = units_per_axis[all_y_axes[0]]
-    if cont.FIG_TITLES["mon"] in title and y_suffix == " kW":
+    if cont.FIG_TITLES.mon in title and y_suffix == " kW":
         y_suffix = " kWh"
 
     fig = fig.update_layout({all_y_axes[0]: format_primary_y_axis(y_suffix)})
@@ -338,16 +338,16 @@ def show_traces(fig: go.Figure) -> go.Figure:
     for name, trace_data in data.items():
         if f"cp_{name}" not in st.session_state:
             suff: str = "Arbeit" if fig_type in ["mon"] else "Leistung"
-            new_name: str = f"{name}{cont.ARBEIT_LEISTUNG['suffix'][suff]}"
+            new_name: str = f"{name}{cont.ARBEIT_LEISTUNG.get_suffix(suff)}"
         else:
             new_name = name
         trace_visible: bool = False
         if switch:
             trace_visible = st.session_state[f'cb_vis_{trace_data["legendgroup"]}']
         if fig_type in ["mon", "jdl"] and any(
-            suff in new_name for suff in cont.ARBEIT_LEISTUNG["suffix"].values()
+            suff in new_name for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()
         ):
-            suffixes: list[str] = list(cont.ARBEIT_LEISTUNG["suffix"].values())
+            suffixes: list[str] = cont.ARBEIT_LEISTUNG.get_all_suffixes()
             trace_stripped: str = new_name
             for suffix in suffixes:
                 trace_stripped = trace_stripped.replace(suffix, "")
@@ -390,7 +390,7 @@ def format_traces(fig: go.Figure) -> go.Figure:
 
         if f"cp_{trace_name}" not in st.session_state:
             suff: str = "Arbeit" if fig_type in {"mon"} else "Leistung"
-            trace_name = f"{trace_name}{cont.ARBEIT_LEISTUNG['suffix'][suff]}"
+            trace_name = f"{trace_name}{cont.ARBEIT_LEISTUNG.get_suffix(suff)}"
 
         if not switch:
             line_colour: str = st.session_state[f"cp_{trace_name}"]
@@ -492,7 +492,7 @@ def show_annos(fig: go.Figure, visible_traces: list[str]) -> go.Figure:
         an_name: str = anno["name"]
         if "hline" not in an_name:
             an_name_cust: str = an_name
-            for suff in cont.ARBEIT_LEISTUNG["suffix"].values():
+            for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes():
                 if suff in an_name:
                     an_name_cust: str = an_name.split(suff)[0]
             an_name_cust = an_name_cust.split(": ")[0]

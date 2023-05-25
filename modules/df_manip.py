@@ -10,7 +10,7 @@ from loguru import logger
 
 from modules import constants as cont
 from modules.general_functions import func_timer
-from modules.logger_setup import LogLevel
+from modules.logger_setup import LogLevels
 
 if TYPE_CHECKING:
     import datetime as dt
@@ -142,7 +142,7 @@ def clean_up_daylight_savings(df: pd.DataFrame) -> CleanUpDLS:
 
     if len(df_deleted.index) > 0:
         logger.warning("Data deleted due to daylight savings.")
-        logger.log(LogLevel.DATA_FRAME.name, df_deleted)
+        logger.log(LogLevels.DATA_FRAME.name, df_deleted)
     else:
         logger.info("No data deleted due to daylight savings")
 
@@ -218,8 +218,8 @@ def split_up_df_multi_years(df: pd.DataFrame) -> dict[int, pd.DataFrame]:
             if all(exc not in str(col) for exc in cont.EXCLUDE)
         ]:
             new_col_name: str = f'{col.replace(" *h","")} {year}'
-            if any(suff in col for suff in cont.ARBEIT_LEISTUNG["suffix"].values()):
-                for suff in cont.ARBEIT_LEISTUNG["suffix"].values():
+            if any(suff in col for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()):
+                for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes():
                     if suff in col:
                         new_col_name = f"{col.split(suff)[0]} {year}{suff}"
 
@@ -270,9 +270,9 @@ def h_from_other(df: pd.DataFrame, meta: dict[str, Any] | None = None) -> pd.Dat
     metadata: dict[str, Any] = meta or st.session_state["metadata"]
     extended_exclude: list[str] = [
         *cont.EXCLUDE,
-        cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"],
+        cont.ARBEIT_LEISTUNG.arbeit.suffix,
     ]
-    suff_leistung: str = cont.ARBEIT_LEISTUNG["suffix"]["Leistung"]
+    suff_leistung: str = cont.ARBEIT_LEISTUNG.leistung.suffix
 
     for col in [
         str(col)
@@ -299,7 +299,7 @@ def h_from_other(df: pd.DataFrame, meta: dict[str, Any] | None = None) -> pd.Dat
     st.session_state["metadata"] = metadata
 
     logger.success("DataFrame mit Stundenwerten erstellt.")
-    logger.log(LogLevel.DATA_FRAME.name, df_h.head())
+    logger.log(LogLevels.DATA_FRAME.name, df_h.head())
 
     return df_h
 
@@ -320,9 +320,9 @@ def check_if_hourly_resolution(
     metadata: dict[str, Any] = kwargs.get("meta") or st.session_state["metadata"]
     extended_exclude: list[str] = [
         *cont.EXCLUDE,
-        cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"],
+        cont.ARBEIT_LEISTUNG.arbeit.suffix,
     ]
-    suff_leistung: str = cont.ARBEIT_LEISTUNG["suffix"]["Leistung"]
+    suff_leistung: str = cont.ARBEIT_LEISTUNG.leistung.suffix
 
     ind_td: pd.Timedelta = pd.to_timedelta(df.index.to_series().diff()).mean()
     df_h: pd.DataFrame = pd.DataFrame()
@@ -373,7 +373,7 @@ def jdl(df: pd.DataFrame) -> pd.DataFrame:
     st.session_state["df_jdl"] = df_jdl
 
     logger.success("DataFrame für Jahresdauerlinie erstellt.")
-    logger.log(LogLevel.DATA_FRAME.name, df_jdl.head())
+    logger.log(LogLevels.DATA_FRAME.name, df_jdl.head())
 
     return df_jdl
 
@@ -415,7 +415,7 @@ def mon(df: pd.DataFrame, meta: dict, year: int | None = None) -> pd.DataFrame:
     st.session_state["df_mon"] = df_mon
 
     logger.success("DataFrame mit Monatswerten erstellt.")
-    logger.log(LogLevel.DATA_FRAME.name, df_mon.head())
+    logger.log(LogLevels.DATA_FRAME.name, df_mon.head())
 
     return df_mon
 

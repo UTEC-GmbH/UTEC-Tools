@@ -123,8 +123,8 @@ def new_user_form() -> None:
             label="Zugriffsrechte",
             key="new_user_access",
             help=("Auswahl der Module, auf die dieser Benutzer zugreifen darf."),
-            options=[key for key in cont.PAGES if key not in ("login")],
-            default=[key for key in cont.PAGES if key not in ("login")],
+            options=[key for key in cont.PAGES.get_all_short() if key not in ("login")],
+            default=[key for key in cont.PAGES.get_all_short() if key not in ("login")],
         )
 
         st.markdown("###")
@@ -681,7 +681,7 @@ def display_options_main() -> bool:
                             part not in line_name
                             for part in [
                                 cont.SMOOTH_SUFFIX,
-                                cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"],
+                                cont.ARBEIT_LEISTUNG.arbeit.suffix,
                             ]
                         ),
                         key=f"cb_vis_{line_name}",
@@ -738,11 +738,11 @@ def display_options_main() -> bool:
                 show: bool = True
                 if any(
                     suff in line_name
-                    for suff in cont.ARBEIT_LEISTUNG["suffix"].values()
+                    for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()
                 ):
                     suff: str = [
                         suff
-                        for suff in cont.ARBEIT_LEISTUNG["suffix"].values()
+                        for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()
                         if suff in line_name
                     ][0]
                     anno_name: str = anno_name.replace(suff, "")

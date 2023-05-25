@@ -27,11 +27,11 @@ def cr_fig_base() -> go.Figure:
 
     tit_res: str = ""
     if st.session_state.get("cb_h"):
-        tit_res = cont.FIG_TITLE_SUFFIXES["suffix_Stunden"]
+        tit_res = cont.FIG_TITLES.suff_stunden
     elif meta["index"]["td_mean"] == pd.Timedelta(minutes=15):
-        tit_res = cont.FIG_TITLE_SUFFIXES["suffix_15min"]
+        tit_res = cont.FIG_TITLES.suff_15min
 
-    tit: str = f'{cont.FIG_TITLES["lastgang"]}{tit_res}'
+    tit: str = f"{cont.FIG_TITLES.lastgang}{tit_res}"
 
     if st.session_state.get("cb_multi_year"):
         fig: go.Figure = ploplo.line_plot_y_overlay(
@@ -96,7 +96,7 @@ def cr_fig_base() -> go.Figure:
 def cr_fig_jdl() -> None:
     """Jahresdauerlinie erstellen"""
 
-    tit: str = f'{cont.FIG_TITLES["jdl"]}{cont.FIG_TITLE_SUFFIXES["suffix_Stunden"]}'
+    tit: str = f"{cont.FIG_TITLES.jdl}{cont.FIG_TITLES.suff_stunden}"
 
     if st.session_state.get("cb_multi_year"):
         st.session_state["fig_jdl"] = ploplo.line_plot_y_overlay(
@@ -144,13 +144,13 @@ def cr_fig_mon() -> None:
             dic_df=st.session_state["dic_mon"],
             meta=st.session_state["metadata"],
             years=st.session_state["years"],
-            title=cont.FIG_TITLES["mon"],
+            title=cont.FIG_TITLES.mon,
         )
     else:
         st.session_state["fig_mon"] = ploplo.line_plot(
             df=st.session_state["df_mon"],
             meta=st.session_state["metadata"],
-            title=cont.FIG_TITLES["mon"],
+            title=cont.FIG_TITLES.mon,
         )
 
     # Pfeile an Maxima
@@ -191,11 +191,11 @@ def cr_fig_days() -> None:
 
     tit_res: str = ""
     if st.session_state.get("cb_h"):
-        tit_res = cont.FIG_TITLE_SUFFIXES["suffix_Stunden"]
+        tit_res = cont.FIG_TITLES.suff_stunden
     elif st.session_state["metadata"]["index"]["td_mean"] == pd.Timedelta(minutes=15):
-        tit_res = cont.FIG_TITLE_SUFFIXES["suffix_15min"]
+        tit_res = cont.FIG_TITLES.suff_15min
 
-    tit: str = f'{cont.FIG_TITLES["tage"]}{tit_res}'
+    tit: str = f'{cont.FIG_TITLES.tage}{tit_res}'
 
     st.session_state["fig_days"] = ploplo.line_plot_day_overlay(
         st.session_state["dic_days"], st.session_state["metadata"], tit, "fig_days"

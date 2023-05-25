@@ -9,7 +9,7 @@ from loguru import logger
 
 import modules.classes as cl
 import modules.general_functions as gf
-import modules.logger_setup as los
+import modules.logger_setup as ls
 from modules import constants as cont
 
 
@@ -55,15 +55,16 @@ def import_prefab_excel(
     # meta data if obis code in column title
     df, meta = meta_from_obis(df, meta)
 
-    # Metadaten zum Zeitindex und zur y-Achse der Linien
+    # Weitere Metadaten
     meta = temporal_metadata(df, mark_index, meta)
     meta = set_y_axis_for_lines(meta)
+    meta = meta_number_format(df, meta)
 
     # 15min und kWh
     df, meta = convert_15min_kwh_to_kw(df, meta)
 
     logger.info(meta.__dict__)
-    los.log_df(df)
+    ls.log_df(df)
     logger.success("Excel-Datei importiert.")
 
     return df, meta
@@ -152,6 +153,32 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cl.MetaDat
             for line, unit in units.items()
         ],
     )
+
+    return meta
+
+
+def meta_number_format(df: pl.DataFrame, meta: cl.MetaData) -> cl.MetaData:
+    """Define Number Formats for Excel-Export"""
+
+    # cut-off for decimal places
+    decimal_0: int = 1000
+    decimal_1: int = 100
+    decimal_2: int = 10
+
+    quantiles: pl.DataFrame = df.quantile(0.95)
+
+    for line in meta.lines:
+        if line.name in df.columns:
+            line_quant = quantiles.get_column(line.name).item()
+            if any(isinstance(line_quant, number) for number in [int, float]):
+                if abs(line_quant) >= decimal_0:
+                    line.excel_number_format = f'#.##0"{line.unit}"'
+                if abs(line_quant) >= decimal_1:
+                    line.excel_number_format = f'#.##0,0"{line.unit}"'
+                if abs(line_quant) >= decimal_2:
+                    line.excel_number_format = f'#.##0,00"{line.unit}"'
+                else:
+                    line.excel_number_format = f'#.##0,000"{line.unit}"'
 
     return meta
 
@@ -252,7 +279,7 @@ def clean_up_daylight_savings(df: pl.DataFrame, mark_index: str) -> CleanUpDLS:
 
     if df_deleted.height > 0:
         logger.warning("Data deleted due to daylight savings.")
-        logger.log(los.LogLevel.DATA_FRAME.name, df_deleted)
+        logger.log(ls.all_log_levels().DATA_FRAME.name, df_deleted)
     else:
         logger.info("No data deleted due to daylight savings")
 
@@ -348,19 +375,19 @@ def convert_15min_kwh_to_kw(
         logger.debug("Skipped 'convert_15min_kwh_to_kw'")
         return df, meta
 
-    suffixes: list[str] = list(cont.ARBEIT_LEISTUNG["suffix"].values())
+    suffixes: list[str] = cont.ARBEIT_LEISTUNG.get_all_suffixes()
 
     for col in meta.get_all_line_names():
         unit: str = (meta.get_line_by_name(col).unit or "").strip()
         suffix_not_in_col_name: bool = all(suffix not in col for suffix in suffixes)
         unit_is_leistung_or_arbeit: bool = unit in (
-            cont.ARBEIT_LEISTUNG["units"]["Arbeit"]
-            + cont.ARBEIT_LEISTUNG["units"]["Leistung"]
+            cont.ARBEIT_LEISTUNG.arbeit.possible_units
+            + cont.ARBEIT_LEISTUNG.leistung.possible_units
         )
         if suffix_not_in_col_name and unit_is_leistung_or_arbeit:
             originla_type: Literal["Arbeit", "Leistung"] = (
                 "Arbeit"
-                if unit in cont.ARBEIT_LEISTUNG["units"]["Arbeit"]
+                if unit in cont.ARBEIT_LEISTUNG.arbeit.possible_units
                 else "Leistung"
             )
             df, meta = insert_column_arbeit_leistung(originla_type, df, meta, col)
@@ -389,7 +416,7 @@ def rename_column_arbeit_leistung(
         - meta (MetaData): Metadaten
         - col (str): Name der (Original-) Spalte
     """
-    new_name: str = f'{col}{cont.ARBEIT_LEISTUNG["suffix"][original_data_type]}'
+    new_name: str = f"{col}{cont.ARBEIT_LEISTUNG.get_suffix(original_data_type)}"
     df = df.rename({col: new_name})
     old_line: cl.MetaLine = meta.get_line_by_name(col)
     new_line: cl.MetaLine = cl.MetaLine(**vars(old_line))
@@ -420,7 +447,7 @@ def insert_column_arbeit_leistung(
         - col (str): Name der (Original-) Spalte
     """
     new_col_type: str = "Arbeit" if original_data == "Leistung" else "Leistung"
-    new_col_name: str = f'{col}{cont.ARBEIT_LEISTUNG["suffix"][new_col_type]}'
+    new_col_name: str = f"{col}{cont.ARBEIT_LEISTUNG.get_suffix(new_col_type)}"
     old_line: cl.MetaLine = meta.get_line_by_name(col)
     new_line: cl.MetaLine = cl.MetaLine(**vars(old_line))
     new_line.name = new_col_name

@@ -14,7 +14,7 @@ from modules import meteorolog as meteo
 from modules.classes import ExcelMarkers, MarkerPosition, MarkerType, ObisElectrical
 from modules.df_manip import CleanUpDLS, clean_up_daylight_savings
 from modules.general_functions import func_timer, sort_list_by_occurance
-from modules.logger_setup import LogLevel
+from modules.logger_setup import LogLevels
 
 pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
 
@@ -28,10 +28,10 @@ def import_prefab_excel(file: Any) -> None:
 
     df_messy: pd.DataFrame = pd.read_excel(file, sheet_name="Daten")
     logger.debug("df_messy")
-    logger.log(LogLevel.DATA_FRAME.name, df_messy.head(10))
+    logger.log(LogLevels.DATA_FRAME.name, df_messy.head(10))
     df: pd.DataFrame = edit_df_after_import(df_messy)
     logger.debug("clean df")
-    logger.log(LogLevel.DATA_FRAME.name, df.head())
+    logger.log(LogLevels.DATA_FRAME.name, df.head())
 
     # Metadaten
     units: dict[str, str] = units_from_messy_df(df_messy)
@@ -59,7 +59,7 @@ def import_prefab_excel(file: Any) -> None:
         st.session_state["years"] = meta["index"]["years"]
 
     logger.success("file imported and metadata extracted")
-    logger.log(LogLevel.DATA_FRAME.name, df.head())
+    logger.log(LogLevels.DATA_FRAME.name, df.head())
 
 
 @func_timer
@@ -270,18 +270,19 @@ def convert_15min_kwh_to_kw(
     if meta["index"]["td_int"] not in ["15min"]:
         return df, meta
 
-    suffixes: list[str] = list(cont.ARBEIT_LEISTUNG["suffix"].values())
+    suffixes: list[str] = cont.ARBEIT_LEISTUNG.get_all_suffixes()
 
     for col in [str(column) for column in df.columns]:
         suffix_not_in_col_name: bool = all(suffix not in col for suffix in suffixes)
         unit_is_leistung_or_arbeit: bool = meta[col]["unit"].strip() in (
-            cont.ARBEIT_LEISTUNG["units"]["Arbeit"]
-            + cont.ARBEIT_LEISTUNG["units"]["Leistung"]
+            cont.ARBEIT_LEISTUNG.arbeit.possible_units
+            + cont.ARBEIT_LEISTUNG.leistung.possible_units
         )
         if suffix_not_in_col_name and unit_is_leistung_or_arbeit:
             original_data: Literal["Arbeit", "Leistung"] = (
                 "Arbeit"
-                if meta[col]["unit"].strip() in cont.ARBEIT_LEISTUNG["units"]["Arbeit"]
+                if meta[col]["unit"].strip()
+                in cont.ARBEIT_LEISTUNG.arbeit.possible_units
                 else "Leistung"
             )
             df, meta = insert_column_arbeit_leistung(original_data, df, meta, col)
@@ -310,7 +311,7 @@ def rename_column_arbeit_leistung(
         - meta (cont.DicStrNest): dictionar der Metadaten
         - col (str): Name der (Original-) Spalte
     """
-    col_name: str = f'{col}{cont.ARBEIT_LEISTUNG["suffix"][original_data]}'
+    col_name: str = f"{col}{cont.ARBEIT_LEISTUNG.get_suffix(original_data)}"
     df = df.rename(columns={col: col_name})
     meta[col_name] = meta[col].copy()
     meta[col_name]["tit"] = col_name
@@ -338,7 +339,7 @@ def insert_column_arbeit_leistung(
         - col (str): Name der (Original-) Spalte
     """
     new_col: str = "Arbeit" if original_data == "Leistung" else "Leistung"
-    col_name: str = f'{col}{cont.ARBEIT_LEISTUNG["suffix"][new_col]}'
+    col_name: str = f"{col}{cont.ARBEIT_LEISTUNG.get_suffix(new_col)}"
     meta[col_name] = meta[col].copy()
     meta[col_name]["tit"] = col_name
 

@@ -19,9 +19,9 @@ def test_conversion_15min_arbeit_leistung() -> None:
 
     df_con, meta_new = ex.convert_15min_kwh_to_kw(df, meta)
 
-    suffixes: list[str] = list(cont.ARBEIT_LEISTUNG["suffix"].values())
-    suff_arbeit: str = cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"]
-    suff_leistung: str = cont.ARBEIT_LEISTUNG["suffix"]["Leistung"]
+    suffixes: list[str] = cont.ARBEIT_LEISTUNG.get_all_suffixes()
+    suff_arbeit: str = cont.ARBEIT_LEISTUNG.arbeit.suffix
+    suff_leistung: str = cont.ARBEIT_LEISTUNG.leistung.suffix
 
     any_col_has_suffix: bool = any(
         (suffix in str(col) for suffix in suffixes) for col in df_con.columns

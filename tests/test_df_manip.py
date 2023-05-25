@@ -20,7 +20,7 @@ def test_h_from_other() -> None:
 
     df_con, meta_new = ex.convert_15min_kwh_to_kw(df, meta)
 
-    suffixes: list[str] = list(cont.ARBEIT_LEISTUNG["suffix"].values())
+    suffixes: list[str] = cont.ARBEIT_LEISTUNG.get_all_suffixes()
 
     df_h: pd.DataFrame = dfm.h_from_other(df_con, meta_new)
 

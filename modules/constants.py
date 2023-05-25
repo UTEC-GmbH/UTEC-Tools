@@ -1,5 +1,6 @@
 """Konstanten"""
 
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, TypeAlias, TypedDict
 
@@ -8,11 +9,16 @@ REPO_NAME: str = "UTEC-Tools"
 # Current Working Directory
 CWD: str = str(Path.cwd())
 
-DURATIONS_IN_MS: dict[str, int] = {
-    "half_day": 12 * 60 * 60 * 1000,  # 43.200.000
-    "week": 7 * 24 * 60 * 60 * 1000,  # 604.800.000
-    "month": 30 * 24 * 60 * 60 * 1000,  # 2.592.000.000
-}
+
+@dataclass
+class DurationMS:
+    """Übersetzung von Zeitbezeichnung in Millisekunden
+    (z.B. für Tickstops in plotly graphs)
+    """
+
+    half_day: int = 12 * 60 * 60 * 1000  # 43.200.000
+    week: int = 7 * 24 * 60 * 60 * 1000  # 604.800.000
+    month: int = 30 * 24 * 60 * 60 * 1000  # 2.592.000.000
 
 
 # Type Alias für nested dict of stings
@@ -38,33 +44,57 @@ COL_ORG_DATE: str = "cutomdata"
 # Anhang für geglättete Linien
 SMOOTH_SUFFIX: str = " geglättet"
 
-# Titel der Grafiken
-FIG_TITLES: dict[str, str] = {
-    "lastgang": "Lastgang",
-    "jdl": "Geordnete Jahresdauerlinie",
-    "mon": "Monatswerte",
-    "tage": "Vergleich ausgewählter Tage",
-}
-FIG_TITLE_SUFFIXES: dict[str, str] = {
-    "suffix_Stunden": '<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>',
-    "suffix_15min": '<i><span style="font-size: 12px;"> (15-Minuten-Werte)</span></i>',
-}
+
+@dataclass
+class FigTitles:
+    """Title und css-suffixes für Plotly graphen"""
+
+    lastgang: str
+    jdl: str
+    mon: str
+    tage: str
+    suff_stunden: str
+    suff_15min: str
 
 
-class ArLeiDic(TypedDict):
-    """dictionary type definition for ARBEIT_LEISTUNG dictionary"""
+FIG_TITLES: FigTitles = FigTitles(
+    lastgang="Lastgang",
+    jdl="Geordnete Jahresdauerlinie",
+    mon="Monatswerte",
+    tage="Vergleich ausgewählter Tage",
+    suff_stunden='<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>',
+    suff_15min='<i><span style="font-size: 12px;"> (15-Minuten-Werte)</span></i>',
+)
 
-    suffix: dict[str, str]
-    units: dict[str, list[str]]
+
+@dataclass
+class SuffixUnit:
+    """Für die Aufteilung in Leistung / Arbeit bei 15-Minuten-Werten"""
+
+    suffix: str
+    possible_units: list[str]
 
 
-ARBEIT_LEISTUNG: ArLeiDic = {
-    "suffix": {"Leistung": " → Leistung", "Arbeit": " → Arbeit"},
-    "units": {
-        "Arbeit": ["GWh", "MWh", "kWh", "Wh"],
-        "Leistung": ["GW", "MW", "kW", "W"],
-    },
-}
+@dataclass
+class ArbeitLeistung:
+    """Test"""
+
+    arbeit: SuffixUnit
+    leistung: SuffixUnit
+
+    def get_all_suffixes(self) -> list[str]:
+        """Get all suffixes"""
+        return [getattr(self, attr).suffix for attr in self.__dict__]
+
+    def get_suffix(self, data_type: str) -> str:
+        """Get the suffix by providing the type (Arbeit / Leistung)"""
+        return getattr(self, data_type.lower()).suffix
+
+
+ARBEIT_LEISTUNG: ArbeitLeistung = ArbeitLeistung(
+    arbeit=SuffixUnit(suffix=" → Arbeit", possible_units=["GWh", "MWh", "kWh", "Wh"]),
+    leistung=SuffixUnit(suffix=" → Leistung", possible_units=["GW", "MW", "kW", "W"]),
+)
 
 
 # Menu für Ausfüllen von Linien
@@ -145,17 +175,41 @@ GRP_MEAN: list[str] = [
     " %",
 ]
 
-PAGES: DicStrNest = {
-    "login": {
-        "page_tit": "UTEC Online Tools",
-    },
-    "graph": {
-        "page_tit": "Grafische Datenauswertung",
-    },
-    "meteo": {
-        "page_tit": "Meteorologische Daten",
-    },
-}
+
+@dataclass
+class StPageProps:
+    """Streamlit Page Properties"""
+
+    short: str
+    title: str
+    excel_ws_name: str | None = None
+
+
+@dataclass
+class StPages:
+    """Streamlit Pages"""
+
+    login: StPageProps
+    graph: StPageProps
+    meteo: StPageProps
+
+    def get_all_short(self) -> list[str]:
+        """Get a list of short page descriptors"""
+        return [getattr(self, attr).short for attr in self.__dict__]
+    
+    def get_title(self, short: str) -> str:
+        """Get the title by providing the short page descriptor"""
+        return getattr(self, short.lower()).title
+
+PAGES: StPages = StPages(
+    login=StPageProps(short="login", title="UTEC Online Tools"),
+    graph=StPageProps(
+        short="graph", title="Grafische Datenauswertung", excel_ws_name="Daten"
+    ),
+    meteo=StPageProps(
+        short="meteo", title="Meteorologische Daten", excel_ws_name="Wetterdaten"
+    ),
+)
 
 
 # Transparenz (Deckungsgrad) 0= durchsichtig, 1= undurchsichtig

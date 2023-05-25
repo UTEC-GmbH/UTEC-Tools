@@ -14,7 +14,7 @@ from modules import setup_stuff
 from modules import streamlit_menus as sm
 from modules import user_authentication as uauth
 from modules.general_functions import func_timer, load_lottie_file
-from modules.logger_setup import LogLevel
+from modules.logger_setup import LogLevels
 
 st.set_page_config(
     page_title="UTEC Online Tools",
@@ -27,7 +27,7 @@ if not st.session_state.get("logger_setup"):
     modules.logger_setup.logger_setup()
 
 if st.session_state.get("initial_setup"):
-    logger.log(LogLevel.NEW_RUN.name, "NEW RUN")
+    logger.log(LogLevels.NEW_RUN.name, "NEW RUN")
 else:
     setup_stuff.general_setup()
 
@@ -93,7 +93,7 @@ def access_granted() -> None:
         st.session_state["logged_username"] = user_key
 
     if access_lvl_user in ("god", "full"):
-        st.session_state["access_pages"] = list(cont.PAGES)
+        st.session_state["access_pages"] = cont.PAGES.get_all_short()
         st.session_state["access_until"] = date.max
     else:
         st.session_state["access_pages"] = access_lvl_user
@@ -116,7 +116,7 @@ def access_granted() -> None:
 
         for page in st.session_state["access_pages"]:
             if page != "login":
-                st.markdown(f"- {cont.PAGES[page]['page_tit']}")
+                st.markdown(f"- {cont.PAGES.get_title(page)}")
 
     if access_lvl_user == "god":
         god_mode()

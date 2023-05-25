@@ -39,68 +39,85 @@ class LevelProperties:
 
 
 @dataclass
-class LogLevel:
+class LogLevels:
     """Logger Format"""
 
-    INFO: LevelProperties = LevelProperties("INFO", icon="💡")
-    DEBUG: LevelProperties = LevelProperties("DEBUG", icon="🐞")
-    ERROR: LevelProperties = LevelProperties("ERROR", icon="😱")
-    SUCCESS: LevelProperties = LevelProperties("SUCCESS", icon="🥳")
-    WARNING: LevelProperties = LevelProperties("WARNING", icon="⚠️")
-    CRITICAL: LevelProperties = LevelProperties("CRITICAL", icon="☠️")
-    START: LevelProperties = LevelProperties(
-        "START",
-        icon="🔥🔥🔥",
-        custom=True,
-        info="",
-        blank_lines_before=2,
-        blank_lines_after=1,
-    )
-    TIMER: LevelProperties = LevelProperties("TIMER", icon="⏱", custom=True, info="")
-    NEW_RUN: LevelProperties = LevelProperties(
-        "NEW_RUN",
-        icon="✨",
-        custom=True,
-        info="",
-        blank_lines_before=2,
-    )
-    FUNC_START: LevelProperties = LevelProperties(
-        "FUNC_START", icon="👉👈", custom=True, info="", blank_lines_before=1
-    )
-    DATA_FRAME: LevelProperties = LevelProperties(
-        "DATA_FRAME",
-        custom=True,
-        icon="",
-        time="",
-        info="",
-        blank_lines_after=1,
-    )
-    ONCE_PER_RUN: LevelProperties = LevelProperties(
-        "ONCE_PER_RUN", icon="👟", custom=True
-    )
-    ONCE_PER_SESSION: LevelProperties = LevelProperties(
-        "ONCE_PER_SESSION",
-        icon="🦤🦤🦤",
-        custom=True,
-        info="",
-        blank_lines_before=1,
-        blank_lines_after=1,
+    INFO: LevelProperties
+    DEBUG: LevelProperties
+    ERROR: LevelProperties
+    SUCCESS: LevelProperties
+    WARNING: LevelProperties
+    CRITICAL: LevelProperties
+    START: LevelProperties
+    TIMER: LevelProperties
+    NEW_RUN: LevelProperties
+    FUNC_START: LevelProperties
+    DATA_FRAME: LevelProperties
+    ONCE_PER_RUN: LevelProperties
+    ONCE_PER_SESSION: LevelProperties
+
+
+def all_log_levels() -> LogLevels:
+    """All Log Levels"""
+    return LogLevels(
+        INFO=LevelProperties("INFO", icon="💡"),
+        DEBUG=LevelProperties("DEBUG", icon="🐞"),
+        ERROR=LevelProperties("ERROR", icon="😱"),
+        SUCCESS=LevelProperties("SUCCESS", icon="🥳"),
+        WARNING=LevelProperties("WARNING", icon="⚠️"),
+        CRITICAL=LevelProperties("CRITICAL", icon="☠️"),
+        START=LevelProperties(
+            "START",
+            icon="🔥🔥🔥",
+            custom=True,
+            info="",
+            blank_lines_before=2,
+            blank_lines_after=1,
+        ),
+        TIMER=LevelProperties("TIMER", icon="⏱", custom=True, info=""),
+        NEW_RUN=LevelProperties(
+            "NEW_RUN",
+            icon="✨",
+            custom=True,
+            info="",
+            blank_lines_before=2,
+        ),
+        FUNC_START=LevelProperties(
+            "FUNC_START", icon="👉👈", custom=True, info="", blank_lines_before=1
+        ),
+        DATA_FRAME=LevelProperties(
+            "DATA_FRAME",
+            custom=True,
+            icon="",
+            time="",
+            info="",
+            blank_lines_after=1,
+        ),
+        ONCE_PER_RUN=LevelProperties("ONCE_PER_RUN", icon="👟", custom=True),
+        ONCE_PER_SESSION=LevelProperties(
+            "ONCE_PER_SESSION",
+            icon="🦤🦤🦤",
+            custom=True,
+            info="",
+            blank_lines_before=1,
+            blank_lines_after=1,
+        ),
     )
 
 
 def log_df(df: pl.DataFrame) -> None:
     """Put the head of the DataFrame in the log"""
     logger.log(
-        LogLevel.DATA_FRAME.name,
+        all_log_levels().DATA_FRAME.name,
         f"DataFrame head: \n{df.head()} \n\nDataFrame properties: \n{df.describe()}",
     )
 
 
 def logger_setup() -> None:
     """Set up the loguru logging module."""
-
+    log_levels: LogLevels = all_log_levels()
     custom_levels: list[str] = [
-        lvl for lvl in LogLevel.__annotations__ if getattr(LogLevel, lvl).custom
+        lvl for lvl in log_levels.__annotations__ if getattr(log_levels, lvl).custom
     ]
 
     for lvl in custom_levels:
@@ -110,7 +127,7 @@ def logger_setup() -> None:
             logger.level(lvl, no=1)
 
     def format_of_lvl(record: dict) -> str:
-        return getattr(LogLevel, record["level"].name).get_format()
+        return getattr(log_levels, record["level"].name).get_format()
 
     logger.remove()
 
@@ -132,4 +149,4 @@ def logger_setup() -> None:
     )
 
     st.session_state["logger_setup"] = True
-    logger.log(LogLevel.START.name, "Session Started. Logger Setup Complete.")
+    logger.log(log_levels.START.name, "Session Started. Logger Setup Complete.")

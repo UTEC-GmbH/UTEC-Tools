@@ -1,9 +1,10 @@
 select = ["ALL"]
 fix = true
 ignore = [
-    "ANN101",
     "ANN002",
     "ANN003",
+    "ANN101",
+    "ANN102",
     "ANN401",
     "COM812",
     "D202",

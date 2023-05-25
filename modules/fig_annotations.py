@@ -196,7 +196,7 @@ def hovertext_from_x_val(
     Returns:
         str: Hovertext
     """
-    jdl: bool = cont.FIG_TITLES["jdl"] in title
+    jdl: bool = cont.FIG_TITLES.jdl in title
     if jdl and line_data:
         hov_date: datetime | str = line_data["customdata"][
             np.where(line_data["x"] == x_val)

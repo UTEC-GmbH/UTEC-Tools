@@ -7,8 +7,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-import plotly.io as pio
 import pandas.io.formats.excel
+import plotly.io as pio
 import sentry_sdk
 import streamlit as st
 from dotenv import load_dotenv
@@ -18,7 +18,7 @@ from pytz import BaseTzInfo, timezone
 
 from modules import constants as cont
 from modules.general_functions import func_timer, render_svg, st_add
-from modules.logger_setup import LogLevel
+from modules.logger_setup import LogLevels
 from modules.user_authentication import get_all_user_data
 
 
@@ -122,7 +122,7 @@ def general_setup() -> None:
         logger.info(f"Pfad '{exp_dir}' für die Ausgabe erstellt")
 
     st.session_state["initial_setup"] = True
-    logger.log(LogLevel.ONCE_PER_SESSION.name, "Initial Setup Complete")
+    logger.log(LogLevels.ONCE_PER_SESSION.name, "Initial Setup Complete")
 
 
 @func_timer
@@ -169,7 +169,7 @@ def page_header_setup(page: str) -> None:
                     unsafe_allow_html=True,
                 )
 
-        st.title(cont.PAGES[page]["page_tit"])
+        st.title(cont.PAGES.get_title(page))
         st.markdown("---")
 
-    logger.log(LogLevel.ONCE_PER_RUN.name, f"page header for page '{page}' created")
+    logger.log(LogLevels.ONCE_PER_RUN.name, f"page header for page '{page}' created")

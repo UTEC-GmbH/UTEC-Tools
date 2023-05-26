@@ -192,10 +192,10 @@ def cr_fig_days() -> None:
     tit_res: str = ""
     if st.session_state.get("cb_h"):
         tit_res = cont.FIG_TITLES.suff_stunden
-    elif st.session_state["metadata"]["index"]["td_mean"] == pd.Timedelta(minutes=15):
+    elif st.session_state["metadata"]["td_mean"] == 15:
         tit_res = cont.FIG_TITLES.suff_15min
 
-    tit: str = f'{cont.FIG_TITLES.tage}{tit_res}'
+    tit: str = f"{cont.FIG_TITLES.tage}{tit_res}"
 
     st.session_state["fig_days"] = ploplo.line_plot_day_overlay(
         st.session_state["dic_days"], st.session_state["metadata"], tit, "fig_days"

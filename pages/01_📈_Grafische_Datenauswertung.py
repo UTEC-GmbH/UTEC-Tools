@@ -2,20 +2,20 @@
 
 from typing import Any, Literal
 
+import polars as pl
 import streamlit as st
 import streamlit_lottie as stlot
-import polars as pl
 
 from modules import df_manip as dfm
 from modules import excel_import as ex_in
 from modules import fig_annotations as fig_anno
 from modules import fig_creation_export as fig_create
 from modules import fig_formatting as fig_format
+from modules import general_functions as gf
 from modules import meteorolog as meteo
+from modules import setup_stuff as set_stuff
 from modules import streamlit_menus as sm
 from modules import user_authentication as uauth
-from modules import general_functions as gf
-from modules import setup_stuff as set_stuff
 
 # setup
 MANUAL_DEBUG: bool = True
@@ -71,8 +71,9 @@ if uauth.authentication(st.session_state["page"]):
             if any(entry not in st.session_state for entry in ("df", "metadata")):
                 with st.spinner("Momentle bitte - Datei wird importiert..."):
                     df, meta = ex_in.import_prefab_excel(st.session_state["f_up"])
-                    gf.st_add("df", df.to_pandas())
+                    gf.st_add("df", df.to_pandas().set_index("↓ Index ↓"))
                     gf.st_add("metadata", meta.__dict__)
+                    gf.st_add("years", meta.years)
 
             # Grundeinstellungen in der sidebar
             sm.base_settings()

@@ -215,15 +215,15 @@ def sidebar_file_upload() -> Any:
 def base_settings() -> None:
     """Grundeinstellungen (Stundenwerte, JDL, Monatswerte)"""
 
-    if st.session_state["metadata"]["index"]["td_mean"] == pd.Timedelta(hours=1):
+    if st.session_state["metadata"]["td_mean"] == 60:
         st.session_state["cb_h"] = True
 
     if (
-        st.session_state["metadata"]["index"]["td_mean"] < pd.Timedelta(hours=1)
+        st.session_state["metadata"]["td_mean"] < 60
         or len(st.session_state["years"]) > 1
     ):
         with st.sidebar, st.form("Grundeinstellungen"):
-            if st.session_state["metadata"]["index"]["td_mean"] < pd.Timedelta(hours=1):
+            if st.session_state["metadata"]["td_mean"] < 60:
                 st.checkbox(
                     label="Umrechnung in Stundenwerte",
                     help=(

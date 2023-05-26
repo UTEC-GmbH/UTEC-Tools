@@ -8,8 +8,8 @@ import polars as pl
 from loguru import logger
 
 from modules import classes as cl
-from modules import general_functions as gf
 from modules import constants as cont
+from modules import general_functions as gf
 from modules import setup_logger as slog
 
 
@@ -279,7 +279,7 @@ def clean_up_daylight_savings(df: pl.DataFrame, mark_index: str) -> CleanUpDLS:
 
     if df_deleted.height > 0:
         logger.warning("Data deleted due to daylight savings.")
-        logger.log(slog.log_lvl().data_frame.name, df_deleted)
+        logger.log(slog.LVLS.data_frame.name, df_deleted)
     else:
         logger.info("No data deleted due to daylight savings")
 

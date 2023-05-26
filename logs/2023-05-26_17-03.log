@@ -1,11 +1,11 @@
 
 
-14:50:53 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+17:03:42 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
 
 
-14:50:53 👉 function 'import_prefab_excel' started 👈 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> rename_columns -> line: 125 | Index-marker found in column 'column_2' 💡 
-14:50:55 ⚠ <ipython-input-1-bd529755af58> -> clean_up_daylight_savings -> line: 281 | Data deleted due to daylight savings. ️ 
+17:03:42 👉 function 'import_prefab_excel' started 👈 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> rename_columns -> line: 125 | Index-marker found in column 'column_2' 💡 
+17:03:45 ⚠ <ipython-input-1-7dfe8f421371> -> clean_up_daylight_savings -> line: 281 | Data deleted due to daylight savings. ️ 
   shape: (8, 6)
 ┌──────────────┬─────────────┬───────────────┬────────────────────┬───────────────────┬────────────┐
 │ ↓ Index ↓    ┆ Strombedarf ┆ PV Produktion ┆ Netzeinspeisung    ┆ PV Eigennutzung   ┆ Strombez.  │
@@ -31,28 +31,28 @@
 │ 02:45:00     ┆             ┆               ┆                    ┆                   ┆            │
 └──────────────┴─────────────┴───────────────┴────────────────────┴───────────────────┴────────────┘  
 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> temporal_metadata -> line: 310 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> set_y_axis_for_lines -> line: 205 | Strombedarf: Y-Achse 'y' 💡 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> set_y_axis_for_lines -> line: 205 | PV Produktion: Y-Achse 'y' 💡 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> set_y_axis_for_lines -> line: 205 | Netzeinspeisung: Y-Achse 'y' 💡 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> set_y_axis_for_lines -> line: 205 | PV Eigennutzung: Y-Achse 'y' 💡 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> set_y_axis_for_lines -> line: 205 | Bezug (1-1:1.29): Y-Achse 'y' 💡 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> insert_column_arbeit_leistung -> line: 467 | Spalte 'Strombedarf → Leistung' mit Einheit ' kW' eingefügt 💡 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> rename_column_arbeit_leistung -> line: 427 | Spalte 'Strombedarf' umbenannt in 'Strombedarf → Arbeit' 💡 
-14:50:55 🥳 <ipython-input-1-bd529755af58> -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'Strombedarf' aufgeteilt 🥳 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> insert_column_arbeit_leistung -> line: 467 | Spalte 'PV Produktion → Leistung' mit Einheit ' kW' eingefügt 💡 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> rename_column_arbeit_leistung -> line: 427 | Spalte 'PV Produktion' umbenannt in 'PV Produktion → Arbeit' 💡 
-14:50:55 🥳 <ipython-input-1-bd529755af58> -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'PV Produktion' aufgeteilt 🥳 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> insert_column_arbeit_leistung -> line: 467 | Spalte 'Netzeinspeisung → Leistung' mit Einheit ' kW' eingefügt 💡 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> rename_column_arbeit_leistung -> line: 427 | Spalte 'Netzeinspeisung' umbenannt in 'Netzeinspeisung → Arbeit' 💡 
-14:50:55 🥳 <ipython-input-1-bd529755af58> -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'Netzeinspeisung' aufgeteilt 🥳 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> insert_column_arbeit_leistung -> line: 467 | Spalte 'PV Eigennutzung → Leistung' mit Einheit ' kW' eingefügt 💡 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> rename_column_arbeit_leistung -> line: 427 | Spalte 'PV Eigennutzung' umbenannt in 'PV Eigennutzung → Arbeit' 💡 
-14:50:55 🥳 <ipython-input-1-bd529755af58> -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'PV Eigennutzung' aufgeteilt 🥳 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> insert_column_arbeit_leistung -> line: 467 | Spalte 'Bezug (1-1:1.29) → Leistung' mit Einheit ' kW' eingefügt 💡 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> rename_column_arbeit_leistung -> line: 427 | Spalte 'Bezug (1-1:1.29)' umbenannt in 'Bezug (1-1:1.29) → Arbeit' 💡 
-14:50:55 🥳 <ipython-input-1-bd529755af58> -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'Bezug (1-1:1.29)' aufgeteilt 🥳 
-14:50:55 💡 <ipython-input-1-bd529755af58> -> import_prefab_excel -> line: 66 | {'units': {'all_units': [' kWh', ' kWh', ' kWh', ' kWh', ' kWh', ' kW', ' kWh', ' kW',
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> temporal_metadata -> line: 310 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> set_y_axis_for_lines -> line: 205 | Strombedarf: Y-Achse 'y' 💡 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> set_y_axis_for_lines -> line: 205 | PV Produktion: Y-Achse 'y' 💡 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> set_y_axis_for_lines -> line: 205 | Netzeinspeisung: Y-Achse 'y' 💡 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> set_y_axis_for_lines -> line: 205 | PV Eigennutzung: Y-Achse 'y' 💡 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> set_y_axis_for_lines -> line: 205 | Bezug (1-1:1.29): Y-Achse 'y' 💡 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> insert_column_arbeit_leistung -> line: 467 | Spalte 'Strombedarf → Leistung' mit Einheit ' kW' eingefügt 💡 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> rename_column_arbeit_leistung -> line: 427 | Spalte 'Strombedarf' umbenannt in 'Strombedarf → Arbeit' 💡 
+17:03:45 🥳 <ipython-input-1-7dfe8f421371> -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'Strombedarf' aufgeteilt 🥳 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> insert_column_arbeit_leistung -> line: 467 | Spalte 'PV Produktion → Leistung' mit Einheit ' kW' eingefügt 💡 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> rename_column_arbeit_leistung -> line: 427 | Spalte 'PV Produktion' umbenannt in 'PV Produktion → Arbeit' 💡 
+17:03:45 🥳 <ipython-input-1-7dfe8f421371> -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'PV Produktion' aufgeteilt 🥳 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> insert_column_arbeit_leistung -> line: 467 | Spalte 'Netzeinspeisung → Leistung' mit Einheit ' kW' eingefügt 💡 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> rename_column_arbeit_leistung -> line: 427 | Spalte 'Netzeinspeisung' umbenannt in 'Netzeinspeisung → Arbeit' 💡 
+17:03:45 🥳 <ipython-input-1-7dfe8f421371> -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'Netzeinspeisung' aufgeteilt 🥳 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> insert_column_arbeit_leistung -> line: 467 | Spalte 'PV Eigennutzung → Leistung' mit Einheit ' kW' eingefügt 💡 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> rename_column_arbeit_leistung -> line: 427 | Spalte 'PV Eigennutzung' umbenannt in 'PV Eigennutzung → Arbeit' 💡 
+17:03:45 🥳 <ipython-input-1-7dfe8f421371> -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'PV Eigennutzung' aufgeteilt 🥳 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> insert_column_arbeit_leistung -> line: 467 | Spalte 'Bezug (1-1:1.29) → Leistung' mit Einheit ' kW' eingefügt 💡 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> rename_column_arbeit_leistung -> line: 427 | Spalte 'Bezug (1-1:1.29)' umbenannt in 'Bezug (1-1:1.29) → Arbeit' 💡 
+17:03:45 🥳 <ipython-input-1-7dfe8f421371> -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'Bezug (1-1:1.29)' aufgeteilt 🥳 
+17:03:45 💡 <ipython-input-1-7dfe8f421371> -> import_prefab_excel -> line: 66 | {'units': {'all_units': [' kWh', ' kWh', ' kWh', ' kWh', ' kWh', ' kW', ' kWh', ' kW',
                ' kWh', ' kW', ' kWh', ' kW', ' kWh', ' kW', ' kWh'],
  'set_units': [' kWh', ' kW']}, 'lines': [{'name': 'Strombedarf',
  'orig_tit': 'Strombedarf',
@@ -197,7 +197,7 @@ shape: (5, 12)
 └────────────┴────────────┴────────────┴────────────┴───┴────────────┴────────────┴────────────┴────────────┘ 
 
 DataFrame properties: 
-shape: (9, 13)
+shape: (7, 13)
 ┌───┬────────────┬────────────┬────────────┬───┬────────────┬────────────┬────────────┬────────────┐
 │ d ┆ ↓ Index ↓  ┆ Strombedar ┆ PV         ┆ … ┆ PV         ┆ Netzeinspe ┆ PV Eigennu ┆ Bezug      │
 │ e ┆ ---        ┆ f → Arbeit ┆ Produktion ┆   ┆ Produktion ┆ isung →    ┆ tzung →    ┆ (1-1:1.29) │
@@ -237,27 +237,18 @@ shape: (9, 13)
 │ t ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
 │ d ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
 │ m ┆ 2021-01-01 ┆ 1.55       ┆ 0.0        ┆ … ┆ 0.0        ┆ 0.0        ┆ 0.0        ┆ 0.0        │
-│ i ┆ 00:00:00   ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
-│ n ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ i ┆ 00:00:00.0 ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ n ┆ 00000      ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
 │ m ┆ 2021-12-31 ┆ 10.6       ┆ 12.97      ┆ … ┆ 51.880001  ┆ 33.720001  ┆ 27.6       ┆ 42.400002  │
-│ a ┆ 23:45:00   ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
-│ x ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ a ┆ 23:45:00.0 ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ x ┆ 00000      ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
 │ m ┆ null       ┆ 4.08       ┆ 0.0        ┆ … ┆ 0.0        ┆ 0.0        ┆ 0.0        ┆ 10.92      │
 │ e ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
 │ d ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
 │ i ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
 │ a ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
 │ n ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
-│ 2 ┆ null       ┆ 2.7        ┆ 0.0        ┆ … ┆ 0.0        ┆ 0.0        ┆ 0.0        ┆ 8.0        │
-│ 5 ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
-│ % ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
-│ 7 ┆ null       ┆ 5.17       ┆ 1.73       ┆ … ┆ 6.92       ┆ 0.0        ┆ 6.92       ┆ 17.120001  │
-│ 5 ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
-│ % ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
 └───┴────────────┴────────────┴────────────┴───┴────────────┴────────────┴────────────┴────────────┘  
 
-14:50:55 🥳 <ipython-input-1-bd529755af58> -> import_prefab_excel -> line: 68 | Excel-Datei importiert. 🥳 
-14:50:55 ⏱ execution time of 'import_prefab_excel': 1.3750 s ⏱ 
-
-14:51:07 👉 function 'excel_download' started 👈 
-14:51:09 ⏱ execution time of 'excel_download': 2.1410 s ⏱ 
+17:03:45 🥳 <ipython-input-1-7dfe8f421371> -> import_prefab_excel -> line: 68 | Excel-Datei importiert. 🥳 
+17:03:45 ⏱ execution time of 'import_prefab_excel': 2.7500 s ⏱ 

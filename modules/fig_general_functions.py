@@ -3,7 +3,9 @@
 from math import ceil
 from typing import Any
 
+import pandas as pd
 import plotly.graph_objects as go
+import streamlit as st
 
 from modules import constants as cont
 
@@ -128,3 +130,24 @@ def fill_colour_with_opacity(sel_trans: str, line_colour: str) -> str:
     )
 
     return f"rgba{fill_col_rgba}"
+
+
+def del_smooth() -> None:
+    """Löscht gegelättete Linien aus den DataFrames
+    und Grafiken im Stremalit SessionState
+    """
+
+    # Spalten in dfs löschen
+    for item in st.session_state:
+        if isinstance(item, pd.DataFrame):
+            for col in [str(col) for col in item.columns]:
+                if cont.SMOOTH_SUFFIX in col:
+                    item.drop(columns=[col], inplace=True)
+
+    # Linien löschen
+    lis_dat: list = [
+        dat
+        for dat in st.session_state["fig_base"].data
+        if cont.SMOOTH_SUFFIX not in dat.name
+    ]
+    st.session_state["fig_base"].data = tuple(lis_dat)

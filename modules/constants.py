@@ -249,9 +249,16 @@ PLOTFARBE: dict[str, str] = {
     "Netzbezug": FARBEN["lila"],
 }
 
+# copy of dates before manipulation
+ORIGINAL_INDEX_COL: str = "orgidx"
 
-# obis Elektrizität (Medium == 1)
-OBIS_PATTERN_EL: str = r"1-\d*:\d*\.\d*"  # fnmatch "*1-*:*.*"
+
+@dataclass
+class ExcelMarkers:
+    """Name of Markers for Index and Units in the Excel-File"""
+
+    index: str = "↓ Index ↓"
+    units: str = "→ Einheit →"
 
 
 @dataclass

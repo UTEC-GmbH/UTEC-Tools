@@ -1,0 +1,21 @@
+
+
+15:03:52 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+
+
+15:03:52 👉 function 'general_setup' started 👈 
+
+15:03:53 👉 function 'render_svg' started 👈 
+15:03:53 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+
+15:03:53 👉 function 'get_commit_message_date' started 👈 
+15:03:54 ⏱ execution time of 'get_commit_message_date': 1.3600 s ⏱ 
+
+15:03:54 👉 function 'get_all_user_data' started 👈 
+
+15:03:54 👉 function 'connect_database' started 👈 
+15:03:54 🥳 user_authentication -> connect_database -> line: 124 | Deta-Database connection established 🥳 
+15:03:54 ⏱ execution time of 'connect_database': 0.0150 s ⏱ 
+15:03:55 🥳 user_authentication -> get_all_user_data -> line: 158 | Collected all user data from Database 🥳 
+15:03:55 ⏱ execution time of 'get_all_user_data': 0.2340 s ⏱ 
+15:03:55 💡 setup_stuff -> general_setup -> line: 119 | Pfad 'C:\Users\fl\Documents\Python\UTEC-Tools\export' für die Ausgabe bereits vorhanden 💡 

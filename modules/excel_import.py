@@ -7,10 +7,10 @@ from typing import Literal, NamedTuple
 import polars as pl
 from loguru import logger
 
-import modules.classes as cl
-import modules.general_functions as gf
-import modules.logger_setup as ls
+from modules import classes as cl
+from modules import general_functions as gf
 from modules import constants as cont
+from modules import setup_logger as slog
 
 
 @gf.func_timer
@@ -37,8 +37,8 @@ def import_prefab_excel(
     df, meta = import_prefab_excel(file)
     """
 
-    mark_index: str = cl.ExcelMarkers(cl.MarkerType.INDEX).marker_string
-    mark_units: str = cl.ExcelMarkers(cl.MarkerType.UNITS).marker_string
+    mark_index: str = cont.ExcelMarkers.index
+    mark_units: str = cont.ExcelMarkers.units
 
     df: pl.DataFrame = get_df_from_excel(file)
 
@@ -64,7 +64,7 @@ def import_prefab_excel(
     df, meta = convert_15min_kwh_to_kw(df, meta)
 
     logger.info(meta.__dict__)
-    ls.log_df(df)
+    slog.log_df(df)
     logger.success("Excel-Datei importiert.")
 
     return df, meta
@@ -117,16 +117,16 @@ def remove_empty(df: pl.DataFrame, **kwargs) -> pl.DataFrame:
     return df
 
 
-def rename_columns(df: pl.DataFrame, mark_ind: str) -> pl.DataFrame:
+def rename_columns(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
     """Rename the columns of the DataFrame"""
 
     # find index marker
-    ind_col: str = [str(col) for col in df.columns if mark_ind in df.get_column(col)][0]
+    ind_col: str = [col for col in df.columns if mark_index in df.get_column(col)][0]
     logger.info(f"Index-marker found in column '{ind_col}'")
 
     # rename columns
-    cols: tuple = df.row(by_predicate=pl.col(ind_col) == mark_ind)
-    df.columns = [str(col) for col in cols]
+    cols: tuple = df.row(by_predicate=pl.col(ind_col) == mark_index)
+    df.columns = list(cols)
 
     return df
 
@@ -222,7 +222,7 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
     df = clean_up_daylight_savings(df, mark_index).df_clean
 
     # copy index in separate column to preserve if index is changed (multi year)
-    df = df.with_columns(pl.col(mark_index).alias("orgidx"))
+    df = df.with_columns(pl.col(mark_index).alias(cont.ORIGINAL_INDEX_COL))
 
     return df
 
@@ -279,7 +279,7 @@ def clean_up_daylight_savings(df: pl.DataFrame, mark_index: str) -> CleanUpDLS:
 
     if df_deleted.height > 0:
         logger.warning("Data deleted due to daylight savings.")
-        logger.log(ls.all_log_levels().DATA_FRAME.name, df_deleted)
+        logger.log(slog.log_lvl().data_frame.name, df_deleted)
     else:
         logger.info("No data deleted due to daylight savings")
 

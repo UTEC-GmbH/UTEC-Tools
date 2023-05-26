@@ -14,7 +14,7 @@ from modules import meteorolog as meteo
 from modules.classes import ExcelMarkers, MarkerPosition, MarkerType
 from modules.df_manip import CleanUpDLS, clean_up_daylight_savings
 from modules.general_functions import func_timer, sort_list_by_occurance
-from modules.logger_setup import LogLevels
+from modules.setup_logger import LogLevels
 
 pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
 
@@ -28,10 +28,10 @@ def import_prefab_excel(file: Any) -> None:
 
     df_messy: pd.DataFrame = pd.read_excel(file, sheet_name="Daten")
     logger.debug("df_messy")
-    logger.log(LogLevels.DATA_FRAME.name, df_messy.head(10))
+    logger.log(LogLevels.data_frame.name, df_messy.head(10))
     df: pd.DataFrame = edit_df_after_import(df_messy)
     logger.debug("clean df")
-    logger.log(LogLevels.DATA_FRAME.name, df.head())
+    logger.log(LogLevels.data_frame.name, df.head())
 
     # Metadaten
     units: dict[str, str] = units_from_messy_df(df_messy)
@@ -59,7 +59,7 @@ def import_prefab_excel(file: Any) -> None:
         st.session_state["years"] = meta["index"]["years"]
 
     logger.success("file imported and metadata extracted")
-    logger.log(LogLevels.DATA_FRAME.name, df.head())
+    logger.log(LogLevels.data_frame.name, df.head())
 
 
 @func_timer

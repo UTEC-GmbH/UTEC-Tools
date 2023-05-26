@@ -12,7 +12,7 @@ import streamlit as st
 from loguru import logger
 
 from modules import constants as cont
-from modules import logger_setup as ls
+from modules import setup_logger as slog
 
 
 def func_timer(func: Callable) -> Callable:
@@ -27,13 +27,12 @@ def func_timer(func: Callable) -> Callable:
 
     def wrapper(*args, **kwargs) -> Any:
         start_time: float = time.monotonic()
-        log_levels: ls.LogLevels = ls.all_log_levels()
         try:
-            logger.level(log_levels.FUNC_START.name)
+            logger.level(slog.LVLS.func_start.name)
         except ValueError:
-            ls.logger_setup()
+            slog.logger_setup()
 
-        logger.log(log_levels.FUNC_START.name, f"function '{func.__name__}' started")
+        logger.log(slog.LVLS.func_start.name, f"function '{func.__name__}' started")
 
         result: Any = func(*args, **kwargs)
 
@@ -45,7 +44,7 @@ def func_timer(func: Callable) -> Callable:
             st.session_state["dic_exe_time"][func.__name__] = exe_time
 
         logger.log(
-            log_levels.TIMER.name,
+            slog.LVLS.timer.name,
             f"execution time of '{func.__name__}': {exe_time:.4f} s",
         )
 

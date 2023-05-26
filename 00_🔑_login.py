@@ -5,16 +5,15 @@ from typing import Any
 
 import streamlit as st
 import streamlit_authenticator as stauth
+import streamlit_lottie as stlot
 from loguru import logger
-from streamlit_lottie import st_lottie
 
-import modules.logger_setup
 from modules import constants as cont
+from modules import general_functions as gf
+from modules import setup_logger as slog
 from modules import setup_stuff
 from modules import streamlit_menus as sm
 from modules import user_authentication as uauth
-from modules.general_functions import func_timer, load_lottie_file
-from modules.logger_setup import LogLevels
 
 st.set_page_config(
     page_title="UTEC Online Tools",
@@ -24,17 +23,17 @@ st.set_page_config(
 
 # general page config (Favicon, etc.)
 if not st.session_state.get("logger_setup"):
-    modules.logger_setup.logger_setup()
+    slog.logger_setup()
 
 if st.session_state.get("initial_setup"):
-    logger.log(LogLevels.NEW_RUN.name, "NEW RUN")
+    logger.log(slog.LVLS.new_run.name, "NEW RUN")
 else:
     setup_stuff.general_setup()
 
 setup_stuff.page_header_setup(page="login")
 
 
-@func_timer
+@gf.func_timer
 def display_login_page() -> None:
     """Login-Page with two columns
     - login with username and password
@@ -45,12 +44,12 @@ def display_login_page() -> None:
     with columns[0]:
         login_section()
     with columns[1]:
-        st_lottie(
-            load_lottie_file("animations/login.json"), height=450, key="lottie_login"
+        stlot.st_lottie(
+            gf.load_lottie_file("animations/login.json"), height=450, key="lottie_login"
         )
 
 
-@func_timer
+@gf.func_timer
 def login_section() -> None:
     """User authentication part of the login page"""
 
@@ -77,7 +76,7 @@ def login_section() -> None:
         logger.error("Benutzername oder Passwort falsch")
 
 
-@func_timer
+@gf.func_timer
 def access_granted() -> None:
     """If access is granted, do this..."""
 
@@ -122,7 +121,7 @@ def access_granted() -> None:
         god_mode()
 
 
-@func_timer
+@gf.func_timer
 def god_mode() -> None:
     """Define special stuff for users with access level 'god'"""
 

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import polars as pl
 
-from modules import excel_import as ex
+from modules import excel_import as ex_in
 
 
 @dataclass
@@ -94,7 +94,7 @@ class TestImportPrefabExcel:
         """Compare actual results to expected results"""
 
         file: str = expected.file_path
-        df, meta = ex.import_prefab_excel(file)
+        df, meta = ex_in.import_prefab_excel(file)
 
         results: Asserts = Asserts(
             file_path=file,

@@ -18,7 +18,8 @@ def excel_download(
     """Download data as an Excel file.
 
     Args:
-        - df (pd.DataFrame): The data frame to download.
+        - df (DataFrame): The data frame to download.
+        - meta (MetaData): meta data with number formats
         - page (str, optional): The name of the page to use in the Excel file.
             Defaults to "graph".
 
@@ -54,7 +55,7 @@ def excel_download(
             offset_row=row_offset,
         )
 
-    return output.getvalue()
+        return output.getvalue()
 
 
 def format_worksheet(
@@ -81,7 +82,13 @@ def format_worksheet(
         "row": kwargs.get("offset_row") or 4,
     }
 
-    cols: list[str] = [str(col) for col in df.columns]
+    cols: list[str] = [
+        col
+        for col in df.columns
+        if all(
+            col not in idx for idx in [cont.ExcelMarkers.index, cont.ORIGINAL_INDEX_COL]
+        )
+    ]
 
     # Formatierung
     worksheet.hide_gridlines(2)

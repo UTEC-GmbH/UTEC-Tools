@@ -9,7 +9,7 @@ import pandas as pd
 import streamlit as st
 
 from modules import constants as cont
-from modules import excel as ex
+from modules import excel_download as ex
 from modules import fig_creation_export as fig_cr
 from modules import fig_general_functions as fgf
 from modules import meteorolog as meteo

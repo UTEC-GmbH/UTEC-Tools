@@ -3,22 +3,23 @@
 from typing import Any, Literal
 
 import streamlit as st
-from streamlit_lottie import st_lottie_spinner
+import streamlit_lottie as stlot
+import polars as pl
 
 from modules import df_manip as dfm
-from modules import excel as ex
+from modules import excel_import as ex_in
 from modules import fig_annotations as fig_anno
 from modules import fig_creation_export as fig_create
 from modules import fig_formatting as fig_format
 from modules import meteorolog as meteo
 from modules import streamlit_menus as sm
 from modules import user_authentication as uauth
-from modules.general_functions import del_session_state_entry, load_lottie_file
-from modules.setup_stuff import page_header_setup
+from modules import general_functions as gf
+from modules import setup_stuff as set_stuff
 
 # setup
 MANUAL_DEBUG: bool = True
-page_header_setup(page="graph")
+set_stuff.page_header_setup(page="graph")
 
 
 def debug_code_run(
@@ -64,10 +65,14 @@ if uauth.authentication(st.session_state["page"]):
     sm.sidebar_file_upload()
 
     if any(st.session_state.get(entry) is not None for entry in ("f_up", "df")):
-        with st_lottie_spinner(load_lottie_file("animations/bored.json"), height=400):
+        with stlot.st_lottie_spinner(
+            gf.load_lottie_file("animations/bored.json"), height=400
+        ):
             if any(entry not in st.session_state for entry in ("df", "metadata")):
                 with st.spinner("Momentle bitte - Datei wird importiert..."):
-                    ex.import_prefab_excel(st.session_state["f_up"])
+                    df, meta = ex_in.import_prefab_excel(st.session_state["f_up"])
+                    gf.st_add("df", df.to_pandas())
+                    gf.st_add("metadata", meta.__dict__)
 
             # Grundeinstellungen in der sidebar
             sm.base_settings()
@@ -80,7 +85,7 @@ if uauth.authentication(st.session_state["page"]):
                     "df_jdl",
                     "df_mon",
                 ):
-                    del_session_state_entry(entry)
+                    gf.del_session_state_entry(entry)
 
             # anzuzeigende Grafiken
             sm.select_graphs()

@@ -2,14 +2,11 @@
 
 import pprint
 from dataclasses import dataclass, field
-from enum import Enum
 from math import ceil
-from typing import Any, NamedTuple
+from typing import Any
 
 import numpy as np
-import pandas as pd
 import plotly.graph_objects as go
-from loguru import logger
 
 import modules.constants as cont
 
@@ -28,78 +25,6 @@ class MultipleLinesFoundError(Exception):
     def __init__(self, line_name: str) -> None:
         """Initiate"""
         super().__init__(f"Multiple lines with name '{line_name}' found.")
-
-
-class MarkerPosition(NamedTuple):
-    """Named Tuple for return value of function in following class"""
-
-    row: int
-    col: int
-
-
-class MarkerType(Enum):
-    """Enum for marker_type in following class"""
-
-    INDEX = "index"
-    UNITS = "units"
-
-
-@dataclass
-class ExcelMarkers:
-    """Name of Markers for Index and Units in the Excel-File"""
-
-    marker_type: MarkerType
-    marker_string: str = field(init=False)
-    error_not_found: str = field(init=False)
-    error_multiple: str = field(init=False)
-
-    def __post_init__(self) -> None:
-        """Check if code is valid and fill in the fields"""
-
-        if self.marker_type not in MarkerType:
-            err_msg: str = "Kein gültiger Marker Typ!"
-            logger.critical(err_msg)
-            raise ValueError(err_msg)
-
-        self.marker_string = (
-            "↓ Index ↓" if self.marker_type == MarkerType.INDEX else "→ Einheit →"
-        )
-        self.error_not_found = (
-            f"Marker {self.marker_string} not found in the DataFrame."
-        )
-        self.error_multiple = (
-            f"Multiple Markers {self.marker_string} found in the DataFrame."
-        )
-
-    def get_marker_position(self, df: pd.DataFrame) -> MarkerPosition:
-        """Get the row- and column-number of the marker in the DataFrame.
-
-
-        Args:
-            - df (pd.DataFrame): DataFrame to search in
-
-        Raises:
-            - ValueError: If marker can't be found or is found multiple times
-
-        Returns:
-            - MarkerPosition: row (int), col (int)
-        """
-        pos: tuple = np.where(df == self.marker_string)
-        logger.debug(pos)
-        if any([len(pos[0]) < 1, len(pos[1]) < 1]):
-            logger.error(self.error_not_found)
-            if self.marker_type == MarkerType.UNITS:
-                pos = np.where(df == "↓ Index ↓")
-                pos[0][0] = max(pos[0][0] - 1, 0)
-
-        if any([len(pos[0]) > 1, len(pos[1]) > 1]):
-            raise ValueError(self.error_multiple)
-
-        logger.success(
-            f"Marker {self.marker_string} found in row {pos[0][0]}, column {pos[1][0]}"
-        )
-
-        return MarkerPosition(row=pos[0][0], col=pos[1][0])
 
 
 @dataclass

@@ -1,11 +1,11 @@
 
 
-15:04:20 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+11:06:59 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
 
 
-15:04:20 👉 function 'import_prefab_excel' started 👈 
-15:04:21 💡 excel_pl -> rename_columns -> line: 124 | Index-marker found in column 'column_2' 💡 
-15:04:21 ⚠ excel_pl -> clean_up_daylight_savings -> line: 254 | Data deleted due to daylight savings. ️ 
+11:06:59 👉 function 'import_prefab_excel' started 👈 
+11:07:00 💡 excel_pl -> rename_columns -> line: 125 | Index-marker found in column 'column_2' 💡 
+11:07:00 ⚠ excel_pl -> clean_up_daylight_savings -> line: 281 | Data deleted due to daylight savings. ️ 
   shape: (8, 6)
 ┌──────────────┬─────────────┬───────────────┬────────────────────┬───────────────────┬────────────┐
 │ ↓ Index ↓    ┆ Strombedarf ┆ PV Produktion ┆ Netzeinspeisung    ┆ PV Eigennutzung   ┆ Strombez.  │
@@ -31,50 +31,54 @@
 │ 02:45:00     ┆             ┆               ┆                    ┆                   ┆            │
 └──────────────┴─────────────┴───────────────┴────────────────────┴───────────────────┴────────────┘  
 
-15:04:21 💡 excel_pl -> temporal_metadata -> line: 283 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
-15:04:21 💡 excel_pl -> set_y_axis_for_lines -> line: 178 | Strombedarf: Y-Achse 'y' 💡 
-15:04:21 💡 excel_pl -> set_y_axis_for_lines -> line: 178 | PV Produktion: Y-Achse 'y' 💡 
-15:04:21 💡 excel_pl -> set_y_axis_for_lines -> line: 178 | Netzeinspeisung: Y-Achse 'y' 💡 
-15:04:21 💡 excel_pl -> set_y_axis_for_lines -> line: 178 | PV Eigennutzung: Y-Achse 'y' 💡 
-15:04:21 💡 excel_pl -> set_y_axis_for_lines -> line: 178 | Bezug (1-1:1.29): Y-Achse 'y' 💡 
-15:04:21 💡 excel_pl -> insert_column_arbeit_leistung -> line: 440 | Spalte 'Strombedarf → Leistung' mit Einheit ' kW' eingefügt 💡 
-15:04:21 💡 excel_pl -> rename_column_arbeit_leistung -> line: 400 | Spalte 'Strombedarf' umbenannt in 'Strombedarf → Arbeit' 💡 
-15:04:21 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 369 | Arbeit und Leistung für Spalte 'Strombedarf' aufgeteilt 🥳 
-15:04:21 💡 excel_pl -> insert_column_arbeit_leistung -> line: 440 | Spalte 'PV Produktion → Leistung' mit Einheit ' kW' eingefügt 💡 
-15:04:21 💡 excel_pl -> rename_column_arbeit_leistung -> line: 400 | Spalte 'PV Produktion' umbenannt in 'PV Produktion → Arbeit' 💡 
-15:04:21 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 369 | Arbeit und Leistung für Spalte 'PV Produktion' aufgeteilt 🥳 
-15:04:21 💡 excel_pl -> insert_column_arbeit_leistung -> line: 440 | Spalte 'Netzeinspeisung → Leistung' mit Einheit ' kW' eingefügt 💡 
-15:04:21 💡 excel_pl -> rename_column_arbeit_leistung -> line: 400 | Spalte 'Netzeinspeisung' umbenannt in 'Netzeinspeisung → Arbeit' 💡 
-15:04:21 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 369 | Arbeit und Leistung für Spalte 'Netzeinspeisung' aufgeteilt 🥳 
-15:04:21 💡 excel_pl -> insert_column_arbeit_leistung -> line: 440 | Spalte 'PV Eigennutzung → Leistung' mit Einheit ' kW' eingefügt 💡 
-15:04:21 💡 excel_pl -> rename_column_arbeit_leistung -> line: 400 | Spalte 'PV Eigennutzung' umbenannt in 'PV Eigennutzung → Arbeit' 💡 
-15:04:21 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 369 | Arbeit und Leistung für Spalte 'PV Eigennutzung' aufgeteilt 🥳 
-15:04:21 💡 excel_pl -> insert_column_arbeit_leistung -> line: 440 | Spalte 'Bezug (1-1:1.29) → Leistung' mit Einheit ' kW' eingefügt 💡 
-15:04:21 💡 excel_pl -> rename_column_arbeit_leistung -> line: 400 | Spalte 'Bezug (1-1:1.29)' umbenannt in 'Bezug (1-1:1.29) → Arbeit' 💡 
-15:04:21 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 369 | Arbeit und Leistung für Spalte 'Bezug (1-1:1.29)' aufgeteilt 🥳 
-15:04:21 💡 excel_pl -> import_prefab_excel -> line: 65 | {'units': {'all_units': [' kWh', ' kWh', ' kWh', ' kWh', ' kWh', ' kW', ' kWh', ' kW',
+11:07:00 💡 excel_pl -> temporal_metadata -> line: 310 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
+11:07:00 💡 excel_pl -> set_y_axis_for_lines -> line: 205 | Strombedarf: Y-Achse 'y' 💡 
+11:07:00 💡 excel_pl -> set_y_axis_for_lines -> line: 205 | PV Produktion: Y-Achse 'y' 💡 
+11:07:00 💡 excel_pl -> set_y_axis_for_lines -> line: 205 | Netzeinspeisung: Y-Achse 'y' 💡 
+11:07:00 💡 excel_pl -> set_y_axis_for_lines -> line: 205 | PV Eigennutzung: Y-Achse 'y' 💡 
+11:07:00 💡 excel_pl -> set_y_axis_for_lines -> line: 205 | Bezug (1-1:1.29): Y-Achse 'y' 💡 
+11:07:00 💡 excel_pl -> insert_column_arbeit_leistung -> line: 467 | Spalte 'Strombedarf → Leistung' mit Einheit ' kW' eingefügt 💡 
+11:07:00 💡 excel_pl -> rename_column_arbeit_leistung -> line: 427 | Spalte 'Strombedarf' umbenannt in 'Strombedarf → Arbeit' 💡 
+11:07:00 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'Strombedarf' aufgeteilt 🥳 
+11:07:00 💡 excel_pl -> insert_column_arbeit_leistung -> line: 467 | Spalte 'PV Produktion → Leistung' mit Einheit ' kW' eingefügt 💡 
+11:07:00 💡 excel_pl -> rename_column_arbeit_leistung -> line: 427 | Spalte 'PV Produktion' umbenannt in 'PV Produktion → Arbeit' 💡 
+11:07:00 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'PV Produktion' aufgeteilt 🥳 
+11:07:00 💡 excel_pl -> insert_column_arbeit_leistung -> line: 467 | Spalte 'Netzeinspeisung → Leistung' mit Einheit ' kW' eingefügt 💡 
+11:07:00 💡 excel_pl -> rename_column_arbeit_leistung -> line: 427 | Spalte 'Netzeinspeisung' umbenannt in 'Netzeinspeisung → Arbeit' 💡 
+11:07:00 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'Netzeinspeisung' aufgeteilt 🥳 
+11:07:00 💡 excel_pl -> insert_column_arbeit_leistung -> line: 467 | Spalte 'PV Eigennutzung → Leistung' mit Einheit ' kW' eingefügt 💡 
+11:07:00 💡 excel_pl -> rename_column_arbeit_leistung -> line: 427 | Spalte 'PV Eigennutzung' umbenannt in 'PV Eigennutzung → Arbeit' 💡 
+11:07:00 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'PV Eigennutzung' aufgeteilt 🥳 
+11:07:00 💡 excel_pl -> insert_column_arbeit_leistung -> line: 467 | Spalte 'Bezug (1-1:1.29) → Leistung' mit Einheit ' kW' eingefügt 💡 
+11:07:00 💡 excel_pl -> rename_column_arbeit_leistung -> line: 427 | Spalte 'Bezug (1-1:1.29)' umbenannt in 'Bezug (1-1:1.29) → Arbeit' 💡 
+11:07:00 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'Bezug (1-1:1.29)' aufgeteilt 🥳 
+11:07:00 💡 excel_pl -> import_prefab_excel -> line: 66 | {'units': {'all_units': [' kWh', ' kWh', ' kWh', ' kWh', ' kWh', ' kW', ' kWh', ' kW',
                ' kWh', ' kW', ' kWh', ' kW', ' kWh', ' kW', ' kWh'],
  'set_units': [' kWh', ' kW']}, 'lines': [{'name': 'Strombedarf',
  'orig_tit': 'Strombedarf',
  'tit': 'Strombedarf',
  'unit': ' kWh',
  'y_axis': 'y',
- 'obis': None}, {'name': 'PV Produktion',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Produktion',
  'orig_tit': 'PV Produktion',
  'tit': 'PV Produktion',
  'unit': ' kWh',
  'y_axis': 'y',
- 'obis': None}, {'name': 'Netzeinspeisung',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Netzeinspeisung',
  'orig_tit': 'Netzeinspeisung',
  'tit': 'Netzeinspeisung',
  'unit': ' kWh',
  'y_axis': 'y',
- 'obis': None}, {'name': 'PV Eigennutzung',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Eigennutzung',
  'orig_tit': 'PV Eigennutzung',
  'tit': 'PV Eigennutzung',
  'unit': ' kWh',
  'y_axis': 'y',
- 'obis': None}, {'name': 'Bezug (1-1:1.29)',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Bezug (1-1:1.29)',
  'orig_tit': 'Strombez. 1-1:1.29.0',
  'tit': 'Bezug (1-1:1.29)',
  'unit': ' kWh',
@@ -89,47 +93,56 @@
  'name': 'Bezug (1-1:1.29)',
  'name_kurz': 'Bezug',
  'name_lang': 'Wirkleistung (+) [kWh] - Zeit Integral 5 - Lastprofil '
-              'Aufzeichnungsperiode 1 (1-1:1.29)'}}, {'name': 'Strombedarf → Leistung',
+              'Aufzeichnungsperiode 1 (1-1:1.29)'},
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Strombedarf → Leistung',
  'orig_tit': 'Strombedarf',
  'tit': 'Strombedarf → Leistung',
  'unit': ' kW',
  'y_axis': 'y',
- 'obis': None}, {'name': 'Strombedarf → Arbeit',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Strombedarf → Arbeit',
  'orig_tit': 'Strombedarf',
  'tit': 'Strombedarf → Arbeit',
  'unit': ' kWh',
  'y_axis': 'y',
- 'obis': None}, {'name': 'PV Produktion → Leistung',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Produktion → Leistung',
  'orig_tit': 'PV Produktion',
  'tit': 'PV Produktion → Leistung',
  'unit': ' kW',
  'y_axis': 'y',
- 'obis': None}, {'name': 'PV Produktion → Arbeit',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Produktion → Arbeit',
  'orig_tit': 'PV Produktion',
  'tit': 'PV Produktion → Arbeit',
  'unit': ' kWh',
  'y_axis': 'y',
- 'obis': None}, {'name': 'Netzeinspeisung → Leistung',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Netzeinspeisung → Leistung',
  'orig_tit': 'Netzeinspeisung',
  'tit': 'Netzeinspeisung → Leistung',
  'unit': ' kW',
  'y_axis': 'y',
- 'obis': None}, {'name': 'Netzeinspeisung → Arbeit',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Netzeinspeisung → Arbeit',
  'orig_tit': 'Netzeinspeisung',
  'tit': 'Netzeinspeisung → Arbeit',
  'unit': ' kWh',
  'y_axis': 'y',
- 'obis': None}, {'name': 'PV Eigennutzung → Leistung',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Eigennutzung → Leistung',
  'orig_tit': 'PV Eigennutzung',
  'tit': 'PV Eigennutzung → Leistung',
  'unit': ' kW',
  'y_axis': 'y',
- 'obis': None}, {'name': 'PV Eigennutzung → Arbeit',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Eigennutzung → Arbeit',
  'orig_tit': 'PV Eigennutzung',
  'tit': 'PV Eigennutzung → Arbeit',
  'unit': ' kWh',
  'y_axis': 'y',
- 'obis': None}, {'name': 'Bezug (1-1:1.29) → Leistung',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Bezug (1-1:1.29) → Leistung',
  'orig_tit': 'Strombez. 1-1:1.29.0',
  'tit': 'Bezug (1-1:1.29) → Leistung',
  'unit': ' kW',
@@ -144,7 +157,8 @@
  'name': 'Bezug (1-1:1.29)',
  'name_kurz': 'Bezug',
  'name_lang': 'Wirkleistung (+) [kWh] - Zeit Integral 5 - Lastprofil '
-              'Aufzeichnungsperiode 1 (1-1:1.29)'}}, {'name': 'Bezug (1-1:1.29) → Arbeit',
+              'Aufzeichnungsperiode 1 (1-1:1.29)'},
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Bezug (1-1:1.29) → Arbeit',
  'orig_tit': 'Strombez. 1-1:1.29.0',
  'tit': 'Bezug (1-1:1.29) → Arbeit',
  'unit': ' kWh',
@@ -159,7 +173,8 @@
  'name': 'Bezug (1-1:1.29)',
  'name_kurz': 'Bezug',
  'name_lang': 'Wirkleistung (+) [kWh] - Zeit Integral 5 - Lastprofil '
-              'Aufzeichnungsperiode 1 (1-1:1.29)'}}], 'datetime': True, 'years': [2021], 'td_mean': 15, 'td_interval': '15min'} 💡 
+              'Aufzeichnungsperiode 1 (1-1:1.29)'},
+ 'excel_number_format': '#.##0,000" kWh"'}], 'datetime': True, 'years': [2021], 'td_mean': 15, 'td_interval': '15min'} 💡 
   DataFrame head: 
 shape: (5, 12)
 ┌────────────┬────────────┬────────────┬────────────┬───┬────────────┬────────────┬────────────┬────────────┐
@@ -241,12 +256,12 @@ shape: (9, 13)
 │ % ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
 └───┴────────────┴────────────┴────────────┴───┴────────────┴────────────┴────────────┴────────────┘  
 
-15:04:21 🥳 excel_pl -> import_prefab_excel -> line: 67 | Excel-Datei importiert. 🥳 
-15:04:21 ⏱ execution time of 'import_prefab_excel': 1.2970 s ⏱ 
+11:07:00 🥳 excel_pl -> import_prefab_excel -> line: 68 | Excel-Datei importiert. 🥳 
+11:07:00 ⏱ execution time of 'import_prefab_excel': 1.3750 s ⏱ 
 
-15:04:21 👉 function 'import_prefab_excel' started 👈 
-15:04:24 💡 excel_pl -> rename_columns -> line: 124 | Index-marker found in column 'column_2' 💡 
-15:04:24 ⚠ excel_pl -> clean_up_daylight_savings -> line: 254 | Data deleted due to daylight savings. ️ 
+11:07:00 👉 function 'import_prefab_excel' started 👈 
+11:07:03 💡 excel_pl -> rename_columns -> line: 125 | Index-marker found in column 'column_2' 💡 
+11:07:03 ⚠ excel_pl -> clean_up_daylight_savings -> line: 281 | Data deleted due to daylight savings. ️ 
   shape: (24, 5)
 ┌─────────────────────┬────────────────────┬─────────────────────┬───────────┬────────┐
 │ ↓ Index ↓           ┆ Bezug (1-1:1.29.0) ┆ Einsp. (1-1:2.29.0) ┆ PV-Anlage ┆ Bedarf │
@@ -264,24 +279,24 @@ shape: (9, 13)
 │ 2019-10-27 03:00:00 ┆ 22.5               ┆ 0.0                 ┆ 0.0       ┆ 11.875 │
 └─────────────────────┴────────────────────┴─────────────────────┴───────────┴────────┘  
 
-15:04:24 💡 excel_pl -> temporal_metadata -> line: 283 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
-15:04:24 💡 excel_pl -> set_y_axis_for_lines -> line: 178 | Bezug (1-1:1.29): Y-Achse 'y' 💡 
-15:04:24 💡 excel_pl -> set_y_axis_for_lines -> line: 178 | Lieferung (1-1:2.29): Y-Achse 'y' 💡 
-15:04:24 💡 excel_pl -> set_y_axis_for_lines -> line: 178 | PV-Anlage: Y-Achse 'y2' 💡 
-15:04:24 💡 excel_pl -> set_y_axis_for_lines -> line: 178 | Bedarf: Y-Achse 'y2' 💡 
-15:04:24 💡 excel_pl -> insert_column_arbeit_leistung -> line: 440 | Spalte 'Bezug (1-1:1.29) → Arbeit' mit Einheit ' kWh' eingefügt 💡 
-15:04:24 💡 excel_pl -> rename_column_arbeit_leistung -> line: 400 | Spalte 'Bezug (1-1:1.29)' umbenannt in 'Bezug (1-1:1.29) → Leistung' 💡 
-15:04:24 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 369 | Arbeit und Leistung für Spalte 'Bezug (1-1:1.29)' aufgeteilt 🥳 
-15:04:24 💡 excel_pl -> insert_column_arbeit_leistung -> line: 440 | Spalte 'Lieferung (1-1:2.29) → Arbeit' mit Einheit ' kWh' eingefügt 💡 
-15:04:24 💡 excel_pl -> rename_column_arbeit_leistung -> line: 400 | Spalte 'Lieferung (1-1:2.29)' umbenannt in 'Lieferung (1-1:2.29) → Leistung' 💡 
-15:04:24 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 369 | Arbeit und Leistung für Spalte 'Lieferung (1-1:2.29)' aufgeteilt 🥳 
-15:04:24 💡 excel_pl -> insert_column_arbeit_leistung -> line: 440 | Spalte 'PV-Anlage → Leistung' mit Einheit ' kW' eingefügt 💡 
-15:04:24 💡 excel_pl -> rename_column_arbeit_leistung -> line: 400 | Spalte 'PV-Anlage' umbenannt in 'PV-Anlage → Arbeit' 💡 
-15:04:24 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 369 | Arbeit und Leistung für Spalte 'PV-Anlage' aufgeteilt 🥳 
-15:04:24 💡 excel_pl -> insert_column_arbeit_leistung -> line: 440 | Spalte 'Bedarf → Leistung' mit Einheit ' kW' eingefügt 💡 
-15:04:24 💡 excel_pl -> rename_column_arbeit_leistung -> line: 400 | Spalte 'Bedarf' umbenannt in 'Bedarf → Arbeit' 💡 
-15:04:24 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 369 | Arbeit und Leistung für Spalte 'Bedarf' aufgeteilt 🥳 
-15:04:24 💡 excel_pl -> import_prefab_excel -> line: 65 | {'units': {'all_units': [' kW', ' kW', ' kWh', ' kWh', ' kWh', ' kW', ' kWh', ' kW',
+11:07:03 💡 excel_pl -> temporal_metadata -> line: 310 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
+11:07:03 💡 excel_pl -> set_y_axis_for_lines -> line: 205 | Bezug (1-1:1.29): Y-Achse 'y' 💡 
+11:07:03 💡 excel_pl -> set_y_axis_for_lines -> line: 205 | Lieferung (1-1:2.29): Y-Achse 'y' 💡 
+11:07:03 💡 excel_pl -> set_y_axis_for_lines -> line: 205 | PV-Anlage: Y-Achse 'y2' 💡 
+11:07:03 💡 excel_pl -> set_y_axis_for_lines -> line: 205 | Bedarf: Y-Achse 'y2' 💡 
+11:07:03 💡 excel_pl -> insert_column_arbeit_leistung -> line: 467 | Spalte 'Bezug (1-1:1.29) → Arbeit' mit Einheit ' kWh' eingefügt 💡 
+11:07:03 💡 excel_pl -> rename_column_arbeit_leistung -> line: 427 | Spalte 'Bezug (1-1:1.29)' umbenannt in 'Bezug (1-1:1.29) → Leistung' 💡 
+11:07:03 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'Bezug (1-1:1.29)' aufgeteilt 🥳 
+11:07:03 💡 excel_pl -> insert_column_arbeit_leistung -> line: 467 | Spalte 'Lieferung (1-1:2.29) → Arbeit' mit Einheit ' kWh' eingefügt 💡 
+11:07:03 💡 excel_pl -> rename_column_arbeit_leistung -> line: 427 | Spalte 'Lieferung (1-1:2.29)' umbenannt in 'Lieferung (1-1:2.29) → Leistung' 💡 
+11:07:03 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'Lieferung (1-1:2.29)' aufgeteilt 🥳 
+11:07:03 💡 excel_pl -> insert_column_arbeit_leistung -> line: 467 | Spalte 'PV-Anlage → Leistung' mit Einheit ' kW' eingefügt 💡 
+11:07:03 💡 excel_pl -> rename_column_arbeit_leistung -> line: 427 | Spalte 'PV-Anlage' umbenannt in 'PV-Anlage → Arbeit' 💡 
+11:07:03 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'PV-Anlage' aufgeteilt 🥳 
+11:07:03 💡 excel_pl -> insert_column_arbeit_leistung -> line: 467 | Spalte 'Bedarf → Leistung' mit Einheit ' kW' eingefügt 💡 
+11:07:03 💡 excel_pl -> rename_column_arbeit_leistung -> line: 427 | Spalte 'Bedarf' umbenannt in 'Bedarf → Arbeit' 💡 
+11:07:03 🥳 excel_pl -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'Bedarf' aufgeteilt 🥳 
+11:07:03 💡 excel_pl -> import_prefab_excel -> line: 66 | {'units': {'all_units': [' kW', ' kW', ' kWh', ' kWh', ' kWh', ' kW', ' kWh', ' kW',
                ' kW', ' kWh', ' kW', ' kWh'],
  'set_units': [' kW', ' kWh']}, 'lines': [{'name': 'Bezug (1-1:1.29)',
  'orig_tit': 'Bezug (1-1:1.29.0)',
@@ -298,7 +313,8 @@ shape: (9, 13)
  'name': 'Bezug (1-1:1.29)',
  'name_kurz': 'Bezug',
  'name_lang': 'Wirkleistung (+) [kWh] - Zeit Integral 5 - Lastprofil '
-              'Aufzeichnungsperiode 1 (1-1:1.29)'}}, {'name': 'Lieferung (1-1:2.29)',
+              'Aufzeichnungsperiode 1 (1-1:1.29)'},
+ 'excel_number_format': '#.##0,00" kW"'}, {'name': 'Lieferung (1-1:2.29)',
  'orig_tit': 'Einsp. (1-1:2.29.0)',
  'tit': 'Lieferung (1-1:2.29)',
  'unit': ' kW',
@@ -313,17 +329,20 @@ shape: (9, 13)
  'name': 'Lieferung (1-1:2.29)',
  'name_kurz': 'Lieferung',
  'name_lang': 'Wirkleistung (-) [kWh] - Zeit Integral 5 - Lastprofil '
-              'Aufzeichnungsperiode 1 (1-1:2.29)'}}, {'name': 'PV-Anlage',
+              'Aufzeichnungsperiode 1 (1-1:2.29)'},
+ 'excel_number_format': '#.##0,00" kW"'}, {'name': 'PV-Anlage',
  'orig_tit': 'PV-Anlage',
  'tit': 'PV-Anlage',
  'unit': ' kWh',
  'y_axis': 'y2',
- 'obis': None}, {'name': 'Bedarf',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Bedarf',
  'orig_tit': 'Bedarf',
  'tit': 'Bedarf',
  'unit': ' kWh',
  'y_axis': 'y2',
- 'obis': None}, {'name': 'Bezug (1-1:1.29) → Arbeit',
+ 'obis': None,
+ 'excel_number_format': '#.##0,00" kWh"'}, {'name': 'Bezug (1-1:1.29) → Arbeit',
  'orig_tit': 'Bezug (1-1:1.29.0)',
  'tit': 'Bezug (1-1:1.29) → Arbeit',
  'unit': ' kWh',
@@ -338,7 +357,8 @@ shape: (9, 13)
  'name': 'Bezug (1-1:1.29)',
  'name_kurz': 'Bezug',
  'name_lang': 'Wirkleistung (+) [kWh] - Zeit Integral 5 - Lastprofil '
-              'Aufzeichnungsperiode 1 (1-1:1.29)'}}, {'name': 'Bezug (1-1:1.29) → Leistung',
+              'Aufzeichnungsperiode 1 (1-1:1.29)'},
+ 'excel_number_format': '#.##0,00" kW"'}, {'name': 'Bezug (1-1:1.29) → Leistung',
  'orig_tit': 'Bezug (1-1:1.29.0)',
  'tit': 'Bezug (1-1:1.29) → Leistung',
  'unit': ' kW',
@@ -353,7 +373,8 @@ shape: (9, 13)
  'name': 'Bezug (1-1:1.29)',
  'name_kurz': 'Bezug',
  'name_lang': 'Wirkleistung (+) [kWh] - Zeit Integral 5 - Lastprofil '
-              'Aufzeichnungsperiode 1 (1-1:1.29)'}}, {'name': 'Lieferung (1-1:2.29) → Arbeit',
+              'Aufzeichnungsperiode 1 (1-1:1.29)'},
+ 'excel_number_format': '#.##0,00" kW"'}, {'name': 'Lieferung (1-1:2.29) → Arbeit',
  'orig_tit': 'Einsp. (1-1:2.29.0)',
  'tit': 'Lieferung (1-1:2.29) → Arbeit',
  'unit': ' kWh',
@@ -368,7 +389,8 @@ shape: (9, 13)
  'name': 'Lieferung (1-1:2.29)',
  'name_kurz': 'Lieferung',
  'name_lang': 'Wirkleistung (-) [kWh] - Zeit Integral 5 - Lastprofil '
-              'Aufzeichnungsperiode 1 (1-1:2.29)'}}, {'name': 'Lieferung (1-1:2.29) → Leistung',
+              'Aufzeichnungsperiode 1 (1-1:2.29)'},
+ 'excel_number_format': '#.##0,00" kW"'}, {'name': 'Lieferung (1-1:2.29) → Leistung',
  'orig_tit': 'Einsp. (1-1:2.29.0)',
  'tit': 'Lieferung (1-1:2.29) → Leistung',
  'unit': ' kW',
@@ -383,27 +405,32 @@ shape: (9, 13)
  'name': 'Lieferung (1-1:2.29)',
  'name_kurz': 'Lieferung',
  'name_lang': 'Wirkleistung (-) [kWh] - Zeit Integral 5 - Lastprofil '
-              'Aufzeichnungsperiode 1 (1-1:2.29)'}}, {'name': 'PV-Anlage → Leistung',
+              'Aufzeichnungsperiode 1 (1-1:2.29)'},
+ 'excel_number_format': '#.##0,00" kW"'}, {'name': 'PV-Anlage → Leistung',
  'orig_tit': 'PV-Anlage',
  'tit': 'PV-Anlage → Leistung',
  'unit': ' kW',
  'y_axis': 'y2',
- 'obis': None}, {'name': 'PV-Anlage → Arbeit',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV-Anlage → Arbeit',
  'orig_tit': 'PV-Anlage',
  'tit': 'PV-Anlage → Arbeit',
  'unit': ' kWh',
  'y_axis': 'y2',
- 'obis': None}, {'name': 'Bedarf → Leistung',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Bedarf → Leistung',
  'orig_tit': 'Bedarf',
  'tit': 'Bedarf → Leistung',
  'unit': ' kW',
  'y_axis': 'y2',
- 'obis': None}, {'name': 'Bedarf → Arbeit',
+ 'obis': None,
+ 'excel_number_format': '#.##0,00" kWh"'}, {'name': 'Bedarf → Arbeit',
  'orig_tit': 'Bedarf',
  'tit': 'Bedarf → Arbeit',
  'unit': ' kWh',
  'y_axis': 'y2',
- 'obis': None}], 'datetime': True, 'years': [2017, 2018, 2019], 'td_mean': 15, 'td_interval': '15min'} 💡 
+ 'obis': None,
+ 'excel_number_format': '#.##0,00" kWh"'}], 'datetime': True, 'years': [2017, 2018, 2019], 'td_mean': 15, 'td_interval': '15min'} 💡 
   DataFrame head: 
 shape: (5, 10)
 ┌────────────┬────────────┬────────────┬────────────┬───┬────────────┬────────────┬────────────┬────────────┐
@@ -485,12 +512,12 @@ shape: (9, 11)
 │ % ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
 └───┴────────────┴────────────┴────────────┴───┴────────────┴────────────┴────────────┴────────────┘  
 
-15:04:24 🥳 excel_pl -> import_prefab_excel -> line: 67 | Excel-Datei importiert. 🥳 
-15:04:24 ⏱ execution time of 'import_prefab_excel': 3.0630 s ⏱ 
+11:07:03 🥳 excel_pl -> import_prefab_excel -> line: 68 | Excel-Datei importiert. 🥳 
+11:07:03 ⏱ execution time of 'import_prefab_excel': 3.1870 s ⏱ 
 
-15:04:24 👉 function 'import_prefab_excel' started 👈 
-15:04:26 💡 excel_pl -> rename_columns -> line: 124 | Index-marker found in column 'column_2' 💡 
-15:04:26 ⚠ excel_pl -> clean_up_daylight_savings -> line: 254 | Data deleted due to daylight savings. ️ 
+11:07:03 👉 function 'import_prefab_excel' started 👈 
+11:07:05 💡 excel_pl -> rename_columns -> line: 125 | Index-marker found in column 'column_2' 💡 
+11:07:05 ⚠ excel_pl -> clean_up_daylight_savings -> line: 281 | Data deleted due to daylight savings. ️ 
   shape: (4, 4)
 ┌─────────────────────┬─────────────┬───────────┬────────────┐
 │ ↓ Index ↓           ┆ Wärmebedarf ┆ BHKW      ┆ Temperatur │
@@ -503,27 +530,30 @@ shape: (9, 11)
 │ 2019-03-30 02:00:00 ┆ 205.699997  ┆ 69.599998 ┆ 3.7        │
 └─────────────────────┴─────────────┴───────────┴────────────┘  
 
-15:04:26 💡 excel_pl -> temporal_metadata -> line: 286 | Index mit zeitlicher Auflösung von 1 Stunde erkannt. 💡 
-15:04:26 💡 excel_pl -> set_y_axis_for_lines -> line: 178 | Wärmebedarf: Y-Achse 'y' 💡 
-15:04:26 💡 excel_pl -> set_y_axis_for_lines -> line: 178 | BHKW: Y-Achse 'y' 💡 
-15:04:26 💡 excel_pl -> set_y_axis_for_lines -> line: 178 | Temperatur: Y-Achse 'y2' 💡 
-15:04:26 🐞 excel_pl -> convert_15min_kwh_to_kw -> line: 348 | Skipped 'convert_15min_kwh_to_kw' 🐞 
-15:04:26 💡 excel_pl -> import_prefab_excel -> line: 65 | {'units': {'all_units': [' kWh', ' kWh', ' °C'], 'set_units': [' kWh', ' °C']}, 'lines': [{'name': 'Wärmebedarf',
+11:07:05 💡 excel_pl -> temporal_metadata -> line: 313 | Index mit zeitlicher Auflösung von 1 Stunde erkannt. 💡 
+11:07:05 💡 excel_pl -> set_y_axis_for_lines -> line: 205 | Wärmebedarf: Y-Achse 'y' 💡 
+11:07:05 💡 excel_pl -> set_y_axis_for_lines -> line: 205 | BHKW: Y-Achse 'y' 💡 
+11:07:05 💡 excel_pl -> set_y_axis_for_lines -> line: 205 | Temperatur: Y-Achse 'y2' 💡 
+11:07:05 🐞 excel_pl -> convert_15min_kwh_to_kw -> line: 375 | Skipped 'convert_15min_kwh_to_kw' 🐞 
+11:07:05 💡 excel_pl -> import_prefab_excel -> line: 66 | {'units': {'all_units': [' kWh', ' kWh', ' °C'], 'set_units': [' kWh', ' °C']}, 'lines': [{'name': 'Wärmebedarf',
  'orig_tit': 'Wärmebedarf',
  'tit': 'Wärmebedarf',
  'unit': ' kWh',
  'y_axis': 'y',
- 'obis': None}, {'name': 'BHKW',
+ 'obis': None,
+ 'excel_number_format': '#.##0,00" kWh"'}, {'name': 'BHKW',
  'orig_tit': 'BHKW',
  'tit': 'BHKW',
  'unit': ' kWh',
  'y_axis': 'y',
- 'obis': None}, {'name': 'Temperatur',
+ 'obis': None,
+ 'excel_number_format': '#.##0,00" kWh"'}, {'name': 'Temperatur',
  'orig_tit': 'Temperatur',
  'tit': 'Temperatur',
  'unit': ' °C',
  'y_axis': 'y2',
- 'obis': None}], 'datetime': True, 'years': [2016, 2017, 2018, 2019], 'td_mean': 60, 'td_interval': 'h'} 💡 
+ 'obis': None,
+ 'excel_number_format': '#.##0,00" °C"'}], 'datetime': True, 'years': [2016, 2017, 2018, 2019], 'td_mean': 60, 'td_interval': 'h'} 💡 
   DataFrame head: 
 shape: (5, 5)
 ┌─────────────────────┬─────────────┬───────────┬────────────┬─────────────────────┐
@@ -556,5 +586,5 @@ shape: (9, 6)
 │ 75%        ┆ null                ┆ 194.399994  ┆ 69.599998 ┆ 16.1       ┆ null                │
 └────────────┴─────────────────────┴─────────────┴───────────┴────────────┴─────────────────────┘  
 
-15:04:26 🥳 excel_pl -> import_prefab_excel -> line: 67 | Excel-Datei importiert. 🥳 
-15:04:26 ⏱ execution time of 'import_prefab_excel': 1.4840 s ⏱ 
+11:07:05 🥳 excel_pl -> import_prefab_excel -> line: 68 | Excel-Datei importiert. 🥳 
+11:07:05 ⏱ execution time of 'import_prefab_excel': 1.5320 s ⏱ 

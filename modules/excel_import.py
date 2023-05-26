@@ -340,8 +340,8 @@ def meta_from_obis(
         name: str = line.name
 
         # check if there is an OBIS-code in the column title
-        if match := re.search(cont.OBIS_PATTERN_EL, name):
-            line.obis = cl.ObisElectrical(match[0])
+        if match := re.search(cont.ObisElectrical.pattern, name):
+            line.obis = cont.ObisElectrical(match[0])
             line.name = line.obis.name
             line.tit = line.obis.name
             line.unit = line.unit or line.obis.unit

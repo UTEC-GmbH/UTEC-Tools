@@ -6,6 +6,7 @@ from typing import Any
 import polars as pl
 import xlsxwriter
 
+import modules.classes as cl
 import modules.constants as cont
 import modules.general_functions as gf
 
@@ -107,13 +108,13 @@ def format_worksheet(
     for col, header in enumerate(cols):
         worksheet.write(offset["row"], col + 1 + offset["col"], header, cell_format)
 
-    for num_format in number_formats.values():
+    for num_format in meta.get_all_num_formats():
         spec_format = base_format.copy()
         spec_format["num_format"] = num_format
         col_format: Any = workbook.add_format(spec_format)
 
         for cnt, col in enumerate(cols):
-            if number_formats[col] == num_format:
+            if meta.get_line_by_name(col).excel_number_format == num_format:
                 worksheet.set_column(
                     cnt + offset["col"] + 1,
                     cnt + offset["col"] + 1,

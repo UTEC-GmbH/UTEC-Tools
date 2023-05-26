@@ -1,8 +1,12 @@
 """Konstanten"""
 
-from dataclasses import dataclass
+import pprint
+import re
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal, TypeAlias, TypedDict
+
+from loguru import logger
 
 REPO_NAME: str = "UTEC-Tools"
 
@@ -196,10 +200,11 @@ class StPages:
     def get_all_short(self) -> list[str]:
         """Get a list of short page descriptors"""
         return [getattr(self, attr).short for attr in self.__dict__]
-    
+
     def get_title(self, short: str) -> str:
         """Get the title by providing the short page descriptor"""
         return getattr(self, short.lower()).title
+
 
 PAGES: StPages = StPages(
     login=StPageProps(short="login", title="UTEC Online Tools"),
@@ -247,6 +252,56 @@ PLOTFARBE: dict[str, str] = {
 
 # obis Elektrizität (Medium == 1)
 OBIS_PATTERN_EL: str = r"1-\d*:\d*\.\d*"  # fnmatch "*1-*:*.*"
+
+
+@dataclass
+class ObisElectrical:
+    """OBIS-Codes für elektrische Zähler.
+
+    Raises
+        - ValueError: Falls der Code nicht mit '1' anfängt,
+            ist es kein Code für eletrische Zähler.
+    """
+
+    code_or_name: str
+    pattern: str = r"1-\d*:\d*\.\d*"
+    code: str = field(init=False)
+    medium: str = "Elektrizität"
+    messgroesse: str = field(init=False)
+    messart: str = field(init=False)
+    unit: str = field(init=False)
+    name: str = field(init=False)
+    name_kurz: str = field(init=False)
+    name_lang: str = field(init=False)
+
+    def __repr__(self) -> str:
+        """Customize the representation to give a dictionary"""
+        return pprint.pformat(vars(self), sort_dicts=False)
+
+    def __post_init__(self) -> None:
+        """Check if code is valid and fill in the fields"""
+        pat_match: re.Match[str] | None = re.search(self.pattern, self.code_or_name)
+        if pat_match is None:
+            err_msg: str = "Kein gültiger OBIS-Code für elektrische Zähler!"
+            logger.critical(err_msg)
+            raise ValueError(err_msg)
+        self.code = pat_match[0]
+        code_r: str = self.code.replace(":", "-").replace(".", "-").replace("~*", "-")
+        code_l: list[str] = code_r.split("-")
+        code_messgr: str = code_l[2]
+        code_messart: str = code_l[3]
+        dic: ObisDic = OBIS_ELECTRICAL
+
+        self.messgroesse = dic["messgroesse"][code_messgr]["bez"]
+        self.messart = dic["messart"][code_messart]["bez"]
+        self.unit = f' {dic["messgroesse"][code_messgr]["unit"]}'
+        self.name = f'{dic["messgroesse"][code_messgr]["alt_bez"]} ({self.code})'
+        self.name_kurz = dic["messgroesse"][code_messgr]["alt_bez"]
+        self.name_lang = (
+            f'{dic["messgroesse"][code_messgr]["bez"]} '
+            f'[{dic["messgroesse"][code_messgr]["unit"]}] - '
+            f'{dic["messart"][code_messart]["bez"]} ({self.code})'
+        )
 
 
 class ObisDic(TypedDict):

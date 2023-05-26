@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import polars as pl
 
-from modules import excel_pl as ex
+from modules import excel_import as ex
 
 
 @dataclass

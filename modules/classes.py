@@ -1,7 +1,6 @@
 """Classes and such"""
 
 import pprint
-import re
 from dataclasses import dataclass, field
 from enum import Enum
 from math import ceil
@@ -12,7 +11,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from loguru import logger
 
-from modules.constants import OBIS_ELECTRICAL, ObisDic
+import modules.constants as cont
 
 
 class LineNotFoundError(Exception):
@@ -104,53 +103,78 @@ class ExcelMarkers:
 
 
 @dataclass
-class ObisElectrical:
-    """OBIS-Codes für elektrische Zähler.
+class MetaUnits:
+    """Class for meta data of units"""
 
-    Raises
-        - ValueError: Falls der Code nicht mit '1' anfängt,
-            ist es kein Code für eletrische Zähler.
-    """
+    all_units: list[str]
+    set_units: list[str]
 
-    code_or_name: str
-    pattern: str = r"1-\d*:\d*\.\d*"
-    code: str = field(init=False)
-    medium: str = "Elektrizität"
-    messgroesse: str = field(init=False)
-    messart: str = field(init=False)
-    unit: str = field(init=False)
-    name: str = field(init=False)
-    name_kurz: str = field(init=False)
-    name_lang: str = field(init=False)
+    def __repr__(self) -> str:
+        """Customize the representation to give a dictionary"""
+        return pprint.pformat(vars(self), sort_dicts=False, compact=True)
+
+
+@dataclass
+class MetaLine:
+    """Class for meta data of lines (traces)"""
+
+    name: str
+    orig_tit: str
+    tit: str
+    unit: str | None = None
+    y_axis: str = "y"
+    obis: cont.ObisElectrical | None = None
+    excel_number_format: str | None = None
 
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
         return pprint.pformat(vars(self), sort_dicts=False)
 
-    def __post_init__(self) -> None:
-        """Check if code is valid and fill in the fields"""
-        pat_match: re.Match[str] | None = re.search(self.pattern, self.code_or_name)
-        if pat_match is None:
-            err_msg: str = "Kein gültiger OBIS-Code für elektrische Zähler!"
-            logger.critical(err_msg)
-            raise ValueError(err_msg)
-        self.code = pat_match[0]
-        code_r: str = self.code.replace(":", "-").replace(".", "-").replace("~*", "-")
-        code_l: list[str] = code_r.split("-")
-        code_messgr: str = code_l[2]
-        code_messart: str = code_l[3]
-        dic: ObisDic = OBIS_ELECTRICAL
 
-        self.messgroesse = dic["messgroesse"][code_messgr]["bez"]
-        self.messart = dic["messart"][code_messart]["bez"]
-        self.unit = f' {dic["messgroesse"][code_messgr]["unit"]}'
-        self.name = f'{dic["messgroesse"][code_messgr]["alt_bez"]} ({self.code})'
-        self.name_kurz = dic["messgroesse"][code_messgr]["alt_bez"]
-        self.name_lang = (
-            f'{dic["messgroesse"][code_messgr]["bez"]} '
-            f'[{dic["messgroesse"][code_messgr]["unit"]}] - '
-            f'{dic["messart"][code_messart]["bez"]} ({self.code})'
-        )
+@dataclass
+class MetaData:
+    """Class for meta data"""
+
+    units: MetaUnits
+    lines: list[MetaLine]
+    datetime: bool = False
+    years: list[int] | None = None
+    td_mean: int | None = None
+    td_interval: str | None = None
+
+    def __repr__(self) -> str:
+        """Customize the representation to give a dictionary"""
+        return pprint.pformat(vars(self), sort_dicts=False)
+
+    def get_line_by_name(self, line_name: str) -> MetaLine:
+        """Get the line object from the string of the line name"""
+        lines: list[MetaLine] = [line for line in self.lines if line.name == line_name]
+        if not lines:
+            raise LineNotFoundError(line_name)
+        if len(lines) > 1:
+            raise MultipleLinesFoundError(line_name)
+        return lines[0]
+
+    def get_all_line_names(self) -> list[str]:
+        """Return a list of all line names"""
+        return [line.name for line in self.lines]
+
+    def get_all_num_formats(self) -> list[str]:
+        """Get the Excel number formats for all lines"""
+        return [(line.excel_number_format or "#.##0,0") for line in self.lines]
+
+    def change_line_attribute(
+        self, line_name: str, attribute: str, new_value: Any
+    ) -> None:
+        """Change the value of a specific attribute for a line (trace)"""
+        for line in self.lines:
+            if line.name == line_name:
+                setattr(line, attribute, new_value)
+                return
+        raise LineNotFoundError(line_name)
+
+
+# ------ ↓ Vielleicht zukünftig ↓ --------
 
 
 @dataclass(kw_only=True)
@@ -241,71 +265,3 @@ class FigAnno:
 
     fig: go.Figure
     anno_name: str
-
-
-@dataclass
-class MetaUnits:
-    """Class for meta data of units"""
-
-    all_units: list[str]
-    set_units: list[str]
-
-    def __repr__(self) -> str:
-        """Customize the representation to give a dictionary"""
-        return pprint.pformat(vars(self), sort_dicts=False, compact=True)
-
-
-@dataclass
-class MetaLine:
-    """Class for meta data of lines (traces)"""
-
-    name: str
-    orig_tit: str
-    tit: str
-    unit: str | None = None
-    y_axis: str = "y"
-    obis: ObisElectrical | None = None
-    excel_number_format: str | None = None
-
-    def __repr__(self) -> str:
-        """Customize the representation to give a dictionary"""
-        return pprint.pformat(vars(self), sort_dicts=False)
-
-
-@dataclass
-class MetaData:
-    """Class for meta data"""
-
-    units: MetaUnits
-    lines: list[MetaLine]
-    datetime: bool = False
-    years: list[int] | None = None
-    td_mean: int | None = None
-    td_interval: str | None = None
-
-    def __repr__(self) -> str:
-        """Customize the representation to give a dictionary"""
-        return pprint.pformat(vars(self), sort_dicts=False)
-
-    def get_line_by_name(self, line_name: str) -> MetaLine:
-        """Get the line object from the string of the line name"""
-        lines: list[MetaLine] = [line for line in self.lines if line.name == line_name]
-        if not lines:
-            raise LineNotFoundError(line_name)
-        if len(lines) > 1:
-            raise MultipleLinesFoundError(line_name)
-        return lines[0]
-
-    def get_all_line_names(self) -> list[str]:
-        """Return a list of all line names"""
-        return [line.name for line in self.lines]
-
-    def change_line_attribute(
-        self, line_name: str, attribute: str, new_value: Any
-    ) -> None:
-        """Change the value of a specific attribute for a line (trace)"""
-        for line in self.lines:
-            if line.name == line_name:
-                setattr(line, attribute, new_value)
-                return
-        raise LineNotFoundError(line_name)

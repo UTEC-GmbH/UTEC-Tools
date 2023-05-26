@@ -11,7 +11,7 @@ from loguru import logger
 
 from modules import constants as cont
 from modules import meteorolog as meteo
-from modules.classes import ExcelMarkers, MarkerPosition, MarkerType, ObisElectrical
+from modules.classes import ExcelMarkers, MarkerPosition, MarkerType
 from modules.df_manip import CleanUpDLS, clean_up_daylight_savings
 from modules.general_functions import func_timer, sort_list_by_occurance
 from modules.logger_setup import LogLevels
@@ -229,8 +229,8 @@ def meta_from_col_title(df: pd.DataFrame, units: dict[str, str]) -> cont.DicStrN
         meta[col] = {"orig_tit": col, "tit": col, "unit": units.get(col) or ""}
 
         # check if there is an OBIS-code in the column title
-        if match := re.search(cont.OBIS_PATTERN_EL, col):
-            obis_code = ObisElectrical(match[0])
+        if match := re.search(cont.ObisElectrical.pattern, col):
+            obis_code = cont.ObisElectrical(match[0])
             meta[col].update(
                 {
                     "unit": units.get(col) or obis_code.unit,

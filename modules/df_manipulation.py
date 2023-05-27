@@ -168,28 +168,28 @@ def split_up_df_multi_years(
 
 
 @gf.func_timer
-def df_multi_y(df: pd.DataFrame) -> None:
+def df_multi_y(df: pl.DataFrame, meta: cl.MetaData) -> None:
     """Mehrere Jahre"""
 
-    years: list[int] = st.session_state["years"]
+    years: list[int] = meta.years or []
 
-    df_multi: dict[int, pd.DataFrame] = split_up_df_multi_years(df)
+    df_multi: dict[int, pl.DataFrame]
+    df_multi, meta = split_up_df_multi_years(df, meta)
 
-    st.session_state["dic_df_multi"] = df_multi
+    gf.st_new("dic_df_multi", df_multi)
 
     # df geordnete Jahresdauerlinie
-    if st.session_state.get("cb_jdl"):
+    if gf.st_check("cb_jdl"):
         dic_jdl: dict[int, pd.DataFrame] = {y: jdl(df_multi[y]) for y in years}
-        st.session_state["dic_jdl"] = dic_jdl
+        gf.st_new("dic_jdl", dic_jdl)
 
     # df Monatswerte
-    if st.session_state.get("cb_mon"):
+    if gf.st_check("cb_mon"):
         dic_mon: dict[int, pd.DataFrame] = {
             year: mon(df_multi[year], st.session_state["metadata"], year)
             for year in years
         }
-
-        st.session_state["dic_mon"] = dic_mon
+        gf.st_new("dic_mon", dic_mon)
 
 
 @gf.func_timer

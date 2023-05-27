@@ -2,7 +2,7 @@
 
 import io
 import re
-from typing import Literal, NamedTuple
+from typing import Literal, NamedTuple, Any
 
 import polars as pl
 from loguru import logger
@@ -169,7 +169,7 @@ def meta_number_format(df: pl.DataFrame, meta: cl.MetaData) -> cl.MetaData:
 
     for line in meta.lines:
         if line.name in df.columns:
-            line_quant = quantiles.get_column(line.name).item()
+            line_quant: Any = quantiles.get_column(line.name).item()
             if any(isinstance(line_quant, number) for number in [int, float]):
                 if abs(line_quant) >= decimal_0:
                     line.excel_number_format = f'#.##0"{line.unit}"'

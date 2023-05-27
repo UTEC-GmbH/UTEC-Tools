@@ -14,11 +14,7 @@ from modules import fig_creation_export as fig_cr
 from modules import fig_general_functions as fgf
 from modules import meteorolog as meteo
 from modules.fig_general_functions import get_colorway
-from modules.general_functions import (
-    del_session_state_entry,
-    func_timer,
-    text_with_hover,
-)
+from modules.general_functions import func_timer, st_delete, text_with_hover
 from modules.user_authentication import get_all_user_data
 
 if TYPE_CHECKING:
@@ -182,7 +178,7 @@ def sidebar_file_upload() -> Any:
             st.button("RESET", "but_reset")
 
         if st.session_state.get("but_reset"):
-            del_session_state_entry("f_up")
+            st_delete("f_up")
 
         # Upload
         sample_direct: str = f"example_files/{sb_example}.xlsx"

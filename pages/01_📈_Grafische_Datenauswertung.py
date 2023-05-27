@@ -6,6 +6,7 @@ import polars as pl
 import streamlit as st
 import streamlit_lottie as stlot
 
+from modules import classes as cl
 from modules import df_manip as dfm
 from modules import excel_import as ex_in
 from modules import fig_annotations as fig_anno
@@ -70,10 +71,12 @@ if uauth.authentication(st.session_state["page"]):
         ):
             if any(entry not in st.session_state for entry in ("df", "metadata")):
                 with st.spinner("Momentle bitte - Datei wird importiert..."):
+                    df: pl.DataFrame
+                    meta: cl.MetaData
                     df, meta = ex_in.import_prefab_excel(st.session_state["f_up"])
-                    gf.st_add("df", df.to_pandas().set_index("↓ Index ↓"))
-                    gf.st_add("metadata", meta.__dict__)
-                    gf.st_add("years", meta.years)
+                    gf.st_new("df", df)
+                    gf.st_new("metadata", meta)
+                    gf.st_new("years", meta.years)
 
             # Grundeinstellungen in der sidebar
             sm.base_settings()
@@ -86,7 +89,7 @@ if uauth.authentication(st.session_state["page"]):
                     "df_jdl",
                     "df_mon",
                 ):
-                    gf.del_session_state_entry(entry)
+                    gf.st_delete(entry)
 
             # anzuzeigende Grafiken
             sm.select_graphs()

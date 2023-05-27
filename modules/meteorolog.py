@@ -12,7 +12,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from geopy import distance
 
-from modules.general_functions import del_session_state_entry, func_timer
+from modules.general_functions import func_timer, st_delete
 
 SKIP = True
 
@@ -390,7 +390,7 @@ if not SKIP:
         # alte Grafiken löschen
         for key, value in st.session_state.items():
             if isinstance(value, go.Figure):
-                del_session_state_entry(key)
+                st_delete(key)
 
         lis_sel_params = (
             st.session_state.get("lis_sel_params")
@@ -507,7 +507,7 @@ if not SKIP:
         # Linien löschen
         for key in st.session_state:
             if isinstance(st.session_state[key], go.Figure):
-                del_session_state_entry(key)
+                st_delete(key)
 
     # --------------------------------------------------------------------------
 

@@ -7,14 +7,14 @@ import sys
 from pathlib import Path
 from typing import Any
 
-import pandas.io.formats.excel
-import plotly.io as pio
-import sentry_sdk
-import streamlit as st
 import dotenv
 import github as gh
-from loguru import logger
+import pandas.io.formats.excel
+import plotly.io as pio
 import pytz
+import sentry_sdk
+import streamlit as st
+from loguru import logger
 
 from modules import constants as cont
 from modules import general_functions as gf
@@ -100,7 +100,7 @@ def general_setup() -> None:
     pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
     sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), traces_sample_rate=0.1)
 
-    gf.st_add("UTEC_logo", gf.render_svg())
+    gf.st_new("UTEC_logo", gf.render_svg())
 
     st.markdown(
         cont.CSS_LABELS,
@@ -112,7 +112,7 @@ def general_setup() -> None:
         st.session_state["com_date"] = commit["com_date"]
         st.session_state["com_msg"] = commit["com_msg"]
 
-    gf.st_add("all_user_data", uauth.get_all_user_data())
+    gf.st_new("all_user_data", uauth.get_all_user_data())
 
     exp_dir: Path = Path(f"{Path.cwd()}/export")
     if Path.exists(exp_dir):
@@ -135,7 +135,7 @@ def page_header_setup(page: str) -> None:
     with st.session_state["title_container"]:
         columns: list = st.columns(2)
 
-        gf.st_add("UTEC_logo", gf.render_svg())
+        gf.st_new("UTEC_logo", gf.render_svg())
         with columns[0]:
             st.write(st.session_state["UTEC_logo"], unsafe_allow_html=True)
 

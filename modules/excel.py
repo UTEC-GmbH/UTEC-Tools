@@ -9,14 +9,47 @@ import pandas.io.formats.excel
 import streamlit as st
 from loguru import logger
 
+from modules import classes as cl
 from modules import constants as cont
 from modules import meteorolog as meteo
-from modules.classes import ExcelMarkers, MarkerPosition, MarkerType
 from modules.df_manip import CleanUpDLS, clean_up_daylight_savings
 from modules.general_functions import func_timer, sort_list_by_occurance
 from modules.setup_logger import LogLevels
 
 pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
+
+
+def meta_to_dic(meta: cl.MetaData) -> dict:
+    """Temporary fuction to get metadata as dict"""
+
+    meta_dic: dict = {
+        "datetime": True,
+        "years": meta.years,
+        "td_int": meta.td_interval,
+        "td_mean": meta.td_mean,
+        "index": {
+            "datetime": True,
+            "years": meta.years,
+            "td_int": meta.td_interval,
+            "td_mean": pd.Timedelta(minutes=meta.td_mean or 0),
+        },
+        "units": {"all": meta.units.all_units, "set": meta.units.set_units},
+    }
+
+    for line in meta.get_all_line_names():
+        line_cl: cl.MetaLine = meta.get_line_by_name(line)
+        meta_dic[line] = {
+            "orig_tit": line_cl.orig_tit,
+            "tit": line_cl.tit,
+            "unit": line_cl.unit,
+            "y_axis": line_cl.y_axis,
+        }
+        if line_cl.obis:
+            meta_dic[line]["obis_code"] = line_cl.obis.code
+            meta_dic[line]["messgroesse"] = line_cl.obis.messgroesse
+            meta_dic[line]["messart"] = line_cl.obis.messart
+
+    return meta_dic
 
 
 # ? return value (maybe dict) instead of putting everything in session_state???
@@ -77,7 +110,9 @@ def units_from_messy_df(df_messy: pd.DataFrame) -> dict[str, str]:
         - dict[str, str]: keys = column names, values = units
     """
 
-    p_in: MarkerPosition = ExcelMarkers(MarkerType.INDEX).get_marker_position(df_messy)
+    p_in: MarkerPosition = cont.ExcelMarkers(cont.MarkerType.INDEX).get_marker_position(
+        df_messy
+    )
     p_un: MarkerPosition = ExcelMarkers(MarkerType.UNITS).get_marker_position(df_messy)
 
     column_names: list[str] = df_messy.iloc[p_in.row, p_in.col + 1 :].to_list()

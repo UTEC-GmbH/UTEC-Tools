@@ -1,0 +1,314 @@
+
+
+13:13:18 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+
+
+13:13:18 👉 function 'general_setup' started 👈 
+
+13:13:19 👉 function 'render_svg' started 👈 
+13:13:19 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+
+13:13:19 👉 function 'get_commit_message_date' started 👈 
+13:13:20 ⏱ execution time of 'get_commit_message_date': 0.9060 s ⏱ 
+
+13:13:20 👉 function 'get_all_user_data' started 👈 
+
+13:13:20 👉 function 'connect_database' started 👈 
+13:13:20 🥳 user_authentication -> connect_database -> line: 124 | Deta-Database connection established 🥳 
+13:13:20 ⏱ execution time of 'connect_database': 0.0160 s ⏱ 
+13:13:20 🥳 user_authentication -> get_all_user_data -> line: 158 | Collected all user data from Database 🥳 
+13:13:20 ⏱ execution time of 'get_all_user_data': 0.1250 s ⏱ 
+13:13:20 💡 setup_stuff -> general_setup -> line: 119 | Pfad 'C:\Users\fl\Documents\Python\UTEC-Tools\export' für die Ausgabe bereits vorhanden 💡 
+
+13:13:20 🦤🦤🦤 Initial Setup Complete 🦤🦤🦤 
+
+13:13:20 ⏱ execution time of 'general_setup': 1.4060 s ⏱ 
+
+13:13:20 👉 function 'page_header_setup' started 👈 
+
+13:13:20 👉 function 'render_svg' started 👈 
+13:13:20 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+13:13:20 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'login' created 👟 
+13:13:20 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+13:13:20 👉 function 'display_login_page' started 👈 
+
+13:13:20 👉 function 'login_section' started 👈 
+13:13:20 ⏱ execution time of 'login_section': 0.0000 s ⏱ 
+13:13:20 ⏱ execution time of 'display_login_page': 0.0000 s ⏱ 
+13:13:20 🥳 00_🔑_login -> <module> -> line: 148 | Login Page Loaded 🥳 
+
+
+13:13:20 ✨ NEW RUN ✨ 
+
+13:13:20 👉 function 'page_header_setup' started 👈 
+
+13:13:20 👉 function 'render_svg' started 👈 
+13:13:20 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+13:13:20 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'login' created 👟 
+13:13:20 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+13:13:20 👉 function 'display_login_page' started 👈 
+
+13:13:20 👉 function 'login_section' started 👈 
+
+13:13:20 👉 function 'access_granted' started 👈 
+13:13:20 🥳 00_🔑_login -> access_granted -> line: 91 | logged in as: fl, access level: god 🥳 
+
+13:13:20 👉 function 'god_mode' started 👈 
+
+13:13:20 👉 function 'user_accounts' started 👈 
+13:13:20 ⏱ execution time of 'user_accounts': 0.0000 s ⏱ 
+13:13:20 ⏱ execution time of 'god_mode': 0.0000 s ⏱ 
+13:13:20 ⏱ execution time of 'access_granted': 0.0000 s ⏱ 
+13:13:20 ⏱ execution time of 'login_section': 0.0160 s ⏱ 
+13:13:20 ⏱ execution time of 'display_login_page': 0.0160 s ⏱ 
+13:13:20 🥳 00_🔑_login -> <module> -> line: 148 | Login Page Loaded 🥳 
+
+
+13:13:21 ✨ NEW RUN ✨ 
+
+13:13:21 👉 function 'page_header_setup' started 👈 
+
+13:13:21 👉 function 'render_svg' started 👈 
+13:13:21 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+13:13:21 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'login' created 👟 
+13:13:21 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+13:13:21 👉 function 'display_login_page' started 👈 
+
+13:13:21 👉 function 'login_section' started 👈 
+
+13:13:21 👉 function 'access_granted' started 👈 
+
+13:13:21 👉 function 'god_mode' started 👈 
+
+13:13:21 👉 function 'user_accounts' started 👈 
+13:13:21 ⏱ execution time of 'user_accounts': 0.0000 s ⏱ 
+13:13:21 ⏱ execution time of 'god_mode': 0.0000 s ⏱ 
+13:13:21 ⏱ execution time of 'access_granted': 0.0000 s ⏱ 
+13:13:21 ⏱ execution time of 'login_section': 0.0000 s ⏱ 
+13:13:21 ⏱ execution time of 'display_login_page': 0.0160 s ⏱ 
+13:13:21 🥳 00_🔑_login -> <module> -> line: 148 | Login Page Loaded 🥳 
+
+13:13:24 👉 function 'page_header_setup' started 👈 
+
+13:13:24 👉 function 'render_svg' started 👈 
+13:13:24 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+13:13:24 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'graph' created 👟 
+13:13:24 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+13:13:24 👉 function 'sidebar_file_upload' started 👈 
+13:13:24 ⏱ execution time of 'sidebar_file_upload': 0.0160 s ⏱ 
+
+13:13:30 👉 function 'page_header_setup' started 👈 
+
+13:13:30 👉 function 'render_svg' started 👈 
+13:13:30 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+13:13:30 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'graph' created 👟 
+13:13:30 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+13:13:30 👉 function 'sidebar_file_upload' started 👈 
+13:13:30 ⏱ execution time of 'sidebar_file_upload': 0.0000 s ⏱ 
+
+13:13:30 👉 function 'import_prefab_excel' started 👈 
+13:13:31 💡 excel_import -> rename_columns -> line: 125 | Index-marker found in column 'column_2' 💡 
+13:13:31 ⚠ excel_import -> clean_up_daylight_savings -> line: 281 | Data deleted due to daylight savings. ️ 
+  shape: (8, 6)
+┌─────────────────────┬─────────────┬───────────────┬─────────────────┬─────────────────┬──────────────────────┐
+│ ↓ Index ↓           ┆ Strombedarf ┆ PV Produktion ┆ Netzeinspeisung ┆ PV Eigennutzung ┆ Strombez. 1-1:1.29.0 │
+│ ---                 ┆ ---         ┆ ---           ┆ ---             ┆ ---             ┆ ---                  │
+│ datetime[μs]        ┆ f32         ┆ f32           ┆ f32             ┆ f32             ┆ f32                  │
+╞═════════════════════╪═════════════╪═══════════════╪═════════════════╪═════════════════╪══════════════════════╡
+│ 2021-03-27 02:00:00 ┆ 2.1         ┆ 0.0           ┆ 0.0             ┆ 0.0             ┆ 2.1                  │
+│ 2021-03-27 02:15:00 ┆ 1.9         ┆ 0.0           ┆ 0.0             ┆ 0.0             ┆ 1.9                  │
+│ 2021-03-27 02:30:00 ┆ 1.88        ┆ 0.0           ┆ 0.0             ┆ 0.0             ┆ 1.88                 │
+│ 2021-03-27 02:45:00 ┆ 1.98        ┆ 0.0           ┆ 0.0             ┆ 0.0             ┆ 1.98                 │
+│ 2021-10-31 02:00:00 ┆ 2.48        ┆ 0.0           ┆ 0.0             ┆ 0.0             ┆ 2.48                 │
+│ 2021-10-31 02:15:00 ┆ 2.55        ┆ 0.0           ┆ 0.0             ┆ 0.0             ┆ 2.55                 │
+│ 2021-10-31 02:30:00 ┆ 2.17        ┆ 0.0           ┆ 0.0             ┆ 0.0             ┆ 2.17                 │
+│ 2021-10-31 02:45:00 ┆ 2.08        ┆ 0.0           ┆ 0.0             ┆ 0.0             ┆ 2.08                 │
+└─────────────────────┴─────────────┴───────────────┴─────────────────┴─────────────────┴──────────────────────┘  
+
+13:13:31 💡 excel_import -> temporal_metadata -> line: 310 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
+13:13:31 💡 excel_import -> set_y_axis_for_lines -> line: 205 | Strombedarf: Y-Achse 'y' 💡 
+13:13:31 💡 excel_import -> set_y_axis_for_lines -> line: 205 | PV Produktion: Y-Achse 'y' 💡 
+13:13:31 💡 excel_import -> set_y_axis_for_lines -> line: 205 | Netzeinspeisung: Y-Achse 'y' 💡 
+13:13:31 💡 excel_import -> set_y_axis_for_lines -> line: 205 | PV Eigennutzung: Y-Achse 'y' 💡 
+13:13:31 💡 excel_import -> set_y_axis_for_lines -> line: 205 | Bezug (1-1:1.29): Y-Achse 'y' 💡 
+13:13:31 💡 excel_import -> insert_column_arbeit_leistung -> line: 467 | Spalte 'Strombedarf → Leistung' mit Einheit ' kW' eingefügt 💡 
+13:13:31 💡 excel_import -> rename_column_arbeit_leistung -> line: 427 | Spalte 'Strombedarf' umbenannt in 'Strombedarf → Arbeit' 💡 
+13:13:31 🥳 excel_import -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'Strombedarf' aufgeteilt 🥳 
+13:13:31 💡 excel_import -> insert_column_arbeit_leistung -> line: 467 | Spalte 'PV Produktion → Leistung' mit Einheit ' kW' eingefügt 💡 
+13:13:31 💡 excel_import -> rename_column_arbeit_leistung -> line: 427 | Spalte 'PV Produktion' umbenannt in 'PV Produktion → Arbeit' 💡 
+13:13:31 🥳 excel_import -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'PV Produktion' aufgeteilt 🥳 
+13:13:31 💡 excel_import -> insert_column_arbeit_leistung -> line: 467 | Spalte 'Netzeinspeisung → Leistung' mit Einheit ' kW' eingefügt 💡 
+13:13:31 💡 excel_import -> rename_column_arbeit_leistung -> line: 427 | Spalte 'Netzeinspeisung' umbenannt in 'Netzeinspeisung → Arbeit' 💡 
+13:13:31 🥳 excel_import -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'Netzeinspeisung' aufgeteilt 🥳 
+13:13:31 💡 excel_import -> insert_column_arbeit_leistung -> line: 467 | Spalte 'PV Eigennutzung → Leistung' mit Einheit ' kW' eingefügt 💡 
+13:13:31 💡 excel_import -> rename_column_arbeit_leistung -> line: 427 | Spalte 'PV Eigennutzung' umbenannt in 'PV Eigennutzung → Arbeit' 💡 
+13:13:31 🥳 excel_import -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'PV Eigennutzung' aufgeteilt 🥳 
+13:13:31 💡 excel_import -> insert_column_arbeit_leistung -> line: 467 | Spalte 'Bezug (1-1:1.29) → Leistung' mit Einheit ' kW' eingefügt 💡 
+13:13:31 💡 excel_import -> rename_column_arbeit_leistung -> line: 427 | Spalte 'Bezug (1-1:1.29)' umbenannt in 'Bezug (1-1:1.29) → Arbeit' 💡 
+13:13:31 🥳 excel_import -> convert_15min_kwh_to_kw -> line: 396 | Arbeit und Leistung für Spalte 'Bezug (1-1:1.29)' aufgeteilt 🥳 
+13:13:31 💡 excel_import -> import_prefab_excel -> line: 66 | {'units': {'all_units': [' kWh', ' kWh', ' kWh', ' kWh', ' kWh', ' kW', ' kWh', ' kW',
+               ' kWh', ' kW', ' kWh', ' kW', ' kWh', ' kW', ' kWh'],
+ 'set_units': [' kWh', ' kW']}, 'lines': [{'name': 'Strombedarf',
+ 'orig_tit': 'Strombedarf',
+ 'tit': 'Strombedarf',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Produktion',
+ 'orig_tit': 'PV Produktion',
+ 'tit': 'PV Produktion',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Netzeinspeisung',
+ 'orig_tit': 'Netzeinspeisung',
+ 'tit': 'Netzeinspeisung',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Eigennutzung',
+ 'orig_tit': 'PV Eigennutzung',
+ 'tit': 'PV Eigennutzung',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Bezug (1-1:1.29)',
+ 'orig_tit': 'Strombez. 1-1:1.29.0',
+ 'tit': 'Bezug (1-1:1.29)',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': {'code_or_name': '1-1:1.29',
+ 'pattern': '1-\\d*:\\d*\\.\\d*',
+ 'medium': 'Elektrizität',
+ 'code': '1-1:1.29',
+ 'messgroesse': 'Wirkleistung (+)',
+ 'messart': 'Zeit Integral 5 - Lastprofil Aufzeichnungsperiode 1',
+ 'unit': ' kWh',
+ 'name': 'Bezug (1-1:1.29)',
+ 'name_kurz': 'Bezug',
+ 'name_lang': 'Wirkleistung (+) [kWh] - Zeit Integral 5 - Lastprofil '
+              'Aufzeichnungsperiode 1 (1-1:1.29)'},
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Strombedarf → Leistung',
+ 'orig_tit': 'Strombedarf',
+ 'tit': 'Strombedarf → Leistung',
+ 'unit': ' kW',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Strombedarf → Arbeit',
+ 'orig_tit': 'Strombedarf',
+ 'tit': 'Strombedarf → Arbeit',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Produktion → Leistung',
+ 'orig_tit': 'PV Produktion',
+ 'tit': 'PV Produktion → Leistung',
+ 'unit': ' kW',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Produktion → Arbeit',
+ 'orig_tit': 'PV Produktion',
+ 'tit': 'PV Produktion → Arbeit',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Netzeinspeisung → Leistung',
+ 'orig_tit': 'Netzeinspeisung',
+ 'tit': 'Netzeinspeisung → Leistung',
+ 'unit': ' kW',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Netzeinspeisung → Arbeit',
+ 'orig_tit': 'Netzeinspeisung',
+ 'tit': 'Netzeinspeisung → Arbeit',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Eigennutzung → Leistung',
+ 'orig_tit': 'PV Eigennutzung',
+ 'tit': 'PV Eigennutzung → Leistung',
+ 'unit': ' kW',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Eigennutzung → Arbeit',
+ 'orig_tit': 'PV Eigennutzung',
+ 'tit': 'PV Eigennutzung → Arbeit',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Bezug (1-1:1.29) → Leistung',
+ 'orig_tit': 'Strombez. 1-1:1.29.0',
+ 'tit': 'Bezug (1-1:1.29) → Leistung',
+ 'unit': ' kW',
+ 'y_axis': 'y',
+ 'obis': {'code_or_name': '1-1:1.29',
+ 'pattern': '1-\\d*:\\d*\\.\\d*',
+ 'medium': 'Elektrizität',
+ 'code': '1-1:1.29',
+ 'messgroesse': 'Wirkleistung (+)',
+ 'messart': 'Zeit Integral 5 - Lastprofil Aufzeichnungsperiode 1',
+ 'unit': ' kWh',
+ 'name': 'Bezug (1-1:1.29)',
+ 'name_kurz': 'Bezug',
+ 'name_lang': 'Wirkleistung (+) [kWh] - Zeit Integral 5 - Lastprofil '
+              'Aufzeichnungsperiode 1 (1-1:1.29)'},
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Bezug (1-1:1.29) → Arbeit',
+ 'orig_tit': 'Strombez. 1-1:1.29.0',
+ 'tit': 'Bezug (1-1:1.29) → Arbeit',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': {'code_or_name': '1-1:1.29',
+ 'pattern': '1-\\d*:\\d*\\.\\d*',
+ 'medium': 'Elektrizität',
+ 'code': '1-1:1.29',
+ 'messgroesse': 'Wirkleistung (+)',
+ 'messart': 'Zeit Integral 5 - Lastprofil Aufzeichnungsperiode 1',
+ 'unit': ' kWh',
+ 'name': 'Bezug (1-1:1.29)',
+ 'name_kurz': 'Bezug',
+ 'name_lang': 'Wirkleistung (+) [kWh] - Zeit Integral 5 - Lastprofil '
+              'Aufzeichnungsperiode 1 (1-1:1.29)'},
+ 'excel_number_format': '#.##0,000" kWh"'}], 'datetime': True, 'years': [2021], 'td_mean': 15, 'td_interval': '15min'} 💡 
+  DataFrame head: 
+shape: (5, 12)
+┌─────────────────────┬──────────────────────┬─────────────────┬───────────────────┬───┬──────────────────────────┬───────────────────┬────────────────────────────┬────────────────────┐
+│ ↓ Index ↓           ┆ Strombedarf → Arbeit ┆ PV Produktion → ┆ Netzeinspeisung → ┆ … ┆ PV Produktion → Leistung ┆ Netzeinspeisung → ┆ PV Eigennutzung → Leistung ┆ Bezug (1-1:1.29) → │
+│ ---                 ┆ ---                  ┆ Arbeit          ┆ Arbeit            ┆   ┆ ---                      ┆ Leistung          ┆ ---                        ┆ Leistung           │
+│ datetime[μs]        ┆ f32                  ┆ ---             ┆ ---               ┆   ┆ f32                      ┆ ---               ┆ f32                        ┆ ---                │
+│                     ┆                      ┆ f32             ┆ f32               ┆   ┆                          ┆ f32               ┆                            ┆ f32                │
+╞═════════════════════╪══════════════════════╪═════════════════╪═══════════════════╪═══╪══════════════════════════╪═══════════════════╪════════════════════════════╪════════════════════╡
+│ 2021-01-01 00:00:00 ┆ 3.4                  ┆ 0.0             ┆ 0.0               ┆ … ┆ 0.0                      ┆ 0.0               ┆ 0.0                        ┆ 13.6               │
+│ 2021-01-01 00:15:00 ┆ 3.23                 ┆ 0.0             ┆ 0.0               ┆ … ┆ 0.0                      ┆ 0.0               ┆ 0.0                        ┆ 12.92              │
+│ 2021-01-01 00:30:00 ┆ 3.15                 ┆ 0.0             ┆ 0.0               ┆ … ┆ 0.0                      ┆ 0.0               ┆ 0.0                        ┆ 12.6               │
+│ 2021-01-01 00:45:00 ┆ 3.55                 ┆ 0.0             ┆ 0.0               ┆ … ┆ 0.0                      ┆ 0.0               ┆ 0.0                        ┆ 14.2               │
+│ 2021-01-01 01:00:00 ┆ 4.3                  ┆ 0.0             ┆ 0.0               ┆ … ┆ 0.0                      ┆ 0.0               ┆ 0.0                        ┆ 17.200001          │
+└─────────────────────┴──────────────────────┴─────────────────┴───────────────────┴───┴──────────────────────────┴───────────────────┴────────────────────────────┴────────────────────┘ 
+
+DataFrame properties: 
+shape: (9, 13)
+┌────────────┬─────────────────────┬──────────────────────┬────────────────────────┬───┬──────────────────────────┬───────────────────┬──────────────────────────────┬──────────────────────────────┐
+│ describe   ┆ ↓ Index ↓           ┆ Strombedarf → Arbeit ┆ PV Produktion → Arbeit ┆ … ┆ PV Produktion → Leistung ┆ Netzeinspeisung → ┆ PV Eigennutzung → Leistung   ┆ Bezug (1-1:1.29) → Leistung  │
+│ ---        ┆ ---                 ┆ ---                  ┆ ---                    ┆   ┆ ---                      ┆ Leistung          ┆ ---                          ┆ ---                          │
+│ str        ┆ str                 ┆ f64                  ┆ f64                    ┆   ┆ f64                      ┆ ---               ┆ f64                          ┆ f64                          │
+│            ┆                     ┆                      ┆                        ┆   ┆                          ┆ f64               ┆                              ┆                              │
+╞════════════╪═════════════════════╪══════════════════════╪════════════════════════╪═══╪══════════════════════════╪═══════════════════╪══════════════════════════════╪══════════════════════════════╡
+│ count      ┆ 35032               ┆ 35032.0              ┆ 35032.0                ┆ … ┆ 35032.0                  ┆ 35032.0           ┆ 35032.0                      ┆ 35032.0                      │
+│ null_count ┆ 0                   ┆ 0.0                  ┆ 0.0                    ┆ … ┆ 0.0                      ┆ 0.0               ┆ 0.0                          ┆ 0.0                          │
+│ mean       ┆ null                ┆ 4.103935             ┆ 1.293289               ┆ … ┆ 5.173158                 ┆ 1.125703          ┆ 4.047495                     ┆ 12.368082                    │
+│ std        ┆ null                ┆ 1.538132             ┆ 2.187393               ┆ … ┆ 8.749574                 ┆ 3.52578           ┆ 6.027531                     ┆ 7.346797                     │
+│ min        ┆ 2021-01-01 00:00:00 ┆ 1.55                 ┆ 0.0                    ┆ … ┆ 0.0                      ┆ 0.0               ┆ 0.0                          ┆ 0.0                          │
+│ max        ┆ 2021-12-31 23:45:00 ┆ 10.6                 ┆ 12.97                  ┆ … ┆ 51.880001                ┆ 33.720001         ┆ 27.6                         ┆ 42.400002                    │
+│ median     ┆ null                ┆ 4.08                 ┆ 0.0                    ┆ … ┆ 0.0                      ┆ 0.0               ┆ 0.0                          ┆ 10.92                        │
+│ 25%        ┆ null                ┆ 2.7                  ┆ 0.0                    ┆ … ┆ 0.0                      ┆ 0.0               ┆ 0.0                          ┆ 8.0                          │
+│ 75%        ┆ null                ┆ 5.17                 ┆ 1.73                   ┆ … ┆ 6.92                     ┆ 0.0               ┆ 6.92                         ┆ 17.120001                    │
+└────────────┴─────────────────────┴──────────────────────┴────────────────────────┴───┴──────────────────────────┴───────────────────┴──────────────────────────────┴──────────────────────────────┘  
+
+13:13:31 🥳 excel_import -> import_prefab_excel -> line: 68 | Excel-Datei importiert. 🥳 
+13:13:31 ⏱ execution time of 'import_prefab_excel': 1.4690 s ⏱ 
+
+13:13:31 👉 function 'base_settings' started 👈 

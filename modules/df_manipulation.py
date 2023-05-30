@@ -9,6 +9,7 @@ import pandas as pd
 import polars as pl
 import streamlit as st
 from loguru import logger
+from scipy.interpolate import Akima1DInterpolator
 
 from modules import classes as cl
 from modules import constants as cont
@@ -20,36 +21,7 @@ if TYPE_CHECKING:
 
 
 @gf.func_timer
-def combine_date_time_cols_and_set_index(
-    df: pd.DataFrame, col_date: str = "Datum", col_time: str = "Uhrzeit"
-) -> pd.DataFrame:
-    """Combine a date-column and a time-column to a datetime-index.
-
-    Also sets the index in the DataFrame.
-
-    Args:
-        - df (DataFrame): DataFrame, das geändert werden soll
-        - col_date (str, optional): Spalte mit Datumswerten. Defaults to "Datum".
-        - col_time (str, optional): Spalte mit Uhrzeitwerten. Defaults to "Uhrzeit".
-
-    Returns:
-        - DataFrame: DataFrame mit Datum & Uhrzeit als Index
-    """
-    ind: pd.DatetimeIndex = (
-        pd.to_datetime(df.loc[:, col_date].to_numpy(), format="%Y-%m-%d")
-        + pd.to_timedelta(
-            [x.hour for x in df.loc[:, col_time].to_numpy()], unit="hours"
-        )
-        + pd.to_timedelta(
-            [x.minute for x in df.loc[:, col_time].to_numpy()], unit="minutes"
-        )
-    )
-
-    return df.set_index(ind, drop=True)
-
-
-@gf.func_timer
-def fix_am_pm(df: pd.DataFrame, time_column: str = "Zeitstempel") -> pd.DataFrame:
+def fix_am_pm(df: pl.DataFrame, time_column: str = "Zeitstempel") -> pl.DataFrame:
     """Zeitreihen ohne Unterscheidung zwischen vormittags und nachmittags
 
     (korrigiert den Bullshit, den man immer von der SWB bekommt)
@@ -61,43 +33,65 @@ def fix_am_pm(df: pd.DataFrame, time_column: str = "Zeitstempel") -> pd.DataFram
     Returns:
         - DataFrame: edited DataFrame
     """
-    col: pd.Series = df[time_column]
+    col: pl.Series = df.get_column(time_column)
 
     # Stunden haben negative Differenz und Tag bleibt gleich
-    if any(col.dt.hour.diff() < 0) and any(col.dt.day.diff() == 0):
+    if any(col.dt.hour().diff() < 0) and any(col.dt.day().diff() == 0):
         conditions: list = [
-            (col.dt.day.diff() > 0),  # neuer Tag
-            (col.dt.month.diff() != 0),  # neuer Monat
-            (col.dt.year.diff() != 0),  # neues Jahr
+            (col.dt.day().diff() > 0),  # neuer Tag
+            (col.dt.month().diff() != 0),  # neuer Monat
+            (col.dt.year().diff() != 0),  # neues Jahr
             (
-                (col.dt.hour.diff() < 0)  # Stunden haben negative Differenz
-                & (col.dt.day.diff() == 0)  # Tag bleibt gleich
+                (col.dt.hour().diff() < 0)  # Stunden haben negative Differenz
+                & (col.dt.day().diff() == 0)  # Tag bleibt gleich
             ),
         ]
 
         choices: list[Any] = [
-            pd.Timedelta(0, "h"),
-            pd.Timedelta(0, "h"),
-            pd.Timedelta(0, "h"),
-            pd.Timedelta(12, "h"),
+            pl.duration(hours=0),
+            pl.duration(hours=0),
+            pl.duration(hours=0),
+            pl.duration(hours=12),
         ]
 
-        offset: pd.Series = pd.Series(
-            data=np.select(conditions, choices, default=np.nan),
-            index=col.index,
-            dtype="timedelta64[ns]",
+        offset: pl.Series = pl.Series(
+            name="offset",
+            values=np.select(conditions, choices, default=pl.lit(None)),
         )
 
-        offset[0] = pd.Timedelta(0)
-        offset = offset.fillna(method="ffill")
+        offset[0] = pl.duration(hours=0)
+        offset.fill_null(strategy="forward")
 
         df[time_column] += offset
+
+        time_diff: pl.Series = df.get_column(time_column)
+
+        new_day: pl.Series = time_diff.dt.day().diff() > 0
+        midday: pl.Series = (time_diff.dt.hour() < 0) & (time_diff.dt.day() == 0)
+
+        df = df.with_columns(
+            [
+                pl.when(
+                    (time_diff.dt.day().diff() > 0)
+                    | (time_diff.dt.month().diff() != 0)
+                    | (time_diff.dt.year().diff() != 0)
+                )
+                .then(pl.duration(hours=0))
+                .otherwise(
+                    pl.when((time_diff.dt.hour() < 0) & (time_diff.dt.day() == 0))
+                    .then(pl.duration(hours=12))
+                    .otherwise(pl.when((time_diff.dt.hour())))
+                )
+                .alias("change")
+                .fill_null(strategy="forward")
+            ]
+        )
 
     return df
 
 
 @gf.func_timer
-def interpolate_missing_data(df: pd.DataFrame, method: str = "akima") -> pd.DataFrame:
+def interpolate_missing_data(df: pl.DataFrame, method: str = "akima") -> pd.DataFrame:
     """Findet stellen an denen sich von einer Zeile zur nächsten
     die Daten nicht ändern, löscht die Daten und interpoliert die Lücken
 
@@ -108,8 +102,8 @@ def interpolate_missing_data(df: pd.DataFrame, method: str = "akima") -> pd.Data
     Returns:
         - pd.DataFrame: edited DataFrame
     """
-
-    df[df.diff() == 0] = np.nan
+    if method == "akima":
+        df[df.diff() == 0] = np.nan
 
     return df.interpolate(method=method) or df
 

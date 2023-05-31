@@ -160,7 +160,7 @@ def standard_axes_and_layout(
 
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
-    title: str = layout["title"]["text"]
+    title: str = "Zählerdaten"
 
     fig = standard_xaxis(fig, data, title, x_tickformat)
     fig = standard_yaxis(fig, data, layout, title)
@@ -203,7 +203,7 @@ def standard_xaxis(
         tickformat=x_tickformat,
         ticklabelmode="period",
         ticksuffix=None,
-        range=[x_min, x_max],
+        # range=[x_min, x_max],
         separatethousands=True,
         tickformatstops=format_tickstops(fig) if x_tickformat == "%b" else None,
         showspikes=True,
@@ -281,7 +281,7 @@ def standard_layout(fig: go.Figure, data: dict[str, dict[str, Any]]) -> go.Figur
             "xanchor": "left" if lastgang else "right",
             "x": 1.02 if lastgang else 0.99,
         },
-        showlegend=len(visible_traces) > 1,
+        showlegend=True,
         margin={"l": 5, "r": 5, "t": 40, "b": 10},
         hovermode="x",
     )
@@ -305,7 +305,7 @@ def update_main(fig: go.Figure) -> go.Figure:
     fig = show_annos(fig, visible_traces)
 
     # Legende ausblenden, wenn nur eine Linie angezeigt wird
-    fig = fig.update_layout({"showlegend": number_of_visible_traces > 1})
+    # fig = fig.update_layout({"showlegend": number_of_visible_traces > 1})
 
     if st.session_state.get("cb_multi_year"):
         fig = legend_groups_for_multi_year(fig)
@@ -524,7 +524,7 @@ def legend_groups_for_multi_year(fig: go.Figure) -> go.Figure:
             [
                 trace
                 for trace in data.values()
-                if str(trace["meta"]["year"]) == group and trace.get("visible")
+                if str(trace["meta"].get("year")) == group and trace.get("visible")
             ]
         )
         for group in legend_groups

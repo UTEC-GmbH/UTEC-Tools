@@ -1,0 +1,332 @@
+
+
+13:49:31 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+
+
+13:49:31 👉 function 'general_setup' started 👈 
+
+13:49:31 👉 function 'render_svg' started 👈 
+13:49:31 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+
+13:49:31 👉 function 'get_commit_message_date' started 👈 
+13:49:32 ⏱ execution time of 'get_commit_message_date': 0.8600 s ⏱ 
+
+13:49:32 👉 function 'get_all_user_data' started 👈 
+
+13:49:32 👉 function 'connect_database' started 👈 
+13:49:32 🥳 user_authentication -> connect_database -> line: 124 | Deta-Database connection established 🥳 
+13:49:32 ⏱ execution time of 'connect_database': 0.0000 s ⏱ 
+13:49:32 🥳 user_authentication -> get_all_user_data -> line: 158 | Collected all user data from Database 🥳 
+13:49:32 ⏱ execution time of 'get_all_user_data': 0.1250 s ⏱ 
+13:49:32 💡 setup_stuff -> general_setup -> line: 117 | Pfad 'C:\Users\fl\Documents\Python\UTEC-Tools\export' für die Ausgabe bereits vorhanden 💡 
+
+13:49:32 🦤🦤🦤 Initial Setup Complete 🦤🦤🦤 
+
+13:49:32 ⏱ execution time of 'general_setup': 1.3130 s ⏱ 
+
+13:49:32 👉 function 'page_header_setup' started 👈 
+
+13:49:32 👉 function 'render_svg' started 👈 
+13:49:32 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+13:49:32 👟 setup_stuff -> page_header_setup -> line: 173 | page header for page 'login' created 👟 
+13:49:32 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+13:49:32 👉 function 'display_login_page' started 👈 
+
+13:49:32 👉 function 'login_section' started 👈 
+13:49:32 ⏱ execution time of 'login_section': 0.0150 s ⏱ 
+13:49:32 ⏱ execution time of 'display_login_page': 0.0150 s ⏱ 
+13:49:32 🥳 00_🔑_login -> <module> -> line: 149 | Login Page Loaded 🥳 
+
+
+13:49:33 ✨ NEW RUN ✨ 
+
+13:49:33 👉 function 'page_header_setup' started 👈 
+
+13:49:33 👉 function 'render_svg' started 👈 
+13:49:33 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+13:49:33 👟 setup_stuff -> page_header_setup -> line: 173 | page header for page 'login' created 👟 
+13:49:33 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+13:49:33 👉 function 'display_login_page' started 👈 
+
+13:49:33 👉 function 'login_section' started 👈 
+
+13:49:33 👉 function 'access_granted' started 👈 
+13:49:33 🥳 00_🔑_login -> access_granted -> line: 92 | logged in as: fl, access level: god 🥳 
+
+13:49:33 👉 function 'god_mode' started 👈 
+
+13:49:33 👉 function 'user_accounts' started 👈 
+13:49:33 ⏱ execution time of 'user_accounts': 0.0000 s ⏱ 
+13:49:33 ⏱ execution time of 'god_mode': 0.0000 s ⏱ 
+13:49:33 ⏱ execution time of 'access_granted': 0.0150 s ⏱ 
+13:49:33 ⏱ execution time of 'login_section': 0.0150 s ⏱ 
+13:49:33 ⏱ execution time of 'display_login_page': 0.0150 s ⏱ 
+13:49:33 🥳 00_🔑_login -> <module> -> line: 149 | Login Page Loaded 🥳 
+
+
+13:49:33 ✨ NEW RUN ✨ 
+
+13:49:33 👉 function 'page_header_setup' started 👈 
+
+13:49:33 👉 function 'render_svg' started 👈 
+13:49:33 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+13:49:33 👟 setup_stuff -> page_header_setup -> line: 173 | page header for page 'login' created 👟 
+13:49:33 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+13:49:33 👉 function 'display_login_page' started 👈 
+
+13:49:33 👉 function 'login_section' started 👈 
+
+13:49:33 👉 function 'access_granted' started 👈 
+
+13:49:33 👉 function 'god_mode' started 👈 
+
+13:49:33 👉 function 'user_accounts' started 👈 
+13:49:33 ⏱ execution time of 'user_accounts': 0.0000 s ⏱ 
+13:49:33 ⏱ execution time of 'god_mode': 0.0000 s ⏱ 
+13:49:33 ⏱ execution time of 'access_granted': 0.0000 s ⏱ 
+13:49:33 ⏱ execution time of 'login_section': 0.0000 s ⏱ 
+13:49:33 ⏱ execution time of 'display_login_page': 0.0160 s ⏱ 
+13:49:33 🥳 00_🔑_login -> <module> -> line: 149 | Login Page Loaded 🥳 
+
+13:49:34 👉 function 'page_header_setup' started 👈 
+
+13:49:34 👉 function 'render_svg' started 👈 
+13:49:34 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+13:49:34 👟 setup_stuff -> page_header_setup -> line: 173 | page header for page 'graph' created 👟 
+13:49:34 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+13:49:34 👉 function 'sidebar_file_upload' started 👈 
+13:49:34 ⏱ execution time of 'sidebar_file_upload': 0.0160 s ⏱ 
+
+13:49:40 👉 function 'page_header_setup' started 👈 
+
+13:49:40 👉 function 'render_svg' started 👈 
+13:49:40 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+13:49:40 👟 setup_stuff -> page_header_setup -> line: 173 | page header for page 'graph' created 👟 
+13:49:40 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+13:49:40 👉 function 'sidebar_file_upload' started 👈 
+13:49:40 ⏱ execution time of 'sidebar_file_upload': 0.0160 s ⏱ 
+
+13:49:40 👉 function 'import_prefab_excel' started 👈 
+13:49:41 🐞 excel -> import_prefab_excel -> line: 30 | df_messy 🐞 
+     Unnamed: 0           Unnamed: 1               Unnamed: 2              Unnamed: 3               Unnamed: 4                            Unnamed: 5                                        Unnamed: 6
+0         NaN                  bla  H00 - Weiche Temp mitte  H00 - Weiche Temp oben  H00 - Weiche Temp unten  H00 - WT TF 04 Trendlog Wertänderung  H00 - Wärmeerzeugung TF 05 Trendlog Wertänderung
+1         NaN          → Einheit →                       °C                      °C                       °C                                    °C                                                °C
+2         NaN            ↓ Index ↓  H00 - Weiche Temp mitte  H00 - Weiche Temp oben  H00 - Weiche Temp unten  H00 - WT TF 04 Trendlog Wertänderung  H00 - Wärmeerzeugung TF 05 Trendlog Wertänderung
+3         NaN  2023-03-20 06:19:40                      NaN                     NaN                56.330002                                   NaN                                               NaN
+4         NaN  2023-03-20 06:19:45                      NaN                     NaN                      NaN                                 54.98                                               NaN
+5         NaN  2023-03-20 06:20:03                      NaN                     NaN                      NaN                             55.110001                                               NaN
+6         NaN  2023-03-20 06:20:33                      NaN                     NaN                      NaN                             55.240002                                               NaN
+7         NaN  2023-03-20 06:21:04                      NaN                     NaN                      NaN                             55.369999                                               NaN
+8         NaN  2023-03-20 06:21:27                      NaN                     NaN                    56.84                                   NaN                                               NaN
+9         NaN  2023-03-20 06:21:34                      NaN                     NaN                      NaN                                  55.5                                               NaN  
+
+
+13:49:41 👉 function 'edit_df_after_import' started 👈 
+13:49:41 🐞 classes -> get_marker_position -> line: 105 | (array([2], dtype=int64), array([1], dtype=int64)) 🐞 
+13:49:41 🥳 classes -> get_marker_position -> line: 115 | Marker ↓ Index ↓ found in row 2, column 1 🥳 
+
+13:49:41 👉 function 'clean_up_daylight_savings' started 👈 
+13:49:41 💡 df_manip -> clean_up_daylight_savings -> line: 147 | No data deleted due to daylight savings 💡 
+13:49:41 ⏱ execution time of 'clean_up_daylight_savings': 0.0000 s ⏱ 
+13:49:41 ⏱ execution time of 'edit_df_after_import': 0.0940 s ⏱ 
+13:49:41 🐞 excel -> import_prefab_excel -> line: 33 | clean df 🐞 
+  2                    H00 - Weiche Temp mitte  H00 - Weiche Temp oben  H00 - Weiche Temp unten  H00 - WT TF 04 Trendlog Wertänderung              orgidx
+↓ Index ↓                                                                                                                                              
+2023-03-20 06:19:40                      NaN                     NaN                56.330002                                   NaN 2023-03-20 06:19:40
+2023-03-20 06:19:45                      NaN                     NaN                      NaN                             54.980000 2023-03-20 06:19:45
+2023-03-20 06:20:03                      NaN                     NaN                      NaN                             55.110001 2023-03-20 06:20:03
+2023-03-20 06:20:33                      NaN                     NaN                      NaN                             55.240002 2023-03-20 06:20:33
+2023-03-20 06:21:04                      NaN                     NaN                      NaN                             55.369999 2023-03-20 06:21:04  
+
+
+13:49:41 👉 function 'units_from_messy_df' started 👈 
+13:49:41 🐞 classes -> get_marker_position -> line: 105 | (array([2], dtype=int64), array([1], dtype=int64)) 🐞 
+13:49:41 🥳 classes -> get_marker_position -> line: 115 | Marker ↓ Index ↓ found in row 2, column 1 🥳 
+13:49:41 🐞 classes -> get_marker_position -> line: 105 | (array([1], dtype=int64), array([1], dtype=int64)) 🐞 
+13:49:41 🥳 classes -> get_marker_position -> line: 115 | Marker → Einheit → found in row 1, column 1 🥳 
+13:49:41 💡 excel -> units_from_messy_df -> line: 95 | H00 - Weiche Temp mitte: ' °C' 💡 
+13:49:41 💡 excel -> units_from_messy_df -> line: 95 | H00 - Weiche Temp oben: ' °C' 💡 
+13:49:41 💡 excel -> units_from_messy_df -> line: 95 | H00 - Weiche Temp unten: ' °C' 💡 
+13:49:41 💡 excel -> units_from_messy_df -> line: 95 | H00 - WT TF 04 Trendlog Wertänderung: ' °C' 💡 
+13:49:41 💡 excel -> units_from_messy_df -> line: 95 | H00 - Wärmeerzeugung TF 05 Trendlog Wertänderung: ' °C' 💡 
+13:49:41 ⏱ execution time of 'units_from_messy_df': 0.0000 s ⏱ 
+
+13:49:41 👉 function 'meta_from_index' started 👈 
+13:49:41 🐞 excel -> meta_from_index -> line: 187 | Zeitliche Auflösung des DataFrame: 0 days 00:00:00 🐞 
+13:49:41 ⏱ execution time of 'meta_from_index': 0.0150 s ⏱ 
+
+13:49:41 👉 function 'meta_from_col_title' started 👈 
+13:49:41 ⏱ execution time of 'meta_from_col_title': 0.0000 s ⏱ 
+
+13:49:41 👉 function 'convert_15min_kwh_to_kw' started 👈 
+13:49:41 ⏱ execution time of 'convert_15min_kwh_to_kw': 0.0000 s ⏱ 
+13:49:41 🐞 excel -> import_prefab_excel -> line: 45 | Metadaten nach 15min-Konvertierung: 
+{'H00 - Weiche Temp mitte': {'orig_tit': 'H00 - Weiche Temp mitte', 'tit': 'H00 - Weiche Temp mitte', 'unit': ' °C'}, 'H00 - Weiche Temp oben': {'orig_tit': 'H00 - Weiche Temp oben', 'tit': 'H00 - Weiche Temp oben', 'unit': ' °C'}, 'H00 - Weiche Temp unten': {'orig_tit': 'H00 - Weiche Temp unten', 'tit': 'H00 - Weiche Temp unten', 'unit': ' °C'}, 'H00 - WT TF 04 Trendlog Wertänderung': {'orig_tit': 'H00 - WT TF 04 Trendlog Wertänderung', 'tit': 'H00 - WT TF 04 Trendlog Wertänderung', 'unit': ' °C'}, 'orgidx': {'orig_tit': 'orgidx', 'tit': 'orgidx', 'unit': ''}, 'index': {'datetime': True, 'years': [2023], 'td_int': 'unbekannt', 'td_mean': Timedelta('0 days 00:00:00')}} 🐞 
+
+13:49:41 👉 function 'set_y_axis_for_lines' started 👈 
+13:49:41 💡 excel -> set_y_axis_for_lines -> line: 109 | H00 - Weiche Temp mitte: Y-Achse y 💡 
+13:49:41 💡 excel -> set_y_axis_for_lines -> line: 109 | H00 - Weiche Temp oben: Y-Achse y 💡 
+13:49:41 💡 excel -> set_y_axis_for_lines -> line: 109 | H00 - Weiche Temp unten: Y-Achse y 💡 
+13:49:41 💡 excel -> set_y_axis_for_lines -> line: 109 | H00 - WT TF 04 Trendlog Wertänderung: Y-Achse y 💡 
+13:49:41 ⏱ execution time of 'set_y_axis_for_lines': 0.0000 s ⏱ 
+13:49:41 🥳 excel -> import_prefab_excel -> line: 61 | file imported and metadata extracted 🥳 
+  2                    H00 - Weiche Temp mitte  H00 - Weiche Temp oben  H00 - Weiche Temp unten  H00 - WT TF 04 Trendlog Wertänderung              orgidx
+↓ Index ↓                                                                                                                                              
+2023-03-20 06:19:40                      NaN                     NaN                56.330002                                   NaN 2023-03-20 06:19:40
+2023-03-20 06:19:45                      NaN                     NaN                      NaN                             54.980000 2023-03-20 06:19:45
+2023-03-20 06:20:03                      NaN                     NaN                      NaN                             55.110001 2023-03-20 06:20:03
+2023-03-20 06:20:33                      NaN                     NaN                      NaN                             55.240002 2023-03-20 06:20:33
+2023-03-20 06:21:04                      NaN                     NaN                      NaN                             55.369999 2023-03-20 06:21:04  
+
+13:49:41 ⏱ execution time of 'import_prefab_excel': 1.3750 s ⏱ 
+
+13:49:41 👉 function 'base_settings' started 👈 
+13:49:41 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+
+13:49:41 👉 function 'select_graphs' started 👈 
+13:49:41 ⏱ execution time of 'select_graphs': 0.0150 s ⏱ 
+
+13:49:41 👉 function 'meteo_sidebar' started 👈 
+13:49:41 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+13:49:41 👉 function 'cr_fig_base' started 👈 
+
+13:49:41 👉 function 'line_plot' started 👈 
+13:49:42 ⏱ execution time of 'line_plot': 1.4690 s ⏱ 
+
+13:49:42 👉 function 'add_arrows_min_max' started 👈 
+
+13:49:43 👉 function 'middle_xaxis' started 👈 
+13:49:43 💡 fig_annotations -> middle_xaxis -> line: 48 | middle of x-axis: 2023-03-26 03:39:37 💡 
+13:49:43 ⏱ execution time of 'middle_xaxis': 0.0000 s ⏱ 
+13:49:43 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für H00 - Weiche Temp mitte hinzugefügt 💡 
+13:49:43 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für H00 - Weiche Temp oben hinzugefügt 💡 
+13:49:43 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für H00 - Weiche Temp unten hinzugefügt 💡 
+13:49:43 💡 fig_annotations -> add_arrows_min_max -> line: 179 | Pfeil für H00 - WT TF 04 Trendlog Wertänderung hinzugefügt 💡 
+13:49:43 🥳 fig_annotations -> add_arrows_min_max -> line: 181 | Max / Min arrows added to figure 🥳 
+13:49:43 ⏱ execution time of 'add_arrows_min_max': 0.0790 s ⏱ 
+
+13:49:43 👉 function 'standard_axes_and_layout' started 👈 
+
+13:49:43 👉 function 'standard_xaxis' started 👈 
+
+13:49:43 👉 function 'format_tickstops' started 👈 
+13:49:43 ⏱ execution time of 'format_tickstops': 0.0000 s ⏱ 
+13:49:43 ⏱ execution time of 'standard_xaxis': 0.0150 s ⏱ 
+
+13:49:43 👉 function 'standard_yaxis' started 👈 
+13:49:43 ⏱ execution time of 'standard_yaxis': 0.0000 s ⏱ 
+
+13:49:43 👉 function 'standard_layout' started 👈 
+13:49:43 ⏱ execution time of 'standard_layout': 0.0160 s ⏱ 
+13:49:43 ⏱ execution time of 'standard_axes_and_layout': 0.0310 s ⏱ 
+13:49:43 🥳 fig_creation_export -> cr_fig_base -> line: 90 | fig_base created 🥳 
+13:49:43 ⏱ execution time of 'cr_fig_base': 1.6100 s ⏱ 
+
+13:49:43 👉 function 'h_v_lines' started 👈 
+13:49:43 ⏱ execution time of 'h_v_lines': 0.0000 s ⏱ 
+
+13:49:43 👉 function 'clean_outliers' started 👈 
+13:49:43 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+13:49:43 👉 function 'display_options_main' started 👈 
+
+13:49:43 👉 function 'display_options_main_col_settings' started 👈 
+13:49:43 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+13:49:43 ⏱ execution time of 'display_options_main': 0.0320 s ⏱ 
+
+13:49:43 👉 function 'display_smooth_main' started 👈 
+
+13:49:43 👉 function 'display_options_main_col_settings' started 👈 
+13:49:43 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+13:49:43 ⏱ execution time of 'display_smooth_main': 0.0150 s ⏱ 
+
+13:49:43 👉 function 'update_main' started 👈 
+
+13:49:43 👉 function 'show_traces' started 👈 
+
+13:49:43 👉 function 'smooth' started 👈 
+13:49:43 ⏱ execution time of 'smooth': 0.0000 s ⏱ 
+13:49:43 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+13:49:43 👉 function 'format_traces' started 👈 
+13:49:43 ⏱ execution time of 'format_traces': 0.0000 s ⏱ 
+
+13:49:43 👉 function 'show_y_axes' started 👈 
+13:49:43 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+13:49:43 ⏱ execution time of 'update_main': 0.0320 s ⏱ 
+
+13:49:43 👉 function 'plot_figs' started 👈 
+13:49:44 ⏱ execution time of 'plot_figs': 1.7650 s ⏱ 
+
+13:49:44 👉 function 'downloads' started 👈 
+13:49:44 ⏱ execution time of 'downloads': 0.0000 s ⏱ 
+
+13:50:07 👉 function 'page_header_setup' started 👈 
+
+13:50:07 👉 function 'render_svg' started 👈 
+13:50:07 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+13:50:07 👟 setup_stuff -> page_header_setup -> line: 173 | page header for page 'graph' created 👟 
+13:50:07 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+13:50:08 👉 function 'sidebar_file_upload' started 👈 
+13:50:08 ⏱ execution time of 'sidebar_file_upload': 0.0160 s ⏱ 
+
+13:50:08 👉 function 'base_settings' started 👈 
+13:50:08 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+
+13:50:08 👉 function 'select_graphs' started 👈 
+13:50:08 ⏱ execution time of 'select_graphs': 0.0000 s ⏱ 
+
+13:50:08 👉 function 'meteo_sidebar' started 👈 
+13:50:08 ⏱ execution time of 'meteo_sidebar': 0.0160 s ⏱ 
+
+13:50:08 👉 function 'h_v_lines' started 👈 
+13:50:08 ⏱ execution time of 'h_v_lines': 0.0000 s ⏱ 
+
+13:50:08 👉 function 'clean_outliers' started 👈 
+13:50:08 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+13:50:08 👉 function 'display_options_main' started 👈 
+
+13:50:08 👉 function 'display_options_main_col_settings' started 👈 
+13:50:08 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+13:50:08 ⏱ execution time of 'display_options_main': 0.0310 s ⏱ 
+
+13:50:08 👉 function 'display_smooth_main' started 👈 
+
+13:50:08 👉 function 'display_options_main_col_settings' started 👈 
+13:50:08 ⏱ execution time of 'display_options_main_col_settings': 0.0000 s ⏱ 
+13:50:08 ⏱ execution time of 'display_smooth_main': 0.0150 s ⏱ 
+
+13:50:08 👉 function 'update_main' started 👈 
+
+13:50:08 👉 function 'show_traces' started 👈 
+
+13:50:08 👉 function 'smooth' started 👈 
+13:50:08 ⏱ execution time of 'smooth': 0.0000 s ⏱ 
+13:50:08 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+
+13:50:08 👉 function 'format_traces' started 👈 
+13:50:08 ⏱ execution time of 'format_traces': 0.0000 s ⏱ 
+
+13:50:08 👉 function 'show_y_axes' started 👈 
+13:50:08 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+13:50:08 ⏱ execution time of 'update_main': 0.0320 s ⏱ 
+
+13:50:08 👉 function 'plot_figs' started 👈 
+13:50:09 ⏱ execution time of 'plot_figs': 1.8120 s ⏱ 
+
+13:50:09 👉 function 'downloads' started 👈 
+
+13:50:09 👉 function 'html_exp' started 👈 
+
+13:50:09 👉 function 'render_svg' started 👈 
+13:50:09 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+13:50:12 ⏱ execution time of 'html_exp': 2.0780 s ⏱ 
+13:50:12 ⏱ execution time of 'downloads': 2.1090 s ⏱ 

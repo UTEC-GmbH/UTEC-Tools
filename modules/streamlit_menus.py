@@ -248,7 +248,7 @@ def base_settings() -> None:
                         gruppiert und übereinander gezeichnet.
                         """
                     ),
-                    value=True,
+                    value=False,
                     key="cb_multi_year",
                     # disabled=True,
                 )
@@ -273,7 +273,7 @@ def select_graphs() -> None:
                 und übereinander dargestellt.)_
                 """
             ),
-            value=True,
+            value=False,
             key="cb_jdl",
         )
 
@@ -288,7 +288,7 @@ def select_graphs() -> None:
                 und als Liniengrafik dargestellt.
                 """
             ),
-            value=True,
+            value=False,
             key="cb_mon",
         )
 
@@ -670,20 +670,27 @@ def display_options_main() -> bool:
         for count, line in enumerate(lines):
             cols: list = st.columns([col["width"] for col in columns.values()])
             line_name: str = line["name"]
-            line_color: str = colorway[count]
+            line_color: str = colorway[3:][count]
+            if "Rücklauf" in line_name:
+                line_color: str = colorway[0]
+            elif "Vorlauf" in line_name:
+                line_color = colorway[1]
+            elif "Rauchgas" in line_name:
+                line_color = colorway[2]
             if len(line["x"]) > 0 and line_name is not None and line_color is not None:
                 with cols[list(columns).index("name")]:
                     st.markdown(line_name)
                 with cols[list(columns).index("vis")]:
                     st.checkbox(
                         label=line_name,
-                        value=all(
-                            part not in line_name
-                            for part in [
-                                cont.SMOOTH_SUFFIX,
-                                cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"],
-                            ]
-                        ),
+                        value=True,
+                        # all(
+                        #     part not in line_name
+                        #     for part in [
+                        #         cont.SMOOTH_SUFFIX,
+                        #         cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"],
+                        #     ]
+                        # ),
                         key=f"cb_vis_{line_name}",
                         label_visibility="collapsed",
                     )
@@ -697,6 +704,7 @@ def display_options_main() -> bool:
                 with cols[list(columns).index("type")]:
                     st.selectbox(
                         label=line_name,
+                        index=len(list(cont.LINE_TYPES)) - 1,
                         key=f"sb_line_dash_{line_name}",
                         label_visibility="collapsed",
                         options=list(cont.LINE_TYPES),
@@ -706,14 +714,14 @@ def display_options_main() -> bool:
                     with lvl2_1:
                         st.checkbox(
                             label="Punkte",
-                            value=False,
+                            value=True,
                             key=f"cb_markers_{line_name}",
                             label_visibility="collapsed",
                         )
                     with lvl2_2:
                         st.number_input(
                             label="Punkte",
-                            value=7,
+                            value=2,
                             key=f"ni_markers_{line_name}",
                             label_visibility="collapsed",
                         )
@@ -829,7 +837,7 @@ def display_smooth_main() -> bool:
         for count, line in enumerate(lines):
             cols: list = st.columns([col["width"] for col in columns.values()])
             line_name: str = f'{line["name"]}{cont.SMOOTH_SUFFIX}'
-            line_color: str = colorway[count + len(lines)]
+            line_color: str = colorway[3:][count + len(lines)]
             if (
                 len(line["x"]) > 0
                 and "hline" not in line_name
@@ -851,7 +859,7 @@ def display_smooth_main() -> bool:
                         key=f"sb_line_dash_{line_name}",
                         label_visibility="collapsed",
                         options=list(cont.LINE_TYPES),
-                        index=1,
+                        index=0,
                     )
                 with cols[list(columns).index("colour")]:
                     st.color_picker(

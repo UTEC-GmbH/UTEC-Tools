@@ -40,14 +40,14 @@ SMOOTH_SUFFIX: str = " geglättet"
 
 # Titel der Grafiken
 FIG_TITLES: dict[str, str] = {
-    "lastgang": "Lastgang",
+    "lastgang": "Zählerdaten",
     "jdl": "Geordnete Jahresdauerlinie",
     "mon": "Monatswerte",
     "tage": "Vergleich ausgewählter Tage",
 }
 FIG_TITLE_SUFFIXES: dict[str, str] = {
-    "suffix_Stunden": '<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>',
-    "suffix_15min": '<i><span style="font-size: 12px;"> (15-Minuten-Werte)</span></i>',
+    "suffix_Stunden": "",
+    "suffix_15min": "",
 }
 
 

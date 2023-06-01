@@ -7,6 +7,7 @@ from typing import Any
 
 import numpy as np
 import plotly.graph_objects as go
+import polars as pl
 
 import modules.constants as cont
 
@@ -97,6 +98,19 @@ class MetaData:
                 setattr(line, attribute, new_value)
                 return
         raise LineNotFoundError(line_name)
+
+
+@dataclass
+class MetaAndDfs:
+    """Class for return value of functions (e.g. in df_manipulation)"""
+
+    meta: MetaData
+    df: pl.DataFrame
+    jdl: pl.DataFrame | None = None
+    mon: pl.DataFrame | None = None
+    df_multi: dict[int, pl.DataFrame] | None = None
+    jdl_multi: dict[int, pl.DataFrame] | None = None
+    mon_multi: dict[int, pl.DataFrame] | None = None
 
 
 # ------ ↓ Vielleicht zukünftig ↓ --------

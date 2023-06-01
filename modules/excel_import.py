@@ -2,7 +2,7 @@
 
 import io
 import re
-from typing import Literal, NamedTuple, Any
+from typing import Any, Literal, NamedTuple
 
 import polars as pl
 from loguru import logger
@@ -14,9 +14,7 @@ from modules import setup_logger as slog
 
 
 @gf.func_timer
-def import_prefab_excel(
-    file: io.BytesIO | str,
-) -> tuple[pl.DataFrame, cl.MetaData]:
+def import_prefab_excel(file: io.BytesIO | str) -> cl.MetaAndDfs:
     """Import and download Excel files.
 
     Args:
@@ -52,22 +50,23 @@ def import_prefab_excel(
     # clean up DataFrame
     df = clean_up_df(df, mark_index)
 
+    mdf: cl.MetaAndDfs = cl.MetaAndDfs(meta, df)
     # meta data if obis code in column title
-    df, meta = meta_from_obis(df, meta)
+    mdf = meta_from_obis(mdf)
 
     # Weitere Metadaten
-    meta = temporal_metadata(df, mark_index, meta)
-    meta = set_y_axis_for_lines(meta)
-    meta = meta_number_format(df, meta)
+    mdf = temporal_metadata(mdf, mark_index)
+    mdf.meta = set_y_axis_for_lines(mdf.meta)
+    mdf.meta = meta_number_format(mdf)
 
     # 15min und kWh
-    df, meta = convert_15min_kwh_to_kw(df, meta)
+    mdf = convert_15min_kwh_to_kw(mdf)
 
-    logger.info(meta.__dict__)
-    slog.log_df(df)
+    logger.info(mdf.meta.__dict__)
+    slog.log_df(mdf.df)
     logger.success("Excel-Datei importiert.")
 
-    return df, meta
+    return mdf
 
 
 def get_df_from_excel(file: io.BytesIO | str) -> pl.DataFrame:
@@ -157,7 +156,7 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cl.MetaDat
     return meta
 
 
-def meta_number_format(df: pl.DataFrame, meta: cl.MetaData) -> cl.MetaData:
+def meta_number_format(mdf: cl.MetaAndDfs) -> cl.MetaData:
     """Define Number Formats for Excel-Export"""
 
     # cut-off for decimal places
@@ -165,10 +164,10 @@ def meta_number_format(df: pl.DataFrame, meta: cl.MetaData) -> cl.MetaData:
     decimal_1: int = 100
     decimal_2: int = 10
 
-    quantiles: pl.DataFrame = df.quantile(0.95)
+    quantiles: pl.DataFrame = mdf.df.quantile(0.95)
 
-    for line in meta.lines:
-        if line.name in df.columns:
+    for line in mdf.meta.lines:
+        if line.name in mdf.df.columns:
             line_quant: Any = quantiles.get_column(line.name).item()
             if any(isinstance(line_quant, number) for number in [int, float]):
                 if abs(line_quant) >= decimal_0:
@@ -180,7 +179,7 @@ def meta_number_format(df: pl.DataFrame, meta: cl.MetaData) -> cl.MetaData:
                 else:
                     line.excel_number_format = f'#.##0,000"{line.unit}"'
 
-    return meta
+    return mdf.meta
 
 
 def meta_units_update(meta: cl.MetaData) -> cl.MetaData:
@@ -286,40 +285,36 @@ def clean_up_daylight_savings(df: pl.DataFrame, mark_index: str) -> CleanUpDLS:
     return CleanUpDLS(df_clean=df_clean, df_deleted=df_deleted)
 
 
-def temporal_metadata(
-    df: pl.DataFrame, mark_index: str, meta: cl.MetaData
-) -> cl.MetaData:
+def temporal_metadata(mdf: cl.MetaAndDfs, mark_index: str) -> cl.MetaAndDfs:
     """Get information about the time index."""
 
-    if not df.get_column(mark_index).is_temporal():
+    if not mdf.df.get_column(mark_index).is_temporal():
         logger.error("Kein Zeitindex gefunden!!!")
-        return meta
+        return mdf
 
     viertel: int = 15
     std: int = 60
 
-    meta.datetime = True
-    meta.years = df.get_column(mark_index).dt.year().unique().sort().to_list()
+    mdf.meta.datetime = True
+    mdf.meta.years = mdf.df.get_column(mark_index).dt.year().unique().sort().to_list()
 
-    meta.td_mean = int(
-        df.select(pl.col(mark_index).diff().dt.minutes().drop_nulls().mean()).item()
+    mdf.meta.td_mean = int(
+        mdf.df.select(pl.col(mark_index).diff().dt.minutes().drop_nulls().mean()).item()
     )
 
-    if meta.td_mean == viertel:
-        meta.td_interval = "15min"
+    if mdf.meta.td_mean == viertel:
+        mdf.meta.td_interval = "15min"
         logger.info("Index mit zeitlicher Auflösung von 15 Minuten erkannt.")
-    elif meta.td_mean == std:
-        meta.td_interval = "h"
+    elif mdf.meta.td_mean == std:
+        mdf.meta.td_interval = "h"
         logger.info("Index mit zeitlicher Auflösung von 1 Stunde erkannt.")
     else:
-        logger.debug(f"Mittlere zeitliche Auflösung des df: {meta.td_mean} Minuten")
+        logger.debug(f"Mittlere zeitliche Auflösung des df: {mdf.meta.td_mean} Minuten")
 
-    return meta
+    return mdf
 
 
-def meta_from_obis(
-    df: pl.DataFrame, meta: cl.MetaData
-) -> tuple[pl.DataFrame, cl.MetaData]:
+def meta_from_obis(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     """Update meta data and column name if there is an obis code in a column title.
 
     If there's an OBIS-code (e.g. 1-1:1.29.0), the following meta data is edited:
@@ -328,15 +323,13 @@ def meta_from_obis(
     - tite -> "alternative name (code)"
 
     Args:
-        - df (DataFrame): DataFrame to edit
-        - meta (MetaData): MetaData dataclass
+        - mdf (MetaAndDfs): Metadaten und DataFrames
 
     Returns:
-        - df (DataFrame): updated DataFrame
-        - meta (MetaData): updated MetaData dataclass
+        - mdf (MetaAndDfs): Metadaten und DataFrames
     """
 
-    for line in meta.lines:
+    for line in mdf.meta.lines:
         name: str = line.name
 
         # check if there is an OBIS-code in the column title
@@ -346,14 +339,14 @@ def meta_from_obis(
             line.tit = line.obis.name
             line.unit = line.unit or line.obis.unit
 
-            df = df.rename({name: line.obis.name})
+            mdf.df = mdf.df.rename({name: line.obis.name})
 
-    return df, meta_units_update(meta)
+    mdf.meta = meta_units_update(mdf.meta)
+
+    return mdf
 
 
-def convert_15min_kwh_to_kw(
-    df: pl.DataFrame, meta: cl.MetaData
-) -> tuple[pl.DataFrame, cl.MetaData]:
+def convert_15min_kwh_to_kw(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     """Falls die Daten als 15-Minuten-Daten vorliegen,
     wird geprüft ob es sich um Verbrauchsdaten handelt.
     Falls dem so ist, werden sie mit 4 multipliziert um
@@ -362,23 +355,18 @@ def convert_15min_kwh_to_kw(
     Die Leistungsdaten werden in neue Spalten im
     DataFrame geschrieben.
 
-
     Args:
-        - df (pl.DataFrame): Der zu untersuchende DataFrame
-        - meta (MetaData): Metadaten
-
-    Returns:
-        - tuple[pd.DataFrame, MetaData]: Aktualisierte df und Metadaten
+        - mdf (MetaAndDfs): Metadaten und DataFrames
     """
 
-    if meta.td_interval not in ["15min"]:
+    if mdf.meta.td_interval not in ["15min"]:
         logger.debug("Skipped 'convert_15min_kwh_to_kw'")
-        return df, meta
+        return mdf
 
     suffixes: list[str] = cont.ARBEIT_LEISTUNG.get_all_suffixes()
 
-    for col in meta.get_all_line_names():
-        unit: str = (meta.get_line_by_name(col).unit or "").strip()
+    for col in mdf.meta.get_all_line_names():
+        unit: str = (mdf.meta.get_line_by_name(col).unit or "").strip()
         suffix_not_in_col_name: bool = all(suffix not in col for suffix in suffixes)
         unit_is_leistung_or_arbeit: bool = unit in (
             cont.ARBEIT_LEISTUNG.arbeit.possible_units
@@ -390,20 +378,21 @@ def convert_15min_kwh_to_kw(
                 if unit in cont.ARBEIT_LEISTUNG.arbeit.possible_units
                 else "Leistung"
             )
-            df, meta = insert_column_arbeit_leistung(originla_type, df, meta, col)
-            df, meta = rename_column_arbeit_leistung(originla_type, df, meta, col)
+            mdf = insert_column_arbeit_leistung(originla_type, mdf, col)
+            mdf = rename_column_arbeit_leistung(originla_type, mdf, col)
 
             logger.success(f"Arbeit und Leistung für Spalte '{col}' aufgeteilt")
 
-    return df, meta_units_update(meta)
+    mdf.meta = meta_units_update(mdf.meta)
+
+    return mdf
 
 
 def rename_column_arbeit_leistung(
     original_data_type: Literal["Arbeit", "Leistung"],
-    df: pl.DataFrame,
-    meta: cl.MetaData,
+    mdf: cl.MetaAndDfs,
     col: str,
-) -> tuple[pl.DataFrame, cl.MetaData]:
+) -> cl.MetaAndDfs:
     """Wenn Daten als Arbeit oder Leistung in 15-Minuten-Auflösung
     vorliegen, wird die Originalspalte umbenannt (mit Suffix "Arbeit" oder "Leistung")
     und in den Metadaten ein Eintrag für den neuen Spaltennamen eingefügt.
@@ -412,29 +401,27 @@ def rename_column_arbeit_leistung(
     Args:
         - original_data_type (Literal['Arbeit', 'Leistung']):
             Sind die Daten "Arbeit" oder "Leistung"
-        - df (DataFrame): DataFrame für neue Spalte
-        - meta (MetaData): Metadaten
+        - mdf (MetaAndDfs): Metadaten und DataFrames
         - col (str): Name der (Original-) Spalte
     """
     new_name: str = f"{col}{cont.ARBEIT_LEISTUNG.get_suffix(original_data_type)}"
-    df = df.rename({col: new_name})
-    old_line: cl.MetaLine = meta.get_line_by_name(col)
+    mdf.df = mdf.df.rename({col: new_name})
+    old_line: cl.MetaLine = mdf.meta.get_line_by_name(col)
     new_line: cl.MetaLine = cl.MetaLine(**vars(old_line))
     new_line.name = new_name
     new_line.tit = new_name
-    meta.lines += [new_line]
+    mdf.meta.lines += [new_line]
 
     logger.info(f"Spalte '{col}' umbenannt in '{new_name}'")
 
-    return df, meta
+    return mdf
 
 
 def insert_column_arbeit_leistung(
     original_data: Literal["Arbeit", "Leistung"],
-    df: pl.DataFrame,
-    meta: cl.MetaData,
+    mdf: cl.MetaAndDfs,
     col: str,
-) -> tuple[pl.DataFrame, cl.MetaData]:
+) -> cl.MetaAndDfs:
     """Wenn Daten als Arbeit oder Leistung in 15-Minuten-Auflösung
     vorliegen, wird eine neue Spalte mit dem jeweils andern Typ eingefügt.
 
@@ -442,28 +429,27 @@ def insert_column_arbeit_leistung(
     Args:
         - original_data (Literal['Arbeit', 'Leistung']):
             Sind die Daten "Arbeit" oder "Leistung"
-        - df (DataFrame): DataFrame für neue Spalte
-        - meta (MetaData): Metadaten
+        - mdf (MetaAndDfs): Metadaten und DataFrames
         - col (str): Name der (Original-) Spalte
     """
     new_col_type: str = "Arbeit" if original_data == "Leistung" else "Leistung"
     new_col_name: str = f"{col}{cont.ARBEIT_LEISTUNG.get_suffix(new_col_type)}"
-    old_line: cl.MetaLine = meta.get_line_by_name(col)
+    old_line: cl.MetaLine = mdf.meta.get_line_by_name(col)
     new_line: cl.MetaLine = cl.MetaLine(**vars(old_line))
     new_line.name = new_col_name
     new_line.tit = new_col_name
-    meta.lines += [new_line]
+    mdf.meta.lines += [new_line]
 
     if original_data == "Arbeit":
-        df = df.with_columns((pl.col(col) * 4).alias(new_col_name))
+        mdf.df = mdf.df.with_columns((pl.col(col) * 4).alias(new_col_name))
         old_unit: str = old_line.unit or " kWh"
         new_unit: str = old_unit[:-1]
     else:
-        df = df.with_columns((pl.col(col) / 4).alias(new_col_name))
+        mdf.df = mdf.df.with_columns((pl.col(col) / 4).alias(new_col_name))
         old_unit = old_line.unit or " kW"
         new_unit: str = f"{old_unit}h"
 
-    meta.change_line_attribute(new_col_name, "unit", new_unit)
+    mdf.meta.change_line_attribute(new_col_name, "unit", new_unit)
     logger.info(f"Spalte '{new_col_name}' mit Einheit '{new_unit}' eingefügt")
 
-    return df, meta
+    return mdf

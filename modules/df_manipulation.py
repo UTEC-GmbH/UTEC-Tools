@@ -91,7 +91,7 @@ def fix_am_pm(df: pl.DataFrame, time_column: str = "Zeitstempel") -> pl.DataFram
 
 
 @gf.func_timer
-def interpolate_missing_data(df: pl.DataFrame, method: str = "akima") -> pd.DataFrame:
+def interpolate_missing_data(df: pl.DataFrame, method: str = "akima") -> pl.DataFrame:
     """Findet stellen an denen sich von einer Zeile zur nächsten
     die Daten nicht ändern, löscht die Daten und interpoliert die Lücken
 
@@ -102,16 +102,16 @@ def interpolate_missing_data(df: pl.DataFrame, method: str = "akima") -> pd.Data
     Returns:
         - pd.DataFrame: edited DataFrame
     """
-    if method == "akima":
-        df[df.diff() == 0] = np.nan
+    df_pd: pd.DataFrame = df.to_pandas().set_index(cont.ExcelMarkers.index)
+    df_pd[df_pd.diff() == 0] = np.nan
 
-    return df.interpolate(method=method) or df
+    df_pd = df_pd.interpolate(method=method) or df_pd
+    df_pl: pl.DataFrame = pl.from_pandas(df_pd)
+    return df_pl
 
 
 @gf.func_timer
-def split_up_df_multi_years(
-    df: pl.DataFrame, meta: cl.MetaData
-) -> tuple[dict[int, pl.DataFrame], cl.MetaData]:
+def split_up_df_multi_years(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     """Split up a DataFrame that has data for multiple years into separate
     DataFrames for each year. The columns names are suffixed with the year.
     The index of all DataFrames is set to the year 2020.
@@ -127,15 +127,15 @@ def split_up_df_multi_years(
         - meta (MetaData): meta data
     """
     index: str = cont.ExcelMarkers.index
-    years: list[int] = meta.years or []
+    years: list[int] = mdf.meta.years or []
 
     df_multi: dict[int, pl.DataFrame] = {}
     for year in years:
-        df_filtered: pl.DataFrame = df.filter(pl.col(index).dt.year() == year)
+        df_filtered: pl.DataFrame = mdf.df.filter(pl.col(index).dt.year() == year)
         df_multi[year][cont.ORIGINAL_INDEX_COL] = df_filtered.get_column(
             cont.ORIGINAL_INDEX_COL
         )
-        df_filtered = df.with_columns(
+        df_filtered = mdf.df.with_columns(
             pl.col(index).dt.strftime("2020-%m-%d %H:%M:%S").str.strptime(pl.Datetime)
         )
 
@@ -152,38 +152,44 @@ def split_up_df_multi_years(
 
             df_filtered = df_filtered.rename({col: new_col_name})
             new_line: cl.MetaLine = replace(
-                meta.get_line_by_name(col), name=new_col_name
+                mdf.meta.get_line_by_name(col), name=new_col_name
             )
-            meta.lines += [replace(new_line, tit=new_col_name)]
+            mdf.meta.lines += [replace(new_line, tit=new_col_name)]
 
         df_multi[year] = df_filtered
 
-    return df_multi, meta
+    mdf.df_multi = df_multi
+
+    return mdf
 
 
 @gf.func_timer
-def df_multi_y(df: pl.DataFrame, meta: cl.MetaData) -> None:
+def df_multi_y(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     """Mehrere Jahre"""
 
-    years: list[int] = meta.years or []
+    years: list[int] = mdf.meta.years or []
 
-    df_multi: dict[int, pl.DataFrame]
-    df_multi, meta = split_up_df_multi_years(df, meta)
+    mdf = split_up_df_multi_years(mdf)
 
-    gf.st_new("dic_df_multi", df_multi)
+    gf.st_new("dic_df_multi", mdf.df_multi)
+
+    if not mdf.df_multi:
+        return mdf
 
     # df geordnete Jahresdauerlinie
     if gf.st_check("cb_jdl"):
-        dic_jdl: dict[int, pd.DataFrame] = {y: jdl(df_multi[y]) for y in years}
-        gf.st_new("dic_jdl", dic_jdl)
+        mdf.jdl_multi = {y: jdl(mdf.df_multi[y]) for y in years}
+        gf.st_new("dic_jdl", mdf.jdl_multi)
 
     # df Monatswerte
     if gf.st_check("cb_mon"):
-        dic_mon: dict[int, pd.DataFrame] = {
-            year: mon(df_multi[year], st.session_state["metadata"], year)
+        mdf.mon_multi = {
+            year: mon(mdf.df_multi[year], st.session_state["metadata"], year)
             for year in years
         }
-        gf.st_new("dic_mon", dic_mon)
+        gf.st_new("dic_mon", mdf.mon_multi)
+
+    return mdf
 
 
 @gf.func_timer

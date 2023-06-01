@@ -2,10 +2,12 @@ black
 deta
 geopy
 ipykernel
+langchain
 loguru
 meteostat
 mypy
 numpy
+openai
 openpyxl
 pandas
 pandas-stubs

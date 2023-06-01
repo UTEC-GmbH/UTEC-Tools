@@ -1,0 +1,190 @@
+
+
+08:29:08 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+
+
+08:29:08 👉 function 'general_setup' started 👈 
+
+08:29:09 👉 function 'render_svg' started 👈 
+08:29:09 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+
+08:29:09 👉 function 'get_commit_message_date' started 👈 
+08:29:10 ⏱ execution time of 'get_commit_message_date': 0.8430 s ⏱ 
+
+08:29:10 👉 function 'get_all_user_data' started 👈 
+
+08:29:10 👉 function 'connect_database' started 👈 
+08:29:10 🥳 user_authentication -> connect_database -> line: 124 | Deta-Database connection established 🥳 
+08:29:10 ⏱ execution time of 'connect_database': 0.0000 s ⏱ 
+08:29:10 🥳 user_authentication -> get_all_user_data -> line: 158 | Collected all user data from Database 🥳 
+08:29:10 ⏱ execution time of 'get_all_user_data': 0.1090 s ⏱ 
+08:29:10 💡 setup_stuff -> general_setup -> line: 119 | Pfad 'C:\Users\fl\Documents\Python\UTEC-Tools\export' für die Ausgabe bereits vorhanden 💡 
+
+08:29:10 🦤🦤🦤 Initial Setup Complete 🦤🦤🦤 
+
+08:29:10 ⏱ execution time of 'general_setup': 1.4680 s ⏱ 
+
+08:29:10 👉 function 'page_header_setup' started 👈 
+
+08:29:10 👉 function 'render_svg' started 👈 
+08:29:10 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:29:10 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'login' created 👟 
+08:29:10 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+08:29:10 👉 function 'display_login_page' started 👈 
+
+08:29:10 👉 function 'login_section' started 👈 
+08:29:10 ⏱ execution time of 'login_section': 0.0000 s ⏱ 
+08:29:10 ⏱ execution time of 'display_login_page': 0.0160 s ⏱ 
+08:29:10 🥳 00_🔑_login -> <module> -> line: 148 | Login Page Loaded 🥳 
+
+
+08:29:10 ✨ NEW RUN ✨ 
+
+08:29:10 👉 function 'page_header_setup' started 👈 
+
+08:29:10 👉 function 'render_svg' started 👈 
+08:29:10 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:29:10 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'login' created 👟 
+08:29:10 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:29:10 👉 function 'display_login_page' started 👈 
+
+08:29:10 👉 function 'login_section' started 👈 
+
+08:29:10 👉 function 'access_granted' started 👈 
+08:29:10 🥳 00_🔑_login -> access_granted -> line: 91 | logged in as: fl, access level: god 🥳 
+
+08:29:10 👉 function 'god_mode' started 👈 
+
+08:29:10 👉 function 'user_accounts' started 👈 
+08:29:10 ⏱ execution time of 'user_accounts': 0.0000 s ⏱ 
+08:29:10 ⏱ execution time of 'god_mode': 0.0000 s ⏱ 
+08:29:10 ⏱ execution time of 'access_granted': 0.0160 s ⏱ 
+08:29:10 ⏱ execution time of 'login_section': 0.0310 s ⏱ 
+08:29:11 ⏱ execution time of 'display_login_page': 0.0310 s ⏱ 
+08:29:11 🥳 00_🔑_login -> <module> -> line: 148 | Login Page Loaded 🥳 
+
+
+08:29:11 ✨ NEW RUN ✨ 
+
+08:29:11 👉 function 'page_header_setup' started 👈 
+
+08:29:11 👉 function 'render_svg' started 👈 
+08:29:11 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:29:11 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'login' created 👟 
+08:29:11 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+08:29:11 👉 function 'display_login_page' started 👈 
+
+08:29:11 👉 function 'login_section' started 👈 
+
+08:29:11 👉 function 'access_granted' started 👈 
+
+08:29:11 👉 function 'god_mode' started 👈 
+
+08:29:11 👉 function 'user_accounts' started 👈 
+08:29:11 ⏱ execution time of 'user_accounts': 0.0000 s ⏱ 
+08:29:11 ⏱ execution time of 'god_mode': 0.0000 s ⏱ 
+08:29:11 ⏱ execution time of 'access_granted': 0.0000 s ⏱ 
+08:29:11 ⏱ execution time of 'login_section': 0.0000 s ⏱ 
+08:29:11 ⏱ execution time of 'display_login_page': 0.0160 s ⏱ 
+08:29:11 🥳 00_🔑_login -> <module> -> line: 148 | Login Page Loaded 🥳 
+
+08:29:15 👉 function 'page_header_setup' started 👈 
+
+08:29:15 👉 function 'render_svg' started 👈 
+08:29:15 ⏱ execution time of 'render_svg': 0.0150 s ⏱ 
+08:29:15 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'chat' created 👟 
+08:29:15 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+08:29:17 👉 function 'page_header_setup' started 👈 
+
+08:29:17 👉 function 'render_svg' started 👈 
+08:29:17 ⏱ execution time of 'render_svg': 0.0160 s ⏱ 
+08:29:17 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'chat' created 👟 
+08:29:17 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+08:31:02 👉 function 'page_header_setup' started 👈 
+
+08:31:02 👉 function 'render_svg' started 👈 
+08:31:02 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:31:02 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'chat' created 👟 
+08:31:02 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:33:40 👉 function 'page_header_setup' started 👈 
+
+08:33:40 👉 function 'render_svg' started 👈 
+08:33:40 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:33:40 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'chat' created 👟 
+08:33:40 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:33:48 👉 function 'page_header_setup' started 👈 
+
+08:33:48 👉 function 'render_svg' started 👈 
+08:33:48 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:33:48 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'chat' created 👟 
+08:33:48 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:34:49 👉 function 'page_header_setup' started 👈 
+
+08:34:49 👉 function 'render_svg' started 👈 
+08:34:49 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:34:49 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'chat' created 👟 
+08:34:49 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:35:02 👉 function 'page_header_setup' started 👈 
+
+08:35:02 👉 function 'render_svg' started 👈 
+08:35:02 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:35:02 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'chat' created 👟 
+08:35:02 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:35:34 👉 function 'page_header_setup' started 👈 
+
+08:35:34 👉 function 'render_svg' started 👈 
+08:35:34 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:35:34 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'chat' created 👟 
+08:35:34 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+08:37:58 👉 function 'page_header_setup' started 👈 
+
+08:37:58 👉 function 'render_svg' started 👈 
+08:37:58 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:37:58 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'chat' created 👟 
+08:37:58 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:38:01 👉 function 'page_header_setup' started 👈 
+
+08:38:01 👉 function 'render_svg' started 👈 
+08:38:01 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:38:01 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'chat' created 👟 
+08:38:01 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:41:03 👉 function 'page_header_setup' started 👈 
+
+08:41:03 👉 function 'render_svg' started 👈 
+08:41:03 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:41:03 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'chat' created 👟 
+08:41:03 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:41:05 👉 function 'page_header_setup' started 👈 
+
+08:41:05 👉 function 'render_svg' started 👈 
+08:41:05 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:41:05 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'chat' created 👟 
+08:41:05 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:55:38 👉 function 'page_header_setup' started 👈 
+
+08:55:38 👉 function 'render_svg' started 👈 
+08:55:38 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:55:38 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'chat' created 👟 
+08:55:38 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+08:55:43 👉 function 'page_header_setup' started 👈 
+
+08:55:43 👉 function 'render_svg' started 👈 
+08:55:43 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:55:43 👟 setup_stuff -> page_header_setup -> line: 175 | page header for page 'chat' created 👟 
+08:55:43 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 

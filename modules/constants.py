@@ -196,6 +196,7 @@ class StPages:
     login: StPageProps
     graph: StPageProps
     meteo: StPageProps
+    chat: StPageProps
 
     def get_all_short(self) -> list[str]:
         """Get a list of short page descriptors"""
@@ -214,6 +215,7 @@ PAGES: StPages = StPages(
     meteo=StPageProps(
         short="meteo", title="Meteorologische Daten", excel_ws_name="Wetterdaten"
     ),
+    chat=StPageProps("chat", "ChatGPT"),
 )
 
 

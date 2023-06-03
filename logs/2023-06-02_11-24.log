@@ -1,0 +1,260 @@
+
+
+11:24:44 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+
+
+11:24:44 👉 function 'import_prefab_excel' started 👈 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> rename_columns -> line: 124 | Index-marker found in column 'column_2' 💡 
+11:24:45 ⚠ <ipython-input-1-e0e855e0fba6> -> clean_up_daylight_savings -> line: 280 | Data deleted due to daylight savings. ️ 
+  shape: (8, 6)
+┌──────────────┬─────────────┬───────────────┬────────────────────┬───────────────────┬────────────┐
+│ ↓ Index ↓    ┆ Strombedarf ┆ PV Produktion ┆ Netzeinspeisung    ┆ PV Eigennutzung   ┆ Strombez.  │
+│ ---          ┆ ---         ┆ ---           ┆ ---                ┆ ---               ┆ 1-1:1.29.0 │
+│ datetime[μs] ┆ f32         ┆ f32           ┆ f32                ┆ f32               ┆ ---        │
+│              ┆             ┆               ┆                    ┆                   ┆ f32        │
+╞══════════════╪═════════════╪═══════════════╪════════════════════╪═══════════════════╪════════════╡
+│ 2021-03-27   ┆ 2.1         ┆ 0.0           ┆ 0.0                ┆ 0.0               ┆ 2.1        │
+│ 02:00:00     ┆             ┆               ┆                    ┆                   ┆            │
+│ 2021-03-27   ┆ 1.9         ┆ 0.0           ┆ 0.0                ┆ 0.0               ┆ 1.9        │
+│ 02:15:00     ┆             ┆               ┆                    ┆                   ┆            │
+│ 2021-03-27   ┆ 1.88        ┆ 0.0           ┆ 0.0                ┆ 0.0               ┆ 1.88       │
+│ 02:30:00     ┆             ┆               ┆                    ┆                   ┆            │
+│ 2021-03-27   ┆ 1.98        ┆ 0.0           ┆ 0.0                ┆ 0.0               ┆ 1.98       │
+│ 02:45:00     ┆             ┆               ┆                    ┆                   ┆            │
+│ 2021-10-31   ┆ 2.48        ┆ 0.0           ┆ 0.0                ┆ 0.0               ┆ 2.48       │
+│ 02:00:00     ┆             ┆               ┆                    ┆                   ┆            │
+│ 2021-10-31   ┆ 2.55        ┆ 0.0           ┆ 0.0                ┆ 0.0               ┆ 2.55       │
+│ 02:15:00     ┆             ┆               ┆                    ┆                   ┆            │
+│ 2021-10-31   ┆ 2.17        ┆ 0.0           ┆ 0.0                ┆ 0.0               ┆ 2.17       │
+│ 02:30:00     ┆             ┆               ┆                    ┆                   ┆            │
+│ 2021-10-31   ┆ 2.08        ┆ 0.0           ┆ 0.0                ┆ 0.0               ┆ 2.08       │
+│ 02:45:00     ┆             ┆               ┆                    ┆                   ┆            │
+└──────────────┴─────────────┴───────────────┴────────────────────┴───────────────────┴────────────┘  
+
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> temporal_metadata -> line: 307 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> set_y_axis_for_lines -> line: 204 | Strombedarf: Y-Achse 'y' 💡 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> set_y_axis_for_lines -> line: 204 | PV Produktion: Y-Achse 'y' 💡 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> set_y_axis_for_lines -> line: 204 | Netzeinspeisung: Y-Achse 'y' 💡 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> set_y_axis_for_lines -> line: 204 | PV Eigennutzung: Y-Achse 'y' 💡 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> set_y_axis_for_lines -> line: 204 | Bezug (1-1:1.29): Y-Achse 'y' 💡 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> insert_column_arbeit_leistung -> line: 453 | Spalte 'Strombedarf → Leistung' mit Einheit ' kW' eingefügt 💡 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> rename_column_arbeit_leistung -> line: 415 | Spalte 'Strombedarf' umbenannt in 'Strombedarf → Arbeit' 💡 
+11:24:45 🥳 <ipython-input-1-e0e855e0fba6> -> convert_15min_kwh_to_kw -> line: 384 | Arbeit und Leistung für Spalte 'Strombedarf' aufgeteilt 🥳 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> insert_column_arbeit_leistung -> line: 453 | Spalte 'PV Produktion → Leistung' mit Einheit ' kW' eingefügt 💡 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> rename_column_arbeit_leistung -> line: 415 | Spalte 'PV Produktion' umbenannt in 'PV Produktion → Arbeit' 💡 
+11:24:45 🥳 <ipython-input-1-e0e855e0fba6> -> convert_15min_kwh_to_kw -> line: 384 | Arbeit und Leistung für Spalte 'PV Produktion' aufgeteilt 🥳 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> insert_column_arbeit_leistung -> line: 453 | Spalte 'Netzeinspeisung → Leistung' mit Einheit ' kW' eingefügt 💡 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> rename_column_arbeit_leistung -> line: 415 | Spalte 'Netzeinspeisung' umbenannt in 'Netzeinspeisung → Arbeit' 💡 
+11:24:45 🥳 <ipython-input-1-e0e855e0fba6> -> convert_15min_kwh_to_kw -> line: 384 | Arbeit und Leistung für Spalte 'Netzeinspeisung' aufgeteilt 🥳 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> insert_column_arbeit_leistung -> line: 453 | Spalte 'PV Eigennutzung → Leistung' mit Einheit ' kW' eingefügt 💡 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> rename_column_arbeit_leistung -> line: 415 | Spalte 'PV Eigennutzung' umbenannt in 'PV Eigennutzung → Arbeit' 💡 
+11:24:45 🥳 <ipython-input-1-e0e855e0fba6> -> convert_15min_kwh_to_kw -> line: 384 | Arbeit und Leistung für Spalte 'PV Eigennutzung' aufgeteilt 🥳 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> insert_column_arbeit_leistung -> line: 453 | Spalte 'Bezug (1-1:1.29) → Leistung' mit Einheit ' kW' eingefügt 💡 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> rename_column_arbeit_leistung -> line: 415 | Spalte 'Bezug (1-1:1.29)' umbenannt in 'Bezug (1-1:1.29) → Arbeit' 💡 
+11:24:45 🥳 <ipython-input-1-e0e855e0fba6> -> convert_15min_kwh_to_kw -> line: 384 | Arbeit und Leistung für Spalte 'Bezug (1-1:1.29)' aufgeteilt 🥳 
+11:24:45 💡 <ipython-input-1-e0e855e0fba6> -> import_prefab_excel -> line: 65 | {'units': {'all_units': [' kWh', ' kWh', ' kWh', ' kWh', ' kWh', ' kW', ' kWh', ' kW',
+               ' kWh', ' kW', ' kWh', ' kW', ' kWh', ' kW', ' kWh'],
+ 'set_units': [' kWh', ' kW']}, 'lines': [{'name': 'Strombedarf',
+ 'orig_tit': 'Strombedarf',
+ 'tit': 'Strombedarf',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Produktion',
+ 'orig_tit': 'PV Produktion',
+ 'tit': 'PV Produktion',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Netzeinspeisung',
+ 'orig_tit': 'Netzeinspeisung',
+ 'tit': 'Netzeinspeisung',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Eigennutzung',
+ 'orig_tit': 'PV Eigennutzung',
+ 'tit': 'PV Eigennutzung',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Bezug (1-1:1.29)',
+ 'orig_tit': 'Strombez. 1-1:1.29.0',
+ 'tit': 'Bezug (1-1:1.29)',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': {'code_or_name': '1-1:1.29',
+ 'pattern': '1-\\d*:\\d*\\.\\d*',
+ 'medium': 'Elektrizität',
+ 'code': '1-1:1.29',
+ 'messgroesse': 'Wirkleistung (+)',
+ 'messart': 'Zeit Integral 5 - Lastprofil Aufzeichnungsperiode 1',
+ 'unit': ' kWh',
+ 'name': 'Bezug (1-1:1.29)',
+ 'name_kurz': 'Bezug',
+ 'name_lang': 'Wirkleistung (+) [kWh] - Zeit Integral 5 - Lastprofil '
+              'Aufzeichnungsperiode 1 (1-1:1.29)'},
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Strombedarf → Leistung',
+ 'orig_tit': 'Strombedarf',
+ 'tit': 'Strombedarf → Leistung',
+ 'unit': ' kW',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Strombedarf → Arbeit',
+ 'orig_tit': 'Strombedarf',
+ 'tit': 'Strombedarf → Arbeit',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Produktion → Leistung',
+ 'orig_tit': 'PV Produktion',
+ 'tit': 'PV Produktion → Leistung',
+ 'unit': ' kW',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Produktion → Arbeit',
+ 'orig_tit': 'PV Produktion',
+ 'tit': 'PV Produktion → Arbeit',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Netzeinspeisung → Leistung',
+ 'orig_tit': 'Netzeinspeisung',
+ 'tit': 'Netzeinspeisung → Leistung',
+ 'unit': ' kW',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Netzeinspeisung → Arbeit',
+ 'orig_tit': 'Netzeinspeisung',
+ 'tit': 'Netzeinspeisung → Arbeit',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Eigennutzung → Leistung',
+ 'orig_tit': 'PV Eigennutzung',
+ 'tit': 'PV Eigennutzung → Leistung',
+ 'unit': ' kW',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'PV Eigennutzung → Arbeit',
+ 'orig_tit': 'PV Eigennutzung',
+ 'tit': 'PV Eigennutzung → Arbeit',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': None,
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Bezug (1-1:1.29) → Leistung',
+ 'orig_tit': 'Strombez. 1-1:1.29.0',
+ 'tit': 'Bezug (1-1:1.29) → Leistung',
+ 'unit': ' kW',
+ 'y_axis': 'y',
+ 'obis': {'code_or_name': '1-1:1.29',
+ 'pattern': '1-\\d*:\\d*\\.\\d*',
+ 'medium': 'Elektrizität',
+ 'code': '1-1:1.29',
+ 'messgroesse': 'Wirkleistung (+)',
+ 'messart': 'Zeit Integral 5 - Lastprofil Aufzeichnungsperiode 1',
+ 'unit': ' kWh',
+ 'name': 'Bezug (1-1:1.29)',
+ 'name_kurz': 'Bezug',
+ 'name_lang': 'Wirkleistung (+) [kWh] - Zeit Integral 5 - Lastprofil '
+              'Aufzeichnungsperiode 1 (1-1:1.29)'},
+ 'excel_number_format': '#.##0,000" kWh"'}, {'name': 'Bezug (1-1:1.29) → Arbeit',
+ 'orig_tit': 'Strombez. 1-1:1.29.0',
+ 'tit': 'Bezug (1-1:1.29) → Arbeit',
+ 'unit': ' kWh',
+ 'y_axis': 'y',
+ 'obis': {'code_or_name': '1-1:1.29',
+ 'pattern': '1-\\d*:\\d*\\.\\d*',
+ 'medium': 'Elektrizität',
+ 'code': '1-1:1.29',
+ 'messgroesse': 'Wirkleistung (+)',
+ 'messart': 'Zeit Integral 5 - Lastprofil Aufzeichnungsperiode 1',
+ 'unit': ' kWh',
+ 'name': 'Bezug (1-1:1.29)',
+ 'name_kurz': 'Bezug',
+ 'name_lang': 'Wirkleistung (+) [kWh] - Zeit Integral 5 - Lastprofil '
+              'Aufzeichnungsperiode 1 (1-1:1.29)'},
+ 'excel_number_format': '#.##0,000" kWh"'}], 'datetime': True, 'years': [2021], 'td_mean': 15, 'td_interval': '15min'} 💡 
+  DataFrame head: 
+shape: (5, 12)
+┌────────────┬────────────┬────────────┬────────────┬───┬────────────┬────────────┬────────────┬────────────┐
+│ ↓ Index ↓  ┆ Strombedar ┆ PV         ┆ Netzeinspe ┆ … ┆ PV         ┆ Netzeinspe ┆ PV Eigennu ┆ Bezug      │
+│ ---        ┆ f → Arbeit ┆ Produktion ┆ isung →    ┆   ┆ Produktion ┆ isung →    ┆ tzung →    ┆ (1-1:1.29) │
+│ datetime[μ ┆ ---        ┆ → Arbeit   ┆ Arbeit     ┆   ┆ → Leistung ┆ Leistung   ┆ Leistung   ┆ → Leistung │
+│ s]         ┆ f32        ┆ ---        ┆ ---        ┆   ┆ ---        ┆ ---        ┆ ---        ┆ ---        │
+│            ┆            ┆ f32        ┆ f32        ┆   ┆ f32        ┆ f32        ┆ f32        ┆ f32        │
+╞════════════╪════════════╪════════════╪════════════╪═══╪════════════╪════════════╪════════════╪════════════╡
+│ 2021-01-01 ┆ 3.4        ┆ 0.0        ┆ 0.0        ┆ … ┆ 0.0        ┆ 0.0        ┆ 0.0        ┆ 13.6       │
+│ 00:00:00   ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ 2021-01-01 ┆ 3.23       ┆ 0.0        ┆ 0.0        ┆ … ┆ 0.0        ┆ 0.0        ┆ 0.0        ┆ 12.92      │
+│ 00:15:00   ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ 2021-01-01 ┆ 3.15       ┆ 0.0        ┆ 0.0        ┆ … ┆ 0.0        ┆ 0.0        ┆ 0.0        ┆ 12.6       │
+│ 00:30:00   ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ 2021-01-01 ┆ 3.55       ┆ 0.0        ┆ 0.0        ┆ … ┆ 0.0        ┆ 0.0        ┆ 0.0        ┆ 14.2       │
+│ 00:45:00   ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ 2021-01-01 ┆ 4.3        ┆ 0.0        ┆ 0.0        ┆ … ┆ 0.0        ┆ 0.0        ┆ 0.0        ┆ 17.200001  │
+│ 01:00:00   ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+└────────────┴────────────┴────────────┴────────────┴───┴────────────┴────────────┴────────────┴────────────┘ 
+
+DataFrame properties: 
+shape: (9, 13)
+┌───┬────────────┬────────────┬────────────┬───┬────────────┬────────────┬────────────┬────────────┐
+│ d ┆ ↓ Index ↓  ┆ Strombedar ┆ PV         ┆ … ┆ PV         ┆ Netzeinspe ┆ PV Eigennu ┆ Bezug      │
+│ e ┆ ---        ┆ f → Arbeit ┆ Produktion ┆   ┆ Produktion ┆ isung →    ┆ tzung →    ┆ (1-1:1.29) │
+│ s ┆ str        ┆ ---        ┆ → Arbeit   ┆   ┆ → Leistung ┆ Leistung   ┆ Leistung   ┆ → Leistung │
+│ c ┆            ┆ f64        ┆ ---        ┆   ┆ ---        ┆ ---        ┆ ---        ┆ ---        │
+│ r ┆            ┆            ┆ f64        ┆   ┆ f64        ┆ f64        ┆ f64        ┆ f64        │
+│ i ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ b ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ e ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ - ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ - ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ - ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ s ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ t ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ r ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+╞═══╪════════════╪════════════╪════════════╪═══╪════════════╪════════════╪════════════╪════════════╡
+│ c ┆ 35032      ┆ 35032.0    ┆ 35032.0    ┆ … ┆ 35032.0    ┆ 35032.0    ┆ 35032.0    ┆ 35032.0    │
+│ o ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ u ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ n ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ t ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ n ┆ 0          ┆ 0.0        ┆ 0.0        ┆ … ┆ 0.0        ┆ 0.0        ┆ 0.0        ┆ 0.0        │
+│ u ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ l ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ l ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ _ ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ c ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ o ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ u ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ n ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ t ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ m ┆ null       ┆ 4.103935   ┆ 1.293289   ┆ … ┆ 5.173158   ┆ 1.125703   ┆ 4.047495   ┆ 12.368082  │
+│ e ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ a ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ n ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ s ┆ null       ┆ 1.538132   ┆ 2.187393   ┆ … ┆ 8.749574   ┆ 3.52578    ┆ 6.027531   ┆ 7.346797   │
+│ t ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ d ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ m ┆ 2021-01-01 ┆ 1.55       ┆ 0.0        ┆ … ┆ 0.0        ┆ 0.0        ┆ 0.0        ┆ 0.0        │
+│ i ┆ 00:00:00   ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ n ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ m ┆ 2021-12-31 ┆ 10.6       ┆ 12.97      ┆ … ┆ 51.880001  ┆ 33.720001  ┆ 27.6       ┆ 42.400002  │
+│ a ┆ 23:45:00   ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ x ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ m ┆ null       ┆ 4.08       ┆ 0.0        ┆ … ┆ 0.0        ┆ 0.0        ┆ 0.0        ┆ 10.92      │
+│ e ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ d ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ i ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ a ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ n ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ 2 ┆ null       ┆ 2.7        ┆ 0.0        ┆ … ┆ 0.0        ┆ 0.0        ┆ 0.0        ┆ 8.0        │
+│ 5 ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ % ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ 7 ┆ null       ┆ 5.17       ┆ 1.73       ┆ … ┆ 6.92       ┆ 0.0        ┆ 6.92       ┆ 17.120001  │
+│ 5 ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+│ % ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
+└───┴────────────┴────────────┴────────────┴───┴────────────┴────────────┴────────────┴────────────┘  
+
+11:24:45 🥳 <ipython-input-1-e0e855e0fba6> -> import_prefab_excel -> line: 67 | Excel-Datei importiert. 🥳 
+11:24:45 ⏱ execution time of 'import_prefab_excel': 1.4060 s ⏱ 

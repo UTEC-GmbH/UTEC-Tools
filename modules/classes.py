@@ -102,7 +102,7 @@ class MetaData:
 
 @dataclass
 class MetaAndDfs:
-    """Class for return value of functions (e.g. in df_manipulation)"""
+    """Class to combine data frames and the corresponding meta data"""
 
     meta: MetaData
     df: pl.DataFrame

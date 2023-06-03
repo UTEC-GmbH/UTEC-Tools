@@ -12,9 +12,12 @@ from modules import constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
 
+if __name__ == "__main__":
+    TEST_FILE = "example_files/Auswertung Stromlastgang - einzelnes Jahr.xlsx"
+
 
 @gf.func_timer
-def import_prefab_excel(file: io.BytesIO | str) -> cl.MetaAndDfs:
+def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cl.MetaAndDfs:
     """Import and download Excel files.
 
     Args:
@@ -31,8 +34,7 @@ def import_prefab_excel(file: io.BytesIO | str) -> cl.MetaAndDfs:
     - file = "example_files/Wärmelastgang - mehrere Jahre.xlsx"
 
     Example test run:
-    file = "example_files/Auswertung Stromlastgang - einzelnes Jahr.xlsx"
-    df, meta = import_prefab_excel(file)
+    mdf = import_prefab_excel()
     """
 
     mark_index: str = cont.ExcelMarkers.index

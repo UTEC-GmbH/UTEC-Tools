@@ -193,20 +193,27 @@ def df_multi_y(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
 
 
 @gf.func_timer
-def h_from_other(df: pd.DataFrame, meta: dict[str, Any] | None = None) -> pd.DataFrame:
+def h_from_other(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     """Stundenwerte aus anderer zeitlicher Auflösung"""
 
-    df_h: pd.DataFrame = pd.DataFrame()
-    metadata: dict[str, Any] = meta or st.session_state["metadata"]
+    metadata: cl.MetaData = mdf.meta
     extended_exclude: list[str] = [
         *cont.EXCLUDE,
         cont.ARBEIT_LEISTUNG.arbeit.suffix,
     ]
+
+    df_h: pl.DataFrame = pl.DataFrame(
+        [
+            mdf.df.get_column(col).sort().alias(col)
+            for col in mdf.df.columns
+            if col not in extended_exclude
+        ]
+    )
     suff_leistung: str = cont.ARBEIT_LEISTUNG.leistung.suffix
 
     for col in [
         str(col)
-        for col in df.columns
+        for col in mdf.df.columns
         if all(excl not in str(col) for excl in extended_exclude)
     ]:
         col_h: str = f"{col} *h".replace(suff_leistung, "")

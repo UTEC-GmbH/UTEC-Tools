@@ -106,6 +106,7 @@ class MetaAndDfs:
 
     meta: MetaData
     df: pl.DataFrame
+    df_h: pl.DataFrame | None = None
     jdl: pl.DataFrame | None = None
     mon: pl.DataFrame | None = None
     df_multi: dict[int, pl.DataFrame] | None = None

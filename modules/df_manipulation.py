@@ -1,7 +1,6 @@
 """Bearbeitung der Daten"""
 
 
-from dataclasses import replace
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -17,6 +16,9 @@ from modules import setup_logger as slog
 
 if TYPE_CHECKING:
     import datetime as dt
+
+COL_IND: str = cont.ExcelMarkers.index
+COL_ORG: str = cont.ORIGINAL_INDEX_COL
 
 
 @gf.func_timer
@@ -101,7 +103,7 @@ def interpolate_missing_data(df: pl.DataFrame, method: str = "akima") -> pl.Data
     Returns:
         - pd.DataFrame: edited DataFrame
     """
-    df_pd: pd.DataFrame = df.to_pandas().set_index(cont.ExcelMarkers.index)
+    df_pd: pd.DataFrame = df.to_pandas().set_index(COL_IND)
     df_pd[df_pd.diff() == 0] = np.nan
 
     df_pd = df_pd.interpolate(method=method) or df_pd
@@ -110,89 +112,7 @@ def interpolate_missing_data(df: pl.DataFrame, method: str = "akima") -> pl.Data
 
 
 @gf.func_timer
-def split_up_df_multi_years(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
-    """Split up a DataFrame that has data for multiple years into separate
-    DataFrames for each year. The columns names are suffixed with the year.
-    The index of all DataFrames is set to the year 2020.
-
-    Args:
-        - df (DataFrame): DataFrame to split
-        - meta (MetaData): meta data
-
-    Returns:
-        - dict (int, pd.DataFrame):
-            - key (int): year
-            - item (DataFrame): DataFrame for the year in 'key'
-        - meta (MetaData): meta data
-    """
-    index: str = cont.ExcelMarkers.index
-    years: list[int] = mdf.meta.years or []
-
-    df_multi: dict[int, pl.DataFrame] = {}
-    for year in years:
-        df_filtered: pl.DataFrame = mdf.df.filter(pl.col(index).dt.year() == year)
-        df_multi[year][cont.ORIGINAL_INDEX_COL] = df_filtered.get_column(
-            cont.ORIGINAL_INDEX_COL
-        )
-        df_filtered = mdf.df.with_columns(
-            pl.col(index).dt.strftime("2020-%m-%d %H:%M:%S").str.strptime(pl.Datetime)
-        )
-
-        for col in [
-            column
-            for column in df_filtered.columns
-            if all(exc not in column for exc in cont.EXCLUDE)
-        ]:
-            new_col_name: str = f'{col.replace(" *h","")} {year}'
-            if any(suff in col for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()):
-                for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes():
-                    if suff in col:
-                        new_col_name = f"{col.split(suff)[0]} {year}{suff}"
-
-            df_filtered = df_filtered.rename({col: new_col_name})
-            new_line: cl.MetaLine = replace(
-                mdf.meta.get_line_by_name(col), name=new_col_name
-            )
-            mdf.meta.lines += [replace(new_line, tit=new_col_name)]
-
-        df_multi[year] = df_filtered
-
-    mdf.df_multi = df_multi
-
-    return mdf
-
-
-@gf.func_timer
-def df_multi_y(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
-    """Mehrere Jahre"""
-
-    years: list[int] = mdf.meta.years or []
-
-    mdf = split_up_df_multi_years(mdf)
-
-    gf.st_new("dic_df_multi", mdf.df_multi)
-
-    if not mdf.df_multi:
-        return mdf
-
-    # df geordnete Jahresdauerlinie
-    if gf.st_check("cb_jdl"):
-        mdf.jdl_multi = {y: jdl(mdf.df_multi[y]) for y in years}
-        gf.st_new("dic_jdl", mdf.jdl_multi)
-
-    # df Monatswerte
-    if gf.st_check("cb_mon"):
-        mdf.mon_multi = {
-            year: mon(mdf.df_multi[year], st.session_state["metadata"], year)
-            for year in years
-        }
-        gf.st_new("dic_mon", mdf.mon_multi)
-
-    return mdf
-
-
-@gf.func_timer
-def h_from_other(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
+def df_h(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     """Stundenwerte aus anderer zeitlicher Auflösung"""
 
     extended_exclude: list[str] = [
@@ -214,17 +134,43 @@ def h_from_other(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
                 for col in cols
             ]
         )
-        .sort(by=cont.ExcelMarkers.index)
-        .groupby_dynamic(cont.ExcelMarkers.index, every="1h")
+        .sort(by=COL_IND)
+        .groupby_dynamic(COL_IND, every="1h")
         .agg(
             [
                 pl.col(
                     col.replace(cont.ARBEIT_LEISTUNG.leistung.suffix, "").strip()
                 ).mean()
-                for col in [co for co in cols if co != cont.ExcelMarkers.index]
+                for col in [co for co in cols if co != COL_IND]
             ]
         )
+        .with_columns(pl.col(COL_IND).alias(COL_ORG))
     )
+
+    if len(mdf.meta.years) > 1:
+        df_h_multi: dict[int, pl.DataFrame] = {}
+        for year in mdf.meta.years:
+            df_filtered: pl.DataFrame = (
+                mdf.df_h.filter(pl.col(COL_IND).dt.year() == year)
+                .with_columns(
+                    pl.col(COL_IND)
+                    .dt.strftime("2020-%m-%d %H:%M:%S")
+                    .str.strptime(pl.Datetime),
+                )
+                .rename(
+                    {
+                        col: f"{col} {year}"
+                        for col in [
+                            col
+                            for col in mdf.df_h.columns
+                            if col not in [COL_IND, COL_ORG]
+                        ]
+                    }
+                )
+            )
+
+            df_h_multi[year] = df_filtered
+        mdf.df_h_multi = df_h_multi
 
     logger.success("DataFrame mit Stundenwerten erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.df_h.head())
@@ -232,70 +178,46 @@ def h_from_other(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     return mdf
 
 
-# def check_if_hourly_resolution(
-#     df: pd.DataFrame, **kwargs: dict[str, Any]
-# ) -> pd.DataFrame:
-#     """Check if the given DataFrame is in hourly resolution.
-#     If not, give out DataFrame in hourly resolution
-
-#     Args:
-#         - df (pd.DataFrame): The DataFrame in question
-#         - dic_meta (dict, optional): Metadata. Defaults to st.session_state["metadata"].
-
-#     Returns:
-#         - pd.DataFrame: DataFrame in hourly resolution
-#     """
-#     metadata: dict[str, Any] = kwargs.get("meta") or st.session_state["metadata"]
-#     extended_exclude: list[str] = [
-#         *cont.EXCLUDE,
-#         cont.ARBEIT_LEISTUNG.arbeit.suffix,
-#     ]
-#     suff_leistung: str = cont.ARBEIT_LEISTUNG.leistung.suffix
-
-#     ind_td: pd.Timedelta = pd.to_timedelta(df.index.to_series().diff()).mean()
-#     df_h: pd.DataFrame = pd.DataFrame()
-#     if ind_td.round("min") < pd.Timedelta(hours=1):
-#         df_h = h_from_other(df)
-#     else:
-#         logger.info("df schon in Stundenauflösung")
-#         for col in [
-#             str(col)
-#             for col in df.columns
-#             if all(excl not in str(col) for excl in extended_exclude)
-#         ]:
-#             col_h: str = f"{col} *h".replace(suff_leistung, "")
-#             df_h[col_h] = df[col].copy()
-#             metadata[col_h] = metadata[col].copy()
-#             if "metadata" in st.session_state:
-#                 st.session_state["metadata"][col_h] = metadata[col].copy()
-
-#     df_h = df_h.infer_objects()
-
-#     return df_h
-
-
 @gf.func_timer
 def jdl(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
-    # sourcery skip: remove-unnecessary-cast
     """Jahresdauerlinie"""
 
+    if mdf.df_h is None:
+        mdf.df_h = df_h(mdf)
+
+    # Zeit-Spalte für jede Linie kopieren um sie zusammen sortieren zu können
     cols_without_index = [
-        col for col in mdf.df_h.columns if col != cont.ExcelMarkers.index
+        col for col in mdf.df_h.columns if col not in [COL_IND, COL_ORG]
     ]
     jdl_first_stage: pl.DataFrame = mdf.df_h.with_columns(
-        [
-            pl.col(cont.ExcelMarkers.index).alias(f"{col} - {cont.ORIGINAL_INDEX_COL}")
-            for col in cols_without_index
-        ]
+        [pl.col(COL_IND).alias(f"{col} - {COL_ORG}") for col in cols_without_index]
     )
 
-    jdl_separate = [
-        jdl_first_stage.select(pl.col(col, f"{col} - {cont.ORIGINAL_INDEX_COL}"))
-        .sort(col, descending=True)
-        .get_columns()
-        for col in cols_without_index
-    ]
+    if len(mdf.meta.years) > 1:
+        jdl_separate = [
+            jdl_first_stage.select(pl.col(col, f"{col} - {COL_ORG}"))
+            .filter(pl.col(f"{col} - {COL_ORG}").dt.year() == year)
+            .sort(col, descending=True)
+            .rename(
+                {
+                    col: f"{col} {year}",
+                    f"{col} - {COL_ORG}": f"{col} - {COL_ORG} {year}",
+                }
+            )
+            .get_columns()
+            for year in mdf.meta.years
+            for col in cols_without_index
+        ]
+    else:
+        jdl_separate = [
+            jdl_first_stage.select(pl.col(col, f"{col} - {COL_ORG}"))
+            .sort(col, descending=True)
+            .get_columns()
+            for col in cols_without_index
+        ]
+
     mdf.jdl = pl.DataFrame(sum(jdl_separate, [])).with_row_count("Stunden")
+
     logger.success("DataFrame für Jahresdauerlinie erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.jdl.head())
 
@@ -306,15 +228,13 @@ def jdl(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
 def mon(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     """Monatswerte"""
 
-    if not mdf.df_h:
-        return mdf
+    if mdf.df_h is None:
+        mdf.df_h = df_h(mdf)
 
     cols_without_index = [
-        col for col in mdf.df_h.columns if col != cont.ExcelMarkers.index
+        col for col in mdf.df_h.columns if col not in [COL_IND, COL_ORG]
     ]
-    mdf.mon: pl.DataFrame = mdf.df_h.groupby_dynamic(
-        cont.ExcelMarkers.index, every="1mo"
-    ).agg(
+    mdf.mon: pl.DataFrame = mdf.df_h.groupby_dynamic(COL_IND, every="1mo").agg(
         [
             pl.col(col).mean()
             if mdf.meta.get_line_by_name(col).unit in cont.GRP_MEAN
@@ -323,9 +243,13 @@ def mon(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         ]
     )
 
+    if len(mdf.meta.years) > 1:
+        for year in mdf.meta.years:
+            
+        mdf.mon_multi = mdf.mon.with_columns(pl.col(COL_IND).alias(COL_ORG))
+
     logger.success("DataFrame mit Monatswerten erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.mon.head())
-
 
     if mean_cols := [
         str(col)

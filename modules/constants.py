@@ -134,8 +134,11 @@ NEGATIVE_VALUES: list[str] = [
     "Stromlieferung",
 ]
 
+# copy of dates before manipulation
+ORIGINAL_INDEX_COL: str = "orgidx"
+
 # Linien, die bei gewissen Operationen übersprungen werden
-EXCLUDE: list[str] = [SMOOTH_SUFFIX, "hline", "orgidx"]
+EXCLUDE: list[str] = [SMOOTH_SUFFIX, ORIGINAL_INDEX_COL, "hline"]
 
 # Theme for plots in streamlit app -> theme="streamlit" or theme=None
 ST_PLOTLY_THEME: Literal["streamlit"] | None = None
@@ -250,9 +253,6 @@ PLOTFARBE: dict[str, str] = {
     "Eigenverbrauch": FARBEN["rot"],
     "Netzbezug": FARBEN["lila"],
 }
-
-# copy of dates before manipulation
-ORIGINAL_INDEX_COL: str = "orgidx"
 
 
 @dataclass

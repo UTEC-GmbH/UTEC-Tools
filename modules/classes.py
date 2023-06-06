@@ -110,7 +110,7 @@ class MetaAndDfs:
     jdl: pl.DataFrame | None = None
     mon: pl.DataFrame | None = None
     df_multi: dict[int, pl.DataFrame] | None = None
-    jdl_multi: dict[int, pl.DataFrame] | None = None
+    df_h_multi: dict[int, pl.DataFrame] | None = None
     mon_multi: dict[int, pl.DataFrame] | None = None
 
 

@@ -21,7 +21,7 @@ COL_IND: str = cont.ExcelMarkers.index
 COL_ORG: str = cont.ORIGINAL_INDEX_COL
 
 
-@gf.func_timer
+# FIX_AM_PM FUNKTIONIERT NOCH NICHT
 def fix_am_pm(df: pl.DataFrame, time_column: str = "Zeitstempel") -> pl.DataFrame:
     """Zeitreihen ohne Unterscheidung zwischen vormittags und nachmittags
 
@@ -111,12 +111,26 @@ def interpolate_missing_data(df: pl.DataFrame, method: str = "akima") -> pl.Data
     return df_pl
 
 
-def split_multi(mdf: cl.MetaAndDfs, frame_to_split: str) -> pl.DataFrame:
+def split_multi_years(
+    mdf: cl.MetaAndDfs, frame_to_split: Literal["df", "df_h", "mon"]
+) -> dict[int, pl.DataFrame]:
     """Split into multiple years"""
 
     df: pl.DataFrame = getattr(mdf, frame_to_split)
+    if not mdf.meta.years:
+        raise cl.NoYearsError
+
     df_multi: dict[int, pl.DataFrame] = {}
     for year in mdf.meta.years:
+        col_rename: dict[str, str] = {}
+        for col in [col for col in df.columns if col not in [*cont.EXCLUDE, COL_IND]]:
+            new_col_name: str = f"{col} {year}"
+            if any(suff in col for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()):
+                for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes():
+                    if suff in col:
+                        new_col_name = f"{col.split(suff)[0]} {year}{suff}"
+            col_rename[col] = new_col_name
+
         df_filtered: pl.DataFrame = (
             df.filter(pl.col(COL_IND).dt.year() == year)
             .with_columns(
@@ -124,14 +138,7 @@ def split_multi(mdf: cl.MetaAndDfs, frame_to_split: str) -> pl.DataFrame:
                 .dt.strftime("2020-%m-%d %H:%M:%S")
                 .str.strptime(pl.Datetime),
             )
-            .rename(
-                {
-                    col: f"{col} {year}"
-                    for col in [
-                        col for col in df.columns if col not in [COL_IND, COL_ORG]
-                    ]
-                }
-            )
+            .rename(col_rename)
         )
 
         df_multi[year] = df_filtered
@@ -147,7 +154,7 @@ def df_h(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         *cont.EXCLUDE,
         cont.ARBEIT_LEISTUNG.arbeit.suffix,
     ]
-    cols = [
+    cols: list[str] = [
         col
         for col in mdf.df.columns
         if all(excl not in col for excl in extended_exclude)
@@ -175,31 +182,8 @@ def df_h(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         .with_columns(pl.col(COL_IND).alias(COL_ORG))
     )
 
-    if len(mdf.meta.years) > 1:
-        # df_h_multi: dict[int, pl.DataFrame] = {}
-        # for year in mdf.meta.years:
-        #     df_filtered: pl.DataFrame = (
-        #         mdf.df_h.filter(pl.col(COL_IND).dt.year() == year)
-        #         .with_columns(
-        #             pl.col(COL_IND)
-        #             .dt.strftime("2020-%m-%d %H:%M:%S")
-        #             .str.strptime(pl.Datetime),
-        #         )
-        #         .rename(
-        #             {
-        #                 col: f"{col} {year}"
-        #                 for col in [
-        #                     col
-        #                     for col in mdf.df_h.columns
-        #                     if col not in [COL_IND, COL_ORG]
-        #                 ]
-        #             }
-        #         )
-        #     )
-
-        #     df_h_multi[year] = df_filtered
-
-        mdf.df_h_multi = split_multi(mdf, "df_h")
+    if mdf.meta.years and len(mdf.meta.years) > 1:
+        mdf.df_h_multi = split_multi_years(mdf, "df_h")
 
     logger.success("DataFrame mit Stundenwerten erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.df_h.head())
@@ -215,15 +199,15 @@ def jdl(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         mdf.df_h = df_h(mdf)
 
     # Zeit-Spalte für jede Linie kopieren um sie zusammen sortieren zu können
-    cols_without_index = [
-        col for col in mdf.df_h.columns if col not in [COL_IND, COL_ORG]
+    cols_without_index: list[str] = [
+        col for col in mdf.df_h.columns if col not in [*cont.EXCLUDE, COL_ORG]
     ]
     jdl_first_stage: pl.DataFrame = mdf.df_h.with_columns(
         [pl.col(COL_IND).alias(f"{col} - {COL_ORG}") for col in cols_without_index]
     )
 
-    if len(mdf.meta.years) > 1:
-        jdl_separate = [
+    if mdf.meta.years and len(mdf.meta.years) > 1:
+        jdl_separate: list[list[pl.Series]] = [
             jdl_first_stage.select(pl.col(col, f"{col} - {COL_ORG}"))
             .filter(pl.col(f"{col} - {COL_ORG}").dt.year() == year)
             .sort(col, descending=True)
@@ -260,88 +244,44 @@ def mon(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     if mdf.df_h is None:
         mdf.df_h = df_h(mdf)
 
-    cols_without_index = [
-        col for col in mdf.df_h.columns if col not in [COL_IND, COL_ORG]
+    cols_without_index: list[str] = [
+        col for col in mdf.df_h.columns if col not in [*cont.EXCLUDE, COL_ORG]
     ]
-    mdf.mon: pl.DataFrame = mdf.df_h.groupby_dynamic(COL_IND, every="1mo").agg(
-        [
-            pl.col(col).mean()
-            if mdf.meta.get_line_by_name(col).unit in cont.GRP_MEAN
-            else pl.col(col).sum()
-            for col in cols_without_index
-        ]
+    mdf.mon = (
+        mdf.df_h.groupby_dynamic(COL_IND, every="1mo")
+        .agg(
+            [
+                pl.col(col).mean()
+                if mdf.meta.get_line_by_name(col).unit in cont.GRP_MEAN
+                else pl.col(col).sum()
+                for col in cols_without_index
+            ]
+        )
+        .with_columns(
+            pl.col(COL_IND).dt.strftime("%Y-%m-15 %H:%M:%S").str.strptime(pl.Datetime),
+        )
     )
 
-    if len(mdf.meta.years) > 1:
-        # mon_multi: dict[int, pl.DataFrame] = {}
-        # for year in mdf.meta.years:
-        #     df_filtered: pl.DataFrame = (
-        #         mdf.mon.filter(pl.col(COL_IND).dt.year() == year)
-        #         .with_columns(
-        #             pl.col(COL_IND)
-        #             .dt.strftime("2020-%m-%d %H:%M:%S")
-        #             .str.strptime(pl.Datetime),
-        #         )
-        #         .rename(
-        #             {
-        #                 col: f"{col} {year}"
-        #                 for col in [
-        #                     col
-        #                     for col in mdf.mon.columns
-        #                     if col not in [COL_IND, COL_ORG]
-        #                 ]
-        #             }
-        #         )
-        #     )
-
-        #     df_h_multi[year] = df_filtered
-
-        mdf.mon_multi = split_multi(mdf, "mon")
+    if mdf.meta.years and len(mdf.meta.years) > 1:
+        mdf.mon_multi = split_multi_years(mdf, "mon")
 
     logger.success("DataFrame mit Monatswerten erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.mon.head())
 
-    if mean_cols := [
-        str(col)
-        for col in df_h.columns
-        if meta[col]["unit"]
-        in [unit for unit in cont.GRP_MEAN if unit not in [" kWh", " kW"]]
-    ]:
-        for col in mean_cols:
-            df_mon[str(col).replace("*h", "*mon")] = df_h[col].resample("M").mean()
-
-    for col in df_mon.columns:
-        meta[col] = meta[str(col).replace("*mon", "*h")].copy()
-        meta[col]["unit"] = " kWh" if meta[col]["unit"] == " kW" else meta[col]["unit"]
-
-    ind: pd.DatetimeIndex = pd.DatetimeIndex(df_mon.index)
-    df_mon.index = pd.to_datetime(ind.strftime("%Y-%m-15"))
-
-    if year:
-        df_mon["orgidx"] = [
-            df_mon.index[x].replace(year=year) for x in range(len(df_mon.index))
-        ]
-    else:
-        df_mon["orgidx"] = df_mon.index.copy()
-
-    df_mon = df_mon.infer_objects()
-
-    st.session_state["df_mon"] = df_mon
-
-    return df_mon
+    return mdf
 
 
-@gf.func_timer
-def dic_days(df: pd.DataFrame) -> None:
-    """Create Dictionary for Days"""
+# @gf.func_timer
+# def dic_days(df: pd.DataFrame) -> None:
+#     """Create Dictionary for Days"""
 
-    st.session_state["dic_days"] = {}
-    for num in range(int(st.session_state["ni_days"])):
-        date: dt.date = st.session_state[f"day_{str(num)}"]
-        item: pd.DataFrame = df.loc[[f"{date:%Y-%m-%d}"]].copy()
+#     st.session_state["dic_days"] = {}
+#     for num in range(int(st.session_state["ni_days"])):
+#         date: dt.date = st.session_state[f"day_{str(num)}"]
+#         item: pd.DataFrame = df.loc[[f"{date:%Y-%m-%d}"]].copy()
 
-        indx: pd.DatetimeIndex = pd.DatetimeIndex(item.index)
-        item["orgidx"] = indx.copy()
-        item.index = pd.to_datetime(indx.strftime("2020-1-1 %H:%M:%S"))
+#         indx: pd.DatetimeIndex = pd.DatetimeIndex(item.index)
+#         item["orgidx"] = indx.copy()
+#         item.index = pd.to_datetime(indx.strftime("2020-1-1 %H:%M:%S"))
 
-        st.session_state["dic_days"][f"{date:%d. %b %Y}"] = item
+#         st.session_state["dic_days"][f"{date:%d. %b %Y}"] = item

@@ -9,11 +9,11 @@ from loguru import logger
 
 from modules import classes as cl
 from modules import constants as cont
+from modules import df_manipulation as df_man
 from modules import general_functions as gf
 from modules import setup_logger as slog
 
-if __name__ == "__main__":
-    TEST_FILE = "example_files/Stromlastgang - mehrere Jahre.xlsx"
+TEST_FILE = "example_files/Stromlastgang - mehrere Jahre.xlsx"
 
 
 @gf.func_timer
@@ -67,8 +67,8 @@ def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cl.MetaAndDfs:
     logger.info(mdf.meta.__dict__)
     slog.log_df(mdf.df)
 
-    if len(mdf.meta.years) > 1:
-        mdf = split_multi_year(mdf)
+    if mdf.meta.years and len(mdf.meta.years) > 1:
+        mdf.df_multi = df_man.split_multi_years(mdf, "df")
 
     logger.success("Excel-Datei importiert.")
 
@@ -458,46 +458,5 @@ def insert_column_arbeit_leistung(
 
     mdf.meta.change_line_attribute(new_col_name, "unit", new_unit)
     logger.info(f"Spalte '{new_col_name}' mit Einheit '{new_unit}' eingefügt")
-
-    return mdf
-
-
-def split_multi_year(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
-    """Split up the df if there is more than one year of data"""
-
-    col_ind: str = cont.ExcelMarkers.index
-    extended_exclude: list[str] = [*cont.EXCLUDE, col_ind]
-    cols = [
-        col
-        for col in mdf.df.columns
-        if all(excl not in col for excl in extended_exclude)
-    ]
-
-    years: list[int] = mdf.meta.years or []
-
-    df_multi: dict[int, pl.DataFrame] = {}
-    for year in years:
-        col_rename: dict[str, str] = {}
-        for col in cols:
-            new_col_name: str = f"{col} {year}"
-            if any(suff in col for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()):
-                for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes():
-                    if suff in col:
-                        new_col_name = f"{col.split(suff)[0]} {year}{suff}"
-            col_rename[col] = new_col_name
-
-        df_filtered: pl.DataFrame = (
-            mdf.df.filter(pl.col(col_ind).dt.year() == year)
-            .with_columns(
-                pl.col(col_ind)
-                .dt.strftime("2020-%m-%d %H:%M:%S")
-                .str.strptime(pl.Datetime),
-            )
-            .rename(col_rename)
-        )
-
-        df_multi[year] = df_filtered
-
-    mdf.df_multi = df_multi
 
     return mdf

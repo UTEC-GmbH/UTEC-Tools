@@ -21,9 +21,7 @@ MANUAL_DEBUG: bool = True
 page_header_setup(page="graph")
 
 
-def debug_code_run(
-    position: Literal["before", "after"]
-) -> None:  
+def debug_code_run(position: Literal["before", "after"]) -> None:
     """Anzeige mit für Debugging"""
 
     if MANUAL_DEBUG and st.session_state.get("access_lvl") == "god":
@@ -61,7 +59,7 @@ def debug_code_run(
 if uauth.authentication(st.session_state["page"]):
     debug_code_run(position="before")
 
-    st.session_state["f_up"] = sm.sidebar_file_upload()
+    sm.sidebar_file_upload()
 
     if any(st.session_state.get(entry) is not None for entry in ("f_up", "df")):
         with st_lottie_spinner(load_lottie_file("animations/bored.json"), height=400):

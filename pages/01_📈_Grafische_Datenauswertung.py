@@ -61,11 +61,11 @@ def debug_code_run(
 if uauth.authentication(st.session_state["page"]):
     debug_code_run(position="before")
 
-    sm.sidebar_file_upload()
+    st.session_state["f_up"] = sm.sidebar_file_upload()
 
     if any(st.session_state.get(entry) is not None for entry in ("f_up", "df")):
         with st_lottie_spinner(load_lottie_file("animations/bored.json"), height=400):
-            if any(entry not in st.session_state for entry in ("df", "metadata")):
+            if any(entry not in st.session_state for entry in ["df", "metadata"]):
                 with st.spinner("Momentle bitte - Datei wird importiert..."):
                     ex.import_prefab_excel(st.session_state["f_up"])
 

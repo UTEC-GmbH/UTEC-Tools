@@ -215,6 +215,10 @@ def sidebar_file_upload() -> Any:
 def base_settings() -> None:
     """Grundeinstellungen (Stundenwerte, JDL, Monatswerte)"""
 
+    if not st.session_state.get("metadata"):
+        with st.spinner("Momentle bitte - Datei wird importiert..."):
+            ex.import_prefab_excel(st.session_state["f_up"])
+
     if st.session_state["metadata"]["index"]["td_mean"] == pd.Timedelta(hours=1):
         st.session_state["cb_h"] = True
 

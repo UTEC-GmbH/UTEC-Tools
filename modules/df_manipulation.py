@@ -1,7 +1,7 @@
 """Bearbeitung der Daten"""
 
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 import pandas as pd
@@ -111,6 +111,34 @@ def interpolate_missing_data(df: pl.DataFrame, method: str = "akima") -> pl.Data
     return df_pl
 
 
+def split_multi(mdf: cl.MetaAndDfs, frame_to_split: str) -> pl.DataFrame:
+    """Split into multiple years"""
+
+    df: pl.DataFrame = getattr(mdf, frame_to_split)
+    df_multi: dict[int, pl.DataFrame] = {}
+    for year in mdf.meta.years:
+        df_filtered: pl.DataFrame = (
+            df.filter(pl.col(COL_IND).dt.year() == year)
+            .with_columns(
+                pl.col(COL_IND)
+                .dt.strftime("2020-%m-%d %H:%M:%S")
+                .str.strptime(pl.Datetime),
+            )
+            .rename(
+                {
+                    col: f"{col} {year}"
+                    for col in [
+                        col for col in df.columns if col not in [COL_IND, COL_ORG]
+                    ]
+                }
+            )
+        )
+
+        df_multi[year] = df_filtered
+
+    return df_multi
+
+
 @gf.func_timer
 def df_h(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     """Stundenwerte aus anderer zeitlicher Auflösung"""
@@ -148,29 +176,30 @@ def df_h(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     )
 
     if len(mdf.meta.years) > 1:
-        df_h_multi: dict[int, pl.DataFrame] = {}
-        for year in mdf.meta.years:
-            df_filtered: pl.DataFrame = (
-                mdf.df_h.filter(pl.col(COL_IND).dt.year() == year)
-                .with_columns(
-                    pl.col(COL_IND)
-                    .dt.strftime("2020-%m-%d %H:%M:%S")
-                    .str.strptime(pl.Datetime),
-                )
-                .rename(
-                    {
-                        col: f"{col} {year}"
-                        for col in [
-                            col
-                            for col in mdf.df_h.columns
-                            if col not in [COL_IND, COL_ORG]
-                        ]
-                    }
-                )
-            )
+        # df_h_multi: dict[int, pl.DataFrame] = {}
+        # for year in mdf.meta.years:
+        #     df_filtered: pl.DataFrame = (
+        #         mdf.df_h.filter(pl.col(COL_IND).dt.year() == year)
+        #         .with_columns(
+        #             pl.col(COL_IND)
+        #             .dt.strftime("2020-%m-%d %H:%M:%S")
+        #             .str.strptime(pl.Datetime),
+        #         )
+        #         .rename(
+        #             {
+        #                 col: f"{col} {year}"
+        #                 for col in [
+        #                     col
+        #                     for col in mdf.df_h.columns
+        #                     if col not in [COL_IND, COL_ORG]
+        #                 ]
+        #             }
+        #         )
+        #     )
 
-            df_h_multi[year] = df_filtered
-        mdf.df_h_multi = df_h_multi
+        #     df_h_multi[year] = df_filtered
+
+        mdf.df_h_multi = split_multi(mdf, "df_h")
 
     logger.success("DataFrame mit Stundenwerten erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.df_h.head())
@@ -244,9 +273,30 @@ def mon(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     )
 
     if len(mdf.meta.years) > 1:
-        for year in mdf.meta.years:
-            
-        mdf.mon_multi = mdf.mon.with_columns(pl.col(COL_IND).alias(COL_ORG))
+        # mon_multi: dict[int, pl.DataFrame] = {}
+        # for year in mdf.meta.years:
+        #     df_filtered: pl.DataFrame = (
+        #         mdf.mon.filter(pl.col(COL_IND).dt.year() == year)
+        #         .with_columns(
+        #             pl.col(COL_IND)
+        #             .dt.strftime("2020-%m-%d %H:%M:%S")
+        #             .str.strptime(pl.Datetime),
+        #         )
+        #         .rename(
+        #             {
+        #                 col: f"{col} {year}"
+        #                 for col in [
+        #                     col
+        #                     for col in mdf.mon.columns
+        #                     if col not in [COL_IND, COL_ORG]
+        #                 ]
+        #             }
+        #         )
+        #     )
+
+        #     df_h_multi[year] = df_filtered
+
+        mdf.mon_multi = split_multi(mdf, "mon")
 
     logger.success("DataFrame mit Monatswerten erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.mon.head())

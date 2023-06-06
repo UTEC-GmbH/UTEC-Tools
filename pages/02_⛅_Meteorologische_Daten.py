@@ -24,8 +24,6 @@ if uauth.authentication(PAGE):
         st.markdown("###")
         st.markdown("###")
 
-    # st.experimental_show(st.session_state.get("but_meteo_main"))
-
     if any(
         st.session_state.get(key)
         for key in (

@@ -23,8 +23,8 @@ page_header_setup(page="graph")
 
 def debug_code_run(
     position: Literal["before", "after"]
-) -> None:  # sourcery skip: flag-streamlit-show
-    """Anzeige mit st.experimental_show() für Debugging"""
+) -> None:  
+    """Anzeige mit für Debugging"""
 
     if MANUAL_DEBUG and st.session_state.get("access_lvl") == "god":
         with st.expander(f"Debug {position}", expanded=False):
@@ -46,11 +46,11 @@ def debug_code_run(
                 st.write(f"show: {show}")
                 if show in st.session_state:
                     if "fig" in show:
-                        st.experimental_show(st.session_state[show].to_dict())
+                        st.write(st.session_state[show].to_dict())
                     else:
-                        st.experimental_show(st.session_state[show])
+                        st.write(st.session_state[show])
 
-            st.experimental_show(st.session_state)
+            st.write(st.session_state)
 
         st.markdown("---")
         st.markdown("###")

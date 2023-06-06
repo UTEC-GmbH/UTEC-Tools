@@ -24,10 +24,10 @@ if uauth.authentication(PAGE):
         st.markdown("###")
         st.markdown("###")
 
-    # st.experimental_show(st.session_state.get("but_meteo_main"))
+    # st.write(gf.st_get("but_meteo_main"))
 
     if any(
-        st.session_state.get(key)
+        gf.st_get(key)
         for key in (
             "but_meteo_sidebar",
             "but_meteo_main",
@@ -35,7 +35,7 @@ if uauth.authentication(PAGE):
             "cancel_excel_download",
         )
     ):
-        if st.session_state.get("but_meteo_sidebar"):
+        if gf.st_get("but_meteo_sidebar"):
             for entry in (
                 "dic_geo",
                 "meteo_fig",
@@ -50,7 +50,7 @@ if uauth.authentication(PAGE):
             ):
                 dics.del_session_state_entry(entry)
 
-        # if st.session_state.get("but_meteo_main"):
+        # if gf.st_get("but_meteo_main"):
         #     for entry in (
         #         "meteo_fig",
         #         "meteo_data",
@@ -64,12 +64,12 @@ if uauth.authentication(PAGE):
             meteo.del_meteo()
             gv.df_used_stations = meteo.df_used_show_edit()
             gv.df_data = (
-                st.session_state.get("meteo_data")
+                gf.st_get("meteo_data")
                 if "meteo_data" in st.session_state
                 else meteo.meteo_data()
             )
             gv.fig = (
-                st.session_state.get("meteo_fig")
+                gf.st_get("meteo_fig")
                 if "meteo_fig" in st.session_state
                 else ploplo.map_weatherstations()
             )

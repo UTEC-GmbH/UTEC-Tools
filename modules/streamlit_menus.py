@@ -12,16 +12,15 @@ from modules import constants as cont
 from modules import excel_download as ex
 from modules import fig_creation_export as fig_cr
 from modules import fig_general_functions as fgf
+from modules import general_functions as gf
 from modules import meteorolog as meteo
-from modules.fig_general_functions import get_colorway
-from modules.general_functions import func_timer, st_delete, text_with_hover
-from modules.user_authentication import get_all_user_data
+from modules import user_authentication as uauth
 
 if TYPE_CHECKING:
     import plotly.graph_objects as go
 
 
-@func_timer
+@gf.func_timer
 def user_accounts() -> None:
     """Benutzerkontensteuerung"""
 
@@ -34,7 +33,7 @@ def user_accounts() -> None:
     ]
 
     # Knöpfle für neuen Benutzer, Benutzer löschen...
-    if not any(st.session_state.get(butt) for butt in lis_butt):
+    if not any(gf.st_get(butt) for butt in lis_butt):
         st.button("Liste aller Konten", "butt_list_all")
         st.button("Neuen Benutzer hinzufügen", "butt_add_new_user")
         st.button("Benutzer löschen", "butt_del_user")
@@ -42,31 +41,31 @@ def user_accounts() -> None:
         st.markdown("###")
 
     # Menu für neuen Benutzer
-    if st.session_state.get("butt_add_new_user"):
+    if gf.st_get("butt_add_new_user"):
         new_user_form()
         st.button("abbrechen")
-    st.session_state["butt_sub_new_user"] = st.session_state.get(
+    st.session_state["butt_sub_new_user"] = gf.st_get(
         "FormSubmitter:Neuer Benutzer-Knöpfle"
     )
 
     # Menu zum Löschen von Benutzern
-    if st.session_state.get("butt_del_user"):
+    if gf.st_get("butt_del_user"):
         delete_user_form()
         st.button("abbrechen")
-    st.session_state["butt_sub_del_user"] = st.session_state.get(
+    st.session_state["butt_sub_del_user"] = gf.st_get(
         "FormSubmitter:Benutzer löschen-Knöpfle"
     )
 
-    if st.session_state.get("butt_list_all"):
+    if gf.st_get("butt_list_all"):
         st.markdown("---")
         list_all_accounts()
 
 
-@func_timer
+@gf.func_timer
 def delete_user_form() -> None:
     """Benutzer löschen"""
 
-    users: dict[str, dict[str, str]] = get_all_user_data()
+    users: dict[str, dict[str, str]] = uauth.get_all_user_data()
     with st.form("Benutzer löschen"):
         st.multiselect(
             label="Benutzer wählen, die gelöscht werden sollen",
@@ -82,7 +81,7 @@ def delete_user_form() -> None:
         st.form_submit_button("Knöpfle")
 
 
-@func_timer
+@gf.func_timer
 def new_user_form() -> None:
     """Neuen Benutzer hinzufügen"""
     with st.form("Neuer Benutzer"):
@@ -127,10 +126,10 @@ def new_user_form() -> None:
         st.form_submit_button("Knöpfle")
 
 
-@func_timer
+@gf.func_timer
 def list_all_accounts() -> None:
     """Liste aller Benutzerkonten"""
-    users: dict[str, dict[str, str]] = get_all_user_data()
+    users: dict[str, dict[str, str]] = uauth.get_all_user_data()
 
     df_users = pd.DataFrame()
     df_users["Benutzername"] = [user["key"] for user in users.values()]
@@ -142,12 +141,12 @@ def list_all_accounts() -> None:
     st.button("ok")
 
 
-@func_timer
+@gf.func_timer
 def sidebar_file_upload() -> Any:
     """Hochgeladene Excel-Datei"""
 
     with st.sidebar, st.expander(
-        "Auszuwertende Daten", expanded=not bool(st.session_state.get("f_up"))
+        "Auszuwertende Daten", expanded=not bool(gf.st_get("f_up"))
     ):
         # Download
         sb_example: str | None = st.selectbox(
@@ -173,19 +172,16 @@ def sidebar_file_upload() -> Any:
             )
 
         # benutze ausgewählte Beispieldatei direkt für debugging
-        if st.session_state.get("access_lvl") == "god":
+        if gf.st_get("access_lvl") == "god":
             st.button("Beispieldatei direkt verwenden", "but_example_direct")
             st.button("RESET", "but_reset")
 
-        if st.session_state.get("but_reset"):
-            st_delete("f_up")
+        if gf.st_get("but_reset"):
+            gf.st_delete("f_up")
 
         # Upload
         sample_direct: str = f"example_files/{sb_example}.xlsx"
-        if (
-            st.session_state.get("but_example_direct")
-            or st.session_state.get("f_up") == sample_direct
-        ):
+        if gf.st_get("but_example_direct") or gf.st_get("f_up") == sample_direct:
             f_up = sample_direct
             st.session_state["f_up"] = f_up
 
@@ -207,7 +203,7 @@ def sidebar_file_upload() -> Any:
     return f_up
 
 
-@func_timer
+@gf.func_timer
 def base_settings() -> None:
     """Grundeinstellungen (Stundenwerte, JDL, Monatswerte)"""
 
@@ -252,7 +248,7 @@ def base_settings() -> None:
             st.session_state["but_base_settings"] = st.form_submit_button("Knöpfle")
 
 
-@func_timer
+@gf.func_timer
 def select_graphs() -> None:
     """Auswahl der anzuzeigenden Grafiken"""
     with st.sidebar, st.expander("anzuzeigende Grafiken", expanded=False), st.form(
@@ -337,7 +333,7 @@ def select_graphs() -> None:
         st.session_state["but_select_graphs"] = st.form_submit_button("Knöpfle")
 
 
-@func_timer
+@gf.func_timer
 def meteo_sidebar(page: str) -> None:
     """sidebar-Menu zur Außentemperatur"""
 
@@ -409,7 +405,7 @@ def meteo_sidebar(page: str) -> None:
         st.markdown("###")
 
 
-@func_timer
+@gf.func_timer
 def meteo_params_main() -> None:
     """Wetterdaten-Menu auf der Hauptseite"""
 
@@ -451,7 +447,7 @@ def meteo_params_main() -> None:
         st.session_state["but_meteo_main"] = st.form_submit_button("Knöpfle")
 
 
-@func_timer
+@gf.func_timer
 def clean_outliers() -> None:
     """Menu zur Ausreißerbereinigung"""
 
@@ -487,7 +483,7 @@ def clean_outliers() -> None:
         st.session_state["but_clean_outliers"] = st.form_submit_button("Knöpfle")
 
 
-@func_timer
+@gf.func_timer
 def smooth() -> None:
     """Einstellungen für die geglätteten Linien"""
 
@@ -534,7 +530,7 @@ def smooth() -> None:
         st.session_state["but_smooth"] = st.form_submit_button("Knöpfle")
 
 
-@func_timer
+@gf.func_timer
 def h_v_lines() -> None:
     """Menu für horizontale und vertikale Linien"""
 
@@ -585,7 +581,7 @@ def h_v_lines() -> None:
         st.session_state["but_h_v_lines"] = st.form_submit_button("Knöpfle")
 
 
-@func_timer
+@gf.func_timer
 def display_options_main_col_settings() -> dict[str, dict]:
     """Settings for the columns of the main display options
     (controlling line color, type, etc.)
@@ -602,42 +598,44 @@ def display_options_main_col_settings() -> dict[str, dict]:
     """
     return {
         "name": {
-            "Title": text_with_hover("Linie", "Bezeichnung der Linie"),
+            "Title": gf.text_with_hover("Linie", "Bezeichnung der Linie"),
             "width": 3,
         },
         "vis": {
-            "Title": text_with_hover("Anzeigen", "Linien, die angezeigt werden sollen"),
+            "Title": gf.text_with_hover(
+                "Anzeigen", "Linien, die angezeigt werden sollen"
+            ),
             "width": 1,
         },
         "colour": {
-            "Title": text_with_hover("Farbe", "Linienfarbe wählen"),
+            "Title": gf.text_with_hover("Farbe", "Linienfarbe wählen"),
             "width": 1,
         },
         "type": {
-            "Title": text_with_hover("Linientyp", "Linie gestrichelt darstellen?"),
+            "Title": gf.text_with_hover("Linientyp", "Linie gestrichelt darstellen?"),
             "width": 2,
         },
         "markers": {
-            "Title": text_with_hover(
+            "Title": gf.text_with_hover(
                 "Punkte", "Markierung (Punkt) an jedem Datenpunkt und deren Größe"
             ),
             "width": 2,
         },
         "fill": {
-            "Title": text_with_hover(
+            "Title": gf.text_with_hover(
                 "Füllen (Transparenz)",
                 "Linien, die zur x-Achse ausgefüllt werden sollen",
             ),
             "width": 2,
         },
         "anno": {
-            "Title": text_with_hover("Maximum", "Maxima als Anmerkung mit Pfeil"),
+            "Title": gf.text_with_hover("Maximum", "Maxima als Anmerkung mit Pfeil"),
             "width": 4,
         },
     }
 
 
-@func_timer
+@gf.func_timer
 def display_options_main() -> bool:
     """Hauptmenu für die Darstellungsoptionen (Linienfarben, Füllung, etc.)"""
 
@@ -656,7 +654,7 @@ def display_options_main() -> bool:
         fig: go.Figure = st.session_state["fig_base"]
         fig_data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
         fig_layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
-        colorway: list[str] = get_colorway(fig)
+        colorway: list[str] = fgf.get_colorway(fig)
         lines: list[dict] = [
             line
             for line in fig_data.values()
@@ -761,7 +759,7 @@ def display_options_main() -> bool:
     return but_upd_main
 
 
-@func_timer
+@gf.func_timer
 def display_smooth_main() -> bool:
     """Hauptmenu für die Darstellungsoptionen (Linienfarben, Füllung, etc.)"""
 
@@ -815,7 +813,7 @@ def display_smooth_main() -> bool:
         # Check Boxes for line visibility, fill and color
         fig: go.Figure = st.session_state["fig_base"]
         fig_data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
-        colorway: list[str] = get_colorway(fig)
+        colorway: list[str] = fgf.get_colorway(fig)
         lines: list[dict] = [
             line
             for line in fig_data.values()
@@ -871,7 +869,7 @@ def display_smooth_main() -> bool:
     return but_smooth
 
 
-@func_timer
+@gf.func_timer
 def downloads(page: str = "graph") -> None:
     """Dateidownloads"""
 
@@ -891,9 +889,7 @@ def downloads(page: str = "graph") -> None:
     else:
         xl_file_name = "Datenausgabe.xlsx"
 
-    if "graph" in page and not any(
-        [st.session_state.get("but_html"), st.session_state.get("but_xls")]
-    ):
+    if "graph" in page and not any([gf.st_get("but_html"), gf.st_get("but_xls")]):
         st.markdown("###")
         # st.subheader("Downloads")
 
@@ -913,7 +909,7 @@ def downloads(page: str = "graph") -> None:
             ein Knöpfle zum herunterladen.""",
         )
 
-    if st.session_state.get("but_html"):
+    if gf.st_get("but_html"):
         with st.spinner("Momentle bitte - html-Datei wird erzeugt..."):
             fig_cr.html_exp()
 
@@ -938,7 +934,7 @@ def downloads(page: str = "graph") -> None:
         st.markdown("---")
 
     if any(
-        st.session_state.get(key)
+        gf.st_get(key)
         for key in (
             "but_xls",
             "but_meteo_sidebar",
@@ -967,7 +963,7 @@ def downloads(page: str = "graph") -> None:
                 st.session_state["df_ex"] = df_ex
 
             if page in ("meteo"):
-                df_ex = st.session_state.get("meteo_data")
+                df_ex = gf.st_get("meteo_data")
 
             dat = ex.excel_download(df_ex, page)
 

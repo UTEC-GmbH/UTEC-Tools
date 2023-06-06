@@ -7,7 +7,7 @@ import streamlit as st
 import streamlit_lottie as stlot
 
 from modules import classes as cl
-from modules import df_manip as dfm
+from modules import df_manipulation as df_man
 from modules import excel_import as ex_in
 from modules import fig_annotations as fig_anno
 from modules import fig_creation_export as fig_create
@@ -23,12 +23,10 @@ MANUAL_DEBUG: bool = True
 set_stuff.page_header_setup(page="graph")
 
 
-def debug_code_run(
-    position: Literal["before", "after"]
-) -> None:  # sourcery skip: flag-streamlit-show
-    """Anzeige mit st.experimental_show() für Debugging"""
+def debug_code_run(position: Literal["before", "after"]) -> None:
+    """Anzeige mit st.write() für Debugging"""
 
-    if MANUAL_DEBUG and st.session_state.get("access_lvl") == "god":
+    if MANUAL_DEBUG and gf.st_get("access_lvl") == "god":
         with st.expander(f"Debug {position}", expanded=False):
             st.plotly_chart(
                 fig_create.ploplo.timings(st.session_state["dic_exe_time"]),
@@ -48,11 +46,11 @@ def debug_code_run(
                 st.write(f"show: {show}")
                 if show in st.session_state:
                     if "fig" in show:
-                        st.experimental_show(st.session_state[show].to_dict())
+                        st.write(st.session_state[show].to_dict())
                     else:
-                        st.experimental_show(st.session_state[show])
+                        st.write(st.session_state[show])
 
-            st.experimental_show(st.session_state)
+            st.write(st.session_state)
 
         st.markdown("---")
         st.markdown("###")
@@ -65,22 +63,19 @@ if uauth.authentication(st.session_state["page"]):
 
     sm.sidebar_file_upload()
 
-    if any(st.session_state.get(entry) is not None for entry in ("f_up", "df")):
+    if any(gf.st_get(entry) is not None for entry in ("f_up", "df")):
         with stlot.st_lottie_spinner(
             gf.load_lottie_file("animations/bored.json"), height=400
         ):
             if any(entry not in st.session_state for entry in ("df", "metadata")):
                 with st.spinner("Momentle bitte - Datei wird importiert..."):
-                    df: pl.DataFrame
-                    meta: cl.MetaData
-                    df, meta = ex_in.import_prefab_excel(st.session_state["f_up"])
-                    gf.st_new("df", df)
-                    gf.st_new("metadata", meta)
-                    gf.st_new("years", meta.years)
+                    gf.st_new(
+                        "mdf", ex_in.import_prefab_excel(st.session_state["f_up"])
+                    )
 
             # Grundeinstellungen in der sidebar
             sm.base_settings()
-            if st.session_state.get("but_base_settings"):
+            if gf.st_get("but_base_settings"):
                 for entry in (
                     "fig_base",
                     "fig_jdl",
@@ -98,42 +93,40 @@ if uauth.authentication(st.session_state["page"]):
             with st.sidebar, st.expander("Außentemperatur", expanded=False):
                 sm.meteo_sidebar("graph")
 
-            if st.session_state.get("but_meteo_sidebar"):
-                if st.session_state.get("cb_temp"):
+            if gf.st_get("but_meteo_sidebar"):
+                if gf.st_get("cb_temp"):
                     meteo.outside_temp_graph()
                 else:
                     meteo.del_meteo()
 
             # df mit Stundenwerten erzeugen
-            if st.session_state.get("cb_h") and "df_h" not in st.session_state:
+            if gf.st_get("cb_h") and gf.st_get("mdf").df_h is None:
                 with st.spinner("Momentle bitte - Stundenwerte werden erzeugt..."):
-                    st.session_state["df_h"] = dfm.h_from_other(st.session_state["df"])
+                    gf.st_get("mdf").df_h = df_man.df_h(gf.st_get("mdf"))
 
             # df für Tagesvergleich
-            if st.session_state.get("but_select_graphs") and st.session_state.get(
-                "cb_days"
-            ):
-                if st.session_state.get("cb_h"):
-                    dfm.dic_days(st.session_state["df_h"])
+            if gf.st_get("but_select_graphs") and gf.st_get("cb_days"):
+                if gf.st_get("cb_h"):
+                    df_man.dic_days(st.session_state["df_h"])
                 else:
-                    dfm.dic_days(st.session_state["df"])
+                    df_man.dic_days(st.session_state["df"])
 
             # einzelnes Jahr
             if (
                 len(st.session_state["years"]) == 1
-                or st.session_state.get("cb_multi_year") is False
+                or gf.st_get("cb_multi_year") is False
             ):
                 # df geordnete Jahresdauerlinie
-                if st.session_state.get("cb_jdl") and "df_jdl" not in st.session_state:
+                if gf.st_get("cb_jdl") and "df_jdl" not in st.session_state:
                     with st.spinner(
                         "Momentle bitte - Jahresdauerlinie wird erzeugt..."
                     ):
-                        dfm.jdl(st.session_state["df"])
+                        df_man.jdl(st.session_state["df"])
 
                 # df Monatswerte
-                if st.session_state.get("cb_mon") and "df_mon" not in st.session_state:
+                if gf.st_get("cb_mon") and "df_mon" not in st.session_state:
                     with st.spinner("Momentle bitte - Monatswerte werden erzeugt..."):
-                        dfm.mon(st.session_state["df"], st.session_state["metadata"])
+                        df_man.mon(st.session_state["df"], st.session_state["metadata"])
 
             # mehrere Jahre übereinander
             else:
@@ -141,9 +134,9 @@ if uauth.authentication(st.session_state["page"]):
                     "Momentle bitte - Werte werden auf Jahre aufgeteilt..."
                 ):
                     if "dic_df_multi" not in st.session_state:
-                        dfm.df_multi_y(
+                        df_man.df_multi_y(
                             st.session_state["df_h"]
-                            if st.session_state.get("cb_h")
+                            if gf.st_get("cb_h")
                             else st.session_state["df"]
                         )
 
@@ -155,7 +148,7 @@ if uauth.authentication(st.session_state["page"]):
                     st.session_state["fig_base"] = fig_create.cr_fig_base()
 
             # Jahresdauerlinie
-            if st.session_state.get("cb_jdl"):
+            if gf.st_get("cb_jdl"):
                 st.session_state["lis_figs"].append("fig_jdl")
                 if "fig_jdl" not in st.session_state:
                     with st.spinner(
@@ -164,7 +157,7 @@ if uauth.authentication(st.session_state["page"]):
                         fig_create.cr_fig_jdl()
 
             # Monatswerte
-            if st.session_state.get("cb_mon"):
+            if gf.st_get("cb_mon"):
                 st.session_state["lis_figs"].append("fig_mon")
                 if "fig_mon" not in st.session_state:
                     with st.spinner(
@@ -173,9 +166,9 @@ if uauth.authentication(st.session_state["page"]):
                         fig_create.cr_fig_mon()
 
             # Tagesvergleich
-            if st.session_state.get("cb_days"):
+            if gf.st_get("cb_days"):
                 st.session_state["lis_figs"].append("fig_days")
-                if st.session_state.get("but_select_graphs"):
+                if gf.st_get("but_select_graphs"):
                     with st.spinner(
                         'Momentle bitte - Grafik "Tagesvergleich" wird erzeugt...'
                     ):
@@ -183,12 +176,12 @@ if uauth.authentication(st.session_state["page"]):
 
             # horizontale / vertikale Linien
             sm.h_v_lines()
-            if st.session_state.get("but_h_v_lines"):
+            if gf.st_get("but_h_v_lines"):
                 fig_anno.h_v_lines()
 
             # Ausreißerbereinigung
             sm.clean_outliers()
-            if st.session_state.get("but_clean_outliers"):
+            if gf.st_get("but_clean_outliers"):
                 fig_anno.clean_outliers()
 
             tab_grafik: Any

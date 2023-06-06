@@ -248,12 +248,12 @@ def df_multi_y(df: pd.DataFrame) -> None:
     st.session_state["dic_df_multi"] = df_multi
 
     # df geordnete Jahresdauerlinie
-    if st.session_state.get("cb_jdl"):
+    if gf.st_get("cb_jdl"):
         dic_jdl: dict[int, pd.DataFrame] = {y: jdl(df_multi[y]) for y in years}
         st.session_state["dic_jdl"] = dic_jdl
 
     # df Monatswerte
-    if st.session_state.get("cb_mon"):
+    if gf.st_get("cb_mon"):
         dic_mon: dict[int, pd.DataFrame] = {
             year: mon(df_multi[year], st.session_state["metadata"], year)
             for year in years

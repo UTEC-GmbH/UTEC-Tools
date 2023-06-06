@@ -17,11 +17,11 @@ from modules.fig_general_functions import (
     fig_layout_as_dic,
     fill_colour_with_opacity,
 )
-from modules.general_functions import func_timer, nachkomma
+from modules import general_functions as gf
 
 
 @st.cache_data(show_spinner=False)
-@func_timer
+@gf.func_timer
 def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> datetime | float:
     """Mitte der x-Achse finden
 
@@ -136,7 +136,7 @@ def add_arrow(
     return fig
 
 
-@func_timer
+@gf.func_timer
 def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
     """Pfeile an Maximum und Minimum aller Linien in der Grafik
 
@@ -172,7 +172,7 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
                 fig_layout,
                 x_val,
                 y_or_line=y_val,
-                text=f"max {tit}: {nachkomma(abs(y_val))} {unit}",
+                text=f"max {tit}: {gf.nachkomma(abs(y_val))} {unit}",
                 yaxis=line["yaxis"],
                 middle_xaxis=middle_x,
             )
@@ -216,7 +216,7 @@ def hovertext_from_x_val(
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer
+@gf.func_timer
 def vline(fig: go.Figure, x_val: float or datetime, txt: str, pos: str) -> None:
     """Vertikale Linie einfügen"""
 
@@ -234,7 +234,7 @@ def vline(fig: go.Figure, x_val: float or datetime, txt: str, pos: str) -> None:
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer
+@gf.func_timer
 def hide_hlines(fig: go.Figure) -> None:
     """Horizontale Linien ausblenden (ohne sie zu löschen)"""
 
@@ -255,7 +255,7 @@ def hide_hlines(fig: go.Figure) -> None:
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer
+@gf.func_timer
 def hline_line(
     fig: go.Figure,
     value: float,
@@ -264,7 +264,7 @@ def hline_line(
     """Horizontale Linie einfügen"""
 
     ti_hor: str | None = None if ti_hor_init in {"", "new text"} else ti_hor_init
-    cb_hor_dash: bool = st.session_state.get("cb_hor_dash") or True
+    cb_hor_dash: bool = gf.st_get("cb_hor_dash") or True
     if any("hline" in x for x in [s.name for s in fig.layout.shapes]):
         for shape in fig.layout.shapes:
             if "hline" in shape.name:
@@ -297,7 +297,7 @@ def hline_line(
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer
+@gf.func_timer
 def hline_fill(fig: go.Figure, value: float, ms_hor: list) -> go.Figure:
     """Ausfüllen zwischen horizontaler Linie und Linien"""
     dic_fill = {}
@@ -338,13 +338,13 @@ def hline_fill(fig: go.Figure, value: float, ms_hor: list) -> go.Figure:
 
 
 # horizontale / vertikale Linien
-@func_timer
+@gf.func_timer
 def h_v_lines() -> None:
     """Horizontale und vertikale Linien"""
 
     # horizontale Linie
     lis_figs_hor: list[str] = ["fig_base"]
-    if st.session_state.get("cb_jdl"):
+    if gf.st_get("cb_jdl"):
         lis_figs_hor.append("fig_jdl")
 
     for fig in lis_figs_hor:
@@ -373,14 +373,12 @@ def calculate_smooth_values(trace: dict[str, Any]) -> np.ndarray:
     return signal.savgol_filter(
         x=pd.Series(trace["y"]).interpolate("akima"),
         mode="mirror",
-        window_length=int(
-            st.session_state.get("gl_win") or st.session_state["smooth_start_val"]
-        ),
-        polyorder=int(st.session_state.get("gl_deg") or 3),
+        window_length=int(gf.st_get("gl_win") or st.session_state["smooth_start_val"]),
+        polyorder=int(gf.st_get("gl_deg") or 3),
     )
 
 
-@func_timer
+@gf.func_timer
 def smooth(fig: go.Figure, **kwargs) -> go.Figure:
     """geglättete Linien"""
 
@@ -396,7 +394,7 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
 
     for trace in traces:
         smooth_name: str = f"{trace['name']}{cont.SMOOTH_SUFFIX}"
-        smooth_visible: bool = bool(st.session_state.get(f"cb_vis_{smooth_name}"))
+        smooth_visible: bool = bool(gf.st_get(f"cb_vis_{smooth_name}"))
 
         if smooth_visible:
             meta_trace: dict[str, Any] = trace["meta"]
@@ -441,7 +439,7 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
 
 # Ausreißer entfernen
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer
+@gf.func_timer
 def remove_outl(fig: go.Figure, cut_off: float) -> go.Figure:
     """Ausreißerbereinigung"""
     for trace in fig.data:
@@ -459,7 +457,7 @@ def remove_outl(fig: go.Figure, cut_off: float) -> go.Figure:
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer
+@gf.func_timer
 def add_points(fig: go.Figure, df: pd.DataFrame, lines: list) -> None:
     """Punkte hinzufügen"""
 
@@ -477,7 +475,7 @@ def add_points(fig: go.Figure, df: pd.DataFrame, lines: list) -> None:
 
 
 # Ausreißerbereinigung
-@func_timer
+@gf.func_timer
 def clean_outliers() -> None:
     """Ausreißerbereinigung"""
 
@@ -489,7 +487,7 @@ def clean_outliers() -> None:
                 )
 
 
-@func_timer
+@gf.func_timer
 def update_main() -> None:
     """Darstellungseinstellungen"""
 
@@ -500,7 +498,7 @@ def update_main() -> None:
         axes_vis = [
             dat.yaxis
             for dat in st.session_state[fig].data
-            if st.session_state.get(f"cb_vis_{dat.legendgroup if switch else dat.name}")
+            if gf.st_get(f"cb_vis_{dat.legendgroup if switch else dat.name}")
         ]
         axes_layout = [x for x in st.session_state[fig].layout if "yaxis" in x]
 
@@ -527,7 +525,7 @@ def update_main() -> None:
 
         for annot in st.session_state[fig].layout.annotations:
             if "hline" not in annot.name:
-                annot.visible = bool(st.session_state.get("cb_anno_" + annot.name))
+                annot.visible = bool(gf.st_get("cb_anno_" + annot.name))
 
         # Legende ausblenden, wenn nur eine Linie angezeigt wird
         st.session_state[fig].update_layout(
@@ -543,7 +541,7 @@ def update_main() -> None:
         )
 
     # Gruppierung der Legende ausschalten, wenn nur eine Linie in Gruppe
-    if st.session_state.get("cb_multi_year"):
+    if gf.st_get("cb_multi_year"):
         if "lgr" not in st.session_state:
             st.session_state["lgr"] = {
                 tr.name: tr.legendgroup

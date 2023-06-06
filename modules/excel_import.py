@@ -25,8 +25,7 @@ def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cl.MetaAndDfs:
         representing the Excel file to import.
 
     Returns:
-    - tuple[pl.DataFrame, MetaData]: A tuple containing the imported DataFrame
-        and metadata extracted from the Excel file.
+    - MetaAndDfs: DataFrames and meta data extracted from the Excel file.
 
     Example files for testing:
     - file = "example_files/Auswertung Stromlastgang - einzelnes Jahr.xlsx"
@@ -71,7 +70,7 @@ def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cl.MetaAndDfs:
         mdf.df_multi = df_man.split_multi_years(mdf, "df")
 
     logger.success("Excel-Datei importiert.")
-
+    
     return mdf
 
 

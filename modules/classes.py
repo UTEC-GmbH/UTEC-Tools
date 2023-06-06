@@ -26,7 +26,8 @@ class MultipleLinesFoundError(Exception):
     def __init__(self, line_name: str) -> None:
         """Initiate"""
         super().__init__(f"Multiple lines with name '{line_name}' found.")
-        
+
+
 class NoYearsError(Exception):
     """Error Message if there are no years in the metadata"""
 
@@ -212,3 +213,21 @@ class FigAnno:
 
     fig: go.Figure
     anno_name: str
+
+
+@dataclass
+class FigProp:
+    """Calss to hold plotly figure properties"""
+
+    fig: go.Figure
+    data: FigData
+    layout: FigLayout
+
+
+@dataclass
+class Figs:
+    """Class to hold plotly figures"""
+
+    base: go.Figure | None = None
+    jdl: go.Figure | None = None
+    mon: go.Figure | None = None

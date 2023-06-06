@@ -22,10 +22,10 @@ st.set_page_config(
 )
 
 # general page config (Favicon, etc.)
-if not st.session_state.get("logger_setup"):
+if not gf.st_get("logger_setup"):
     slog.logger_setup()
 
-if st.session_state.get("initial_setup"):
+if gf.st_get("initial_setup"):
     logger.log(slog.LVLS.new_run.name, "NEW RUN")
 else:
     setup_stuff.general_setup()
@@ -87,7 +87,7 @@ def access_granted() -> None:
     st.session_state["access_lvl"] = access_lvl_user
 
     # log used username and access level
-    if st.session_state.get("logged_username") != user_key:
+    if gf.st_get("logged_username") != user_key:
         logger.success(f"logged in as: {user_key}, access level: {access_lvl_user}")
         st.session_state["logged_username"] = user_key
 
@@ -102,7 +102,7 @@ def access_granted() -> None:
             .date()
         )
 
-    if st.session_state.get("username") in ["utec"]:
+    if gf.st_get("username") in ["utec"]:
         st.markdown(uauth.MessageLog.access_utec.message)
 
     else:
@@ -127,7 +127,7 @@ def god_mode() -> None:
 
     sm.user_accounts()
     # neuen Benutzer eintragen
-    if st.session_state.get("butt_sub_new_user"):
+    if gf.st_get("butt_sub_new_user"):
         with st.spinner("Momentle bitte, Benutzer wird hinzugefügt..."):
             uauth.insert_new_user(
                 username=st.session_state["new_user_user"],
@@ -139,7 +139,7 @@ def god_mode() -> None:
             )
 
     # Benutzer löschen
-    if st.session_state.get("butt_sub_del_user"):
+    if gf.st_get("butt_sub_del_user"):
         uauth.delete_user()
 
 

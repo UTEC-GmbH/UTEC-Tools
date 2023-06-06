@@ -13,12 +13,12 @@ from modules import constants as cont
 from modules import fig_annotations as fig_anno
 from modules import fig_formatting as fig_format
 from modules import fig_general_functions as fgf
+from modules import general_functions as gf
 from modules import plotly_plots as ploplo
-from modules.general_functions import func_timer, render_svg
 
 
 # Grund-Grafik
-@func_timer
+@gf.func_timer
 def cr_fig_base() -> go.Figure:
     """Lastgang erstellen"""
 
@@ -26,14 +26,14 @@ def cr_fig_base() -> go.Figure:
     min_amount_vals: int = 20
 
     tit_res: str = ""
-    if st.session_state.get("cb_h"):
+    if gf.st_get("cb_h"):
         tit_res = cont.FIG_TITLES.suff_stunden
     elif meta["index"]["td_mean"] == pd.Timedelta(minutes=15):
         tit_res = cont.FIG_TITLES.suff_15min
 
     tit: str = f"{cont.FIG_TITLES.lastgang}{tit_res}"
 
-    if st.session_state.get("cb_multi_year"):
+    if gf.st_get("cb_multi_year"):
         fig: go.Figure = ploplo.line_plot_y_overlay(
             dic_df=st.session_state["dic_df_multi"],
             meta=meta,
@@ -43,7 +43,7 @@ def cr_fig_base() -> go.Figure:
     else:
         fig: go.Figure = ploplo.line_plot(
             df=st.session_state["df_h"]
-            if st.session_state.get("cb_h")
+            if gf.st_get("cb_h")
             else st.session_state["df"],
             meta=meta,
             title=tit,
@@ -92,13 +92,13 @@ def cr_fig_base() -> go.Figure:
     return fig
 
 
-@func_timer
+@gf.func_timer
 def cr_fig_jdl() -> None:
     """Jahresdauerlinie erstellen"""
 
     tit: str = f"{cont.FIG_TITLES.jdl}{cont.FIG_TITLES.suff_stunden}"
 
-    if st.session_state.get("cb_multi_year"):
+    if gf.st_get("cb_multi_year"):
         st.session_state["fig_jdl"] = ploplo.line_plot_y_overlay(
             dic_df=st.session_state["dic_jdl"],
             meta=st.session_state["metadata"],
@@ -135,11 +135,11 @@ def cr_fig_jdl() -> None:
     logger.success("fig_jdl created")
 
 
-@func_timer
+@gf.func_timer
 def cr_fig_mon() -> None:
     """Monatswerte erstellen"""
 
-    if st.session_state.get("cb_multi_year"):
+    if gf.st_get("cb_multi_year"):
         st.session_state["fig_mon"] = ploplo.line_plot_y_overlay(
             dic_df=st.session_state["dic_mon"],
             meta=st.session_state["metadata"],
@@ -157,15 +157,11 @@ def cr_fig_mon() -> None:
     fig_anno.add_arrows_min_max(st.session_state["fig_mon"])
 
     st.session_state["fig_mon"].update_layout(
-        xaxis_tickformat="%b<br>%Y"
-        if st.session_state.get("cb_multi_year") is False
-        else "%b",
+        xaxis_tickformat="%b<br>%Y" if gf.st_get("cb_multi_year") is False else "%b",
         xaxis_tickformatstops=[
             {
                 "dtickrange": [None, None],
-                "value": "%b<br>%Y"
-                if st.session_state.get("cb_multi_year") is False
-                else "%b",
+                "value": "%b<br>%Y" if gf.st_get("cb_multi_year") is False else "%b",
             },
         ],
         title_text=st.session_state["fig_mon"].layout.meta.get("title"),
@@ -185,12 +181,12 @@ def cr_fig_mon() -> None:
     logger.success("fig_mon created")
 
 
-@func_timer
+@gf.func_timer
 def cr_fig_days() -> None:
     """Tagesvergleiche"""
 
     tit_res: str = ""
-    if st.session_state.get("cb_h"):
+    if gf.st_get("cb_h"):
         tit_res = cont.FIG_TITLES.suff_stunden
     elif st.session_state["metadata"]["td_mean"] == 15:
         tit_res = cont.FIG_TITLES.suff_15min
@@ -217,7 +213,7 @@ def cr_fig_days() -> None:
     )
 
 
-@func_timer
+@gf.func_timer
 def plot_figs() -> None:
     """Grafiken darstellen"""
 
@@ -229,7 +225,7 @@ def plot_figs() -> None:
             theme=cont.ST_PLOTLY_THEME,
         )
 
-        if st.session_state.get("cb_jdl") and st.session_state.get("cb_mon"):
+        if gf.st_get("cb_jdl") and gf.st_get("cb_mon"):
             st.markdown("###")
 
             columns: list = st.columns(2)
@@ -240,7 +236,7 @@ def plot_figs() -> None:
                     config=fig_format.plotly_config(),
                     theme=cont.ST_PLOTLY_THEME,
                 )
-                if st.session_state.get("cb_days"):
+                if gf.st_get("cb_days"):
                     st.markdown("###")
                     st.plotly_chart(
                         st.session_state["fig_days"],
@@ -257,7 +253,7 @@ def plot_figs() -> None:
                     theme=cont.ST_PLOTLY_THEME,
                 )
 
-        elif st.session_state.get("cb_jdl") and not st.session_state.get("cb_mon"):
+        elif gf.st_get("cb_jdl") and not gf.st_get("cb_mon"):
             st.markdown("###")
 
             st.plotly_chart(
@@ -266,7 +262,7 @@ def plot_figs() -> None:
                 config=fig_format.plotly_config(),
                 theme=cont.ST_PLOTLY_THEME,
             )
-            if st.session_state.get("cb_days"):
+            if gf.st_get("cb_days"):
                 st.markdown("###")
                 st.plotly_chart(
                     st.session_state["fig_days"],
@@ -275,7 +271,7 @@ def plot_figs() -> None:
                     theme=cont.ST_PLOTLY_THEME,
                 )
 
-        elif st.session_state.get("cb_mon") and not st.session_state.get("cb_jdl"):
+        elif gf.st_get("cb_mon") and not gf.st_get("cb_jdl"):
             st.markdown("###")
 
             st.plotly_chart(
@@ -284,7 +280,7 @@ def plot_figs() -> None:
                 config=fig_format.plotly_config(),
                 theme=cont.ST_PLOTLY_THEME,
             )
-            if st.session_state.get("cb_days"):
+            if gf.st_get("cb_days"):
                 st.markdown("###")
                 st.plotly_chart(
                     st.session_state["fig_days"],
@@ -294,7 +290,7 @@ def plot_figs() -> None:
                 )
 
 
-@func_timer
+@gf.func_timer
 def html_exp(f_pn: str = "export\\interaktive_grafische_Auswertung.html") -> None:
     """html-Export"""
 
@@ -309,7 +305,7 @@ def html_exp(f_pn: str = "export\\interaktive_grafische_Auswertung.html") -> Non
         fil.write("body{width: 85%; margin-left:auto; margin-right:auto}")
         fil.write("</style></head>")
         fil.write('<body><h1><a href="https://www.utec-bremen.de/">')
-        fil.write(render_svg())
+        fil.write(gf.render_svg())
         fil.write("</a><br /><br />")
         fil.write("Interaktive Grafische Datenauswertung")
         fil.write("</h1><br /><hr><br /><br />")

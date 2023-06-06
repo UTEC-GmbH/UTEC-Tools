@@ -14,16 +14,11 @@ from loguru import logger
 
 from modules import constants as cont
 from modules import fig_general_functions as fgf
+from modules import general_functions as gf
 from modules.fig_annotations import smooth
-from modules.general_functions import (
-    func_timer,
-    last_day_of_month,
-    sort_list_by_occurance,
-    st_get,
-)
 
 
-@func_timer
+@gf.func_timer
 def format_tickstops(fig: go.Figure) -> list[dict[str, Any]]:
     """Tickformat stops for axes
 
@@ -141,7 +136,7 @@ def add_range_slider(fig: go.Figure) -> go.Figure:
     )
 
 
-@func_timer
+@gf.func_timer
 def standard_axes_and_layout(
     fig: go.Figure,
     x_tickformat: str = "%b",
@@ -170,7 +165,7 @@ def standard_axes_and_layout(
     return fig
 
 
-@func_timer
+@gf.func_timer
 def standard_xaxis(
     fig: go.Figure,
     data: dict[str, dict[str, Any]],
@@ -192,7 +187,7 @@ def standard_xaxis(
 
     x_max: Any = max(max(p["x"]) for p in data.values())
     if isinstance(x_max, datetime):
-        x_max = last_day_of_month(x_max)
+        x_max = gf.last_day_of_month(x_max)
 
     x_min: Any = min(min(p["x"]) for p in data.values())
     if isinstance(x_min, datetime):
@@ -215,7 +210,7 @@ def standard_xaxis(
     )
 
 
-@func_timer
+@gf.func_timer
 def standard_yaxis(
     fig: go.Figure,
     data: dict[str, dict[str, Any]],
@@ -251,7 +246,7 @@ def standard_yaxis(
     return fig
 
 
-@func_timer
+@gf.func_timer
 def standard_layout(fig: go.Figure, data: dict[str, dict[str, Any]]) -> go.Figure:
     """Standardlayout"""
 
@@ -287,7 +282,7 @@ def standard_layout(fig: go.Figure, data: dict[str, dict[str, Any]]) -> go.Figur
     )
 
 
-@func_timer
+@gf.func_timer
 def update_main(fig: go.Figure) -> go.Figure:
     """Darstellungseinstellungen aus dem Hauptfenster"""
 
@@ -307,13 +302,13 @@ def update_main(fig: go.Figure) -> go.Figure:
     # Legende ausblenden, wenn nur eine Linie angezeigt wird
     fig = fig.update_layout({"showlegend": number_of_visible_traces > 1})
 
-    if st.session_state.get("cb_multi_year"):
+    if gf.st_get("cb_multi_year"):
         fig = legend_groups_for_multi_year(fig)
 
     return fig
 
 
-@func_timer
+@gf.func_timer
 def show_traces(fig: go.Figure) -> go.Figure:
     """Set the visibility of the traces in the figure.
 
@@ -363,7 +358,7 @@ def show_traces(fig: go.Figure) -> go.Figure:
     return fig
 
 
-@func_timer
+@gf.func_timer
 def format_traces(fig: go.Figure) -> go.Figure:
     """Bearbeiten der Anzeige der Linien
     in Bezug auf die Auswahl im Anzeigen-Menu.
@@ -383,9 +378,9 @@ def format_traces(fig: go.Figure) -> go.Figure:
     for trace in visible_traces:
         trace_name: str = trace["name"]
         line_mode: str = "lines"
-        if st_get(f"cb_markers_{trace_name}"):
+        if gf.st_get(f"cb_markers_{trace_name}"):
             line_mode = "markers+lines"
-        if st_get(f"sb_line_dash_{trace_name}") == "keine":
+        if gf.st_get(f"sb_line_dash_{trace_name}") == "keine":
             line_mode = "markers"
 
         if f"cp_{trace_name}" not in st.session_state:
@@ -416,7 +411,7 @@ def format_traces(fig: go.Figure) -> go.Figure:
                         st.session_state[f"sb_line_dash_{trace_name}"]
                     ],
                     "mode": line_mode,
-                    "marker_size": st_get(f"ni_markers_{trace_name}"),
+                    "marker_size": gf.st_get(f"ni_markers_{trace_name}"),
                     "fill": line_fill,
                     "fillcolor": fill_color,
                 },
@@ -426,7 +421,7 @@ def format_traces(fig: go.Figure) -> go.Figure:
     return fig
 
 
-@func_timer
+@gf.func_timer
 def show_y_axes(fig: go.Figure) -> go.Figure:
     """Y-Achsen ein- bzw. ausblenden.
     ...je nachdem, ob Linien in der Grafik angezeigt werden,
@@ -449,7 +444,7 @@ def show_y_axes(fig: go.Figure) -> go.Figure:
         for val in data.values()
         if val.get("visible")
     ]
-    axes_to_show = sort_list_by_occurance(axes_to_show)
+    axes_to_show = gf.sort_list_by_occurance(axes_to_show)
     units_per_axes: dict[str, str] = fgf.get_units_for_all_axes(fig, data=data)
 
     y_suffix: str = units_per_axes[axes_to_show[0]]
@@ -499,7 +494,7 @@ def show_annos(fig: go.Figure, visible_traces: list[str]) -> go.Figure:
 
             visible: bool = all(
                 [
-                    st.session_state.get(f"cb_anno_{an_name_cust}"),
+                    gf.st_get(f"cb_anno_{an_name_cust}"),
                     any(trace in an_name for trace in visible_traces),
                 ]
             )

@@ -64,9 +64,7 @@ class CustomError:
         )
     )
 
-    access_other = MessageLog(
-        message=(f"Angemeldet als '{st.session_state.get('name')}'.")
-    )
+    access_other = MessageLog(message=(f"Angemeldet als '{gf.st_get('name')}'."))
 
     access_until = MessageLog(
         message=(

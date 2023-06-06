@@ -157,7 +157,7 @@ def page_header_setup(page: str) -> None:
                 unsafe_allow_html=True,
             )
 
-            access_lvl_user: str | list | None = st.session_state.get("access_lvl")
+            access_lvl_user: str | list | None = gf.st_get("access_lvl")
             if isinstance(access_lvl_user, str) and access_lvl_user in ("god"):
                 st.write(
                     (

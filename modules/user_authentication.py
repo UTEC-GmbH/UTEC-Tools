@@ -11,7 +11,7 @@ from deta import Deta
 from dotenv import load_dotenv
 from loguru import logger
 
-from modules.general_functions import func_timer
+from modules import general_functions as gf
 
 
 @dataclass
@@ -72,9 +72,7 @@ class MessageLog:
         )
     )
 
-    access_other = MessageLogLvl2(
-        message=(f"Angemeldet als '{st.session_state.get('name')}'.")
-    )
+    access_other = MessageLogLvl2(message=(f"Angemeldet als '{gf.st_get('name')}'."))
 
     access_until = MessageLogLvl2(
         message=(
@@ -91,7 +89,7 @@ class MessageLog:
 def authentication(page: str) -> bool:
     """Authentication object"""
 
-    if not st.session_state.get("authentication_status"):
+    if not gf.st_get("authentication_status"):
         MessageLog.no_login.show_message()
         return False
     if page not in st.session_state["access_pages"]:
@@ -104,7 +102,7 @@ def authentication(page: str) -> bool:
     return True
 
 
-@func_timer
+@gf.func_timer
 def connect_database(database: str = "UTEC_users") -> Any:
     """Connection to a Deta database.
 
@@ -126,7 +124,7 @@ def connect_database(database: str = "UTEC_users") -> Any:
     return deta.Base(database)
 
 
-@func_timer
+@gf.func_timer
 def get_all_user_data() -> dict[str, dict[str, str]]:
     """Liste aller gespeicherter Benutzerdaten - je Benutzer ein dictionary
 
@@ -184,7 +182,7 @@ def format_user_credentials() -> dict[str, dict[str, Any]]:
     }
 
 
-@func_timer
+@gf.func_timer
 def insert_new_user(
     username: str, password: str, access_lvl: str | list, **kwargs
 ) -> None:
@@ -232,17 +230,17 @@ def insert_new_user(
     st.button("ok", key="insert_ok_butt")
 
 
-@func_timer
+@gf.func_timer
 def update_user(username: str, updates: dict) -> Any:
     """Existierendes Benutzerkonto ändern"""
     deta_db: Any = connect_database()
     return deta_db.update(updates, username)
 
 
-@func_timer
+@gf.func_timer
 def delete_user() -> None:
     """Benutzer löschen"""
-    if not st.session_state.get("ms_del_users"):
+    if not gf.st_get("ms_del_users"):
         return
 
     all_users: dict[str, dict[str, str]] = get_all_user_data()

@@ -19,7 +19,7 @@ from modules import streamlit_menus as sm
 from modules import user_authentication as uauth
 
 # setup
-MANUAL_DEBUG: bool = True
+MANUAL_DEBUG = True
 set_stuff.page_header_setup(page="graph")
 
 

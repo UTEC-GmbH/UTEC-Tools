@@ -58,6 +58,11 @@ def debug_code_run(position: Literal["before", "after"]) -> None:
     st.session_state["dic_exe_time"] = {}
 
 
+def gather_data():
+    """Import Excel file and do stuff with the data"""
+    return
+
+
 if uauth.authentication(st.session_state["page"]):
     debug_code_run(position="before")
 

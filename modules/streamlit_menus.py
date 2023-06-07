@@ -215,7 +215,7 @@ def sidebar_file_upload() -> Any:
 def base_settings() -> None:
     """Grundeinstellungen (Stundenwerte, JDL, Monatswerte)"""
 
-    if not st.session_state.get("metadata"):
+    if "metadata" not in st.session_state:
         with st.spinner("Momentle bitte - Datei wird importiert..."):
             ex.import_prefab_excel(st.session_state["f_up"])
 

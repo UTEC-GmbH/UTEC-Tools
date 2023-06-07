@@ -4,17 +4,20 @@ import os
 
 import numpy as np
 import pandas as pd
+import polars as pl
 import plotly.graph_objects as go
 import streamlit as st
 from geopy import distance
 
+from modules import classes_data as cl
 from modules import constants as cont
 from modules import meteorolog as meteo
+import modules.classes_constants
 from modules.general_functions import func_timer, sort_list_by_occurance
 
 
 @func_timer
-def line_plot(df: pd.DataFrame, meta: dict, **kwargs) -> go.Figure:
+def line_plot(mdf: cl.MetaAndDfs, **kwargs) -> go.Figure:
     """Liniengrafik für Daten eines einzelnen Jahres
 
     Args:
@@ -24,9 +27,9 @@ def line_plot(df: pd.DataFrame, meta: dict, **kwargs) -> go.Figure:
     Returns:
         - go.Figure: Linengrafik
     """
-    cols: list[str] = [str(col) for col in df.columns]
+    cols: list[str] = [str(col) for col in mdf.df.columns]
     lines: list[str] = kwargs.get("lines") or [
-        col for col in cols if "orgidx" not in col
+        col for col in cols if col not in 
     ]
     title: str = kwargs.get("title") or ""
     cusd_format: str = (
@@ -88,10 +91,8 @@ def line_plot(df: pd.DataFrame, meta: dict, **kwargs) -> go.Figure:
 # Lastgang mehrerer Jahre übereinander darstellen
 @func_timer
 def line_plot_y_overlay(
-    dic_df: dict,
-    meta: dict,
-    years: list,
-    lines: list | None = None,
+    mdf: cl.MetaAndDfs,
+    lines: list[str] | None = None,
     title: str = "",
     var_name: str = "",
 ) -> go.Figure:
@@ -115,15 +116,12 @@ def line_plot_y_overlay(
     if lines is None:
         lines = [
             str(col)
-            for col_list in [dic_df[year].columns.to_list() for year in years]
+            for col_list in [
+                mdf.df_multi[year].columns.to_list() for year in mdf.meta.years
+            ]
             for col in col_list
-            if all(ex not in col for ex in cont.EXCLUDE)
+            if all(ex not in col for ex in [*cont.EXCLUDE, modules.classes_constants.ExcelMarkers.index])
         ]
-    all_units: list[str] = [
-        meta[line].get("unit")
-        for line in lines
-        if all(excl not in line for excl in cont.EXCLUDE)
-    ]
 
     cusd_format: str = (
         "(%{customdata|%a %d. %b %Y %H:%M})"
@@ -138,13 +136,14 @@ def line_plot_y_overlay(
                 "title": title,
                 "var_name": var_name,
                 "multi_y": True,
-                "units": sort_list_by_occurance(all_units),
-                "metadata": meta,
+                "units": mdf.meta.units.set_units,
+                "metadata": mdf.meta,
             }
         }
     )
 
     for line in lines:
+        line_name = line.replace()
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
         trace_unit: str | None = meta[line].get("unit")
         hovtemp: str = f"{trace_unit} {cusd_format}"

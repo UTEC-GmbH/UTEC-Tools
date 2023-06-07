@@ -6,7 +6,7 @@ import polars as pl
 import streamlit as st
 import streamlit_lottie as stlot
 
-from modules import classes as cl
+from modules import classes_data as cl
 from modules import df_manipulation as df_man
 from modules import excel_import as ex_in
 from modules import fig_annotations as fig_anno
@@ -59,35 +59,30 @@ def debug_code_run(position: Literal["before", "after"]) -> None:
 
 
 @gf.lottie_spinner
-def gather_and_manipulate_data() -> None:
+def gather_and_manipulate_data() -> cl.MetaAndDfs:
     """Import Excel file and do stuff with the data"""
-
-    if not gf.st_check("mdf"):
-        with st.spinner("Momentle bitte - Datei wird importiert..."):
-            gf.st_set("mdf", ex_in.import_prefab_excel(gf.st_get("f_up")))
-
-    mdf: cl.MetaAndDfs = gf.st_get("mdf")
+  
+    if isinstance(gf.st_get("mdf"), cl.MetaAndDfs):
+        mdf: cl.MetaAndDfs = gf.st_get("mdf")  
+    else: 
+        mdf: cl.MetaAndDfs = ex_in.import_prefab_excel(gf.st_get("f_up"))
 
     # Grundeinstellungen in der sidebar
     sm.base_settings(mdf)
 
     if gf.st_get("but_base_settings"):
-        for entry in (
-            "fig_base",
-            "fig_jdl",
-            "fig_mon",
-            "df_h",
-            "df_jdl",
-            "df_mon",
-        ):
-            gf.st_delete(entry)
+        gf.st_delete("fig_base")
+        gf.st_delete("fig_jdl")
+        gf.st_delete("fig_mon")
+        mdf.df_h = None
+        mdf.jdl = None
+        mdf.mon = None
 
     # anzuzeigende Grafiken
-    sm.select_graphs()
+    sm.select_graphs(mdf)
 
     # Außentemperatur
-    with st.sidebar, st.expander("Außentemperatur", expanded=False):
-        sm.meteo_sidebar("graph")
+    sm.meteo_sidebar("graph")
 
     if gf.st_get("but_meteo_sidebar"):
         if gf.st_get("cb_temp"):
@@ -96,39 +91,78 @@ def gather_and_manipulate_data() -> None:
             meteo.del_meteo()
 
     # df mit Stundenwerten erzeugen
-    if gf.st_get("cb_h") and gf.st_get("mdf").df_h is None:
-        with st.spinner("Momentle bitte - Stundenwerte werden erzeugt..."):
-            gf.st_get("mdf").df_h = df_man.df_h(gf.st_get("mdf"))
+    if gf.st_get("cb_h"):
+        mdf = df_man.df_h(mdf)
 
     # df für Tagesvergleich
     if gf.st_get("but_select_graphs") and gf.st_get("cb_days"):
         if gf.st_get("cb_h"):
-            df_man.dic_days(st.session_state["df_h"])
+            df_man.dic_days(mdf.df_h)
         else:
-            df_man.dic_days(st.session_state["df"])
+            df_man.dic_days(mdf.df)
 
-    # einzelnes Jahr
-    if len(st.session_state["years"]) == 1 or gf.st_get("cb_multi_year") is False:
-        # df geordnete Jahresdauerlinie
-        if gf.st_get("cb_jdl") and "df_jdl" not in st.session_state:
-            with st.spinner("Momentle bitte - Jahresdauerlinie wird erzeugt..."):
-                df_man.jdl(st.session_state["df"])
+    # df geordnete Jahresdauerlinie
+    if gf.st_get("cb_jdl"):
+        mdf = df_man.jdl(mdf)
 
-        # df Monatswerte
-        if gf.st_get("cb_mon") and "df_mon" not in st.session_state:
-            with st.spinner("Momentle bitte - Monatswerte werden erzeugt..."):
-                df_man.mon(st.session_state["df"], st.session_state["metadata"])
+    # df Monatswerte
+    if gf.st_get("cb_mon"):
+        mdf = df_man.mon(mdf)
 
-    # mehrere Jahre übereinander
-    else:
-        with st.spinner("Momentle bitte - Werte werden auf Jahre aufgeteilt..."):
-            if "dic_df_multi" not in st.session_state:
-                df_man.df_multi_y(
-                    st.session_state["df_h"]
-                    if gf.st_get("cb_h")
-                    else st.session_state["df"]
-                )
+    gf.st_set("mdf", mdf)
+    return mdf
 
+@gf.lottie_spinner
+def make_graphs(mdf: cl.MetaAndDfs):
+    """Grafiken erzeugen"""
+    
+    figs: cl.Figs = cl.Figs()
+    # Grund-Grafik
+    if gf.st_not_in("fig_base"):
+        with st.spinner('Momentle bitte - Grafik "Lastgang" wird erzeugt...'):
+            figs.base.fig = fig_create.cr_fig_base(mdf)
+            
+
+    # Jahresdauerlinie
+    if gf.st_get("cb_jdl"):
+        st.session_state["lis_figs"].append("fig_jdl")
+        if "fig_jdl" not in st.session_state:
+            with st.spinner(
+                'Momentle bitte - Grafik "Jahresdauerlinie" wird erzeugt...'
+            ):
+                fig_create.cr_fig_jdl()
+
+    # Monatswerte
+    if gf.st_get("cb_mon"):
+        st.session_state["lis_figs"].append("fig_mon")
+        if "fig_mon" not in st.session_state:
+            with st.spinner(
+                'Momentle bitte - Grafik "Monatswerte" wird erzeugt...'
+            ):
+                fig_create.cr_fig_mon()
+
+    # Tagesvergleich
+    if gf.st_get("cb_days"):
+        st.session_state["lis_figs"].append("fig_days")
+        if gf.st_get("but_select_graphs"):
+            with st.spinner(
+                'Momentle bitte - Grafik "Tagesvergleich" wird erzeugt...'
+            ):
+                fig_create.cr_fig_days()
+
+    # horizontale / vertikale Linien
+    sm.h_v_lines()
+    if gf.st_get("but_h_v_lines"):
+        fig_anno.h_v_lines()
+
+    # Ausreißerbereinigung
+    sm.clean_outliers()
+    if gf.st_get("but_clean_outliers"):
+        fig_anno.clean_outliers()
+
+            
+
+    
 
 if uauth.authentication(st.session_state["page"]):
     debug_code_run(position="before")
@@ -136,81 +170,8 @@ if uauth.authentication(st.session_state["page"]):
     sm.sidebar_file_upload()
 
     if any(gf.st_get(entry) is not None for entry in ("f_up", "df")):
-        with stlot.st_lottie_spinner(
-            gf.load_lottie_file("animations/bored.json"), height=400
-        ):
-            if any(entry not in st.session_state for entry in ("df", "metadata")):
-                with st.spinner("Momentle bitte - Datei wird importiert..."):
-                    gf.st_add_once(
-                        "mdf", ex_in.import_prefab_excel(st.session_state["f_up"])
-                    )
-
-            # Grundeinstellungen in der sidebar
-            sm.base_settings(gf.st_get("mdf"))
-            if gf.st_get("but_base_settings"):
-                for entry in (
-                    "fig_base",
-                    "fig_jdl",
-                    "fig_mon",
-                    "df_h",
-                    "df_jdl",
-                    "df_mon",
-                ):
-                    gf.st_delete(entry)
-
-            # anzuzeigende Grafiken
-            sm.select_graphs()
-
-            # Außentemperatur
-            with st.sidebar, st.expander("Außentemperatur", expanded=False):
-                sm.meteo_sidebar("graph")
-
-            if gf.st_get("but_meteo_sidebar"):
-                if gf.st_get("cb_temp"):
-                    meteo.outside_temp_graph()
-                else:
-                    meteo.del_meteo()
-
-            # df mit Stundenwerten erzeugen
-            if gf.st_get("cb_h") and gf.st_get("mdf").df_h is None:
-                with st.spinner("Momentle bitte - Stundenwerte werden erzeugt..."):
-                    gf.st_get("mdf").df_h = df_man.df_h(gf.st_get("mdf"))
-
-            # df für Tagesvergleich
-            if gf.st_get("but_select_graphs") and gf.st_get("cb_days"):
-                if gf.st_get("cb_h"):
-                    df_man.dic_days(st.session_state["df_h"])
-                else:
-                    df_man.dic_days(st.session_state["df"])
-
-            # einzelnes Jahr
-            if (
-                len(st.session_state["years"]) == 1
-                or gf.st_get("cb_multi_year") is False
-            ):
-                # df geordnete Jahresdauerlinie
-                if gf.st_get("cb_jdl") and "df_jdl" not in st.session_state:
-                    with st.spinner(
-                        "Momentle bitte - Jahresdauerlinie wird erzeugt..."
-                    ):
-                        df_man.jdl(st.session_state["df"])
-
-                # df Monatswerte
-                if gf.st_get("cb_mon") and "df_mon" not in st.session_state:
-                    with st.spinner("Momentle bitte - Monatswerte werden erzeugt..."):
-                        df_man.mon(st.session_state["df"], st.session_state["metadata"])
-
-            # mehrere Jahre übereinander
-            else:
-                with st.spinner(
-                    "Momentle bitte - Werte werden auf Jahre aufgeteilt..."
-                ):
-                    if "dic_df_multi" not in st.session_state:
-                        df_man.df_multi_y(
-                            st.session_state["df_h"]
-                            if gf.st_get("cb_h")
-                            else st.session_state["df"]
-                        )
+        
+        gather_and_manipulate_data()
 
             # --- Grafiken erzeugen ---
             # Grund-Grafik

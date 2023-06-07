@@ -5,8 +5,9 @@ from typing import Any
 
 import polars as pl
 import xlsxwriter
+import modules.classes_constants
 
-import modules.classes as cl
+import modules.classes_data as cl
 import modules.constants as cont
 import modules.general_functions as gf
 
@@ -27,7 +28,7 @@ def excel_download(
         - bytes: The Excel file as a bytes object.
     """
 
-    page: cont.StPageProps = getattr(cont.PAGES, page_short)
+    page: modules.classes_constants.StPageProps = getattr(cont.PAGES, page_short)
     ws_name: str = page.excel_ws_name or "Tabelle1"
 
     column_offset: int = 2
@@ -86,7 +87,7 @@ def format_worksheet(
         col
         for col in df.columns
         if all(
-            col not in idx for idx in [cont.ExcelMarkers.index, cont.ORIGINAL_INDEX_COL]
+            col not in idx for idx in [modules.classes_constants.ExcelMarkers.index, cont.ORIGINAL_INDEX_COL]
         )
     ]
 

@@ -11,6 +11,7 @@ from loguru import logger
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
+import modules.classes_constants
 
 if TYPE_CHECKING:
     import datetime as dt
@@ -269,7 +270,7 @@ def h_from_other(df: pd.DataFrame, meta: dict[str, Any] | None = None) -> pd.Dat
     df_h: pd.DataFrame = pd.DataFrame()
     metadata: dict[str, Any] = meta or st.session_state["metadata"]
     extended_exclude: list[str] = [
-        *cont.EXCLUDE,
+        *modules.classes_constants.Exclude.base,
         cont.ARBEIT_LEISTUNG.arbeit.suffix,
     ]
     suff_leistung: str = cont.ARBEIT_LEISTUNG.leistung.suffix
@@ -319,7 +320,7 @@ def check_if_hourly_resolution(
     """
     metadata: dict[str, Any] = kwargs.get("meta") or st.session_state["metadata"]
     extended_exclude: list[str] = [
-        *cont.EXCLUDE,
+        *modules.classes_constants.Exclude.base,
         cont.ARBEIT_LEISTUNG.arbeit.suffix,
     ]
     suff_leistung: str = cont.ARBEIT_LEISTUNG.leistung.suffix

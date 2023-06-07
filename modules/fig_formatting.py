@@ -12,6 +12,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from loguru import logger
 
+import modules.classes_constants
 from modules import constants as cont
 from modules import fig_general_functions as fgf
 from modules import general_functions as gf
@@ -33,24 +34,27 @@ def format_tickstops(fig: go.Figure) -> list[dict[str, Any]]:
 
     return [
         {
-            "dtickrange": [None, cont.DurationMS.half_day],
+            "dtickrange": [None, modules.classes_constants.TimeMSec.half_day],
             "value": "%H:%M\n%e. %b" if multi_y else "%H:%M\n%a %e. %b",
         },
         {
             "dtickrange": [
-                cont.DurationMS.half_day + 1,
-                cont.DurationMS.week,
+                modules.classes_constants.TimeMSec.half_day + 1,
+                modules.classes_constants.TimeMSec.week,
             ],
             "value": "%e. %b" if multi_y else "%a\n%e. %b",
         },
         {
             "dtickrange": [
-                cont.DurationMS.week + 1,
-                cont.DurationMS.month,
+                modules.classes_constants.TimeMSec.week + 1,
+                modules.classes_constants.TimeMSec.month,
             ],
             "value": "%e.\n%b",
         },
-        {"dtickrange": [cont.DurationMS.month + 1, None], "value": "%b"},
+        {
+            "dtickrange": [modules.classes_constants.TimeMSec.month + 1, None],
+            "value": "%b",
+        },
     ]
 
 

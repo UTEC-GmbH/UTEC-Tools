@@ -9,9 +9,10 @@ import pandas.io.formats.excel
 import streamlit as st
 from loguru import logger
 
-from modules import classes as cl
+from modules import classes_data as cl
 from modules import constants as cont
 from modules import meteorolog as meteo
+import modules.classes_constants
 from modules.df_manip import CleanUpDLS, clean_up_daylight_savings
 from modules.general_functions import func_timer, sort_list_by_occurance
 from modules.setup_logger import LogLevels
@@ -109,7 +110,7 @@ def units_from_messy_df(df_messy: pd.DataFrame) -> dict[str, str]:
         - dict[str, str]: keys = column names, values = units
     """
 
-    p_in: MarkerPosition = cont.ExcelMarkers(cont.MarkerType.INDEX).get_marker_position(
+    p_in: MarkerPosition = modules.classes_constants.ExcelMarkers(cont.MarkerType.INDEX).get_marker_position(
         df_messy
     )
     p_un: MarkerPosition = ExcelMarkers(MarkerType.UNITS).get_marker_position(df_messy)
@@ -261,8 +262,8 @@ def meta_from_col_title(df: pd.DataFrame, units: dict[str, str]) -> cont.DicStrN
         meta[col] = {"orig_tit": col, "tit": col, "unit": units.get(col) or ""}
 
         # check if there is an OBIS-code in the column title
-        if match := re.search(cont.ObisElectrical.pattern, col):
-            obis_code = cont.ObisElectrical(match[0])
+        if match := re.search(modules.classes_constants.ObisElectrical.pattern, col):
+            obis_code = modules.classes_constants.ObisElectrical(match[0])
             meta[col].update(
                 {
                     "unit": units.get(col) or obis_code.unit,

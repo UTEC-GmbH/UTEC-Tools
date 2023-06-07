@@ -9,6 +9,8 @@ import plotly.graph_objects as go
 import streamlit as st
 from loguru import logger
 
+import modules.classes_constants
+from modules import classes_data as cl
 from modules import constants as cont
 from modules import fig_annotations as fig_anno
 from modules import fig_formatting as fig_format
@@ -19,27 +21,21 @@ from modules import plotly_plots as ploplo
 
 # Grund-Grafik
 @gf.func_timer
-def cr_fig_base() -> go.Figure:
+def cr_fig_base(mdf: cl.MetaAndDfs) -> go.Figure:
     """Lastgang erstellen"""
 
-    meta: dict = st.session_state["metadata"]
     min_amount_vals: int = 20
 
     tit_res: str = ""
     if gf.st_get("cb_h"):
         tit_res = cont.FIG_TITLES.suff_stunden
-    elif meta["index"]["td_mean"] == pd.Timedelta(minutes=15):
+    elif mdf.meta.td_mnts == modules.classes_constants.TimeMin.q_hour:
         tit_res = cont.FIG_TITLES.suff_15min
 
     tit: str = f"{cont.FIG_TITLES.lastgang}{tit_res}"
 
     if gf.st_get("cb_multi_year"):
-        fig: go.Figure = ploplo.line_plot_y_overlay(
-            dic_df=st.session_state["dic_df_multi"],
-            meta=meta,
-            years=st.session_state["years"],
-            title=tit,
-        )
+        fig: go.Figure = ploplo.line_plot_y_overlay(mdf, title=tit)
     else:
         fig: go.Figure = ploplo.line_plot(
             df=st.session_state["df_h"]

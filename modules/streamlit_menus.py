@@ -8,7 +8,8 @@ from typing import TYPE_CHECKING, Any
 import pandas as pd
 import streamlit as st
 
-from modules import classes as cl
+import modules.classes_constants
+from modules import classes_data as cl
 from modules import constants as cont
 from modules import excel_download as ex
 from modules import fig_creation_export as fig_cr
@@ -208,12 +209,15 @@ def sidebar_file_upload() -> Any:
 def base_settings(mdf: cl.MetaAndDfs) -> None:
     """Grundeinstellungen (Stundenwerte, JDL, Monatswerte)"""
 
-    if mdf.meta.td_mnts == cont.DurationMin.hour:
+    if mdf.meta.td_mnts == modules.classes_constants.TimeMin.hour:
         gf.st_set("cb_h", value=True)
 
-    if mdf.meta.td_mnts < cont.DurationMin.hour or mdf.meta.multi_years:
+    if (
+        mdf.meta.td_mnts < modules.classes_constants.TimeMin.hour
+        or mdf.meta.multi_years
+    ):
         with st.sidebar, st.form("Grundeinstellungen"):
-            if mdf.meta.td_mnts < cont.DurationMin.hour:
+            if mdf.meta.td_mnts < modules.classes_constants.TimeMin.hour:
                 st.checkbox(
                     label="Umrechnung in Stundenwerte",
                     help=(
@@ -247,7 +251,7 @@ def base_settings(mdf: cl.MetaAndDfs) -> None:
 
 
 @gf.func_timer
-def select_graphs() -> None:
+def select_graphs(mdf: cl.MetaAndDfs) -> None:
     """Auswahl der anzuzeigenden Grafiken"""
     with st.sidebar, st.expander("anzuzeigende Grafiken", expanded=False), st.form(
         "anzuzeigende Grafiken"
@@ -316,12 +320,13 @@ def select_graphs() -> None:
             key="ni_days",
         )
 
-        for num in range(int(st.session_state["ni_days"])):
+        for num in range(int(gf.st_get("ni_days"))):
             st.date_input(
                 label=f"Tag {num + 1!s}",
-                min_value=st.session_state["df"].index.min(),
-                max_value=st.session_state["df"].index.max(),
-                value=st.session_state["df"].index.min() + pd.DateOffset(days=num),
+                min_value=mdf.df.get_column(cont.COL_ORG_DATE).min(),
+                max_value=mdf.df.get_column(cont.COL_ORG_DATE).max(),
+                value=mdf.df.get_column(cont.COL_ORG_DATE).min()
+                + pd.DateOffset(days=num),
                 key=f"day_{num!s}",
             )
 
@@ -334,8 +339,9 @@ def select_graphs() -> None:
 @gf.func_timer
 def meteo_sidebar(page: str) -> None:
     """sidebar-Menu zur Außentemperatur"""
-
-    with st.form("Außentemperatur"):
+    with st.sidebar, st.expander("Außentemperatur", expanded=False), st.form(
+        "Außentemperatur"
+    ):
         st.warning("temporär außer Betrieb")
 
         if page in ("graph"):
@@ -345,10 +351,10 @@ def meteo_sidebar(page: str) -> None:
                 key="cb_temp",
                 help=(
                     """
-                    Außentemperaturen  werden 
-                    für den unten eingegebenen Ort heruntergeladen 
-                    und in den Grafiken eingefügt.
-                    """
+                        Außentemperaturen  werden 
+                        für den unten eingegebenen Ort heruntergeladen 
+                        und in den Grafiken eingefügt.
+                        """
                 ),
                 disabled=True,
             )
@@ -360,9 +366,9 @@ def meteo_sidebar(page: str) -> None:
                 value=2020,
                 help=(
                     """
-                    Falls nur ein Jahr ausgegeben werden soll, 
-                    in beide Felder das gleiche Jahr eingeben.
-                    """
+                        Falls nur ein Jahr ausgegeben werden soll, 
+                        in beide Felder das gleiche Jahr eingeben.
+                        """
                 ),
                 key="meteo_start_year",
                 disabled=True,
@@ -383,12 +389,12 @@ def meteo_sidebar(page: str) -> None:
             value=("Cuxhavener Str. 10  \n20217 Bremen"),
             help=(
                 """
-                Je genauer, desto besser, 
-                aber es reicht auch nur eine Stadt.  \n
-                _(Wird oben "anzeigen" ausgewählt und as Knöpfle gedrückt, 
-                wird eine Karte eingeblendet, mit der kontrolliert werden kann, 
-                ob die richtige Adresse gefunden wurde.)_
-                """
+                    Je genauer, desto besser, 
+                    aber es reicht auch nur eine Stadt.  \n
+                    _(Wird oben "anzeigen" ausgewählt und as Knöpfle gedrückt, 
+                    wird eine Karte eingeblendet, mit der kontrolliert werden kann, 
+                    ob die richtige Adresse gefunden wurde.)_
+                    """
             ),
             # placeholder= 'Cuxhavener Str. 10, 20217 Bremen',
             # autocomplete= '',

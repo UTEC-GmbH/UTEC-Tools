@@ -129,7 +129,7 @@ def get_all_user_data() -> dict[str, dict[str, str]]:
     """Liste aller gespeicherter Benutzerdaten - je Benutzer ein dictionary
 
     Returns:
-        - cont.DicStrNest: {
+        - dict[str, dict[str, str]]: {
             - "key": {
                 - "key" -> Benutzername für login (z.B. "fl")
                 - "name" -> Klartext Name (z.B. "Florian")

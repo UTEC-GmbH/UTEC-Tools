@@ -7,7 +7,8 @@ from typing import Any, Literal, NamedTuple
 import polars as pl
 from loguru import logger
 
-from modules import classes as cl
+import modules.classes_constants
+from modules import classes_data as cl
 from modules import constants as cont
 from modules import df_manipulation as df_man
 from modules import general_functions as gf
@@ -36,8 +37,8 @@ def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cl.MetaAndDfs:
     mdf = import_prefab_excel()
     """
 
-    mark_index: str = cont.ExcelMarkers.index
-    mark_units: str = cont.ExcelMarkers.units
+    mark_index: str = modules.classes_constants.ExcelMarkers.index
+    mark_units: str = modules.classes_constants.ExcelMarkers.units
 
     df: pl.DataFrame = get_df_from_excel(file)
 
@@ -66,7 +67,7 @@ def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cl.MetaAndDfs:
     logger.info(mdf.meta.__dict__)
     slog.log_df(mdf.df)
 
-    if mdf.meta.years and mdf.meta.multi_years:
+    if mdf.meta.multi_years:
         mdf.df_multi = df_man.split_multi_years(mdf, "df")
 
     logger.success("Excel-Datei importiert.")
@@ -305,10 +306,10 @@ def temporal_metadata(mdf: cl.MetaAndDfs, mark_index: str) -> cl.MetaAndDfs:
         mdf.df.select(pl.col(mark_index).diff().dt.minutes().drop_nulls().mean()).item()
     )
 
-    if mdf.meta.td_mnts == cont.DurationMin.q_hour:
+    if mdf.meta.td_mnts == modules.classes_constants.TimeMin.q_hour:
         mdf.meta.td_interval = "15min"
         logger.info("Index mit zeitlicher Auflösung von 15 Minuten erkannt.")
-    elif mdf.meta.td_mnts == cont.DurationMin.hour:
+    elif mdf.meta.td_mnts == modules.classes_constants.TimeMin.hour:
         mdf.meta.td_interval = "h"
         mdf.df_h = mdf.df
         logger.info("Index mit zeitlicher Auflösung von 1 Stunde erkannt.")
@@ -337,8 +338,8 @@ def meta_from_obis(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         name: str = line.name
 
         # check if there is an OBIS-code in the column title
-        if match := re.search(cont.ObisElectrical.pattern, name):
-            line.obis = cont.ObisElectrical(match[0])
+        if match := re.search(modules.classes_constants.ObisElectrical.pattern, name):
+            line.obis = modules.classes_constants.ObisElectrical(match[0])
             line.name = line.obis.name
             line.tit = line.obis.name
             line.unit = line.unit or line.obis.unit

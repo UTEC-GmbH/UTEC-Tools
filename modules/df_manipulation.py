@@ -9,15 +9,17 @@ import polars as pl
 import streamlit as st
 from loguru import logger
 
-from modules import classes as cl
+from modules import classes_data as cl
+from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
+import modules.classes_constants
 
 if TYPE_CHECKING:
     import datetime as dt
 
-COL_IND: str = cont.ExcelMarkers.index
+COL_IND: str = modules.classes_constants.ExcelMarkers.index
 COL_ORG: str = cont.ORIGINAL_INDEX_COL
 
 
@@ -118,15 +120,15 @@ def split_multi_years(
 
     df: pl.DataFrame = getattr(mdf, frame_to_split)
     if not mdf.meta.years:
-        raise cl.NoYearsError
+        raise cle.NoYearsError
 
     df_multi: dict[int, pl.DataFrame] = {}
     for year in mdf.meta.years:
         col_rename: dict[str, str] = {}
         for col in [col for col in df.columns if col not in [*cont.EXCLUDE, COL_IND]]:
             new_col_name: str = f"{col} {year}"
-            if any(suff in col for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()):
-                for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes():
+            if any(suff in col for suff in modules.classes_constants.ArbeitLeistung.get_all_suffixes()):
+                for suff in modules.classes_constants.ArbeitLeistung.get_all_suffixes():
                     if suff in col:
                         new_col_name = f"{col.split(suff)[0]} {year}{suff}"
             col_rename[col] = new_col_name
@@ -182,12 +184,13 @@ def df_h(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         .with_columns(pl.col(COL_IND).alias(COL_ORG))
     )
 
-    if mdf.meta.years and mdf.meta.multi_years:
+    if mdf.meta.multi_years:
         mdf.df_h_multi = split_multi_years(mdf, "df_h")
 
     logger.success("DataFrame mit Stundenwerten erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.df_h.head())
 
+    gf.st_set("mdf", mdf)
     return mdf
 
 
@@ -206,7 +209,7 @@ def jdl(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         [pl.col(COL_IND).alias(f"{col} - {COL_ORG}") for col in cols_without_index]
     )
 
-    if mdf.meta.years and mdf.meta.multi_years:
+    if mdf.meta.multi_years:
         jdl_separate: list[list[pl.Series]] = [
             jdl_first_stage.select(pl.col(col, f"{col} - {COL_ORG}"))
             .filter(pl.col(f"{col} - {COL_ORG}").dt.year() == year)
@@ -234,6 +237,7 @@ def jdl(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     logger.success("DataFrame für Jahresdauerlinie erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.jdl.head())
 
+    gf.st_set("mdf", mdf)
     return mdf
 
 
@@ -262,12 +266,13 @@ def mon(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         )
     )
 
-    if mdf.meta.years and mdf.meta.multi_years:
+    if mdf.meta.multi_years:
         mdf.mon_multi = split_multi_years(mdf, "mon")
 
     logger.success("DataFrame mit Monatswerten erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.mon.head())
 
+    gf.st_set("mdf", mdf)
     return mdf
 
 

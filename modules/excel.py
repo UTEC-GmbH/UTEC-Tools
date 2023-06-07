@@ -22,7 +22,6 @@ pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
 # ? return value (maybe dict) instead of putting everything in session_state???
 # TODO: better docstring
 @func_timer
-@st.cache_data(show_spinner=False)
 def import_prefab_excel(file: Any) -> None:
     """Vordefinierte Datei (benannte Zelle für Index) importieren"""
 
@@ -111,7 +110,6 @@ def set_y_axis_for_lines() -> None:
 
 
 @func_timer
-@st.cache_data(show_spinner=False)
 def edit_df_after_import(df_messy: pd.DataFrame) -> pd.DataFrame:
     """Clean up the df
 
@@ -157,7 +155,6 @@ def edit_df_after_import(df_messy: pd.DataFrame) -> pd.DataFrame:
 
 
 @func_timer
-@st.cache_data(show_spinner=False)
 def meta_from_index(df: pd.DataFrame) -> dict[str, Any]:
     """Check if index is datetime and if so, get temporal resolution
 

@@ -21,7 +21,6 @@ from modules.user_authentication import get_all_user_data
 
 
 @func_timer
-@st.cache_data(show_spinner=False)
 def get_commit_message_date() -> dict[str, dt.datetime | str]:
     """Commit message and date from GitHub to show in the header.
 

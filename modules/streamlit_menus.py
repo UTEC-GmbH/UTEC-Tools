@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 import pandas as pd
 import streamlit as st
 
+from modules import classes as cl
 from modules import constants as cont
 from modules import excel_download as ex
 from modules import fig_creation_export as fig_cr
@@ -204,18 +205,15 @@ def sidebar_file_upload() -> Any:
 
 
 @gf.func_timer
-def base_settings() -> None:
+def base_settings(mdf: cl.MetaAndDfs) -> None:
     """Grundeinstellungen (Stundenwerte, JDL, Monatswerte)"""
 
-    if st.session_state["metadata"]["td_mean"] == 60:
-        st.session_state["cb_h"] = True
+    if mdf.meta.td_mnts == cont.DurationMin.hour:
+        gf.st_set("cb_h", value=True)
 
-    if (
-        st.session_state["metadata"]["td_mean"] < 60
-        or len(st.session_state["years"]) > 1
-    ):
+    if mdf.meta.td_mnts < cont.DurationMin.hour or mdf.meta.multi_years:
         with st.sidebar, st.form("Grundeinstellungen"):
-            if st.session_state["metadata"]["td_mean"] < 60:
+            if mdf.meta.td_mnts < cont.DurationMin.hour:
                 st.checkbox(
                     label="Umrechnung in Stundenwerte",
                     help=(
@@ -231,7 +229,7 @@ def base_settings() -> None:
                     key="cb_h",
                 )
 
-            if len(st.session_state["years"]) > 1:
+            if mdf.meta.multi_years:
                 st.checkbox(
                     label="mehrere Jahre übereinander",
                     help=(
@@ -245,7 +243,7 @@ def base_settings() -> None:
                     # disabled=True,
                 )
 
-            st.session_state["but_base_settings"] = st.form_submit_button("Knöpfle")
+            gf.st_set("but_base_settings", st.form_submit_button("Knöpfle"))
 
 
 @gf.func_timer

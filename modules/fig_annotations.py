@@ -20,7 +20,6 @@ from modules.fig_general_functions import (
 from modules import general_functions as gf
 
 
-@st.cache_data(show_spinner=False)
 @gf.func_timer
 def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> datetime | float:
     """Mitte der x-Achse finden

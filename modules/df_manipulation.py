@@ -182,7 +182,7 @@ def df_h(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         .with_columns(pl.col(COL_IND).alias(COL_ORG))
     )
 
-    if mdf.meta.years and len(mdf.meta.years) > 1:
+    if mdf.meta.years and mdf.meta.multi_years:
         mdf.df_h_multi = split_multi_years(mdf, "df_h")
 
     logger.success("DataFrame mit Stundenwerten erstellt.")
@@ -206,7 +206,7 @@ def jdl(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         [pl.col(COL_IND).alias(f"{col} - {COL_ORG}") for col in cols_without_index]
     )
 
-    if mdf.meta.years and len(mdf.meta.years) > 1:
+    if mdf.meta.years and mdf.meta.multi_years:
         jdl_separate: list[list[pl.Series]] = [
             jdl_first_stage.select(pl.col(col, f"{col} - {COL_ORG}"))
             .filter(pl.col(f"{col} - {COL_ORG}").dt.year() == year)
@@ -262,7 +262,7 @@ def mon(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         )
     )
 
-    if mdf.meta.years and len(mdf.meta.years) > 1:
+    if mdf.meta.years and mdf.meta.multi_years:
         mdf.mon_multi = split_multi_years(mdf, "mon")
 
     logger.success("DataFrame mit Monatswerten erstellt.")

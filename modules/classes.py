@@ -67,13 +67,24 @@ class MetaLine:
 
 @dataclass
 class MetaData:
-    """Class for meta data"""
+    """Meta Daten
+
+    Attrs:
+        - units (MetaUnits): Einheiten aller Linien -> Liste aller und set
+        - lines (list[MetaLine]): Liste aller Linien (Spalten)
+        - datetime (bool): Ob eine Spalten mit Zeiten gefunden wurde
+        - years (list[int]): Liste der Jahre, für die Daten vorliegen
+        - multi_years (bool): Ob Daten für mehrere Jahre vorliegen
+        - td_mnts (int): Zeitliche Auflösung der Daten in Minuten
+        - td_interval (str): "h" bei stündlichen Daten, "15min" bei 15-Minuten-Daten
+    """
 
     units: MetaUnits
     lines: list[MetaLine]
     datetime: bool = False
     years: list[int] | None = None
-    td_mean: int | None = None
+    multi_years: bool | None = None
+    td_mnts: int | None = None
     td_interval: str | None = None
 
     def __repr__(self) -> str:
@@ -110,7 +121,18 @@ class MetaData:
 
 @dataclass
 class MetaAndDfs:
-    """Class to combine data frames and the corresponding meta data"""
+    """Class to combine data frames and the corresponding meta data
+
+    Attrs:
+        - meta (MetaData): Meta Data
+        - df (pl.DataFrame): main data frame imported from excel file
+        - df_h (pl.DataFrame | None): df in hourly resolution
+        - jdl (pl.DataFrame | None): Jahresdauerlinie
+        - mon (pl.DataFrame | None): monthly data
+        - df_multi (dict[int, pl.DataFrame] | None): grouped by year
+        - df_h_multi (dict[int, pl.DataFrame] | None): grouped by year
+        - mon_multi (dict[int, pl.DataFrame] | None): grouped by year
+    """
 
     meta: MetaData
     df: pl.DataFrame

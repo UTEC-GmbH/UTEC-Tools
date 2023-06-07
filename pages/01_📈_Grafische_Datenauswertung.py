@@ -58,9 +58,76 @@ def debug_code_run(position: Literal["before", "after"]) -> None:
     st.session_state["dic_exe_time"] = {}
 
 
-def gather_data():
+@gf.lottie_spinner
+def gather_and_manipulate_data() -> None:
     """Import Excel file and do stuff with the data"""
-    return
+
+    if not gf.st_check("mdf"):
+        with st.spinner("Momentle bitte - Datei wird importiert..."):
+            gf.st_set("mdf", ex_in.import_prefab_excel(gf.st_get("f_up")))
+
+    mdf: cl.MetaAndDfs = gf.st_get("mdf")
+
+    # Grundeinstellungen in der sidebar
+    sm.base_settings(mdf)
+
+    if gf.st_get("but_base_settings"):
+        for entry in (
+            "fig_base",
+            "fig_jdl",
+            "fig_mon",
+            "df_h",
+            "df_jdl",
+            "df_mon",
+        ):
+            gf.st_delete(entry)
+
+    # anzuzeigende Grafiken
+    sm.select_graphs()
+
+    # Außentemperatur
+    with st.sidebar, st.expander("Außentemperatur", expanded=False):
+        sm.meteo_sidebar("graph")
+
+    if gf.st_get("but_meteo_sidebar"):
+        if gf.st_get("cb_temp"):
+            meteo.outside_temp_graph()
+        else:
+            meteo.del_meteo()
+
+    # df mit Stundenwerten erzeugen
+    if gf.st_get("cb_h") and gf.st_get("mdf").df_h is None:
+        with st.spinner("Momentle bitte - Stundenwerte werden erzeugt..."):
+            gf.st_get("mdf").df_h = df_man.df_h(gf.st_get("mdf"))
+
+    # df für Tagesvergleich
+    if gf.st_get("but_select_graphs") and gf.st_get("cb_days"):
+        if gf.st_get("cb_h"):
+            df_man.dic_days(st.session_state["df_h"])
+        else:
+            df_man.dic_days(st.session_state["df"])
+
+    # einzelnes Jahr
+    if len(st.session_state["years"]) == 1 or gf.st_get("cb_multi_year") is False:
+        # df geordnete Jahresdauerlinie
+        if gf.st_get("cb_jdl") and "df_jdl" not in st.session_state:
+            with st.spinner("Momentle bitte - Jahresdauerlinie wird erzeugt..."):
+                df_man.jdl(st.session_state["df"])
+
+        # df Monatswerte
+        if gf.st_get("cb_mon") and "df_mon" not in st.session_state:
+            with st.spinner("Momentle bitte - Monatswerte werden erzeugt..."):
+                df_man.mon(st.session_state["df"], st.session_state["metadata"])
+
+    # mehrere Jahre übereinander
+    else:
+        with st.spinner("Momentle bitte - Werte werden auf Jahre aufgeteilt..."):
+            if "dic_df_multi" not in st.session_state:
+                df_man.df_multi_y(
+                    st.session_state["df_h"]
+                    if gf.st_get("cb_h")
+                    else st.session_state["df"]
+                )
 
 
 if uauth.authentication(st.session_state["page"]):
@@ -74,12 +141,12 @@ if uauth.authentication(st.session_state["page"]):
         ):
             if any(entry not in st.session_state for entry in ("df", "metadata")):
                 with st.spinner("Momentle bitte - Datei wird importiert..."):
-                    gf.st_new(
+                    gf.st_add_once(
                         "mdf", ex_in.import_prefab_excel(st.session_state["f_up"])
                     )
 
             # Grundeinstellungen in der sidebar
-            sm.base_settings()
+            sm.base_settings(gf.st_get("mdf"))
             if gf.st_get("but_base_settings"):
                 for entry in (
                     "fig_base",

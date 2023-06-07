@@ -9,14 +9,33 @@ from collections.abc import Callable
 from typing import Any
 
 import streamlit as st
+import streamlit_lottie as stlot
 from loguru import logger
 
 from modules import constants as cont
+from modules import general_functions as gf
 from modules import setup_logger as slog
 
 
+def lottie_spinner(func: Callable) -> Callable:
+    """Decorator fancy animated spinners while a function runs.
+
+    Returns:
+        - Callable: Function to spin around
+    """
+
+    def wrapper(*args, **kwargs) -> Any:
+        with stlot.st_lottie_spinner(
+            gf.load_lottie_file("animations/bored.json"), height=400
+        ):
+            result: Any = func(*args, **kwargs)
+        return result
+
+    return wrapper
+
+
 def func_timer(func: Callable) -> Callable:
-    """Create Decorator for measuring the execution time of a function.
+    """Decorator for measuring the execution time of a function.
 
     The execution time is writen in the streamlit session state
     and printed in the logs.
@@ -63,7 +82,7 @@ def st_check(key: str) -> bool:
     return key in st.session_state
 
 
-def st_new(key: str, value: Any) -> None:
+def st_add_once(key: str, value: Any) -> None:
     """Add something to streamlit's session_state if it doesn't exist yet.
 
     Args:
@@ -74,7 +93,7 @@ def st_new(key: str, value: Any) -> None:
         st.session_state[key] = value
 
 
-def st_add_repl(key: str, value: Any) -> None:
+def st_set(key: str, value: Any) -> None:
     """Add an item to streamlit's session_state
     or replace it, if it alread exists
     """

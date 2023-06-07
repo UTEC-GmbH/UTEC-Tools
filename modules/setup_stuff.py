@@ -23,7 +23,6 @@ from modules import user_authentication as uauth
 
 
 @gf.func_timer
-@st.cache_data(show_spinner=False)
 def get_commit_message_date() -> dict[str, dt.datetime | str]:
     """Commit message and date from GitHub to show in the header.
 
@@ -100,7 +99,7 @@ def general_setup() -> None:
     pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
     sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), traces_sample_rate=0.1)
 
-    gf.st_new("UTEC_logo", gf.render_svg())
+    gf.st_add_once("UTEC_logo", gf.render_svg())
 
     st.markdown(
         cont.CSS_LABELS,
@@ -112,7 +111,7 @@ def general_setup() -> None:
         st.session_state["com_date"] = commit["com_date"]
         st.session_state["com_msg"] = commit["com_msg"]
 
-    gf.st_new("all_user_data", uauth.get_all_user_data())
+    gf.st_add_once("all_user_data", uauth.get_all_user_data())
 
     exp_dir: Path = Path(f"{Path.cwd()}/export")
     if Path.exists(exp_dir):
@@ -135,7 +134,7 @@ def page_header_setup(page: str) -> None:
     with st.session_state["title_container"]:
         columns: list = st.columns(2)
 
-        gf.st_new("UTEC_logo", gf.render_svg())
+        gf.st_add_once("UTEC_logo", gf.render_svg())
         with columns[0]:
             st.write(st.session_state["UTEC_logo"], unsafe_allow_html=True)
 

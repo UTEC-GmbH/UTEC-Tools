@@ -28,7 +28,7 @@ def generate_response(input_text: str) -> None:
     old_his: list[str] | None = gf.st_get(HISTORY_KEY)
     if old_his and response not in old_his:
         history += old_his
-    gf.st_add_repl(HISTORY_KEY, history)
+    gf.st_set(HISTORY_KEY, history)
 
     st.info(response, icon="🤖")
 

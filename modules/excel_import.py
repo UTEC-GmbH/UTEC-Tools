@@ -66,11 +66,11 @@ def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cl.MetaAndDfs:
     logger.info(mdf.meta.__dict__)
     slog.log_df(mdf.df)
 
-    if mdf.meta.years and len(mdf.meta.years) > 1:
+    if mdf.meta.years and mdf.meta.multi_years:
         mdf.df_multi = df_man.split_multi_years(mdf, "df")
 
     logger.success("Excel-Datei importiert.")
-    
+
     return mdf
 
 
@@ -297,25 +297,23 @@ def temporal_metadata(mdf: cl.MetaAndDfs, mark_index: str) -> cl.MetaAndDfs:
         logger.error("Kein Zeitindex gefunden!!!")
         return mdf
 
-    viertel: int = 15
-    std: int = 60
-
     mdf.meta.datetime = True
     mdf.meta.years = mdf.df.get_column(mark_index).dt.year().unique().sort().to_list()
+    mdf.meta.multi_years = len(mdf.meta.years) > 1
 
-    mdf.meta.td_mean = int(
+    mdf.meta.td_mnts = int(
         mdf.df.select(pl.col(mark_index).diff().dt.minutes().drop_nulls().mean()).item()
     )
 
-    if mdf.meta.td_mean == viertel:
+    if mdf.meta.td_mnts == cont.DurationMin.q_hour:
         mdf.meta.td_interval = "15min"
         logger.info("Index mit zeitlicher Auflösung von 15 Minuten erkannt.")
-    elif mdf.meta.td_mean == std:
+    elif mdf.meta.td_mnts == cont.DurationMin.hour:
         mdf.meta.td_interval = "h"
         mdf.df_h = mdf.df
         logger.info("Index mit zeitlicher Auflösung von 1 Stunde erkannt.")
     else:
-        logger.debug(f"Mittlere zeitliche Auflösung des df: {mdf.meta.td_mean} Minuten")
+        logger.debug(f"Mittlere zeitliche Auflösung des df: {mdf.meta.td_mnts} Minuten")
 
     return mdf
 

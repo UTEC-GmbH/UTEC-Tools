@@ -25,6 +25,14 @@ class DurationMS:
     month: int = 30 * 24 * 60 * 60 * 1000  # 2.592.000.000
 
 
+@dataclass
+class DurationMin:
+    """Zeiten in Minuten"""
+
+    hour: int = 60
+    q_hour: int = 15
+
+
 # Type Alias für nested dict of stings
 DicStrNest: TypeAlias = dict[str, dict[str, str]]
 

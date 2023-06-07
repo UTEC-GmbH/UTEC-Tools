@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Any
 
 import plotly.io as pio
-import sentry_sdk
 import streamlit as st
 from dotenv import load_dotenv
 from github import Github
@@ -96,7 +95,6 @@ def general_setup() -> None:
     locale.setlocale(locale.LC_ALL, "")
     load_dotenv(".streamlit/secrets.toml")
     pio.templates.default = "plotly"
-    sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), traces_sample_rate=0.1)
 
     st_add("UTEC_logo", render_svg())
 

@@ -29,7 +29,7 @@ def debug_code_run(position: Literal["before", "after"]) -> None:
     if MANUAL_DEBUG and gf.st_get("access_lvl") == "god":
         with st.expander(f"Debug {position}", expanded=False):
             st.plotly_chart(
-                fig_create.ploplo.timings(st.session_state["dic_exe_time"]),
+                fig_create.ploplo.timings(gf.st_get("dic_exe_time")),
                 use_container_width=True,
                 config=fig_format.plotly_config(),
             )
@@ -46,9 +46,9 @@ def debug_code_run(position: Literal["before", "after"]) -> None:
                 st.write(f"show: {show}")
                 if show in st.session_state:
                     if "fig" in show:
-                        st.write(st.session_state[show].to_dict())
+                        st.write(gf.st_get(show).to_dict())
                     else:
-                        st.write(st.session_state[show])
+                        st.write(gf.st_get(show))
 
             st.write(st.session_state)
 

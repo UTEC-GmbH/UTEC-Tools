@@ -134,7 +134,7 @@ class ObisDic(TypedDict):
     messart: dict
 
 
-@dataclass(frozen=True)
+@dataclass()
 class ObisElectrical:
     """OBIS-Codes für elektrische Zähler.
     Raises

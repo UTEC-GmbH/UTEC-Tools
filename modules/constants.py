@@ -122,7 +122,9 @@ EXCEL_MARKERS: clc.ExcelMarkers = clc.ExcelMarkers(
 )
 
 SPECIAL_COLS: clc.SpecialCols = clc.SpecialCols(
-    index=EXCEL_MARKERS.index, original_index="orgidx", smooth=SUFFIXES.col_smooth
+    index=EXCEL_MARKERS.index,
+    original_index="orgidx",
+    smooth=SUFFIXES.col_smooth,
 )
 
 TIME_MS: clc.TimeMSec = clc.TimeMSec(

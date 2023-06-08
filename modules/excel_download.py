@@ -5,11 +5,11 @@ from typing import Any
 
 import polars as pl
 import xlsxwriter
-import modules.classes_constants
 
-import modules.classes_data as cl
-import modules.constants as cont
-import modules.general_functions as gf
+from modules import classes_constants as clc
+from modules import classes_data as cl
+from modules import constants as cont
+from modules import general_functions as gf
 
 
 @gf.func_timer
@@ -28,7 +28,7 @@ def excel_download(
         - bytes: The Excel file as a bytes object.
     """
 
-    page: modules.classes_constants.StPageProps = getattr(cont.PAGES, page_short)
+    page: clc.StPageProps = getattr(cont.ST_PAGES, page_short)
     ws_name: str = page.excel_ws_name or "Tabelle1"
 
     column_offset: int = 2
@@ -87,7 +87,8 @@ def format_worksheet(
         col
         for col in df.columns
         if all(
-            col not in idx for idx in [modules.classes_constants.ExcelMarkers.index, cont.ORIGINAL_INDEX_COL]
+            col not in idx
+            for idx in [cont.SPECIAL_COLS.index, cont.SPECIAL_COLS.original_index]
         )
     ]
 

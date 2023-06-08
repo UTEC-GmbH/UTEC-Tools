@@ -63,13 +63,13 @@ def login_section() -> None:
 
     authenticator.login("Login", "main")
 
-    if st.session_state["authentication_status"]:
+    if gf.st_get("authentication_status"):
         access_granted()
 
         st.markdown("---")
         authenticator.logout("Logout", "main")
 
-    elif st.session_state["authentication_status"] is None:
+    elif gf.st_get("authentication_status") is None:
         st.warning("Bitte Benutzernamen und Passwort eingeben")
     else:
         st.error("Benutzername oder Passwort falsch")
@@ -81,25 +81,28 @@ def access_granted() -> None:
     """If access is granted, do this..."""
 
     # determine the access level
-    user_key: str = st.session_state["username"]
-    all_users: dict[str, dict[str, Any]] = st.session_state["all_user_data"]
+    user_key: str = gf.st_get("username")
+    all_users: dict[str, dict[str, Any]] = gf.st_get("all_user_data")
     access_lvl_user: str | list = all_users[user_key]["access_lvl"]
-    st.session_state["access_lvl"] = access_lvl_user
+    gf.st_set("access_lvl", access_lvl_user)
 
     # log used username and access level
     if gf.st_get("logged_username") != user_key:
         logger.success(f"logged in as: {user_key}, access level: {access_lvl_user}")
-        st.session_state["logged_username"] = user_key
+        gf.st_set("logged_username", user_key)
 
     if access_lvl_user in ("god", "full"):
-        st.session_state["access_pages"] = cont.PAGES.get_all_short()
-        st.session_state["access_until"] = date.max
+        gf.st_set("access_pages", cont.ST_PAGES.get_all_short())
+        gf.st_set("access_until", date.max)
     else:
-        st.session_state["access_pages"] = access_lvl_user
-        st.session_state["access_until"] = (
-            datetime.strptime(all_users[user_key]["access_until"], "%Y-%m-%d")
-            .astimezone()
-            .date()
+        gf.st_set("access_pages", access_lvl_user)
+        gf.st_set(
+            "access_until",
+            (
+                datetime.strptime(all_users[user_key]["access_until"], "%Y-%m-%d")
+                .astimezone()
+                .date()
+            ),
         )
 
     if gf.st_get("username") in ["utec"]:
@@ -115,7 +118,7 @@ def access_granted() -> None:
 
         for page in st.session_state["access_pages"]:
             if page != "login":
-                st.markdown(f"- {cont.PAGES.get_title(page)}")
+                st.markdown(f"- {cont.ST_PAGES.get_title(page)}")
 
     if access_lvl_user == "god":
         god_mode()

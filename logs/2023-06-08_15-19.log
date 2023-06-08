@@ -1,11 +1,11 @@
 
 
-11:00:27 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+15:19:51 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
 
 
-11:00:27 👉 function 'import_prefab_excel' started 👈 
-11:00:30 💡 <ipython-input-1-ba90a5e8efa2> -> rename_columns -> line: 129 | Index-marker found in column 'column_2' 💡 
-11:00:30 ⚠ <ipython-input-1-ba90a5e8efa2> -> clean_up_daylight_savings -> line: 285 | Data deleted due to daylight savings. ️ 
+15:19:51 👉 function 'import_prefab_excel' started 👈 
+15:19:54 💡 <ipython-input-1-9d2902dfb2f9> -> rename_columns -> line: 131 | Index-marker found in column 'column_2' 💡 
+15:19:54 ⚠ <ipython-input-1-9d2902dfb2f9> -> clean_up_daylight_savings -> line: 287 | Data deleted due to daylight savings. ️ 
   shape: (24, 5)
 ┌─────────────────────┬────────────────────┬─────────────────────┬───────────┬────────┐
 │ ↓ Index ↓           ┆ Bezug (1-1:1.29.0) ┆ Einsp. (1-1:2.29.0) ┆ PV-Anlage ┆ Bedarf │
@@ -23,24 +23,24 @@
 │ 2019-10-27 03:00:00 ┆ 22.5               ┆ 0.0                 ┆ 0.0       ┆ 11.875 │
 └─────────────────────┴────────────────────┴─────────────────────┴───────────┴────────┘  
 
-11:00:30 💡 <ipython-input-1-ba90a5e8efa2> -> temporal_metadata -> line: 309 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
-11:00:30 💡 <ipython-input-1-ba90a5e8efa2> -> set_y_axis_for_lines -> line: 209 | Bezug (1-1:1.29): Y-Achse 'y' 💡 
-11:00:30 💡 <ipython-input-1-ba90a5e8efa2> -> set_y_axis_for_lines -> line: 209 | Lieferung (1-1:2.29): Y-Achse 'y' 💡 
-11:00:30 💡 <ipython-input-1-ba90a5e8efa2> -> set_y_axis_for_lines -> line: 209 | PV-Anlage: Y-Achse 'y2' 💡 
-11:00:30 💡 <ipython-input-1-ba90a5e8efa2> -> set_y_axis_for_lines -> line: 209 | Bedarf: Y-Achse 'y2' 💡 
-11:00:30 💡 <ipython-input-1-ba90a5e8efa2> -> insert_column_arbeit_leistung -> line: 456 | Spalte 'Bezug (1-1:1.29) → Arbeit' mit Einheit ' kWh' eingefügt 💡 
-11:00:30 💡 <ipython-input-1-ba90a5e8efa2> -> rename_column_arbeit_leistung -> line: 418 | Spalte 'Bezug (1-1:1.29)' umbenannt in 'Bezug (1-1:1.29) → Leistung' 💡 
-11:00:30 🥳 <ipython-input-1-ba90a5e8efa2> -> convert_15min_kwh_to_kw -> line: 387 | Arbeit und Leistung für Spalte 'Bezug (1-1:1.29)' aufgeteilt 🥳 
-11:00:30 💡 <ipython-input-1-ba90a5e8efa2> -> insert_column_arbeit_leistung -> line: 456 | Spalte 'Lieferung (1-1:2.29) → Arbeit' mit Einheit ' kWh' eingefügt 💡 
-11:00:30 💡 <ipython-input-1-ba90a5e8efa2> -> rename_column_arbeit_leistung -> line: 418 | Spalte 'Lieferung (1-1:2.29)' umbenannt in 'Lieferung (1-1:2.29) → Leistung' 💡 
-11:00:30 🥳 <ipython-input-1-ba90a5e8efa2> -> convert_15min_kwh_to_kw -> line: 387 | Arbeit und Leistung für Spalte 'Lieferung (1-1:2.29)' aufgeteilt 🥳 
-11:00:30 💡 <ipython-input-1-ba90a5e8efa2> -> insert_column_arbeit_leistung -> line: 456 | Spalte 'PV-Anlage → Leistung' mit Einheit ' kW' eingefügt 💡 
-11:00:30 💡 <ipython-input-1-ba90a5e8efa2> -> rename_column_arbeit_leistung -> line: 418 | Spalte 'PV-Anlage' umbenannt in 'PV-Anlage → Arbeit' 💡 
-11:00:30 🥳 <ipython-input-1-ba90a5e8efa2> -> convert_15min_kwh_to_kw -> line: 387 | Arbeit und Leistung für Spalte 'PV-Anlage' aufgeteilt 🥳 
-11:00:30 💡 <ipython-input-1-ba90a5e8efa2> -> insert_column_arbeit_leistung -> line: 456 | Spalte 'Bedarf → Leistung' mit Einheit ' kW' eingefügt 💡 
-11:00:30 💡 <ipython-input-1-ba90a5e8efa2> -> rename_column_arbeit_leistung -> line: 418 | Spalte 'Bedarf' umbenannt in 'Bedarf → Arbeit' 💡 
-11:00:30 🥳 <ipython-input-1-ba90a5e8efa2> -> convert_15min_kwh_to_kw -> line: 387 | Arbeit und Leistung für Spalte 'Bedarf' aufgeteilt 🥳 
-11:00:30 💡 <ipython-input-1-ba90a5e8efa2> -> import_prefab_excel -> line: 66 | {'units': {'all_units': [' kW', ' kW', ' kWh', ' kWh', ' kWh', ' kW', ' kWh', ' kW',
+15:19:54 💡 <ipython-input-1-9d2902dfb2f9> -> temporal_metadata -> line: 312 | Index mit zeitlicher Auflösung von 15 Minuten erkannt. 💡 
+15:19:54 💡 <ipython-input-1-9d2902dfb2f9> -> set_y_axis_for_lines -> line: 211 | Bezug (1-1:1.29): Y-Achse 'y' 💡 
+15:19:54 💡 <ipython-input-1-9d2902dfb2f9> -> set_y_axis_for_lines -> line: 211 | Lieferung (1-1:2.29): Y-Achse 'y' 💡 
+15:19:54 💡 <ipython-input-1-9d2902dfb2f9> -> set_y_axis_for_lines -> line: 211 | PV-Anlage: Y-Achse 'y2' 💡 
+15:19:54 💡 <ipython-input-1-9d2902dfb2f9> -> set_y_axis_for_lines -> line: 211 | Bedarf: Y-Achse 'y2' 💡 
+15:19:54 💡 <ipython-input-1-9d2902dfb2f9> -> insert_column_arbeit_leistung -> line: 459 | Spalte 'Bezug (1-1:1.29) → Arbeit' mit Einheit ' kWh' eingefügt 💡 
+15:19:54 💡 <ipython-input-1-9d2902dfb2f9> -> rename_column_arbeit_leistung -> line: 421 | Spalte 'Bezug (1-1:1.29)' umbenannt in 'Bezug (1-1:1.29) → Leistung' 💡 
+15:19:54 🥳 <ipython-input-1-9d2902dfb2f9> -> convert_15min_kwh_to_kw -> line: 390 | Arbeit und Leistung für Spalte 'Bezug (1-1:1.29)' aufgeteilt 🥳 
+15:19:54 💡 <ipython-input-1-9d2902dfb2f9> -> insert_column_arbeit_leistung -> line: 459 | Spalte 'Lieferung (1-1:2.29) → Arbeit' mit Einheit ' kWh' eingefügt 💡 
+15:19:54 💡 <ipython-input-1-9d2902dfb2f9> -> rename_column_arbeit_leistung -> line: 421 | Spalte 'Lieferung (1-1:2.29)' umbenannt in 'Lieferung (1-1:2.29) → Leistung' 💡 
+15:19:54 🥳 <ipython-input-1-9d2902dfb2f9> -> convert_15min_kwh_to_kw -> line: 390 | Arbeit und Leistung für Spalte 'Lieferung (1-1:2.29)' aufgeteilt 🥳 
+15:19:54 💡 <ipython-input-1-9d2902dfb2f9> -> insert_column_arbeit_leistung -> line: 459 | Spalte 'PV-Anlage → Leistung' mit Einheit ' kW' eingefügt 💡 
+15:19:54 💡 <ipython-input-1-9d2902dfb2f9> -> rename_column_arbeit_leistung -> line: 421 | Spalte 'PV-Anlage' umbenannt in 'PV-Anlage → Arbeit' 💡 
+15:19:54 🥳 <ipython-input-1-9d2902dfb2f9> -> convert_15min_kwh_to_kw -> line: 390 | Arbeit und Leistung für Spalte 'PV-Anlage' aufgeteilt 🥳 
+15:19:54 💡 <ipython-input-1-9d2902dfb2f9> -> insert_column_arbeit_leistung -> line: 459 | Spalte 'Bedarf → Leistung' mit Einheit ' kW' eingefügt 💡 
+15:19:54 💡 <ipython-input-1-9d2902dfb2f9> -> rename_column_arbeit_leistung -> line: 421 | Spalte 'Bedarf' umbenannt in 'Bedarf → Arbeit' 💡 
+15:19:54 🥳 <ipython-input-1-9d2902dfb2f9> -> convert_15min_kwh_to_kw -> line: 390 | Arbeit und Leistung für Spalte 'Bedarf' aufgeteilt 🥳 
+15:19:54 💡 <ipython-input-1-9d2902dfb2f9> -> import_prefab_excel -> line: 68 | {'units': {'all_units': [' kW', ' kW', ' kWh', ' kWh', ' kWh', ' kW', ' kWh', ' kW',
                ' kW', ' kWh', ' kW', ' kWh'],
  'set_units': [' kW', ' kWh']}, 'lines': [{'name': 'Bezug (1-1:1.29)',
  'orig_tit': 'Bezug (1-1:1.29.0)',
@@ -174,7 +174,7 @@
  'unit': ' kWh',
  'y_axis': 'y2',
  'obis': None,
- 'excel_number_format': '#.##0,00" kWh"'}], 'datetime': True, 'years': [2017, 2018, 2019], 'multi_years': False, 'td_mnts': 15, 'td_interval': '15min'} 💡 
+ 'excel_number_format': '#.##0,00" kWh"'}], 'datetime': True, 'years': [2017, 2018, 2019], 'multi_years': True, 'td_mnts': 15, 'td_interval': '15min'} 💡 
   DataFrame head: 
 shape: (5, 10)
 ┌────────────┬────────────┬────────────┬────────────┬───┬────────────┬────────────┬────────────┬────────────┐
@@ -256,5 +256,30 @@ shape: (9, 11)
 │ % ┆            ┆            ┆            ┆   ┆            ┆            ┆            ┆            │
 └───┴────────────┴────────────┴────────────┴───┴────────────┴────────────┴────────────┴────────────┘  
 
-11:00:30 🥳 <ipython-input-1-ba90a5e8efa2> -> import_prefab_excel -> line: 72 | Excel-Datei importiert. 🥳 
-11:00:30 ⏱ execution time of 'import_prefab_excel': 3.2650 s ⏱ 
+15:19:54 🥳 <ipython-input-1-9d2902dfb2f9> -> import_prefab_excel -> line: 74 | Excel-Datei importiert. 🥳 
+15:19:54 ⏱ execution time of 'import_prefab_excel': 3.2970 s ⏱ 
+
+15:20:20 👉 function 'mon' started 👈 
+
+15:20:20 👉 function 'df_h' started 👈 
+15:20:20 🥳 <ipython-input-3-6969e6b3e7e3> -> df_h -> line: 186 | DataFrame mit Stundenwerten erstellt. 🥳 
+  shape: (5, 6)
+┌──────────────┬──────────────────┬────────────┬───────────┬───────────┬─────────────────────┐
+│ ↓ Index ↓    ┆ Bezug (1-1:1.29) ┆ Lieferung  ┆ PV-Anlage ┆ Bedarf    ┆ orgidx              │
+│ ---          ┆ ---              ┆ (1-1:2.29) ┆ ---       ┆ ---       ┆ ---                 │
+│ datetime[μs] ┆ f32              ┆ ---        ┆ f32       ┆ f32       ┆ datetime[μs]        │
+│              ┆                  ┆ f32        ┆           ┆           ┆                     │
+╞══════════════╪══════════════════╪════════════╪═══════════╪═══════════╪═════════════════════╡
+│ 2017-01-01   ┆ 0.0              ┆ 11.833333  ┆ 0.0       ┆ 13.166667 ┆ 2017-01-01 00:00:00 │
+│ 00:00:00     ┆                  ┆            ┆           ┆           ┆                     │
+│ 2017-01-01   ┆ 0.0              ┆ 10.75      ┆ 0.0       ┆ 14.25     ┆ 2017-01-01 01:00:00 │
+│ 01:00:00     ┆                  ┆            ┆           ┆           ┆                     │
+│ 2017-01-01   ┆ 0.0              ┆ 10.5       ┆ 0.0       ┆ 14.5      ┆ 2017-01-01 02:00:00 │
+│ 02:00:00     ┆                  ┆            ┆           ┆           ┆                     │
+│ 2017-01-01   ┆ 0.0              ┆ 10.75      ┆ 0.0       ┆ 14.25     ┆ 2017-01-01 03:00:00 │
+│ 03:00:00     ┆                  ┆            ┆           ┆           ┆                     │
+│ 2017-01-01   ┆ 0.0              ┆ 10.75      ┆ 0.0       ┆ 14.25     ┆ 2017-01-01 04:00:00 │
+│ 04:00:00     ┆                  ┆            ┆           ┆           ┆                     │
+└──────────────┴──────────────────┴────────────┴───────────┴───────────┴─────────────────────┘  
+
+15:20:20 ⏱ execution time of 'df_h': 0.0310 s ⏱ 

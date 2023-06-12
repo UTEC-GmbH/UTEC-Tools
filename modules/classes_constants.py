@@ -15,6 +15,7 @@ class Suffixes:
     col_smooth: str
     col_arbeit: str
     col_leistung: str
+    col_original_index: str
     fig_tit_h: str
     fig_tit_15: str
 
@@ -76,7 +77,13 @@ class SuffixUnit:
 
 @dataclass(frozen=True, kw_only=True)
 class ArbeitLeistung:
-    """Test"""
+    """Arbeit und Leistung bei 15-min-Daten
+
+
+    Methods:
+        - get_all_suffixes: ...wie der Name schon sagt...
+        - get_suffix: Get the suffix by providing the type (Arbeit / Leistung)
+    """
 
     arbeit: SuffixUnit
     leistung: SuffixUnit

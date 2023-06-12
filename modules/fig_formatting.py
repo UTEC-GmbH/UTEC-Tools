@@ -257,7 +257,7 @@ def standard_layout(fig: go.Figure, data: dict[str, dict[str, Any]]) -> go.Figur
     visible_traces: list[str] = [
         trace
         for trace, value in data.items()
-        if value["visible"] and all(excl not in trace for excl in cont.EXCLUDE)
+        if value["visible"] and gf.check_if_not_exclude(trace)
     ]
     lastgang: bool = fgf.fig_type_by_title(fig) == "lastgang"
 
@@ -295,7 +295,7 @@ def update_main(fig: go.Figure) -> go.Figure:
     visible_traces: list[str] = [
         tr["name"]
         for tr in fig.data
-        if tr["visible"] and all(ex not in tr["name"] for ex in cont.EXCLUDE)
+        if tr["visible"] and gf.check_if_not_exclude(tr["name"]) 
     ]
     number_of_visible_traces: int = len(visible_traces)
 

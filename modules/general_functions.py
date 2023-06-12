@@ -6,7 +6,7 @@ import json
 import time
 from collections import Counter
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Literal
 
 import streamlit as st
 import streamlit_lottie as stlot
@@ -234,3 +234,19 @@ def last_day_of_month(any_day: dt.datetime) -> dt.datetime:
     next_month: dt.datetime = any_day.replace(day=28) + dt.timedelta(days=4)
 
     return next_month - dt.timedelta(days=next_month.day)
+
+
+def check_if_not_exclude(
+    line: str, exclude: Literal["base", "index", "suff_arbeit"] = "index"
+) -> bool:
+    """Check if a line is in the exclude list.
+
+    Args:
+        - line (str): line to check
+        - exclude (Literal["base", "index", "suff_arbeit"]):
+            exclude list to check (from cont.EXCLUDE)
+
+    Returns:
+        - bool: True if line is not in exclude list
+    """
+    return all(excl not in line for excl in getattr(cont.EXCLUDE, exclude))

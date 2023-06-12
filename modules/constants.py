@@ -112,6 +112,7 @@ SUFFIXES: clc.Suffixes = clc.Suffixes(
     col_smooth=" geglättet",
     col_arbeit=" → Arbeit",
     col_leistung=" → Leistung",
+    col_original_index=" - orgidx",
     fig_tit_h='<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>',
     fig_tit_15='<i><span style="font-size: 12px;"> (15-Minuten-Werte)</span></i>',
 )
@@ -123,7 +124,7 @@ EXCEL_MARKERS: clc.ExcelMarkers = clc.ExcelMarkers(
 
 SPECIAL_COLS: clc.SpecialCols = clc.SpecialCols(
     index=EXCEL_MARKERS.index,
-    original_index="orgidx",
+    original_index=SUFFIXES.col_original_index.replace(" - ", ""),
     smooth=SUFFIXES.col_smooth,
 )
 

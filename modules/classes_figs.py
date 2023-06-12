@@ -6,9 +6,6 @@ from typing import Any
 
 import numpy as np
 import plotly.graph_objects as go
-import polars as pl
-
-import modules.constants as cont
 
 
 @dataclass(kw_only=True)
@@ -118,6 +115,7 @@ class Figs:
     base: FigProp | None = None
     jdl: FigProp | None = None
     mon: FigProp | None = None
+    days: FigProp | None = None
 
     def get_list_of_figs(self) -> list[str]:
         """Attribute names for figs that were created"""

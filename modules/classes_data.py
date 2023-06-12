@@ -27,6 +27,7 @@ class MetaLine:
     """Class for meta data of lines (traces)"""
 
     name: str
+    name_orgidx: str
     orig_tit: str
     tit: str
     unit: str | None = None
@@ -81,6 +82,13 @@ class MetaData:
     def get_all_num_formats(self) -> list[str]:
         """Get the Excel number formats for all lines"""
         return [(line.excel_number_format or "#.##0,0") for line in self.lines]
+
+    def get_line_attribute(self, line_name: str, attribute: str) -> Any:
+        """Get the value of a specific attribute for a line (trace)"""
+        for line in self.lines:
+            if line.name == line_name:
+                return getattr(line, attribute)
+        raise cle.LineNotFoundError(line_name)
 
     def change_line_attribute(
         self, line_name: str, attribute: str, new_value: Any

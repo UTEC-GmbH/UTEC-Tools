@@ -1,35 +1,38 @@
 """Darstellung der Plots"""
 
 import os
+from typing import Literal
 
 import numpy as np
 import pandas as pd
-import polars as pl
 import plotly.graph_objects as go
+import polars as pl
 import streamlit as st
 from geopy import distance
 
 from modules import classes_data as cl
 from modules import constants as cont
+from modules import general_functions as gf
 from modules import meteorolog as meteo
-import modules.classes_constants
-from modules.general_functions import func_timer, sort_list_by_occurance
 
 
-@func_timer
-def line_plot(mdf: cl.MetaAndDfs, **kwargs) -> go.Figure:
+@gf.func_timer
+def line_plot(
+    mdf: cl.MetaAndDfs, data_frame: Literal["df", "df_h", "jdl", "mon"] = "df", **kwargs
+) -> go.Figure:
     """Liniengrafik für Daten eines einzelnen Jahres
 
     Args:
-        - df (pd.DataFrame): Daten
-        - meta (dict): Metadaten
+        - mdf (cl.MetaAndDfs): Data Frames und Metadaten
+        - data_frame (Literal["df", "df_h", "jdl", "mon"], optional):
+            Zu verwendender Data Frame. Defaults to "df".
 
     Returns:
-        - go.Figure: Linengrafik
+        - go.Figure: Liniengrafik eines einzelnen Jahres
     """
-    cols: list[str] = [str(col) for col in mdf.df.columns]
+    df: pl.DataFrame = getattr(mdf, data_frame)
     lines: list[str] = kwargs.get("lines") or [
-        col for col in cols if col not in 
+        col for col in df.columns if gf.check_if_not_exclude(col)
     ]
     title: str = kwargs.get("title") or ""
     cusd_format: str = (
@@ -37,11 +40,6 @@ def line_plot(mdf: cl.MetaAndDfs, **kwargs) -> go.Figure:
         if "Monatswerte" not in title
         else "(%{customdata|%b %Y})"
     )
-    all_units: list[str] = [
-        meta[line].get("unit")
-        for line in lines
-        if all(ex not in line for ex in cont.EXCLUDE)
-    ]
 
     fig: go.Figure = go.Figure()
     fig = fig.update_layout(
@@ -49,28 +47,32 @@ def line_plot(mdf: cl.MetaAndDfs, **kwargs) -> go.Figure:
             "meta": {
                 "title": title,
                 "var_name": kwargs.get("var_name"),
-                "units": sort_list_by_occurance(all_units),
-                "metadata": meta,
+                "units": mdf.meta.units.set_units,
+                "metadata": mdf.meta,
             }
         }
     )
 
-    for line in [lin for lin in lines if "orgidx" not in lin]:
+    for line in [lin for lin in lines if gf.check_if_not_exclude(lin)]:
+        line_data: pl.Series = df.get_column(line)
+        line_meta: cl.MetaLine = mdf.meta.get_line_by_name(line)
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
-        cusd: pd.Series = (
-            df[f"{line}_orgidx"] if f"{line}_orgidx" in df.columns else df["orgidx"]
+        cusd: pl.Series = (
+            df.get_column(line_meta.name_orgidx)
+            if line_meta.name_orgidx in df.columns
+            else df.get_column(cont.SPECIAL_COLS.original_index)
         )
-        trace_unit: str | None = meta[line].get("unit")
+        trace_unit: str | None = line_meta.unit
         hovtemp: str = f"{trace_unit} {cusd_format}"
         fig = fig.add_trace(
             go.Scatter(
-                x=df.index,
-                y=df[line] * manip,
+                x=df.get_column(cont.SPECIAL_COLS.index),
+                y=line_data * manip,
                 customdata=cusd,
-                name=meta[line].get("tit"),
+                name=line_meta.tit,
                 hovertemplate=(
                     np.select(
-                        [abs(df[line]) < 10, abs(df[line]) < 100],
+                        [abs(line_data) < 10, abs(line_data) < 100],
                         [
                             "%{y:,.2f}" + hovtemp,
                             "%{y:,.1f}" + hovtemp,
@@ -80,7 +82,7 @@ def line_plot(mdf: cl.MetaAndDfs, **kwargs) -> go.Figure:
                 ),
                 mode="lines",
                 visible=True,
-                yaxis=meta[line]["y_axis"],
+                yaxis=line_meta.y_axis,
                 meta={"unit": trace_unit, "negativ": manip < 0, "df_col": line},
             )
         )
@@ -89,43 +91,33 @@ def line_plot(mdf: cl.MetaAndDfs, **kwargs) -> go.Figure:
 
 
 # Lastgang mehrerer Jahre übereinander darstellen
-@func_timer
+@gf.func_timer
 def line_plot_y_overlay(
     mdf: cl.MetaAndDfs,
-    lines: list[str] | None = None,
-    title: str = "",
-    var_name: str = "",
+    data_frame: Literal["df_multi", "df_h_multi", "mon_multi"] = "df_multi",
+    **kwargs,
 ) -> go.Figure:
     """Liniengrafik mit mehreren Jahren übereinander
     (Jahreszahlen werden ausgetauscht)
 
-
     Args:
-        - dic_df (dict): dictionary mit df für jedes Jahr
-        - meta (dict): dictionary mit Metadaten für jedes Jahr
-        - years (list): liste der Jahre
-        - lines (list | None, optional): liste der Linien - wenn None werden
-            alle Linien der df verwendet. Defaults to None.
-        - title (str, optional): Titel der Grafik. Defaults to "".
-        - var_name (str, optional): Variablenname für Metadaten. Defaults to "".
+        - mdf (cl.MetaAndDfs): Data Frames und Metadaten
+        - data_frame (Literal["df_multi", "df_h_multi", "mon_multi"], optional):
+            Zu verwendender Data Frame. Defaults to "df_multi".
 
     Returns:
         - go.Figure: Liniengrafik mit mehreren Jahren übereinander
     """
-
-    if lines is None:
-        lines = [
-            str(col)
-            for col_list in [
-                mdf.df_multi[year].columns.to_list() for year in mdf.meta.years
-            ]
-            for col in col_list
-            if all(ex not in col for ex in [*cont.EXCLUDE, modules.classes_constants.ExcelMarkers.index])
-        ]
+    dic_df: dict[int, pl.DataFrame] = getattr(mdf, data_frame)
+    lines = kwargs.get("lines") or [
+        col
+        for col in [dic_df[year].columns for year in mdf.meta.years]
+        if gf.check_if_not_exclude(col)
+    ]
 
     cusd_format: str = (
         "(%{customdata|%a %d. %b %Y %H:%M})"
-        if "Monatswerte" not in title
+        if "Monatswerte" not in (kwargs.get("title") or "")
         else "(%{customdata|%b %Y})"
     )
 
@@ -133,8 +125,8 @@ def line_plot_y_overlay(
     fig = fig.update_layout(
         {
             "meta": {
-                "title": title,
-                "var_name": var_name,
+                "title": (kwargs.get("title") or ""),
+                "var_name": kwargs.get("var_name"),
                 "multi_y": True,
                 "units": mdf.meta.units.set_units,
                 "metadata": mdf.meta,
@@ -143,41 +135,36 @@ def line_plot_y_overlay(
     )
 
     for line in lines:
-        line_name = line.replace()
+        year: int = [year for year in mdf.meta.years if str(year) in line][0]
+        line_data: pl.Series = dic_df[year].get_column(line)
+        line_meta: cl.MetaLine = mdf.meta.get_line_by_name(line)
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
-        trace_unit: str | None = meta[line].get("unit")
+        trace_unit: str | None = line_meta.unit
         hovtemp: str = f"{trace_unit} {cusd_format}"
-        year: int = [year for year in years if str(year) in line][0]
 
         cusd: pd.Series = (
-            dic_df[year][f"{line}_orgidx"]
-            if f"{line}_orgidx" in list(dic_df[year].columns)
-            else dic_df[year]["orgidx"]
+            dic_df[year].get_column(line_meta.name_orgidx)
+            if line_meta.name_orgidx in list(dic_df[year].columns)
+            else dic_df[year].get_column(cont.SPECIAL_COLS.original_index)
         )
         fig = fig.add_trace(
             go.Scatter(
-                x=dic_df[year].index,
-                y=dic_df[year][line] * manip,
+                x=dic_df[year].get_column(cont.SPECIAL_COLS.index),
+                y=line_data * manip,
                 customdata=cusd,
                 legendgroup=year,
                 legendgrouptitle_text=year,
-                name=meta[line].get("tit"),
+                name=line_meta.tit,
                 mode="lines",
                 hovertemplate=(
                     np.select(
-                        [
-                            abs(dic_df[year][line]) < 10,
-                            abs(dic_df[year][line]) < 100,
-                        ],
-                        [
-                            "%{y:,.2f}" + hovtemp,
-                            "%{y:,.1f}" + hovtemp,
-                        ],
+                        [abs(line_data) < 10, abs(line_data) < 100],
+                        ["%{y:,.2f}" + hovtemp, "%{y:,.1f}" + hovtemp],
                         "%{y:,.0f}" + hovtemp,
                     )
                 ),
                 visible=True,
-                yaxis=meta[line].get("y_axis"),
+                yaxis=line_meta.y_axis,
                 meta={
                     "unit": trace_unit,
                     "negativ": manip < 0,
@@ -190,7 +177,7 @@ def line_plot_y_overlay(
     return fig
 
 
-@func_timer
+@gf.func_timer
 def line_plot_day_overlay(
     dic_days: dict, meta: dict, title: str = "", var_name: str = ""
 ) -> go.Figure:
@@ -265,7 +252,7 @@ def line_plot_day_overlay(
     return fig
 
 
-@func_timer
+@gf.func_timer
 def map_dwd_all() -> go.Figure:
     """Karte aller Wetterstationen"""
 
@@ -324,7 +311,7 @@ def map_dwd_all() -> go.Figure:
     return fig
 
 
-@func_timer
+@gf.func_timer
 def map_weatherstations() -> go.Figure:
     """Karte der Wetterstationen (verwendete hervorgehoben)"""
 

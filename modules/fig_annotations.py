@@ -12,12 +12,12 @@ from loguru import logger
 from scipy import signal
 
 from modules import constants as cont
+from modules import general_functions as gf
 from modules.fig_general_functions import (
     fig_data_as_dic,
     fig_layout_as_dic,
     fill_colour_with_opacity,
 )
-from modules import general_functions as gf
 
 
 @gf.func_timer
@@ -150,7 +150,7 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
 
     # alle Linien in Grafik
     for line in fig_data.values():
-        if all(exclude not in line["name"] for exclude in cont.EXCLUDE):
+        if gf.check_if_not_exclude(line):
             y_val: float = (
                 np.nanmin(line["y"])
                 if line["meta"]["negativ"]
@@ -386,7 +386,7 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
     traces: list[dict] = kwargs.get("traces") or [
         trace
         for trace in fig_data.values()
-        if all(excl not in trace["name"] for excl in cont.EXCLUDE)
+        if gf.check_if_not_exclude(trace["name"])
     ]
     gl_win: int = st.session_state["gl_win"]
     gl_deg: int = st.session_state["gl_deg"]
@@ -533,7 +533,7 @@ def update_main() -> None:
                     tr
                     for tr in st.session_state[fig].data
                     if tr.visible is True
-                    and all(n not in cont.EXCLUDE for n in tr.name.split())
+                    and gf.check_if_not_exclude(tr.name)
                 ]
             )
             != 1

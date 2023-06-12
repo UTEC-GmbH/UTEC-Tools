@@ -7,8 +7,8 @@ from typing import Any, Literal, NamedTuple
 import polars as pl
 from loguru import logger
 
-from modules import classes_data as cl
 from modules import classes_constants as clc
+from modules import classes_data as cl
 from modules import constants as cont
 from modules import df_manipulation as df_man
 from modules import general_functions as gf
@@ -154,7 +154,13 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cl.MetaDat
             set_units=gf.sort_list_by_occurance(list(units.values())),
         ),
         lines=[
-            cl.MetaLine(name=line, orig_tit=line, tit=line, unit=unit)
+            cl.MetaLine(
+                name=line,
+                name_orgidx=f"{line}{cont.SUFFIXES.col_original_index}",
+                orig_tit=line,
+                tit=line,
+                unit=unit,
+            )
             for line, unit in units.items()
         ],
     )

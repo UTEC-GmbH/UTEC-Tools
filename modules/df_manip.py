@@ -216,7 +216,7 @@ def split_up_df_multi_years(df: pd.DataFrame) -> dict[int, pd.DataFrame]:
         for col in [
             str(col)
             for col in df_multi[year].columns
-            if all(exc not in str(col) for exc in cont.EXCLUDE)
+            if gf.check_if_not_exclude(col)
         ]:
             new_col_name: str = f'{col.replace(" *h","")} {year}'
             if any(suff in col for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()):

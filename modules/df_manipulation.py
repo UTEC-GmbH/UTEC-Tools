@@ -123,11 +123,7 @@ def split_multi_years(
     df_multi: dict[int, pl.DataFrame] = {}
     for year in mdf.meta.years:
         col_rename: dict[str, str] = {}
-        for col in [
-            col
-            for col in df.columns
-            if all(excl not in col for excl in cont.EXCLUDE.index)
-        ]:
+        for col in [col for col in df.columns if gf.check_if_not_exclude(col)]:
             new_col_name: str = f"{col} {year}"
             if any(suff in col for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()):
                 for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes():
@@ -155,9 +151,7 @@ def df_h(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     """Stundenwerte aus anderer zeitlicher Auflösung"""
 
     cols: list[str] = [
-        col
-        for col in mdf.df.columns
-        if all(excl not in col for excl in cont.EXCLUDE.suff_arbeit)
+        col for col in mdf.df.columns if gf.check_if_not_exclude(col, "suff_arbeit")
     ]
 
     mdf.df_h = (
@@ -199,9 +193,7 @@ def jdl(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
 
     # Zeit-Spalte für jede Linie kopieren um sie zusammen sortieren zu können
     cols_without_index: list[str] = [
-        col
-        for col in mdf.df_h.columns
-        if all(excl not in col for excl in cont.EXCLUDE.index)
+        col for col in mdf.df_h.columns if gf.check_if_not_exclude(col)
     ]
     jdl_first_stage: pl.DataFrame = mdf.df_h.with_columns(
         [pl.col(COL_IND).alias(f"{col} - {COL_ORG}") for col in cols_without_index]
@@ -247,9 +239,7 @@ def mon(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         mdf = df_h(mdf)
 
     cols_without_index: list[str] = [
-        col
-        for col in mdf.df_h.columns
-        if all(excl not in col for excl in cont.EXCLUDE.index)
+        col for col in mdf.df_h.columns if gf.check_if_not_exclude(col)
     ]
     mdf.mon = (
         mdf.df_h.groupby_dynamic(COL_IND, every="1mo")

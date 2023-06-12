@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any
 import pandas as pd
 import streamlit as st
 
-import modules.classes_constants
 from modules import classes_data as cl
 from modules import constants as cont
 from modules import excel_download as ex
@@ -120,8 +119,12 @@ def new_user_form() -> None:
             label="Zugriffsrechte",
             key="new_user_access",
             help=("Auswahl der Module, auf die dieser Benutzer zugreifen darf."),
-            options=[key for key in cont.PAGES.get_all_short() if key not in ("login")],
-            default=[key for key in cont.PAGES.get_all_short() if key not in ("login")],
+            options=[
+                key for key in cont.ST_PAGES.get_all_short() if key not in ("login")
+            ],
+            default=[
+                key for key in cont.ST_PAGES.get_all_short() if key not in ("login")
+            ],
         )
 
         st.markdown("###")
@@ -209,15 +212,12 @@ def sidebar_file_upload() -> Any:
 def base_settings(mdf: cl.MetaAndDfs) -> None:
     """Grundeinstellungen (Stundenwerte, JDL, Monatswerte)"""
 
-    if mdf.meta.td_mnts == modules.classes_constants.TimeMin.hour:
+    if mdf.meta.td_mnts == cont.TIME_MIN.hour:
         gf.st_set("cb_h", value=True)
 
-    if (
-        mdf.meta.td_mnts < modules.classes_constants.TimeMin.hour
-        or mdf.meta.multi_years
-    ):
+    if mdf.meta.td_mnts < cont.TIME_MIN.hour or mdf.meta.multi_years:
         with st.sidebar, st.form("Grundeinstellungen"):
-            if mdf.meta.td_mnts < modules.classes_constants.TimeMin.hour:
+            if mdf.meta.td_mnts < cont.TIME_MIN.hour:
                 st.checkbox(
                     label="Umrechnung in Stundenwerte",
                     help=(
@@ -323,9 +323,9 @@ def select_graphs(mdf: cl.MetaAndDfs) -> None:
         for num in range(int(gf.st_get("ni_days"))):
             st.date_input(
                 label=f"Tag {num + 1!s}",
-                min_value=mdf.df.get_column(cont.COL_ORG_DATE).min(),
-                max_value=mdf.df.get_column(cont.COL_ORG_DATE).max(),
-                value=mdf.df.get_column(cont.COL_ORG_DATE).min()
+                min_value=mdf.df.get_column(cont.SPECIAL_COLS.original_index).min(),
+                max_value=mdf.df.get_column(cont.SPECIAL_COLS.original_index).max(),
+                value=mdf.df.get_column(cont.SPECIAL_COLS.original_index).min()
                 + pd.DateOffset(days=num),
                 key=f"day_{num!s}",
             )
@@ -662,7 +662,7 @@ def display_options_main() -> bool:
         lines: list[dict] = [
             line
             for line in fig_data.values()
-            if all(ex not in line["name"] for ex in cont.EXCLUDE)
+            if gf.check_if_not_exclude(line["name"])
         ]
 
         for count, line in enumerate(lines):
@@ -678,8 +678,8 @@ def display_options_main() -> bool:
                         value=all(
                             part not in line_name
                             for part in [
-                                cont.SMOOTH_SUFFIX,
-                                cont.ARBEIT_LEISTUNG.arbeit.suffix,
+                                cont.SUFFIXES.col_smooth,
+                                cont.SUFFIXES.col_arbeit,
                             ]
                         ),
                         key=f"cb_vis_{line_name}",
@@ -728,8 +728,8 @@ def display_options_main() -> bool:
                 for anno in [
                     anno["name"]
                     for anno in fig_layout["annotations"]
-                    if all(string not in anno["name"] for string in cont.EXCLUDE)
-                    and all(string not in line_name for string in cont.EXCLUDE)
+                    if gf.check_if_not_exclude(anno["name"])
+                    and gf.check_if_not_exclude(line_name)
                 ]:
                     if line_name in anno:
                         anno_name = anno.split(": ")[0]
@@ -821,12 +821,12 @@ def display_smooth_main() -> bool:
         lines: list[dict] = [
             line
             for line in fig_data.values()
-            if all(ex not in line["name"] for ex in cont.EXCLUDE)
+            if gf.check_if_not_exclude(line["name"])
         ]
 
         for count, line in enumerate(lines):
             cols: list = st.columns([col["width"] for col in columns.values()])
-            line_name: str = f'{line["name"]}{cont.SMOOTH_SUFFIX}'
+            line_name: str = f'{line["name"]}{cont.SUFFIXES.col_smooth}'
             line_color: str = colorway[count + len(lines)]
             if (
                 len(line["x"]) > 0
@@ -957,7 +957,7 @@ def downloads(page: str = "graph") -> None:
                     for x in [
                         d
                         for d in st.session_state["fig_base"].data
-                        if all(e not in d.name for e in cont.EXCLUDE)
+                        if gf.check_if_not_exclude(d.name)
                     ]
                 }
 

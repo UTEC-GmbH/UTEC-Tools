@@ -168,7 +168,7 @@ def page_header_setup(page: str) -> None:
                     unsafe_allow_html=True,
                 )
 
-        st.title(cont.PAGES.get_title(page))
+        st.title(cont.ST_PAGES.get_title(page))
         st.markdown("---")
 
     logger.log(slog.LVLS.once_per_run.name, f"page header for page '{page}' created")

@@ -4,12 +4,10 @@
 from pathlib import Path
 from typing import Any
 
-import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from loguru import logger
 
-import modules.classes_constants
 from modules import classes_data as cl
 from modules import constants as cont
 from modules import fig_annotations as fig_anno
@@ -28,9 +26,9 @@ def cr_fig_base(mdf: cl.MetaAndDfs) -> go.Figure:
 
     tit_res: str = ""
     if gf.st_get("cb_h"):
-        tit_res = cont.FIG_TITLES.suff_stunden
-    elif mdf.meta.td_mnts == modules.classes_constants.TimeMin.q_hour:
-        tit_res = cont.FIG_TITLES.suff_15min
+        tit_res = cont.SUFFIXES.fig_tit_h
+    elif mdf.meta.td_mnts == cont.TIME_MIN.quarter_hour:
+        tit_res = cont.SUFFIXES.fig_tit_15
 
     tit: str = f"{cont.FIG_TITLES.lastgang}{tit_res}"
 
@@ -38,10 +36,8 @@ def cr_fig_base(mdf: cl.MetaAndDfs) -> go.Figure:
         fig: go.Figure = ploplo.line_plot_y_overlay(mdf, title=tit)
     else:
         fig: go.Figure = ploplo.line_plot(
-            df=st.session_state["df_h"]
-            if gf.st_get("cb_h")
-            else st.session_state["df"],
-            meta=meta,
+            mdf,
+            "df_h" if gf.st_get("cb_h") else "df",
             title=tit,
         )
 
@@ -89,70 +85,66 @@ def cr_fig_base(mdf: cl.MetaAndDfs) -> go.Figure:
 
 
 @gf.func_timer
-def cr_fig_jdl() -> None:
+def cr_fig_jdl(mdf: cl.MetaAndDfs) -> go.Figure:
     """Jahresdauerlinie erstellen"""
 
-    tit: str = f"{cont.FIG_TITLES.jdl}{cont.FIG_TITLES.suff_stunden}"
+    tit: str = f"{cont.FIG_TITLES.jdl}{cont.SUFFIXES.fig_tit_h}"
 
     if gf.st_get("cb_multi_year"):
-        st.session_state["fig_jdl"] = ploplo.line_plot_y_overlay(
-            dic_df=st.session_state["dic_jdl"],
-            meta=st.session_state["metadata"],
-            years=st.session_state["years"],
-            title=tit,
-        )
+        fig: go.Figure = ploplo.line_plot_y_overlay(mdf, title=tit)
     else:
-        st.session_state["fig_jdl"] = ploplo.line_plot(
-            df=st.session_state["df_jdl"],
-            meta=st.session_state["metadata"],
-            title=tit,
-        )
+        fig: go.Figure = ploplo.line_plot(mdf, title=tit)
 
-    # Pfeile an Maxima
-    fig_anno.add_arrows_min_max(st.session_state["fig_jdl"])
+    data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
+    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
+
+    fig = fig_anno.add_arrows_min_max(fig, data=data, layout=layout)
+    colorway: list[str] = fgf.get_colorway(fig, data=data, layout=layout)
 
     # updates
-    st.session_state["fig_jdl"].update_layout(
-        title_text=st.session_state["fig_jdl"].layout.meta.get("title"),
+    fig.update_layout(
+        title_text=fig.layout.meta.get("title"),
         legend={"yanchor": "top", "y": 0.975, "xanchor": "right", "x": 0.975},
     )
-    st.session_state["fig_jdl"] = fig_format.standard_axes_and_layout(
-        st.session_state["fig_jdl"], x_tickformat=",d"
-    )
+    fig = fig_format.standard_axes_and_layout(fig, x_tickformat=",d")
 
-    x_min = min(min(d.x) for d in st.session_state["fig_jdl"].data)
-    x_max = max(max(d.x) for d in st.session_state["fig_jdl"].data)
+    x_min = min(min(d.x) for d in fig.data)
+    x_max = max(max(d.x) for d in fig.data)
 
     if 7000 < x_max < 9000:
-        st.session_state["fig_jdl"].update_xaxes(
+        fig.update_xaxes(
             range=[x_min, 9000],
         )
 
+    # colours
+    for count, (line, line_dat) in enumerate(data.items()):
+        if len(line_dat["x"]) > 0 and "hline" not in line:
+            fig = fig.update_traces(
+                {"line_color": colorway[count].lower()}, {"name": line}
+            )
+
     logger.success("fig_jdl created")
+
+    return fig
 
 
 @gf.func_timer
-def cr_fig_mon() -> None:
+def cr_fig_mon(mdf) -> go.Figure:
     """Monatswerte erstellen"""
 
     if gf.st_get("cb_multi_year"):
-        st.session_state["fig_mon"] = ploplo.line_plot_y_overlay(
-            dic_df=st.session_state["dic_mon"],
-            meta=st.session_state["metadata"],
-            years=st.session_state["years"],
-            title=cont.FIG_TITLES.mon,
-        )
+        fig: go.Figure = ploplo.line_plot_y_overlay(mdf, title=cont.FIG_TITLES.mon)
     else:
-        st.session_state["fig_mon"] = ploplo.line_plot(
-            df=st.session_state["df_mon"],
-            meta=st.session_state["metadata"],
-            title=cont.FIG_TITLES.mon,
-        )
+        fig: go.Figure = ploplo.line_plot(mdf, title=cont.FIG_TITLES.mon)
 
     # Pfeile an Maxima
-    fig_anno.add_arrows_min_max(st.session_state["fig_mon"])
+    data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
+    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
-    st.session_state["fig_mon"].update_layout(
+    fig = fig_anno.add_arrows_min_max(fig, data=data, layout=layout)
+    colorway: list[str] = fgf.get_colorway(fig, data=data, layout=layout)
+
+    fig.update_layout(
         xaxis_tickformat="%b<br>%Y" if gf.st_get("cb_multi_year") is False else "%b",
         xaxis_tickformatstops=[
             {
@@ -160,21 +152,27 @@ def cr_fig_mon() -> None:
                 "value": "%b<br>%Y" if gf.st_get("cb_multi_year") is False else "%b",
             },
         ],
-        title_text=st.session_state["fig_mon"].layout.meta.get("title"),
+        title_text=fig.layout.meta.get("title"),
         legend={"yanchor": "top", "y": 0.975, "xanchor": "right", "x": 0.975},
     )
 
-    st.session_state["fig_mon"] = fig_format.standard_axes_and_layout(
-        st.session_state["fig_mon"]
-    )
+    fig = fig_format.standard_axes_and_layout(fig)
 
-    st.session_state["fig_mon"].update_traces(
+    fig.update_traces(
         mode="markers+lines",
         line={"dash": "dash", "width": 1},
         marker={"size": 10},
     )
 
+    # colours
+    for count, (line, line_dat) in enumerate(data.items()):
+        if len(line_dat["x"]) > 0 and "hline" not in line:
+            fig = fig.update_traces(
+                {"line_color": colorway[count].lower()}, {"name": line}
+            )
     logger.success("fig_mon created")
+
+    return fig
 
 
 @gf.func_timer

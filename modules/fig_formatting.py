@@ -12,7 +12,6 @@ import plotly.graph_objects as go
 import streamlit as st
 from loguru import logger
 
-import modules.classes_constants
 from modules import constants as cont
 from modules import fig_general_functions as fgf
 from modules import general_functions as gf
@@ -34,25 +33,25 @@ def format_tickstops(fig: go.Figure) -> list[dict[str, Any]]:
 
     return [
         {
-            "dtickrange": [None, modules.classes_constants.TimeMSec.half_day],
+            "dtickrange": [None, cont.TIME_MS.half_day],
             "value": "%H:%M\n%e. %b" if multi_y else "%H:%M\n%a %e. %b",
         },
         {
             "dtickrange": [
-                modules.classes_constants.TimeMSec.half_day + 1,
-                modules.classes_constants.TimeMSec.week,
+                cont.TIME_MS.half_day + 1,
+                cont.TIME_MS.week,
             ],
             "value": "%e. %b" if multi_y else "%a\n%e. %b",
         },
         {
             "dtickrange": [
-                modules.classes_constants.TimeMSec.week + 1,
-                modules.classes_constants.TimeMSec.month,
+                cont.TIME_MS.week + 1,
+                cont.TIME_MS.month,
             ],
             "value": "%e.\n%b",
         },
         {
-            "dtickrange": [modules.classes_constants.TimeMSec.month + 1, None],
+            "dtickrange": [cont.TIME_MS.month + 1, None],
             "value": "%b",
         },
     ]
@@ -295,7 +294,7 @@ def update_main(fig: go.Figure) -> go.Figure:
     visible_traces: list[str] = [
         tr["name"]
         for tr in fig.data
-        if tr["visible"] and gf.check_if_not_exclude(tr["name"]) 
+        if tr["visible"] and gf.check_if_not_exclude(tr["name"])
     ]
     number_of_visible_traces: int = len(visible_traces)
 
@@ -322,7 +321,7 @@ def show_traces(fig: go.Figure) -> go.Figure:
 
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
     fig_type: str = "lastgang"
-    for key, value in cont.FIG_TITLES.items():
+    for key, value in vars(cont.FIG_TITLES).items():
         if value in layout["meta"]["title"]:
             fig_type = key
 
@@ -382,12 +381,12 @@ def format_traces(fig: go.Figure) -> go.Figure:
     for trace in visible_traces:
         trace_name: str = trace["name"]
         line_mode: str = "lines"
-        if gf.st_get(f"cb_markers_{trace_name}"):
+        if gf.st_get(f"cb_markers_{trace_name}") or fig_type == "mon":
             line_mode = "markers+lines"
         if gf.st_get(f"sb_line_dash_{trace_name}") == "keine":
             line_mode = "markers"
 
-        if f"cp_{trace_name}" not in st.session_state:
+        if gf.st_not_in(f"cp_{trace_name}"):
             suff: str = "Arbeit" if fig_type in {"mon"} else "Leistung"
             trace_name = f"{trace_name}{cont.ARBEIT_LEISTUNG.get_suffix(suff)}"
 
@@ -395,7 +394,7 @@ def format_traces(fig: go.Figure) -> go.Figure:
             line_colour: str = st.session_state[f"cp_{trace_name}"]
             line_transp: str = (
                 cont.TRANSPARENCY_OPTIONS[0]
-                if cont.SMOOTH_SUFFIX in trace_name
+                if cont.SUFFIXES.col_smooth in trace_name
                 else st.session_state[
                     f"sb_fill_{trace['legendgroup'] if switch else trace_name}"
                 ]
@@ -408,14 +407,20 @@ def format_traces(fig: go.Figure) -> go.Figure:
                 if line_fill
                 else None
             )
+            line_dash = (
+                cont.LINE_TYPES["gestrichelt lang"]
+                if fig_type == "mon"
+                else cont.LINE_TYPES[st.session_state[f"sb_line_dash_{trace_name}"]]
+            )
+
             fig = fig.update_traces(
                 {
                     "line_color": line_colour,
-                    "line_dash": cont.LINE_TYPES[
-                        st.session_state[f"sb_line_dash_{trace_name}"]
-                    ],
+                    "line_dash": line_dash,
                     "mode": line_mode,
-                    "marker_size": gf.st_get(f"ni_markers_{trace_name}"),
+                    "marker_size": 15
+                    if fig_type == "mon"
+                    else gf.st_get(f"ni_markers_{trace_name}"),
                     "fill": line_fill,
                     "fillcolor": fill_color,
                 },

@@ -1,19 +1,22 @@
 """Darstellung der Plots"""
 
 import os
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
-import pandas as pd
 import plotly.graph_objects as go
-import polars as pl
 import streamlit as st
 from geopy import distance
+from loguru import logger
 
 from modules import classes_data as cl
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import meteorolog as meteo
+
+if TYPE_CHECKING:
+    import pandas as pd
+    import polars as pl
 
 
 @gf.func_timer
@@ -48,7 +51,7 @@ def line_plot(
                 "title": title,
                 "var_name": kwargs.get("var_name"),
                 "units": mdf.meta.units.set_units,
-                "metadata": mdf.meta,
+                "metadata": mdf.meta.as_dict(),
             }
         }
     )
@@ -57,6 +60,9 @@ def line_plot(
         line_data: pl.Series = df.get_column(line)
         line_meta: cl.MetaLine = mdf.meta.get_line_by_name(line)
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
+
+        logger.debug(f"line: {line}, line_org: {line_meta.name_orgidx}")
+
         cusd: pl.Series = (
             df.get_column(line_meta.name_orgidx)
             if line_meta.name_orgidx in df.columns
@@ -129,7 +135,7 @@ def line_plot_y_overlay(
                 "var_name": kwargs.get("var_name"),
                 "multi_y": True,
                 "units": mdf.meta.units.set_units,
-                "metadata": mdf.meta,
+                "metadata": mdf.meta.as_dict(),
             }
         }
     )

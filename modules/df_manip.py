@@ -8,10 +8,10 @@ import pandas as pd
 import streamlit as st
 from loguru import logger
 
+import modules.classes_constants
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
-import modules.classes_constants
 
 if TYPE_CHECKING:
     import datetime as dt
@@ -178,14 +178,14 @@ def del_smooth() -> None:
     for item in st.session_state:
         if isinstance(item, pd.DataFrame):
             for col in [str(col) for col in item.columns]:
-                if cont.SMOOTH_SUFFIX in col:
+                if cont.SUFFIXES.col_smooth in col:
                     item.drop(columns=[col], inplace=True)
 
     # Linien löschen
     lis_dat: list = [
         dat
         for dat in st.session_state["fig_base"].data
-        if cont.SMOOTH_SUFFIX not in dat.name
+        if cont.SUFFIXES.col_smooth not in dat.name
     ]
     st.session_state["fig_base"].data = tuple(lis_dat)
 
@@ -214,9 +214,7 @@ def split_up_df_multi_years(df: pd.DataFrame) -> dict[int, pd.DataFrame]:
         df_multi[year]["orgidx"] = df.loc[ind.year == year, :].index
 
         for col in [
-            str(col)
-            for col in df_multi[year].columns
-            if gf.check_if_not_exclude(col)
+            str(col) for col in df_multi[year].columns if gf.check_if_not_exclude(col)
         ]:
             new_col_name: str = f'{col.replace(" *h","")} {year}'
             if any(suff in col for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()):

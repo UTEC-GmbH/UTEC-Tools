@@ -100,6 +100,25 @@ class MetaData:
                 return
         raise cle.LineNotFoundError(line_name)
 
+    def as_dict(self) -> dict[str, Any]:
+        """Get all MetaData as a dictionary"""
+        lines: list[dict] = []
+        for line in self.lines:
+            dic: dict = {}
+            for key, val in vars(line).items():
+                dic[key] = vars(val) if isinstance(val, cont.ObisElectrical) else val
+                lines.append(dic)
+
+        return {
+            "units": vars(self.units),
+            "lines": lines,
+            "datetime": self.datetime,
+            "years": self.years,
+            "multi_years": self.multi_years,
+            "td_mnts": self.td_mnts,
+            "td_interval": self.td_interval,
+        }
+
 
 @dataclass
 class MetaAndDfs:

@@ -47,6 +47,21 @@ LINE_TYPES: dict[str, str] = {
     "keine": "solid",
 }
 
+FARBEN: dict[str, str] = {
+    "weiß": "255, 255, 255",
+    "schwarz": "0, 0, 0",
+    "hellgrau": "200, 200, 200",
+    "blau": "99, 110, 250",
+    "rot": "239, 85, 59",
+    "grün-blau": "0, 204, 150",
+    "lila": "171, 99, 250",
+    "orange": "255, 161, 90",
+    "hellblau": "25, 211, 243",
+    "rosa": "255, 102, 146",
+    "hellgrün": "182, 232, 128",
+    "pink": "255, 151, 255",
+    "gelb": "254, 203, 82",
+}
 
 # negative Werte für Lieferung ins Netz etc.
 NEGATIVE_VALUES: list[str] = [

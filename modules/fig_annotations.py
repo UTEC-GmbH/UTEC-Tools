@@ -11,13 +11,10 @@ import streamlit as st
 from loguru import logger
 from scipy import signal
 
+from modules import classes_figs as clf
 from modules import constants as cont
+from modules import fig_general_functions as fgf
 from modules import general_functions as gf
-from modules.fig_general_functions import (
-    fig_data_as_dic,
-    fig_layout_as_dic,
-    fill_colour_with_opacity,
-)
 
 
 @gf.func_timer
@@ -33,19 +30,14 @@ def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> datetime | float:
     """
 
     data_x: list = [val["x"] for val in fig_data.values()]
-    x_max_temp: datetime | int = max(max(dat) for dat in data_x if len(dat) > 0)
-    x_max: float = (
-        x_max_temp.timestamp() if isinstance(x_max_temp, datetime) else x_max_temp
+    x_max: datetime | np.datetime64 | int = max(
+        max(dat) for dat in data_x if len(dat) > 0
     )
-    x_min_temp: datetime | int = min(min(dat) for dat in data_x if len(dat) > 0)
-    x_min: float = (
-        x_min_temp.timestamp() if isinstance(x_min_temp, datetime) else x_min_temp
+    x_min: datetime | np.datetime64 | int = min(
+        min(dat) for dat in data_x if len(dat) > 0
     )
-    middle: float = x_min + (x_max - x_min) / 2
 
-    if isinstance(x_max_temp, datetime):
-        logger.info(f"middle of x-axis: {datetime.fromtimestamp(middle)}")
-        return datetime.fromtimestamp(middle)
+    middle: float = x_min + (x_max - x_min) / 2
 
     logger.info(f"middle of x-axis: {middle}")
 
@@ -100,11 +92,10 @@ def add_arrow(
     )
 
     # Textausrichtung
-    mid: datetime | float = kwargs.get("middle_xaxis") or middle_xaxis(fig_data)
-    middle: float = mid if isinstance(mid, float) else mid.timestamp()
-    anc: bool = (
-        x_val.timestamp() > middle if isinstance(x_val, datetime) else x_val > middle
+    mid: datetime | np.datetime64 | int = kwargs.get("middle_xaxis") or middle_xaxis(
+        fig_data
     )
+    anc: bool = x_val > mid
     anchor: Literal["right", "left"] = (
         kwargs.get("anchor") or "right" if anc else "left"
     )
@@ -144,8 +135,8 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
         - fig (go.Figure): Grafik, die Pfeile erhalten soll
     """
 
-    fig_data: dict[str, dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
-    fig_layout: dict[str, Any] = kwargs.get("layout") or fig_layout_as_dic(fig)
+    fig_data: dict[str, dict[str, Any]] = kwargs.get("data") or fgf.fig_data_as_dic(fig)
+    fig_layout: dict[str, Any] = kwargs.get("layout") or fgf.fig_layout_as_dic(fig)
     middle_x: datetime | float = middle_xaxis(fig_data)
 
     # alle Linien in Grafik
@@ -237,8 +228,8 @@ def vline(fig: go.Figure, x_val: float or datetime, txt: str, pos: str) -> None:
 def hide_hlines(fig: go.Figure) -> None:
     """Horizontale Linien ausblenden (ohne sie zu löschen)"""
 
-    fig_data: dict[str, dict[str, Any]] = fig_data_as_dic(fig)
-    fig_layout: dict[str, Any] = fig_layout_as_dic(fig)
+    fig_data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
+    fig_layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
     for dat in fig_data:
         if "hline" in dat:
@@ -381,18 +372,16 @@ def calculate_smooth_values(trace: dict[str, Any]) -> np.ndarray:
 def smooth(fig: go.Figure, **kwargs) -> go.Figure:
     """geglättete Linien"""
 
-    fig_data: dict[str, dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
+    fig_data: dict[str, dict[str, Any]] = kwargs.get("data") or fgf.fig_data_as_dic(fig)
 
     traces: list[dict] = kwargs.get("traces") or [
-        trace
-        for trace in fig_data.values()
-        if gf.check_if_not_exclude(trace["name"])
+        trace for trace in fig_data.values() if gf.check_if_not_exclude(trace["name"])
     ]
-    gl_win: int = st.session_state["gl_win"]
-    gl_deg: int = st.session_state["gl_deg"]
+    gl_win: int = gf.st_get("gl_win")
+    gl_deg: int = gf.st_get("gl_deg")
 
     for trace in traces:
-        smooth_name: str = f"{trace['name']}{cont.SMOOTH_SUFFIX}"
+        smooth_name: str = f"{trace['name']}{cont.SUFFIXES.col_smooth}"
         smooth_visible: bool = bool(gf.st_get(f"cb_vis_{smooth_name}"))
 
         if smooth_visible:
@@ -416,7 +405,6 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
                         meta=meta_trace,
                     )
                 )
-                st.session_state["metadata"][smooth_name] = meta_trace
 
             elif any(
                 [
@@ -486,11 +474,13 @@ def clean_outliers() -> None:
                 )
 
 
+"""
 @gf.func_timer
 def update_main() -> None:
-    """Darstellungseinstellungen"""
-
-    for fig in st.session_state["lis_figs"]:
+    "Darstellungseinstellungen"
+    figs: clf.Figs = gf.st_get("figs")
+    fig_lis: list[go.Figure] = [fig.st_key for fig in figs.list_all_figs()]
+    for fig in fig_lis:
         switch = fig == "fig_days"
 
         # anzuzeigende Achsen
@@ -520,7 +510,7 @@ def update_main() -> None:
             trace.fill = (
                 "tozeroy" if line_transp != cont.TRANSPARENCY_OPTIONS[0] else None
             )
-            trace.fillcolor = fill_colour_with_opacity(line_transp, line_colour)
+            trace.fillcolor = fgf.fill_colour_with_opacity(line_transp, line_colour)
 
         for annot in st.session_state[fig].layout.annotations:
             if "hline" not in annot.name:
@@ -532,8 +522,7 @@ def update_main() -> None:
                 [
                     tr
                     for tr in st.session_state[fig].data
-                    if tr.visible is True
-                    and gf.check_if_not_exclude(tr.name)
+                    if tr.visible is True and gf.check_if_not_exclude(tr.name)
                 ]
             )
             != 1
@@ -592,3 +581,4 @@ def update_main() -> None:
                 legendgroup=None,
                 legendgrouptitle=None,
             )
+"""

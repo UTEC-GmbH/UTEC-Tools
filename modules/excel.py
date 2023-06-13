@@ -75,7 +75,7 @@ def import_prefab_excel(file: Any) -> None:
 
     # 15min und kWh
     df, meta = convert_15min_kwh_to_kw(df, meta)
-    logger.debug(f"Metadaten nach 15min-Konvertierung: \n{meta}")
+    
     units = {col: meta[col]["unit"] for col in meta if meta[col].get("unit")}
 
     # write stuff in session state
@@ -216,8 +216,6 @@ def meta_from_index(df: pd.DataFrame) -> dict[str, Any]:
     else:
         dic_index["datetime"] = True
         td_mean: pd.Timedelta = df.index.to_series().diff().mean().round("min")
-
-        logger.debug(f"Zeitliche Auflösung des DataFrame: {td_mean}")
 
         dic_index["td_mean"] = td_mean
         if dic_index["td_mean"] == pd.Timedelta(minutes=15):

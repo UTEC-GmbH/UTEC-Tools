@@ -77,7 +77,7 @@ def fig_type_by_title(fig: go.Figure, **kwargs) -> str:
     )
 
     return next(
-        (key for key, value in cont.FIG_TITLES.items() if value in title),
+        (key for key, value in vars(cont.FIG_TITLES).items() if value in title),
         "type unknown",
     )
 
@@ -141,13 +141,13 @@ def del_smooth() -> None:
     for item in st.session_state:
         if isinstance(item, pd.DataFrame):
             for col in [str(col) for col in item.columns]:
-                if cont.SMOOTH_SUFFIX in col:
+                if cont.SUFFIXES.col_smooth in col:
                     item.drop(columns=[col], inplace=True)
 
     # Linien löschen
     lis_dat: list = [
         dat
         for dat in st.session_state["fig_base"].data
-        if cont.SMOOTH_SUFFIX not in dat.name
+        if cont.SUFFIXES.col_smooth not in dat.name
     ]
     st.session_state["fig_base"].data = tuple(lis_dat)

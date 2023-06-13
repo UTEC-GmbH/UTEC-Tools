@@ -14,8 +14,9 @@ from modules import general_functions as gf
 from modules import setup_logger as slog
 
 if TYPE_CHECKING:
-    import pandas as pd
     import datetime as dt
+
+    import pandas as pd
 
 COL_IND: str = cont.SPECIAL_COLS.index
 COL_ORG: str = cont.SPECIAL_COLS.original_index
@@ -160,7 +161,7 @@ def df_h(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
                 mdf.df.get_column(col).alias(
                     col.replace(cont.SUFFIXES.col_leistung, "").strip()
                 )
-                for col in cols
+                for col in [*cols, COL_ORG]
             ]
         )
         .sort(by=COL_IND)
@@ -179,6 +180,7 @@ def df_h(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
 
     logger.success("DataFrame mit Stundenwerten erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.df_h.head())
+    logger.info(f"Cols: {mdf.df_h.columns}")
 
     gf.st_set("mdf", mdf)
     return mdf
@@ -188,8 +190,7 @@ def df_h(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
 def jdl(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     """Jahresdauerlinie"""
 
-    if mdf.df_h is None:
-        mdf = df_h(mdf)
+    mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h(mdf)
 
     # Zeit-Spalte für jede Linie kopieren um sie zusammen sortieren zu können
     cols_without_index: list[str] = [
@@ -222,10 +223,13 @@ def jdl(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
             for col in cols_without_index
         ]
 
-    mdf.jdl = pl.DataFrame(sum(jdl_separate, [])).with_row_count("Stunden")
+    mdf.jdl = pl.DataFrame(sum(jdl_separate, [])).with_row_count(
+        cont.SPECIAL_COLS.index
+    )
 
     logger.success("DataFrame für Jahresdauerlinie erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.jdl.head())
+    logger.info(f"Cols: {mdf.jdl.columns}")
 
     gf.st_set("mdf", mdf)
     return mdf
@@ -235,12 +239,12 @@ def jdl(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
 def mon(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     """Monatswerte"""
 
-    if mdf.df_h is None:
-        mdf = df_h(mdf)
+    mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h(mdf)
 
     cols_without_index: list[str] = [
         col for col in mdf.df_h.columns if gf.check_if_not_exclude(col)
     ]
+
     mdf.mon = (
         mdf.df_h.groupby_dynamic(COL_IND, every="1mo")
         .agg(
@@ -252,7 +256,12 @@ def mon(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
             ]
         )
         .with_columns(
-            pl.col(COL_IND).dt.strftime("%Y-%m-15 %H:%M:%S").str.strptime(pl.Datetime),
+            [
+                pl.col(COL_IND).alias(COL_ORG),
+                pl.col(COL_IND)
+                .dt.strftime("%Y-%m-15 %H:%M:%S")
+                .str.strptime(pl.Datetime),
+            ]
         )
     )
 

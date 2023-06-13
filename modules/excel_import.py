@@ -156,7 +156,9 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cl.MetaDat
         lines=[
             cl.MetaLine(
                 name=line,
-                name_orgidx=f"{line}{cont.SUFFIXES.col_original_index}",
+                name_orgidx=f"{line}{cont.SUFFIXES.col_original_index}"
+                if cont.SUFFIXES.col_original_index not in line
+                else line,
                 orig_tit=line,
                 tit=line,
                 unit=unit,
@@ -347,6 +349,11 @@ def meta_from_obis(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         if match := re.search(clc.ObisElectrical.pattern, name):
             line.obis = clc.ObisElectrical(match[0])
             line.name = line.obis.name
+            line.name_orgidx = (
+                f"{line.obis.name}{cont.SUFFIXES.col_original_index}"
+                if cont.SUFFIXES.col_original_index not in line.obis.name
+                else line.obis.name
+            )
             line.tit = line.obis.name
             line.unit = line.unit or line.obis.unit
 

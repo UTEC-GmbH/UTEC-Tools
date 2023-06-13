@@ -46,6 +46,7 @@ with st.form("my_form"):
     if submitted and OPENAI_KEY.startswith("sk-"):
         generate_response(text)
 
-with st.expander("Chat Verlauf"):
-    for element in gf.st_get(HISTORY_KEY):
-        st.info(element, icon="🤔" if "Frage: " in element else "🤖")
+if gf.st_in(HISTORY_KEY):
+    with st.expander("Chat Verlauf"):
+        for element in gf.st_get(HISTORY_KEY):
+            st.info(element, icon="🤔" if "Frage: " in element else "🤖")

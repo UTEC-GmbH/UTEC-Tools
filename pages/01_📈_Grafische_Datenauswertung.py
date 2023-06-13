@@ -113,31 +113,32 @@ def gather_and_manipulate_data() -> cl.MetaAndDfs:
 
 
 @gf.lottie_spinner
-def make_graphs(mdf: cl.MetaAndDfs) -> None:
+def make_graphs(mdf: cl.MetaAndDfs) -> clf.Figs:
     """Grafiken erzeugen"""
 
-    figs: clf.Figs = clf.Figs()
+    figs: clf.Figs = gf.st_get("figs") or clf.Figs()
+
     # Grund-Grafik
-    if gf.st_not_in("fig_base"):
+    if figs.base is None:
         with st.spinner('Momentle bitte - Grafik "Lastgang" wird erzeugt...'):
-            figs.base.fig = fig_create.cr_fig_base(mdf)
-            gf.st_set("fig_base", figs.base.fig)
+            figs.base = clf.FigProp(fig=fig_create.cr_fig_base(mdf), st_key="fig_base")
 
     # Jahresdauerlinie
-    if gf.st_get("cb_jdl") and gf.st_not_in("fig_jdl"):
+    if figs.jdl is None and gf.st_not_in("fig_jdl"):
         with st.spinner('Momentle bitte - Grafik "Jahresdauerlinie" wird erzeugt...'):
-            figs.jdl.fig = fig_create.cr_fig_jdl(mdf)
-            gf.st_set("fig_jdl", figs.jdl.fig)
+            figs.jdl = clf.FigProp(fig=fig_create.cr_fig_jdl(mdf), st_key="fig_jdl")
 
     # Monatswerte
-    if gf.st_get("cb_mon") and gf.st_not_in("fig_mon"):
+    if figs.mon is None and gf.st_not_in("fig_mon"):
         with st.spinner('Momentle bitte - Grafik "Monatswerte" wird erzeugt...'):
-            figs.mon.fig = fig_create.cr_fig_mon(mdf)
+            figs.mon = clf.FigProp(fig=fig_create.cr_fig_mon(mdf), st_key="fig_mon")
 
     # Tagesvergleich
-    if gf.st_get("cb_days") and gf.st_get("but_select_graphs"):
+    if figs.days is None and gf.st_get("but_select_graphs"):
         with st.spinner('Momentle bitte - Grafik "Tagesvergleich" wird erzeugt...'):
-            figs.days.fig = fig_create.cr_fig_days(mdf)
+            figs.days = clf.FigProp(fig=fig_create.cr_fig_days(mdf), st_key="fig_days")
+
+    figs.write_all_to_st()
 
     # horizontale / vertikale Linien
     sm.h_v_lines()
@@ -149,58 +150,18 @@ def make_graphs(mdf: cl.MetaAndDfs) -> None:
     if gf.st_get("but_clean_outliers"):
         fig_anno.clean_outliers()
 
+    gf.st_set("figs", figs)
+    return figs
+
 
 if uauth.authentication(st.session_state["page"]):
     debug_code_run(position="before")
 
     sm.sidebar_file_upload()
 
-    if any(gf.st_get(entry) is not None for entry in ("f_up", "df")):
-        mdf = gather_and_manipulate_data()
-        make_graphs(mdf)
-        # # --- Grafiken erzeugen ---
-        # # Grund-Grafik
-        # st.session_state["lis_figs"] = ["fig_base"]
-        # if "fig_base" not in st.session_state:
-        #     with st.spinner('Momentle bitte - Grafik "Lastgang" wird erzeugt...'):
-        #         st.session_state["fig_base"] = fig_create.cr_fig_base()
-
-        # # Jahresdauerlinie
-        # if gf.st_get("cb_jdl"):
-        #     st.session_state["lis_figs"].append("fig_jdl")
-        #     if "fig_jdl" not in st.session_state:
-        #         with st.spinner(
-        #             'Momentle bitte - Grafik "Jahresdauerlinie" wird erzeugt...'
-        #         ):
-        #             fig_create.cr_fig_jdl()
-
-        # # Monatswerte
-        # if gf.st_get("cb_mon"):
-        #     st.session_state["lis_figs"].append("fig_mon")
-        #     if "fig_mon" not in st.session_state:
-        #         with st.spinner(
-        #             'Momentle bitte - Grafik "Monatswerte" wird erzeugt...'
-        #         ):
-        #             fig_create.cr_fig_mon()
-
-        # # Tagesvergleich
-        # if gf.st_get("cb_days"):
-        #     st.session_state["lis_figs"].append("fig_days")
-        #     if gf.st_get("but_select_graphs"):
-        #         with st.spinner(
-        #             'Momentle bitte - Grafik "Tagesvergleich" wird erzeugt...'
-        #         ):
-        #             fig_create.cr_fig_days()
-
-        # # horizontale / vertikale Linien
-        # sm.h_v_lines()
-        # if gf.st_get("but_h_v_lines"):
-        #     fig_anno.h_v_lines()
-
-        # # Ausreißerbereinigung
-        # sm.clean_outliers()
-        # if gf.st_get("but_clean_outliers"):
-        #     fig_anno.clean_outliers()
+    if any(gf.st_get(entry) is not None for entry in ("f_up", "mdf")):
+        mdf: cl.MetaAndDfs = gather_and_manipulate_data()
+        figs: clf.Figs = make_graphs(mdf)
 
         tab_grafik: Any
         tab_download: Any
@@ -212,17 +173,20 @@ if uauth.authentication(st.session_state["page"]):
                 sm.display_options_main()
                 sm.display_smooth_main()
 
-                for fig in st.session_state["lis_figs"]:
-                    st.session_state[fig] = fig_format.update_main(
-                        st.session_state[fig]
-                    )
+                figs.update_all_figs()
+                figs.write_all_to_st()
 
             with st.spinner("Momentle bitte - Grafiken werden angezeigt..."):
-                fig_create.plot_figs()
+                fig_create.plot_figs(figs)
+
+        gf.st_set("figs", figs)
 
         # --- Downloads ---
         with tab_download:
             sm.downloads()
+
+    else:
+        st.info("Bitte Datei hochladen oder Beispiel auswählen")
 
         debug_code_run(position="after")
 

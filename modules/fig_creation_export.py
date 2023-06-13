@@ -9,6 +9,7 @@ import streamlit as st
 from loguru import logger
 
 from modules import classes_data as cl
+from modules import classes_figs as clf
 from modules import constants as cont
 from modules import fig_annotations as fig_anno
 from modules import fig_formatting as fig_format
@@ -80,7 +81,6 @@ def cr_fig_base(mdf: cl.MetaAndDfs) -> go.Figure:
             )
 
     logger.success("fig_base created")
-
     return fig
 
 
@@ -91,9 +91,9 @@ def cr_fig_jdl(mdf: cl.MetaAndDfs) -> go.Figure:
     tit: str = f"{cont.FIG_TITLES.jdl}{cont.SUFFIXES.fig_tit_h}"
 
     if gf.st_get("cb_multi_year"):
-        fig: go.Figure = ploplo.line_plot_y_overlay(mdf, title=tit)
+        fig: go.Figure = ploplo.line_plot_y_overlay(mdf, "jdl", title=tit)
     else:
-        fig: go.Figure = ploplo.line_plot(mdf, title=tit)
+        fig: go.Figure = ploplo.line_plot(mdf, "jdl", title=tit)
 
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
@@ -108,8 +108,8 @@ def cr_fig_jdl(mdf: cl.MetaAndDfs) -> go.Figure:
     )
     fig = fig_format.standard_axes_and_layout(fig, x_tickformat=",d")
 
-    x_min = min(min(d.x) for d in fig.data)
-    x_max = max(max(d.x) for d in fig.data)
+    x_min: int = min(min(d.x) for d in fig.data)
+    x_max: int = max(max(d.x) for d in fig.data)
 
     if 7000 < x_max < 9000:
         fig.update_xaxes(
@@ -129,13 +129,15 @@ def cr_fig_jdl(mdf: cl.MetaAndDfs) -> go.Figure:
 
 
 @gf.func_timer
-def cr_fig_mon(mdf) -> go.Figure:
+def cr_fig_mon(mdf: cl.MetaAndDfs) -> go.Figure:
     """Monatswerte erstellen"""
 
     if gf.st_get("cb_multi_year"):
-        fig: go.Figure = ploplo.line_plot_y_overlay(mdf, title=cont.FIG_TITLES.mon)
+        fig: go.Figure = ploplo.line_plot_y_overlay(
+            mdf, "mon", title=cont.FIG_TITLES.mon
+        )
     else:
-        fig: go.Figure = ploplo.line_plot(mdf, title=cont.FIG_TITLES.mon)
+        fig: go.Figure = ploplo.line_plot(mdf, "mon", title=cont.FIG_TITLES.mon)
 
     # Pfeile an Maxima
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
@@ -176,7 +178,7 @@ def cr_fig_mon(mdf) -> go.Figure:
 
 
 @gf.func_timer
-def cr_fig_days() -> None:
+def cr_fig_days(mdf: cl.MetaAndDfs) -> None:
     """Tagesvergleiche"""
 
     tit_res: str = ""
@@ -208,32 +210,39 @@ def cr_fig_days() -> None:
 
 
 @gf.func_timer
-def plot_figs() -> None:
+def plot_figs(figs: clf.Figs) -> None:
     """Grafiken darstellen"""
 
     with st.container():
         st.plotly_chart(
-            st.session_state["fig_base"],
+            figs.base.fig,
             use_container_width=True,
             config=fig_format.plotly_config(height=450),
             theme=cont.ST_PLOTLY_THEME,
         )
 
-        if gf.st_get("cb_jdl") and gf.st_get("cb_mon"):
+        if all(
+            [
+                gf.st_get("cb_jdl"),
+                gf.st_get("cb_mon"),
+                figs.jdl is not None,
+                figs.mon is not None,
+            ]
+        ):
             st.markdown("###")
 
             columns: list = st.columns(2)
             with columns[0]:
                 st.plotly_chart(
-                    st.session_state["fig_jdl"],
+                    figs.jdl.fig,
                     use_container_width=True,
                     config=fig_format.plotly_config(),
                     theme=cont.ST_PLOTLY_THEME,
                 )
-                if gf.st_get("cb_days"):
+                if gf.st_get("cb_days") and figs.days is not None:
                     st.markdown("###")
                     st.plotly_chart(
-                        st.session_state["fig_days"],
+                        figs.days.fig,
                         use_container_width=True,
                         config=fig_format.plotly_config(),
                         theme=cont.ST_PLOTLY_THEME,
@@ -241,7 +250,7 @@ def plot_figs() -> None:
 
             with columns[1]:
                 st.plotly_chart(
-                    st.session_state["fig_mon"],
+                    figs.mon.fig,
                     use_container_width=True,
                     config=fig_format.plotly_config(),
                     theme=cont.ST_PLOTLY_THEME,
@@ -251,7 +260,7 @@ def plot_figs() -> None:
             st.markdown("###")
 
             st.plotly_chart(
-                st.session_state["fig_jdl"],
+                figs.jdl.fig,
                 use_container_width=True,
                 config=fig_format.plotly_config(),
                 theme=cont.ST_PLOTLY_THEME,
@@ -259,7 +268,7 @@ def plot_figs() -> None:
             if gf.st_get("cb_days"):
                 st.markdown("###")
                 st.plotly_chart(
-                    st.session_state["fig_days"],
+                    figs.days.fig,
                     use_container_width=True,
                     config=fig_format.plotly_config(),
                     theme=cont.ST_PLOTLY_THEME,
@@ -269,7 +278,7 @@ def plot_figs() -> None:
             st.markdown("###")
 
             st.plotly_chart(
-                st.session_state["fig_mon"],
+                figs.mon.fig,
                 use_container_width=True,
                 config=fig_format.plotly_config(),
                 theme=cont.ST_PLOTLY_THEME,
@@ -277,7 +286,7 @@ def plot_figs() -> None:
             if gf.st_get("cb_days"):
                 st.markdown("###")
                 st.plotly_chart(
-                    st.session_state["fig_days"],
+                    figs.days.fig,
                     use_container_width=True,
                     config=fig_format.plotly_config(),
                     theme=cont.ST_PLOTLY_THEME,

@@ -7,6 +7,9 @@ from typing import Any
 import numpy as np
 import plotly.graph_objects as go
 
+from modules import fig_formatting as fform
+from modules import general_functions as gf
+
 
 @dataclass(kw_only=True)
 class FigTrace:
@@ -103,9 +106,14 @@ class FigProp:
     """Calss to hold plotly figure properties"""
 
     fig: go.Figure
+    st_key: str
     data: FigData | None = None
     layout: FigLayout | None = None
     annos: FigAnno | None = None
+
+    def update_fig(self) -> None:
+        """Update a figure (after settings in main window)"""
+        self.fig = fform.update_main(self.fig)
 
 
 @dataclass
@@ -117,6 +125,19 @@ class Figs:
     mon: FigProp | None = None
     days: FigProp | None = None
 
-    def get_list_of_figs(self) -> list[str]:
-        """Attribute names for figs that were created"""
-        return [key for key, val in vars(self).items() if val]
+    def list_all_figs(self) -> list[FigProp]:
+        """Get a list of all figs as custom types"""
+        return [self.base, self.jdl, self.mon, self.days]
+
+    def write_all_to_st(self) -> None:
+        """Write all figs to streamlit"""
+        gf.st_set("figs", self)
+        for fig in self.list_all_figs():
+            if fig is not None:
+                gf.st_set(fig.st_key, fig.fig)
+
+    def update_all_figs(self) -> None:
+        """Update all figs"""
+        for fig in self.list_all_figs():
+            if fig is not None:
+                fig.update_fig()

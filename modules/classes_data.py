@@ -6,8 +6,9 @@ from typing import Any, Literal
 
 import polars as pl
 
-from modules import classes_constants as cont
+from modules import classes_constants as clc
 from modules import classes_errors as cle
+from modules import constants as cont
 from modules import general_functions as gf
 
 
@@ -33,7 +34,7 @@ class MetaLine:
     tit: str
     unit: str | None = None
     y_axis: str = "y"
-    obis: cont.ObisElectrical | None = None
+    obis: clc.ObisElectrical | None = None
     excel_number_format: str | None = None
 
     def __repr__(self) -> str:
@@ -109,6 +110,11 @@ class MetaData:
         new_line: MetaLine = MetaLine(**vars(old_line))
         new_line.name = new_name
         new_line.tit = new_name
+        new_line.name_orgidx = (
+            f"{new_name}{cont.SUFFIXES.col_original_index}"
+            if cont.SUFFIXES.col_original_index not in new_name
+            else new_name
+        )
         self.lines += [new_line]
 
     def as_dict(self) -> dict[str, Any]:
@@ -117,7 +123,7 @@ class MetaData:
         for line in self.lines:
             dic: dict = {}
             for key, val in vars(line).items():
-                dic[key] = vars(val) if isinstance(val, cont.ObisElectrical) else val
+                dic[key] = vars(val) if isinstance(val, clc.ObisElectrical) else val
                 lines.append(dic)
 
         return {

@@ -63,11 +63,15 @@ def line_plot(
 
         logger.debug(f"line: {line}, line_org: {line_meta.name_orgidx}")
 
-        cusd: pl.Series = (
-            df.get_column(line_meta.name_orgidx)
-            if line_meta.name_orgidx in df.columns
-            else df.get_column(cont.SPECIAL_COLS.original_index)
-        )
+        if line_meta.name_orgidx in df.columns:
+            cusd: pl.Series = df.get_column(line_meta.name_orgidx)
+        else:
+            logger.debug(
+                f"Line '{line_meta.name_orgidx}' not found in DataFrame!"
+                f"Available columns: \n{df.columns}"
+            )
+            cusd: pl.Series = df.get_column(cont.SPECIAL_COLS.original_index)
+
         trace_unit: str | None = line_meta.unit
         hovtemp: str = f"{trace_unit} {cusd_format}"
         fig = fig.add_trace(

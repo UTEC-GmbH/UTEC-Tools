@@ -521,14 +521,21 @@ def legend_groups_for_multi_year(fig: go.Figure) -> go.Figure:
     """Docstring"""
 
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
-    legend_groups: list[str] = [str(year) for year in st.session_state["years"]]
+    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
+    legend_groups: list[str] = [
+        str(year) for year in layout["meta"]["metadata"]["years"]
+    ]
 
     number_of_traces_in_groups: dict = {
         group: len(
             [
                 trace
                 for trace in data.values()
-                if str(trace["meta"]["year"]) == group and trace.get("visible")
+                if (
+                    str(trace["meta"].get("year")) == group
+                    or group in trace.get("name")
+                )
+                and trace.get("visible")
             ]
         )
         for group in legend_groups
@@ -544,7 +551,9 @@ def legend_groups_for_multi_year(fig: go.Figure) -> go.Figure:
             )
         else:
             for trace in data.values():
-                if group in str(trace["meta"]["year"]):
+                if group in str(trace["meta"].get("year")) or group in trace.get(
+                    "name"
+                ):
                     fig = fig.update_traces(
                         {"legendgroup": group, "legendgrouptitle": {"text": group}},
                         {"name": trace["name"]},

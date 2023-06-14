@@ -42,8 +42,6 @@ def cr_fig_base(mdf: cl.MetaAndDfs) -> go.Figure:
             title=tit,
         )
 
-    logger.debug(fig.to_dict)
-
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
@@ -92,10 +90,11 @@ def cr_fig_jdl(mdf: cl.MetaAndDfs) -> go.Figure:
 
     tit: str = f"{cont.FIG_TITLES.jdl}{cont.SUFFIXES.fig_tit_h}"
 
-    if gf.st_get("cb_multi_year"):
-        fig: go.Figure = ploplo.line_plot_y_overlay(mdf, "jdl", title=tit)
-    else:
-        fig: go.Figure = ploplo.line_plot(mdf, "jdl", title=tit)
+    # if gf.st_get("cb_multi_year"):
+    #     fig: go.Figure = ploplo.line_plot_y_overlay(mdf, "jdl", title=tit)
+    # else:
+    #     fig: go.Figure = ploplo.line_plot(mdf, "jdl", title=tit)
+    fig: go.Figure = ploplo.line_plot(mdf, "jdl", title=tit)
 
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
@@ -136,7 +135,7 @@ def cr_fig_mon(mdf: cl.MetaAndDfs) -> go.Figure:
 
     if gf.st_get("cb_multi_year"):
         fig: go.Figure = ploplo.line_plot_y_overlay(
-            mdf, "mon", title=cont.FIG_TITLES.mon
+            mdf, "mon_multi", title=cont.FIG_TITLES.mon
         )
     else:
         fig: go.Figure = ploplo.line_plot(mdf, "mon", title=cont.FIG_TITLES.mon)

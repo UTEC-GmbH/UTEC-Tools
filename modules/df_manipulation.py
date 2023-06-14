@@ -15,7 +15,6 @@ from modules import setup_logger as slog
 
 if TYPE_CHECKING:
     import datetime as dt
-
     import pandas as pd
 
 COL_IND: str = cont.SPECIAL_COLS.index
@@ -219,7 +218,7 @@ def jdl(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
             .rename(
                 {
                     col: f"{col} {year}",
-                    f"{col} - {COL_ORG}": f"{col} - {COL_ORG} {year}",
+                    f"{col} - {COL_ORG}": f"{col} {year} - {COL_ORG}",
                 }
             )
             .get_columns()

@@ -123,16 +123,12 @@ def split_multi_years(
 
     df_multi: dict[int, pl.DataFrame] = {}
     for year in mdf.meta.years:
-        col_rename: dict[str, str] = {}
-        for col in [col for col in df.columns if gf.check_if_not_exclude(col)]:
-            new_col_name: str = f"{col} {year}"
-            if any(suff in col for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()):
-                for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes():
-                    if suff in col:
-                        new_col_name = f"{col.split(suff)[0]} {year}{suff}"
-            col_rename[col] = new_col_name
+        col_rename: dict[str, str] = multi_year_column_rename(df, year)
+        for old_name, new_name in col_rename.items():
+            if new_name not in mdf.meta.get_all_line_names():
+                mdf.meta.copy_line_meta_with_new_name(old_name, new_name)
 
-        df_filtered: pl.DataFrame = (
+        df_multi[year] = (
             df.filter(pl.col(COL_IND).dt.year() == year)
             .with_columns(
                 pl.col(COL_IND)
@@ -142,9 +138,24 @@ def split_multi_years(
             .rename(col_rename)
         )
 
-        df_multi[year] = df_filtered
+    logger.debug(
+        f"Meta for following lines available: \n{mdf.meta.get_all_line_names()}"
+    )
 
     return df_multi
+
+
+def multi_year_column_rename(df: pl.DataFrame, year: int) -> dict[str, str]:
+    """Rename columns for multi year data"""
+    col_rename: dict[str, str] = {}
+    for col in [col for col in df.columns if gf.check_if_not_exclude(col)]:
+        new_col_name: str = f"{col} {year}"
+        if any(suff in col for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()):
+            for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes():
+                if suff in col:
+                    new_col_name = f"{col.split(suff)[0]} {year}{suff}"
+        col_rename[col] = new_col_name
+    return col_rename
 
 
 @gf.func_timer

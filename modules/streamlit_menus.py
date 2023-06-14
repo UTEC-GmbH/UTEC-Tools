@@ -601,15 +601,13 @@ def display_options_main_col_settings() -> dict[str, dict]:
                 - "anno" -> show an arrow pointing to the maximim value of the line
     """
     return {
-        "name": {
-            "Title": gf.text_with_hover("Linie", "Bezeichnung der Linie"),
-            "width": 3,
-        },
+        # "name": {
+        #     "Title": gf.text_with_hover("Linie", "Bezeichnung der Linie"),
+        #     "width": 3,
+        # },
         "vis": {
-            "Title": gf.text_with_hover(
-                "Anzeigen", "Linien, die angezeigt werden sollen"
-            ),
-            "width": 1,
+            "Title": gf.text_with_hover("Linie", "Linien, die angezeigt werden sollen"),
+            "width": 3,
         },
         "colour": {
             "Title": gf.text_with_hover("Farbe", "Linienfarbe wählen"),
@@ -619,16 +617,16 @@ def display_options_main_col_settings() -> dict[str, dict]:
             "Title": gf.text_with_hover("Linientyp", "Linie gestrichelt darstellen?"),
             "width": 2,
         },
-        "markers": {
-            "Title": gf.text_with_hover(
-                "Punkte", "Markierung (Punkt) an jedem Datenpunkt und deren Größe"
-            ),
-            "width": 2,
-        },
         "fill": {
             "Title": gf.text_with_hover(
                 "Füllen (Transparenz)",
                 "Linien, die zur x-Achse ausgefüllt werden sollen",
+            ),
+            "width": 2,
+        },
+        "markers": {
+            "Title": gf.text_with_hover(
+                "Punkte", "Markierung (Punkt) an jedem Datenpunkt und deren Größe"
             ),
             "width": 2,
         },
@@ -660,9 +658,7 @@ def display_options_main() -> bool:
         fig_layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
         colorway: list[str] = fgf.get_colorway(fig)
         lines: list[dict] = [
-            line
-            for line in fig_data.values()
-            if gf.check_if_not_exclude(line["name"])
+            line for line in fig_data.values() if gf.check_if_not_exclude(line["name"])
         ]
 
         for count, line in enumerate(lines):
@@ -670,8 +666,8 @@ def display_options_main() -> bool:
             line_name: str = line["name"]
             line_color: str = colorway[count]
             if len(line["x"]) > 0 and line_name is not None and line_color is not None:
-                with cols[list(columns).index("name")]:
-                    st.markdown(line_name)
+                # with cols[list(columns).index("name")]:
+                #     st.markdown(line_name)
                 with cols[list(columns).index("vis")]:
                     st.checkbox(
                         label=line_name,
@@ -683,7 +679,7 @@ def display_options_main() -> bool:
                             ]
                         ),
                         key=f"cb_vis_{line_name}",
-                        label_visibility="collapsed",
+                        # label_visibility="collapsed",
                     )
                 with cols[list(columns).index("colour")]:
                     st.color_picker(
@@ -819,9 +815,7 @@ def display_smooth_main() -> bool:
         fig_data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
         colorway: list[str] = fgf.get_colorway(fig)
         lines: list[dict] = [
-            line
-            for line in fig_data.values()
-            if gf.check_if_not_exclude(line["name"])
+            line for line in fig_data.values() if gf.check_if_not_exclude(line["name"])
         ]
 
         for count, line in enumerate(lines):
@@ -834,14 +828,14 @@ def display_smooth_main() -> bool:
                 and line_name is not None
                 and line_color is not None
             ):
-                with cols[list(columns).index("name")]:
-                    st.markdown(line_name)
+                # with cols[list(columns).index("name")]:
+                #     st.markdown(line_name)
                 with cols[list(columns).index("vis")]:
                     st.checkbox(
                         label=line_name,
                         value=False,
                         key=f"cb_vis_{line_name}",
-                        label_visibility="collapsed",
+                        # label_visibility="collapsed",
                     )
                 with cols[list(columns).index("type")]:
                     st.selectbox(

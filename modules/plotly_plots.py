@@ -114,12 +114,10 @@ def line_plot_y_overlay(
     Returns:
         - go.Figure: Liniengrafik mit mehreren Jahren übereinander
     """
+
+    logger.debug(f"DataFrame {data_frame}")
     dic_df: dict[int, pl.DataFrame] = getattr(mdf, data_frame)
-    lines = kwargs.get("lines") or [
-        col
-        for col in [dic_df[year].columns for year in mdf.meta.years]
-        if gf.check_if_not_exclude(col)
-    ]
+    lines = kwargs.get("lines") or mdf.get_lines_in_multi_df(data_frame)
 
     cusd_format: str = (
         "(%{customdata|%a %d. %b %Y %H:%M})"

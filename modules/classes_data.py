@@ -2,12 +2,13 @@
 
 import pprint
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Literal
 
 import polars as pl
 
-import modules.classes_constants as cont
+from modules import classes_constants as cont
 from modules import classes_errors as cle
+from modules import general_functions as gf
 
 
 @dataclass
@@ -64,7 +65,7 @@ class MetaData:
 
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
-        return pprint.pformat(vars(self), sort_dicts=False)
+        return pprint.pformat(vars(self))
 
     def get_line_by_name(self, line_name: str) -> MetaLine:
         """Get the line object from the string of the line name"""
@@ -99,6 +100,16 @@ class MetaData:
                 setattr(line, attribute, new_value)
                 return
         raise cle.LineNotFoundError(line_name)
+
+    def copy_line_meta_with_new_name(self, old_name: str, new_name: str) -> None:
+        """Add an entry in the list of lines in the meta data
+        by copying the meta data of a line and giving it a new name"""
+
+        old_line: MetaLine = self.get_line_by_name(old_name)
+        new_line: MetaLine = MetaLine(**vars(old_line))
+        new_line.name = new_name
+        new_line.tit = new_name
+        self.lines += [new_line]
 
     def as_dict(self) -> dict[str, Any]:
         """Get all MetaData as a dictionary"""
@@ -143,3 +154,17 @@ class MetaAndDfs:
     df_multi: dict[int, pl.DataFrame] | None = None
     df_h_multi: dict[int, pl.DataFrame] | None = None
     mon_multi: dict[int, pl.DataFrame] | None = None
+
+    def get_lines_in_multi_df(
+        self, df: Literal["df_multi", "df_h_multi", "mon_multi"] = "df_multi"
+    ) -> list[str]:
+        """Get all lines in the multi-year data frame"""
+        df_multi: dict[int, pl.DataFrame] = getattr(self, df)
+
+        lines = []
+        for year in self.meta.years:
+            lines.extend(
+                [col for col in df_multi[year].columns if gf.check_if_not_exclude(col)]
+            )
+
+        return lines

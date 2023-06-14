@@ -42,6 +42,8 @@ def cr_fig_base(mdf: cl.MetaAndDfs) -> go.Figure:
             title=tit,
         )
 
+    logger.debug(fig.to_dict)
+
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
 

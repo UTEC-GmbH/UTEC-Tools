@@ -64,13 +64,13 @@ def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cl.MetaAndDfs:
     # 15min und kWh
     mdf = convert_15min_kwh_to_kw(mdf)
 
-    logger.info(mdf.meta.__dict__)
     slog.log_df(mdf.df)
 
     if mdf.meta.multi_years:
         mdf.df_multi = df_man.split_multi_years(mdf, "df")
 
     logger.success("Excel-Datei importiert.")
+    logger.info(f"Imported lines: \n{mdf.meta.get_all_line_names()}")
 
     return mdf
 
@@ -424,11 +424,8 @@ def rename_column_arbeit_leistung(
     """
     new_name: str = f"{col}{cont.ARBEIT_LEISTUNG.get_suffix(original_data_type)}"
     mdf.df = mdf.df.rename({col: new_name})
-    old_line: cl.MetaLine = mdf.meta.get_line_by_name(col)
-    new_line: cl.MetaLine = cl.MetaLine(**vars(old_line))
-    new_line.name = new_name
-    new_line.tit = new_name
-    mdf.meta.lines += [new_line]
+    # mdf = copy_line_meta_with_new_name(mdf, col, new_name)
+    mdf.meta.copy_line_meta_with_new_name(col, new_name)
 
     logger.info(f"Spalte '{col}' umbenannt in '{new_name}'")
 
@@ -452,19 +449,16 @@ def insert_column_arbeit_leistung(
     """
     new_col_type: str = "Arbeit" if original_data == "Leistung" else "Leistung"
     new_col_name: str = f"{col}{cont.ARBEIT_LEISTUNG.get_suffix(new_col_type)}"
-    old_line: cl.MetaLine = mdf.meta.get_line_by_name(col)
-    new_line: cl.MetaLine = cl.MetaLine(**vars(old_line))
-    new_line.name = new_col_name
-    new_line.tit = new_col_name
-    mdf.meta.lines += [new_line]
+    # mdf = copy_line_meta_with_new_name(mdf, col, new_col_name)
+    mdf.meta.copy_line_meta_with_new_name(col, new_col_name)
 
     if original_data == "Arbeit":
         mdf.df = mdf.df.with_columns((pl.col(col) * 4).alias(new_col_name))
-        old_unit: str = old_line.unit or " kWh"
+        old_unit: str = mdf.meta.get_line_attribute(col, "unit") or " kWh"
         new_unit: str = old_unit[:-1]
     else:
         mdf.df = mdf.df.with_columns((pl.col(col) / 4).alias(new_col_name))
-        old_unit = old_line.unit or " kW"
+        old_unit = mdf.meta.get_line_attribute(col, "unit") or " kW"
         new_unit: str = f"{old_unit}h"
 
     mdf.meta.change_line_attribute(new_col_name, "unit", new_unit)

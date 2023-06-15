@@ -81,16 +81,12 @@ class ArbeitLeistung:
 
 
     Methods:
-        - get_all_suffixes: ...wie der Name schon sagt...
         - get_suffix: Get the suffix by providing the type (Arbeit / Leistung)
     """
 
     arbeit: SuffixUnit
     leistung: SuffixUnit
-
-    def get_all_suffixes(self) -> list[str]:
-        """Get all suffixes"""
-        return [getattr(self, attr).suffix for attr in self.__dict__]
+    all_suffixes: list[str]
 
     def get_suffix(self, data_type: str) -> str:
         """Get the suffix by providing the type (Arbeit / Leistung)"""

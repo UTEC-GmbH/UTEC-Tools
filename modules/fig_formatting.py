@@ -13,9 +13,9 @@ import streamlit as st
 from loguru import logger
 
 from modules import constants as cont
+from modules import fig_annotations as fa
 from modules import fig_general_functions as fgf
 from modules import general_functions as gf
-from modules.fig_annotations import smooth
 
 
 @gf.func_timer
@@ -326,7 +326,7 @@ def show_traces(fig: go.Figure) -> go.Figure:
             fig_type = key
 
     if fig_type == "lastgang":
-        fig = smooth(fig)
+        fig = fa.smooth(fig)
         layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
@@ -343,9 +343,9 @@ def show_traces(fig: go.Figure) -> go.Figure:
         if switch:
             trace_visible = st.session_state[f'cb_vis_{trace_data["legendgroup"]}']
         if fig_type in ["mon", "jdl"] and any(
-            suff in new_name for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()
+            suff in new_name for suff in cont.ARBEIT_LEISTUNG.all_suffixes
         ):
-            suffixes: list[str] = cont.ARBEIT_LEISTUNG.get_all_suffixes()
+            suffixes: list[str] = cont.ARBEIT_LEISTUNG.all_suffixes
             trace_stripped: str = new_name
             for suffix in suffixes:
                 trace_stripped = trace_stripped.replace(suffix, "")
@@ -407,7 +407,7 @@ def format_traces(fig: go.Figure) -> go.Figure:
                 if line_fill
                 else None
             )
-            line_dash = (
+            line_dash: str = (
                 cont.LINE_TYPES["gestrichelt lang"]
                 if fig_type == "mon"
                 else cont.LINE_TYPES[st.session_state[f"sb_line_dash_{trace_name}"]]
@@ -496,7 +496,7 @@ def show_annos(fig: go.Figure, visible_traces: list[str]) -> go.Figure:
         an_name: str = anno["name"]
         if "hline" not in an_name:
             an_name_cust: str = an_name
-            for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes():
+            for suff in cont.ARBEIT_LEISTUNG.all_suffixes:
                 if suff in an_name:
                     an_name_cust: str = an_name.split(suff)[0]
             an_name_cust = an_name_cust.split(": ")[0]
@@ -525,6 +525,10 @@ def legend_groups_for_multi_year(fig: go.Figure) -> go.Figure:
     legend_groups: list[str] = [
         str(year) for year in layout["meta"]["metadata"]["years"]
     ]
+    for trace in data.values():
+        if not trace.get("meta"):
+            logger.critical(f"trace '{trace['name']}' has no meta data")
+            raise ValueError
 
     number_of_traces_in_groups: dict = {
         group: len(

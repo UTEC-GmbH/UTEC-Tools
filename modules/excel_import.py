@@ -381,7 +381,7 @@ def convert_15min_kwh_to_kw(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         logger.debug("Skipped 'convert_15min_kwh_to_kw'")
         return mdf
 
-    suffixes: list[str] = cont.ARBEIT_LEISTUNG.get_all_suffixes()
+    suffixes: list[str] = cont.ARBEIT_LEISTUNG.all_suffixes
 
     for col in mdf.meta.get_all_line_names():
         unit: str = (mdf.meta.get_line_by_name(col).unit or "").strip()

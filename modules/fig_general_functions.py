@@ -6,6 +6,7 @@ from typing import Any
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+from loguru import logger
 
 from modules import constants as cont
 
@@ -82,6 +83,21 @@ def fig_type_by_title(fig: go.Figure, **kwargs) -> str:
     )
 
 
+def get_set_of_visible_y_axes(fig: go.Figure, **kwargs) -> list[str]:
+    """Get all Y-Axes in Figure for visible traces ("y", "y2" etc.)
+    (without duplicates)
+    """
+
+    data: dict[str, dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
+    all_y_axes: list[str] = ["y"]
+    for line in data:
+        if data[line].get("visible"):
+            line_y: str = data[line].get("yaxis") or "y"
+            all_y_axes += [line_y] if line_y not in all_y_axes else []
+
+    return all_y_axes
+
+
 def get_units_for_all_axes(fig: go.Figure, **kwargs) -> dict[str, str]:
     """Get the units of all axes in a Figure from the metadata.
 
@@ -151,3 +167,13 @@ def del_smooth() -> None:
         if cont.SUFFIXES.col_smooth not in dat.name
     ]
     st.session_state["fig_base"].data = tuple(lis_dat)
+
+
+def debug_check_for_missing_meta_data(fig: go.Figure) -> None:
+    """Checks traces in a figure for missing meta data"""
+
+    data: dict[str, dict[str, Any]] = fig_data_as_dic(fig)
+    for trace in data.values():
+        if not trace.get("meta"):
+            logger.critical(f"trace '{trace['name']}' has no meta data")
+            raise ValueError

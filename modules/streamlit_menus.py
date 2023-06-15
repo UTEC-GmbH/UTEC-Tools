@@ -3,9 +3,10 @@
 import datetime
 import secrets
 from glob import glob
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 
 from modules import classes_data as cl
@@ -16,9 +17,6 @@ from modules import fig_general_functions as fgf
 from modules import general_functions as gf
 from modules import meteorolog as meteo
 from modules import user_authentication as uauth
-
-if TYPE_CHECKING:
-    import plotly.graph_objects as go
 
 
 @gf.func_timer
@@ -211,6 +209,9 @@ def sidebar_file_upload() -> Any:
 @gf.func_timer
 def base_settings(mdf: cl.MetaAndDfs) -> None:
     """Grundeinstellungen (Stundenwerte, JDL, Monatswerte)"""
+
+    if not mdf.meta.td_mnts:
+        return
 
     if mdf.meta.td_mnts == cont.TIME_MIN.hour:
         gf.st_set("cb_h", value=True)
@@ -535,8 +536,11 @@ def smooth() -> None:
 
 
 @gf.func_timer
-def h_v_lines() -> None:
+def h_v_lines(fig: go.Figure | None = None) -> None:
     """Menu für horizontale und vertikale Linien"""
+    fig = fig or gf.st_get("fig_base")
+    if fig is None:
+        return
 
     with st.sidebar, st.expander(
         "horizontale / vertikale Linien", expanded=False
@@ -558,6 +562,19 @@ def h_v_lines() -> None:
             key="ni_hor",
             step=1.0,
         )
+
+        if len(fgf.get_set_of_visible_y_axes(fig)) > 1:
+            st.selectbox(
+                label="Y-Achse",
+                options=fgf.get_set_of_visible_y_axes(fig),
+                help=(
+                    """
+                    Die Y-Achse, auf die sich die Linie beziehen soll.  \n
+                    (nicht wundern - die Reihenfolge ist "y", "y2", "y3" etc.)
+                    """
+                ),
+                key="sb_h_line_y",
+            )
 
         # st.multiselect(
         #     label= 'ausfüllen',
@@ -585,7 +602,6 @@ def h_v_lines() -> None:
         st.session_state["but_h_v_lines"] = st.form_submit_button("Knöpfle")
 
 
-@gf.func_timer
 def display_options_main_col_settings() -> dict[str, dict]:
     """Settings for the columns of the main display options
     (controlling line color, type, etc.)
@@ -607,7 +623,7 @@ def display_options_main_col_settings() -> dict[str, dict]:
         # },
         "vis": {
             "Title": gf.text_with_hover("Linie", "Linien, die angezeigt werden sollen"),
-            "width": 3,
+            "width": 4,
         },
         "colour": {
             "Title": gf.text_with_hover("Farbe", "Linienfarbe wählen"),
@@ -707,7 +723,7 @@ def display_options_main() -> bool:
                     with lvl2_2:
                         st.number_input(
                             label="Punkte",
-                            value=7,
+                            value=6,
                             key=f"ni_markers_{line_name}",
                             label_visibility="collapsed",
                         )
@@ -729,23 +745,21 @@ def display_options_main() -> bool:
                 ]:
                     if line_name in anno:
                         anno_name = anno.split(": ")[0]
-                show: bool = True
-                if any(
-                    suff in line_name
-                    for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()
-                ):
+
+                show_cb: bool = True
+                if any(suff in line_name for suff in cont.ARBEIT_LEISTUNG.all_suffixes):
                     suff: str = [
                         suff
-                        for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()
+                        for suff in cont.ARBEIT_LEISTUNG.all_suffixes
                         if suff in line_name
                     ][0]
                     anno_name: str = anno_name.replace(suff, "")
                     if "first_suff" not in st.session_state:
                         st.session_state["first_suff"] = suff
                     if suff != st.session_state["first_suff"]:
-                        show = False
+                        show_cb = False
 
-                if show and f"cb_anno_{anno_name}" not in st.session_state:
+                if show_cb:
                     with cols[list(columns).index("anno")]:
                         st.checkbox(
                             label=anno_name,
@@ -805,7 +819,7 @@ def display_smooth_main() -> bool:
 
         # Überschriften
         for count, col in enumerate(columns):
-            if count < 4:
+            if count < 3:
                 with cols[count]:
                     st.markdown("###")
                     st.markdown(columns[col]["Title"], unsafe_allow_html=True)

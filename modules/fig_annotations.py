@@ -255,24 +255,29 @@ def hline_line(
 
     ti_hor: str | None = None if ti_hor_init in {"", "new text"} else ti_hor_init
     cb_hor_dash: bool = gf.st_get("cb_hor_dash") or True
+    y_axis: str = gf.st_get("sb_h_line_y") or "y"
+    y_axis = "y" if y_axis not in fgf.get_set_of_visible_y_axes(fig) else y_axis
     if any("hline" in x for x in [s.name for s in fig.layout.shapes]):
         for shape in fig.layout.shapes:
             if "hline" in shape.name:
                 shape.y0 = shape.y1 = value
                 shape.visible = True
                 shape.line.dash = "dot" if cb_hor_dash else "solid"
+                shape.yref = y_axis
 
         for annot in fig.layout.annotations:
             if "hline" in annot.name:
                 annot.y = value
                 annot.visible = bool(ti_hor)
                 annot.text = ti_hor
+                annot.yref = y_axis
+
         logger.info(f"existing horizontal line moved to y = {value}")
 
     else:
         fig.add_hline(
             y=value,
-            yref="y2",
+            yref=y_axis,
             name="hline",
             line_dash="dot" if cb_hor_dash else "solid",
             line_width=1,
@@ -283,6 +288,7 @@ def hline_line(
             annotation_bgcolor="rgba(" + cont.FARBEN["weiß"] + cont.ALPHA["bg"],
             visible=True,
         )
+
         logger.success(f"horizontal line create at y = {value}")
 
 
@@ -363,7 +369,7 @@ def calculate_smooth_values(trace: dict[str, Any]) -> np.ndarray:
     return signal.savgol_filter(
         x=pd.Series(trace["y"]).interpolate("akima"),
         mode="mirror",
-        window_length=int(gf.st_get("gl_win") or st.session_state["smooth_start_val"]),
+        window_length=int(gf.st_get("gl_win") or gf.st_get("smooth_start_val")),
         polyorder=int(gf.st_get("gl_deg") or 3),
     )
 
@@ -378,7 +384,7 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
         trace for trace in fig_data.values() if gf.check_if_not_exclude(trace["name"])
     ]
     gl_win: int = gf.st_get("gl_win")
-    gl_deg: int = gf.st_get("gl_deg")
+    gl_deg: int = gf.st_get("gl_deg") or 3
 
     for trace in traces:
         smooth_name: str = f"{trace['name']}{cont.SUFFIXES.col_smooth}"
@@ -386,9 +392,12 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
 
         if smooth_visible:
             meta_trace: dict[str, Any] = trace["meta"]
-
+            logger.debug(f"meta data for '{trace['name']}': {meta_trace}")
             if smooth_name not in fig_data:
-                meta_trace = meta_trace.update({"gl_win": gl_win, "gl_deg": gl_deg})
+                meta_trace |= {"gl_win": gl_win, "gl_deg": gl_deg}
+                logger.debug(
+                    f"meta data for '{trace['name']}' after update: {meta_trace}"
+                )
                 smooth_legendgroup: str = trace.get("legendgroup") or "geglättet"
                 fig = fig.add_trace(
                     go.Scatter(
@@ -405,6 +414,7 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
                         meta=meta_trace,
                     )
                 )
+                fgf.debug_check_for_missing_meta_data(fig)
 
             elif any(
                 [
@@ -412,7 +422,7 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
                     meta_trace.get("gl_deg") != gl_deg,
                 ]
             ):
-                meta_trace = meta_trace.update({"gl_win": gl_win, "gl_deg": gl_deg})
+                meta_trace |= {"gl_win": gl_win, "gl_deg": gl_deg}
                 fig = fig.update_traces(
                     {"y": calculate_smooth_values(trace), "meta": meta_trace},
                     {"name": smooth_name},
@@ -420,6 +430,8 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
 
         elif smooth_name in fig_data:
             fig = fig.update_traces({"visible": False}, {"name": smooth_name})
+
+    fgf.debug_check_for_missing_meta_data(fig)
 
     return fig
 
@@ -472,113 +484,3 @@ def clean_outliers() -> None:
                 st.session_state[fig] = remove_outl(
                     st.session_state[fig], st.session_state["ni_outl"]
                 )
-
-
-"""
-@gf.func_timer
-def update_main() -> None:
-    "Darstellungseinstellungen"
-    figs: clf.Figs = gf.st_get("figs")
-    fig_lis: list[go.Figure] = [fig.st_key for fig in figs.list_all_figs()]
-    for fig in fig_lis:
-        switch = fig == "fig_days"
-
-        # anzuzeigende Achsen
-        axes_vis = [
-            dat.yaxis
-            for dat in st.session_state[fig].data
-            if gf.st_get(f"cb_vis_{dat.legendgroup if switch else dat.name}")
-        ]
-        axes_layout = [x for x in st.session_state[fig].layout if "yaxis" in x]
-
-        for a_x in axes_layout:
-            st.session_state[fig].update_layout(
-                {a_x: {"visible": a_x.replace("axis", "") in axes_vis}}
-            )
-
-        # anzuzeigende Traces
-        for trace in st.session_state[fig].data:
-            line_colour: str = st.session_state[f"cp_{trace.name}"]
-            line_transp: str = st.session_state[
-                f"sb_fill_{trace.legendgroup if switch else trace.name}"
-            ]
-            if not switch:
-                trace.line.color = line_colour
-            trace.visible = st.session_state[
-                f"cb_vis_{trace.legendgroup if switch else trace.name}"
-            ]
-            trace.fill = (
-                "tozeroy" if line_transp != cont.TRANSPARENCY_OPTIONS[0] else None
-            )
-            trace.fillcolor = fgf.fill_colour_with_opacity(line_transp, line_colour)
-
-        for annot in st.session_state[fig].layout.annotations:
-            if "hline" not in annot.name:
-                annot.visible = bool(gf.st_get("cb_anno_" + annot.name))
-
-        # Legende ausblenden, wenn nur eine Linie angezeigt wird
-        st.session_state[fig].update_layout(
-            showlegend=len(
-                [
-                    tr
-                    for tr in st.session_state[fig].data
-                    if tr.visible is True and gf.check_if_not_exclude(tr.name)
-                ]
-            )
-            != 1
-        )
-
-    # Gruppierung der Legende ausschalten, wenn nur eine Linie in Gruppe
-    if gf.st_get("cb_multi_year"):
-        if "lgr" not in st.session_state:
-            st.session_state["lgr"] = {
-                tr.name: tr.legendgroup
-                for tr in st.session_state["fig_base"].data
-                if tr.legendgroup is not None
-            }
-
-        if "lgr_t" not in st.session_state:
-            st.session_state["lgr_t"] = {
-                tr.name: tr.legendgrouptitle
-                for tr in st.session_state["fig_base"].data
-                if tr.legendgrouptitle is not None
-            }
-
-        b_gr = False
-        if (
-            len(
-                {
-                    tr.legendgroup
-                    for tr in st.session_state["fig_base"].data
-                    if tr.visible
-                }
-            )
-            > 1
-        ):
-            for leg_gr in set(st.session_state["lgr"].values()):
-                if (
-                    len(
-                        [
-                            trace
-                            for trace in st.session_state["fig_base"].data
-                            if (
-                                st.session_state["lgr"].get(trace.name) == leg_gr
-                                and trace.visible
-                            )
-                        ]
-                    )
-                    > 1
-                ):
-                    b_gr = True
-
-        if b_gr:
-            for trace in st.session_state["fig_base"].data:
-                if trace.legendgroup is None:
-                    trace.legendgroup = st.session_state["lgr"].get(trace.name)
-                    trace.legendgrouptitle = st.session_state["lgr_t"].get(trace.name)
-        else:
-            st.session_state["fig_base"].update_traces(
-                legendgroup=None,
-                legendgrouptitle=None,
-            )
-"""

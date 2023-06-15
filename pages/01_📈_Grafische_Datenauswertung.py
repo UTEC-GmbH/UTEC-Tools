@@ -73,9 +73,6 @@ def gather_and_manipulate_data() -> cl.MetaAndDfs:
         gf.st_delete("fig_base")
         gf.st_delete("fig_jdl")
         gf.st_delete("fig_mon")
-        mdf.df_h = None
-        mdf.jdl = None
-        mdf.mon = None
 
     # anzuzeigende Grafiken
     sm.select_graphs(mdf)
@@ -117,6 +114,12 @@ def make_graphs(mdf: cl.MetaAndDfs) -> clf.Figs:
     """Grafiken erzeugen"""
 
     figs: clf.Figs = gf.st_get("figs") or clf.Figs()
+
+    if gf.st_get("but_base_settings"):
+        figs.base = None
+        figs.jdl = None
+        figs.mon = None
+        figs.days = None
 
     # Grund-Grafik
     if figs.base is None:

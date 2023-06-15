@@ -15,6 +15,7 @@ from modules import setup_logger as slog
 
 if TYPE_CHECKING:
     import datetime as dt
+
     import pandas as pd
 
 COL_IND: str = cont.SPECIAL_COLS.index
@@ -149,8 +150,8 @@ def multi_year_column_rename(df: pl.DataFrame, year: int) -> dict[str, str]:
     col_rename: dict[str, str] = {}
     for col in [col for col in df.columns if gf.check_if_not_exclude(col)]:
         new_col_name: str = f"{col} {year}"
-        if any(suff in col for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes()):
-            for suff in cont.ARBEIT_LEISTUNG.get_all_suffixes():
+        if any(suff in col for suff in cont.ARBEIT_LEISTUNG.all_suffixes):
+            for suff in cont.ARBEIT_LEISTUNG.all_suffixes:
                 if suff in col:
                     new_col_name = f"{col.split(suff)[0]} {year}{suff}"
         col_rename[col] = new_col_name

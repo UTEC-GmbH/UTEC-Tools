@@ -165,6 +165,7 @@ FIG_TITLES: clc.FigTitles = clc.FigTitles(
 ARBEIT_LEISTUNG: clc.ArbeitLeistung = clc.ArbeitLeistung(
     arbeit=clc.SuffixUnit(SUFFIXES.col_arbeit, ["GWh", "MWh", "kWh", "Wh"]),
     leistung=clc.SuffixUnit(SUFFIXES.col_leistung, ["GW", "MW", "kW", "W"]),
+    all_suffixes=[SUFFIXES.col_arbeit, SUFFIXES.col_leistung],
 )
 
 # Linien, die bei gewissen Operationen übersprungen werden

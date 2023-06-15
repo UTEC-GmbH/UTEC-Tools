@@ -15,7 +15,7 @@ from modules import fig_annotations as fig_anno
 from modules import fig_formatting as fig_format
 from modules import fig_general_functions as fgf
 from modules import general_functions as gf
-from modules import plotly_plots as ploplo
+from modules import fig_plotly_plots as ploplo
 
 
 # Grund-Grafik
@@ -109,10 +109,10 @@ def cr_fig_jdl(mdf: cl.MetaAndDfs) -> go.Figure:
     )
     fig = fig_format.standard_axes_and_layout(fig, x_tickformat=",d")
 
-    x_min: int = min(min(d.x) for d in fig.data)
     x_max: int = max(max(d.x) for d in fig.data)
 
-    if 7000 < x_max < 9000:
+    if 7000 < x_max < 9000:  # noqa: PLR2004
+        x_min: int = min(min(d.x) for d in fig.data)
         fig.update_xaxes(
             range=[x_min, 9000],
         )
@@ -144,7 +144,7 @@ def cr_fig_mon(mdf: cl.MetaAndDfs) -> go.Figure:
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
-    fig = fig_anno.add_arrows_min_max(fig, data=data, layout=layout)
+    # fig = fig_anno.add_arrows_min_max(fig, data=data, layout=layout)
     colorway: list[str] = fgf.get_colorway(fig, data=data, layout=layout)
 
     fig.update_layout(

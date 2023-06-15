@@ -3,7 +3,6 @@
 from math import ceil
 from typing import Any
 
-import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from loguru import logger
@@ -34,8 +33,7 @@ def fig_layout_as_dic(fig: go.Figure) -> dict[str, Any]:
     Returns:
         - layout (dict[str, Any]): layout as dictionary
     """
-
-    return {item: fig.layout[item] for item in fig.layout}  # type: ignore
+    return {item: fig.layout[item] for item in fig.layout}
 
 
 def get_colorway(fig: go.Figure, **kwargs) -> list[str]:
@@ -149,16 +147,9 @@ def fill_colour_with_opacity(sel_trans: str, line_colour: str) -> str:
 
 
 def del_smooth() -> None:
-    """Löscht gegelättete Linien aus den DataFrames
-    und Grafiken im Stremalit SessionState
+    """Löscht gegelättete Linien aus den Grafiken 
+    im Stremalit SessionState
     """
-
-    # Spalten in dfs löschen
-    for item in st.session_state:
-        if isinstance(item, pd.DataFrame):
-            for col in [str(col) for col in item.columns]:
-                if cont.SUFFIXES.col_smooth in col:
-                    item.drop(columns=[col], inplace=True)
 
     # Linien löschen
     lis_dat: list = [

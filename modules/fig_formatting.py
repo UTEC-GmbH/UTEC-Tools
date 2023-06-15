@@ -17,6 +17,24 @@ from modules import fig_annotations as fa
 from modules import fig_general_functions as fgf
 from modules import general_functions as gf
 
+FORMAT_PRIMARY_Y: dict[str, Any] = {
+    "tickformat": ",d",
+    "side": "left",
+    "anchor": "x",
+    "separatethousands": True,
+    "fixedrange": False,
+    "visible": True,
+}
+
+FORMAT_SECONDARY_Y: dict[str, Any] = {
+    "tickmode": "sync",
+    "anchor": "free",
+    "side": "right",
+    "overlaying": "y",
+    "autoshift": True,
+    "shift": 10,
+}
+
 
 @gf.func_timer
 def format_tickstops(fig: go.Figure) -> list[dict[str, Any]]:
@@ -55,47 +73,6 @@ def format_tickstops(fig: go.Figure) -> list[dict[str, Any]]:
             "value": "%b",
         },
     ]
-
-
-def format_primary_y_axis(y_suffix: str) -> dict[str, Any]:
-    """Format Parameters for the Primary Y-Axis
-
-
-    Args:
-        - y_suffix (str): suffix for ticks (usually the unit)
-
-    Returns:
-        - dict[str, Any]: dictionary of parameters
-    """
-    return {
-        "ticksuffix": y_suffix,
-        "tickformat": ",d",
-        "side": "left",
-        "anchor": "x",
-        "separatethousands": True,
-        "fixedrange": False,
-        "visible": True,
-    }
-
-
-def format_secondary_y_axis(y_suffix: str, overlaying: str) -> dict[str, Any]:
-    """Format Parameters for the Secondary Y-Axes
-
-    Args:
-        - y_suffix (str): siffix for ticks (usually the unit)
-        - overlaying (str): name of primary y-axis (e.g. "y", "y2", ...)
-
-    Returns:
-        - dict[str, Any]: dictionary of parameters
-    """
-    return format_primary_y_axis(y_suffix) | {
-        "tickmode": "sync",
-        "anchor": "free",
-        "side": "right",
-        "overlaying": overlaying,
-        "autoshift": True,
-        "shift": 10,
-    }
 
 
 def add_range_slider(fig: go.Figure) -> go.Figure:
@@ -232,8 +209,8 @@ def standard_yaxis(
     y_suffix: str = units_per_axis[all_y_axes[0]]
     if cont.FIG_TITLES.mon in title and y_suffix == " kW":
         y_suffix = " kWh"
-
-    fig = fig.update_layout({all_y_axes[0]: format_primary_y_axis(y_suffix)})
+    # "ticksuffix": y_suffix,
+    fig = fig.update_layout({"y": FORMAT_PRIMARY_Y})
 
     if len(all_y_axes) > 1:
         for axis in all_y_axes[1:]:
@@ -275,7 +252,7 @@ def standard_layout(fig: go.Figure, data: dict[str, dict[str, Any]]) -> go.Figur
             "groupclick": "toggleitem",
             "orientation": "v",
             "yanchor": "top",
-            "y": 1 if lastgang else 0.98,
+            "y": 1.02 if lastgang else 0.98,
             "xanchor": "left" if lastgang else "right",
             "x": 1.02 if lastgang else 0.99,
         },
@@ -377,9 +354,14 @@ def format_traces(fig: go.Figure) -> go.Figure:
     switch: bool = fig_type == "fig_days"
 
     visible_traces: list[dict] = [trace for trace in data.values() if trace["visible"]]
+    visible_units: list[str] = gf.sort_list_by_occurance(
+        trace["unit"] for trace in visible_traces
+    )
 
     for trace in visible_traces:
         trace_name: str = trace["name"]
+        index_unit: int = visible_units.index(trace["unit"])
+        trace_y: str = "y" if index_unit == 0 else f"y{index_unit + 1}"
         line_mode: str = "lines"
         if gf.st_get(f"cb_markers_{trace_name}") or fig_type == "mon":
             line_mode = "markers+lines"
@@ -415,12 +397,15 @@ def format_traces(fig: go.Figure) -> go.Figure:
 
             fig = fig.update_traces(
                 {
+                    "yaxis": trace_y,
                     "line_color": line_colour,
                     "line_dash": line_dash,
                     "mode": line_mode,
-                    "marker_size": 15
-                    if fig_type == "mon"
-                    else gf.st_get(f"ni_markers_{trace_name}"),
+                    "marker_size": (
+                        15
+                        if fig_type == "mon"
+                        else gf.st_get(f"ni_markers_{trace_name}")
+                    ),
                     "fill": line_fill,
                     "fillcolor": fill_color,
                 },

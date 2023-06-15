@@ -35,20 +35,17 @@ def debug_code_run(position: Literal["before", "after"]) -> None:
 
             se_st_show: list[str] = [
                 "fig_base",
-                "fig_jdl",
-                "fig_mon",
-                "metadata",
-                "dic_days",
             ]
 
             for show in se_st_show:
-                st.write(f"show: {show}")
                 if show in st.session_state:
+                    st.write(f"st.session_state['{show}']:")
                     if "fig" in show:
                         st.write(gf.st_get(show).to_dict())
                     else:
                         st.write(gf.st_get(show))
-
+            st.markdown("---")
+            st.write("Session State:")
             st.write(st.session_state)
 
         st.markdown("---")
@@ -127,17 +124,17 @@ def make_graphs(mdf: cl.MetaAndDfs) -> clf.Figs:
             figs.base = clf.FigProp(fig=fig_create.cr_fig_base(mdf), st_key="fig_base")
 
     # Jahresdauerlinie
-    if figs.jdl is None and gf.st_not_in("fig_jdl"):
+    if figs.jdl is None and gf.st_not_in("fig_jdl") and gf.st_get("cb_jdl"):
         with st.spinner('Momentle bitte - Grafik "Jahresdauerlinie" wird erzeugt...'):
             figs.jdl = clf.FigProp(fig=fig_create.cr_fig_jdl(mdf), st_key="fig_jdl")
 
     # Monatswerte
-    if figs.mon is None and gf.st_not_in("fig_mon"):
+    if figs.mon is None and gf.st_not_in("fig_mon") and gf.st_get("cb_mon"):
         with st.spinner('Momentle bitte - Grafik "Monatswerte" wird erzeugt...'):
             figs.mon = clf.FigProp(fig=fig_create.cr_fig_mon(mdf), st_key="fig_mon")
 
     # Tagesvergleich
-    if figs.days is None and gf.st_get("but_select_graphs"):
+    if figs.days is None and gf.st_get("but_select_graphs") and gf.st_get("cb_days"):
         with st.spinner('Momentle bitte - Grafik "Tagesvergleich" wird erzeugt...'):
             figs.days = clf.FigProp(fig=fig_create.cr_fig_days(mdf), st_key="fig_days")
 
@@ -191,7 +188,7 @@ if uauth.authentication(st.session_state["page"]):
     else:
         st.info("Bitte Datei hochladen oder Beispiel auswählen")
 
-        debug_code_run(position="after")
-
         st.markdown("###")
         st.markdown("---")
+
+    debug_code_run(position="after")

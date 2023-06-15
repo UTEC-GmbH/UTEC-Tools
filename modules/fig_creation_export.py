@@ -181,7 +181,9 @@ def cr_fig_mon(mdf: cl.MetaAndDfs) -> go.Figure:
 @gf.func_timer
 def cr_fig_days(mdf: cl.MetaAndDfs) -> None:
     """Tagesvergleiche"""
-
+    if not gf.st_get("cb_days"):
+        return
+    
     tit_res: str = ""
     if gf.st_get("cb_h"):
         tit_res = cont.FIG_TITLES.suff_stunden

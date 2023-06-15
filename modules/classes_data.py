@@ -33,7 +33,7 @@ class MetaLine:
     orig_tit: str
     tit: str
     unit: str | None = None
-    y_axis: str = "y"
+    unit_h: str | None = None
     obis: clc.ObisElectrical | None = None
     excel_number_format: str | None = None
 

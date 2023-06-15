@@ -11,7 +11,6 @@ import streamlit as st
 from loguru import logger
 from scipy import signal
 
-from modules import classes_figs as clf
 from modules import constants as cont
 from modules import fig_general_functions as fgf
 from modules import general_functions as gf
@@ -148,7 +147,7 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
                 else np.nanmax(line["y"])
             )
 
-            if pd.isna(y_val):
+            if not isinstance(y_val, float):
                 logger.debug(f"Annotation for {line['name']} SKIPPED")
                 continue
 
@@ -453,24 +452,6 @@ def remove_outl(fig: go.Figure, cut_off: float) -> go.Figure:
             annot["text"] = annot["text"].replace(str(y_old), str(cut_off))
 
     return fig
-
-
-# @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@gf.func_timer
-def add_points(fig: go.Figure, df: pd.DataFrame, lines: list) -> None:
-    """Punkte hinzufügen"""
-
-    for line in lines:
-        fig.add_trace(
-            go.Scatter(
-                x=df.index,
-                y=df[line],
-                name=line,
-                hovertemplate=("%{y:,.1f}"),
-                mode="markers",
-                showlegend=False,
-            )
-        )
 
 
 # Ausreißerbereinigung

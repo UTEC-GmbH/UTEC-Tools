@@ -303,7 +303,7 @@ def select_graphs(mdf: cl.MetaAndDfs) -> None:
             ),
             value=False,
             key="cb_days",
-            # disabled=True,
+            disabled=True,
         )
 
         st.number_input(
@@ -756,7 +756,7 @@ def display_options_main() -> bool:
                     anno_name: str = anno_name.replace(suff, "")
                     if "first_suff" not in st.session_state:
                         st.session_state["first_suff"] = suff
-                    if suff != st.session_state["first_suff"]:
+                    if suff != st.session_state["first_suff"] or not anno_name:
                         show_cb = False
 
                 if show_cb:

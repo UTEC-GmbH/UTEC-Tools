@@ -58,7 +58,6 @@ def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cl.MetaAndDfs:
 
     # Weitere Metadaten
     mdf = temporal_metadata(mdf, mark_index)
-    mdf.meta = set_y_axis_for_lines(mdf.meta)
     mdf.meta = meta_number_format(mdf)
 
     # 15min und kWh
@@ -156,12 +155,15 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cl.MetaDat
         lines=[
             cl.MetaLine(
                 name=line,
-                name_orgidx=f"{line}{cont.SUFFIXES.col_original_index}"
-                if cont.SUFFIXES.col_original_index not in line
-                else line,
+                name_orgidx=(
+                    f"{line}{cont.SUFFIXES.col_original_index}"
+                    if cont.SUFFIXES.col_original_index not in line
+                    else line
+                ),
                 orig_tit=line,
                 tit=line,
                 unit=unit,
+                unit_h=unit.strip("h"),
             )
             for line, unit in units.items()
         ],
@@ -202,20 +204,6 @@ def meta_units_update(meta: cl.MetaData) -> cl.MetaData:
     all_units: list[str] = [str(line.unit) for line in meta.lines]
     meta.units.all_units = all_units
     meta.units.set_units = gf.sort_list_by_occurance(all_units)
-
-    return meta
-
-
-def set_y_axis_for_lines(meta: cl.MetaData) -> cl.MetaData:
-    """Y-Achsen der Linien"""
-
-    for line in meta.lines:
-        if line.unit not in meta.units.set_units:
-            continue
-        index_unit: int = meta.units.set_units.index(line.unit)
-        if index_unit > 0:
-            meta.get_line_by_name(line.name).y_axis = f"y{index_unit + 1}"
-        logger.info(f"{line.name}: Y-Achse '{meta.get_line_by_name(line.name).y_axis}'")
 
     return meta
 

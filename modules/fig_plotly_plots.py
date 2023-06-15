@@ -32,6 +32,7 @@ def line_plot(
     Returns:
         - go.Figure: Liniengrafik eines einzelnen Jahres
     """
+    df_h: bool = data_frame in ["df_h", "jdl", "mon"]
     df: pl.DataFrame = getattr(mdf, data_frame)
     lines: list[str] = kwargs.get("lines") or [
         col for col in df.columns if gf.check_if_not_exclude(col)
@@ -71,7 +72,8 @@ def line_plot(
             )
             cusd: pl.Series = df.get_column(cont.SPECIAL_COLS.original_index)
 
-        trace_unit: str | None = line_meta.unit
+        trace_unit: str | None = line_meta.unit_h if df_h else line_meta.unit
+
         hovtemp: str = f"{trace_unit} {cusd_format}"
         fig = fig.add_trace(
             go.Scatter(
@@ -91,7 +93,7 @@ def line_plot(
                 ),
                 mode="lines",
                 visible=True,
-                yaxis=line_meta.y_axis,
+                # yaxis=line_meta.y_axis_h if df_h else line_meta.y_axis,
                 meta={"unit": trace_unit, "negativ": manip < 0, "df_col": line},
             )
         )
@@ -117,7 +119,7 @@ def line_plot_y_overlay(
     Returns:
         - go.Figure: Liniengrafik mit mehreren Jahren übereinander
     """
-
+    df_h: bool = data_frame in ["df_h", "jdl", "mon"]
     logger.debug(f"DataFrame {data_frame}")
     dic_df: dict[int, pl.DataFrame] = getattr(mdf, data_frame)
     lines: list[str] = kwargs.get("lines") or mdf.get_lines_in_multi_df(data_frame)
@@ -146,7 +148,7 @@ def line_plot_y_overlay(
         line_data: pl.Series = dic_df[year].get_column(line)
         line_meta: cl.MetaLine = mdf.meta.get_line_by_name(line)
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
-        trace_unit: str | None = line_meta.unit
+        trace_unit: str | None = line_meta.unit_h if df_h else line_meta.unit
         hovtemp: str = f"{trace_unit} {cusd_format}"
 
         cusd: pl.Series = (
@@ -171,7 +173,7 @@ def line_plot_y_overlay(
                     )
                 ),
                 visible=True,
-                yaxis=line_meta.y_axis,
+                # yaxis=line_meta.y_axis_h if df_h else line_meta.y_axis,
                 meta={
                     "unit": trace_unit,
                     "negativ": manip < 0,

@@ -148,10 +148,6 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cl.MetaDat
     units = {line: f" {unit.strip()}" for line, unit in units.items()}
 
     meta: cl.MetaData = cl.MetaData(
-        units=cl.MetaUnits(
-            all_units=list(units.values()),
-            set_units=gf.sort_list_by_occurance(list(units.values())),
-        ),
         lines=[
             cl.MetaLine(
                 name=line,
@@ -196,16 +192,6 @@ def meta_number_format(mdf: cl.MetaAndDfs) -> cl.MetaData:
                     line.excel_number_format = f'#.##0,000"{line.unit}"'
 
     return mdf.meta
-
-
-def meta_units_update(meta: cl.MetaData) -> cl.MetaData:
-    """Update units with all units from metadata"""
-
-    all_units: list[str] = [str(line.unit) for line in meta.lines]
-    meta.units.all_units = all_units
-    meta.units.set_units = gf.sort_list_by_occurance(all_units)
-
-    return meta
 
 
 def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
@@ -347,8 +333,6 @@ def meta_from_obis(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
 
             mdf.df = mdf.df.rename({name: line.obis.name})
 
-    mdf.meta = meta_units_update(mdf.meta)
-
     return mdf
 
 
@@ -388,8 +372,6 @@ def convert_15min_kwh_to_kw(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
             mdf = rename_column_arbeit_leistung(originla_type, mdf, col)
 
             logger.success(f"Arbeit und Leistung für Spalte '{col}' aufgeteilt")
-
-    mdf.meta = meta_units_update(mdf.meta)
 
     return mdf
 

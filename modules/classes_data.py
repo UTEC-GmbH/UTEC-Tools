@@ -13,18 +13,6 @@ from modules import general_functions as gf
 
 
 @dataclass
-class MetaUnits:
-    """Class for meta data of units"""
-
-    all_units: list[str]
-    set_units: list[str]
-
-    def __repr__(self) -> str:
-        """Customize the representation to give a dictionary"""
-        return pprint.pformat(vars(self), sort_dicts=False, compact=True)
-
-
-@dataclass
 class MetaLine:
     """Class for meta data of lines (traces)"""
 
@@ -47,7 +35,6 @@ class MetaData:
     """Meta Daten
 
     Attrs:
-        - units (MetaUnits): Einheiten aller Linien -> Liste aller und set
         - lines (list[MetaLine]): Liste aller Linien (Spalten)
         - datetime (bool): Ob eine Spalten mit Zeiten gefunden wurde
         - years (list[int]): Liste der Jahre, für die Daten vorliegen
@@ -56,7 +43,6 @@ class MetaData:
         - td_interval (str): "h" bei stündlichen Daten, "15min" bei 15-Minuten-Daten
     """
 
-    units: MetaUnits
     lines: list[MetaLine]
     datetime: bool = False
     years: list[int] | None = None
@@ -127,7 +113,6 @@ class MetaData:
                 lines.append(dic)
 
         return {
-            "units": vars(self.units),
             "lines": lines,
             "datetime": self.datetime,
             "years": self.years,
@@ -165,12 +150,20 @@ class MetaAndDfs:
         self, df: Literal["df_multi", "df_h_multi", "mon_multi"] = "df_multi"
     ) -> list[str]:
         """Get all lines in the multi-year data frame"""
-        df_multi: dict[int, pl.DataFrame] = getattr(self, df)
 
-        lines = []
-        for year in self.meta.years:
-            lines.extend(
-                [col for col in df_multi[year].columns if gf.check_if_not_exclude(col)]
-            )
+        lines: list[str] = []
+        df_multi: dict[int, pl.DataFrame] = getattr(self, df)
+        if not isinstance(df_multi, dict):
+            raise TypeError
+
+        if self.meta.years:
+            for year in self.meta.years:
+                lines.extend(
+                    [
+                        col
+                        for col in df_multi[year].columns
+                        if gf.check_if_not_exclude(col)
+                    ]
+                )
 
         return lines

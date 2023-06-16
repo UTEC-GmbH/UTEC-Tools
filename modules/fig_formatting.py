@@ -138,7 +138,7 @@ def standard_axes_and_layout(
     title: str = layout["title"]["text"]
 
     fig = standard_xaxis(fig, data, title, x_tickformat)
-    fig = standard_yaxis(fig, data, layout, title)
+    fig = fig.update_yaxes(FORMAT_PRIMARY_Y)
 
     fig = standard_layout(fig, data)
 
@@ -190,40 +190,6 @@ def standard_xaxis(
     )
 
 
-@gf.func_timer
-def standard_yaxis(
-    fig: go.Figure,
-    data: dict[str, dict[str, Any]],
-    layout: dict[str, Any],
-    title: str,
-) -> go.Figure:
-    """Format the standard y-axis"""
-
-    all_y_axes: list[str] = list(
-        {f'yaxis{(val.get("yaxis") or "y").replace("y", "")}' for val in data.values()}
-    )
-    units_per_axis: dict[str, str] = fgf.get_units_for_all_axes(
-        fig, data=data, layout=layout
-    )
-
-    y_suffix: str = units_per_axis[all_y_axes[0]]
-    if cont.FIG_TITLES.mon in title and y_suffix == " kW":
-        y_suffix = " kWh"
-    # "ticksuffix": y_suffix,
-    fig = fig.update_layout({"y": FORMAT_PRIMARY_Y})
-
-    if len(all_y_axes) > 1:
-        for axis in all_y_axes[1:]:
-            y_suffix = units_per_axis[axis]
-            fig = fig.update_layout(
-                {
-                    axis: format_secondary_y_axis(
-                        y_suffix, all_y_axes[0].replace("axis", "")
-                    )
-                }
-            )
-
-    return fig
 
 
 @gf.func_timer

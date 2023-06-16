@@ -10,6 +10,7 @@ from geopy import distance
 from loguru import logger
 
 from modules import classes_data as cl
+from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import meteorolog as meteo
@@ -32,7 +33,7 @@ def line_plot(
     Returns:
         - go.Figure: Liniengrafik eines einzelnen Jahres
     """
-    df_h: bool = data_frame in ["df_h", "jdl", "mon"]
+
     df: pl.DataFrame = getattr(mdf, data_frame)
     lines: list[str] = kwargs.get("lines") or [
         col for col in df.columns if gf.check_if_not_exclude(col)
@@ -50,7 +51,6 @@ def line_plot(
             "meta": {
                 "title": title,
                 "var_name": kwargs.get("var_name"),
-                "units": mdf.meta.units.set_units,
                 "metadata": mdf.meta.as_dict(),
             }
         }
@@ -72,7 +72,9 @@ def line_plot(
             )
             cusd: pl.Series = df.get_column(cont.SPECIAL_COLS.original_index)
 
-        trace_unit: str | None = line_meta.unit_h if df_h else line_meta.unit
+        trace_unit: str | None = (
+            line_meta.unit if data_frame == "df" else line_meta.unit_h
+        )
 
         hovtemp: str = f"{trace_unit} {cusd_format}"
         fig = fig.add_trace(
@@ -119,7 +121,9 @@ def line_plot_y_overlay(
     Returns:
         - go.Figure: Liniengrafik mit mehreren Jahren übereinander
     """
-    df_h: bool = data_frame in ["df_h", "jdl", "mon"]
+    if mdf.meta.years is None:
+        raise cle.NoYearsError
+
     logger.debug(f"DataFrame {data_frame}")
     dic_df: dict[int, pl.DataFrame] = getattr(mdf, data_frame)
     lines: list[str] = kwargs.get("lines") or mdf.get_lines_in_multi_df(data_frame)
@@ -137,7 +141,6 @@ def line_plot_y_overlay(
                 "title": (kwargs.get("title") or ""),
                 "var_name": kwargs.get("var_name"),
                 "multi_y": True,
-                "units": mdf.meta.units.set_units,
                 "metadata": mdf.meta.as_dict(),
             }
         }
@@ -148,7 +151,9 @@ def line_plot_y_overlay(
         line_data: pl.Series = dic_df[year].get_column(line)
         line_meta: cl.MetaLine = mdf.meta.get_line_by_name(line)
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
-        trace_unit: str | None = line_meta.unit_h if df_h else line_meta.unit
+        trace_unit: str | None = (
+            line_meta.unit_h if data_frame == "df_multi" else line_meta.unit
+        )
         hovtemp: str = f"{trace_unit} {cusd_format}"
 
         cusd: pl.Series = (

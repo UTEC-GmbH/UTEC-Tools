@@ -61,13 +61,13 @@ def line_plot(
         line_meta: cl.MetaLine = mdf.meta.get_line_by_name(line)
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
 
-        logger.debug(f"line: {line}, line_org: {line_meta.name_orgidx}")
+        logger.info(f"line: {line}, line_org: {line_meta.name_orgidx}")
 
         if line_meta.name_orgidx in df.columns:
             cusd: pl.Series = df.get_column(line_meta.name_orgidx)
         else:
-            logger.debug(
-                f"Line '{line_meta.name_orgidx}' not found in DataFrame!"
+            logger.warning(
+                f"Line '{line_meta.name_orgidx}' not found in '{data_frame}'! "
                 f"Available columns: \n{df.columns}"
             )
             cusd: pl.Series = df.get_column(cont.SPECIAL_COLS.original_index)

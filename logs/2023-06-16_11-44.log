@@ -1,0 +1,72 @@
+
+
+11:44:25 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+
+
+11:44:25 👉 function 'general_setup' started 👈 
+
+11:44:26 👉 function 'render_svg' started 👈 
+11:44:26 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+
+11:44:26 👉 function 'get_commit_message_date' started 👈 
+11:44:27 ⏱ execution time of 'get_commit_message_date': 0.8280 s ⏱ 
+
+11:44:27 👉 function 'get_all_user_data' started 👈 
+
+11:44:27 👉 function 'connect_database' started 👈 
+11:44:27 🥳 user_authentication -> connect_database -> line: 123 | Deta-Database connection established 🥳 
+11:44:27 ⏱ execution time of 'connect_database': 0.0150 s ⏱ 
+11:44:27 🥳 user_authentication -> get_all_user_data -> line: 157 | Collected all user data from Database 🥳 
+11:44:27 ⏱ execution time of 'get_all_user_data': 0.1400 s ⏱ 
+11:44:27 💡 setup_stuff -> general_setup -> line: 118 | Pfad 'C:\Users\fl\Documents\Python\UTEC-Tools\export' für die Ausgabe bereits vorhanden 💡 
+
+11:44:27 🦤🦤🦤 Initial Setup Complete 🦤🦤🦤 
+
+11:44:27 ⏱ execution time of 'general_setup': 1.4690 s ⏱ 
+
+11:44:27 👉 function 'page_header_setup' started 👈 
+
+11:44:27 👉 function 'render_svg' started 👈 
+11:44:27 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+11:44:27 👟 setup_stuff -> page_header_setup -> line: 176 | page header for page 'login' created 👟 
+11:44:27 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+11:44:27 👉 function 'display_login_page' started 👈 
+
+11:44:27 👉 function 'login_section' started 👈 
+11:44:27 ⏱ execution time of 'login_section': 0.0000 s ⏱ 
+11:44:27 ⏱ execution time of 'display_login_page': 0.0160 s ⏱ 
+11:44:27 🥳 00_🔑_login -> <module> -> line: 151 | Login Page Loaded 🥳 
+
+
+11:44:27 ✨ NEW RUN ✨ 
+
+11:44:27 👉 function 'page_header_setup' started 👈 
+
+11:44:27 👉 function 'render_svg' started 👈 
+11:44:27 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+11:44:27 👟 setup_stuff -> page_header_setup -> line: 176 | page header for page 'login' created 👟 
+11:44:27 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+11:44:27 👉 function 'display_login_page' started 👈 
+
+11:44:27 👉 function 'login_section' started 👈 
+
+11:44:27 👉 function 'access_granted' started 👈 
+11:44:27 🥳 00_🔑_login -> access_granted -> line: 91 | logged in as: fl, access level: god 🥳 
+
+
+11:44:27 ✨ NEW RUN ✨ 
+
+11:44:27 👉 function 'page_header_setup' started 👈 
+
+11:44:27 👉 function 'render_svg' started 👈 
+11:44:27 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+11:44:27 👟 setup_stuff -> page_header_setup -> line: 176 | page header for page 'login' created 👟 
+11:44:27 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+11:44:27 👉 function 'display_login_page' started 👈 
+
+11:44:27 👉 function 'login_section' started 👈 
+
+11:44:27 👉 function 'access_granted' started 👈 

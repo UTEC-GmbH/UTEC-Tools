@@ -22,10 +22,10 @@ st.set_page_config(
 )
 
 # general page config (Favicon, etc.)
-if not gf.st_get("logger_setup"):
+if gf.st_not_in("logger_setup"):
     slog.logger_setup()
 
-if gf.st_get("initial_setup"):
+if gf.st_in("initial_setup"):
     logger.log(slog.LVLS.new_run.name, "NEW RUN")
 else:
     setup_stuff.general_setup()
@@ -87,8 +87,11 @@ def access_granted() -> None:
     gf.st_set("access_lvl", access_lvl_user)
 
     # log used username and access level
-    if gf.st_get("logged_username") != user_key:
-        logger.success(f"logged in as: {user_key}, access level: {access_lvl_user}")
+    if gf.st_not_in("logged_username") or gf.st_get("logged_username") != user_key:
+        logger.success(
+            f"logged in as: '{user_key}' (name:'{gf.st_get('name')}'), "
+            f"access level: '{access_lvl_user}'"
+        )
         gf.st_set("logged_username", user_key)
 
     if access_lvl_user in ("god", "full"):

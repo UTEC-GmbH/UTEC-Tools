@@ -13,6 +13,7 @@ import streamlit_lottie as stlot
 from loguru import logger
 
 from modules import constants as cont
+from modules import classes_errors as cle
 from modules import general_functions as gf
 from modules import setup_logger as slog
 
@@ -72,9 +73,12 @@ def func_timer(func: Callable) -> Callable:
     return wrapper
 
 
-def st_get(key: str) -> Any | None:
+def st_get(key: str) -> Any:
     """Shorter version of st.session_state.get(key)"""
-    return st.session_state.get(key)
+    entry: Any = st.session_state.get(key, "not in SeSt")
+    if entry == "not in SeSt":
+        raise cle.NotInSessionStateError(key)
+    return entry
 
 
 def st_in(key: str) -> bool:
@@ -245,6 +249,9 @@ def check_if_not_exclude(
         - line (str): line to check
         - exclude (Literal["base", "index", "suff_arbeit"]):
             exclude list to check (from cont.EXCLUDE)
+            - base: "hline", smooth (suffix), original index
+            - index: base + Excel index marker
+            - suff_arbeit: index + arbeit (suffix)
 
     Returns:
         - bool: True if line is not in exclude list

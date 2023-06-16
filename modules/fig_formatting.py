@@ -27,9 +27,13 @@ FORMAT_PRIMARY_Y: dict[str, Any] = {
 }
 
 FORMAT_SECONDARY_Y: dict[str, Any] = {
-    "tickmode": "sync",
-    "anchor": "free",
+    "tickformat": ",d",
     "side": "right",
+    "anchor": "free",
+    "separatethousands": True,
+    "fixedrange": False,
+    "visible": False,
+    "tickmode": "sync",
     "overlaying": "y",
     "autoshift": True,
     "shift": 10,
@@ -190,8 +194,6 @@ def standard_xaxis(
     )
 
 
-
-
 @gf.func_timer
 def standard_layout(fig: go.Figure, data: dict[str, dict[str, Any]]) -> go.Figure:
     """Standardlayout"""
@@ -233,20 +235,29 @@ def update_main(fig: go.Figure) -> go.Figure:
     """Darstellungseinstellungen aus dem Hauptfenster"""
 
     fig = show_traces(fig)
-    fig = format_traces(fig)
-    visible_traces: list[str] = [
-        tr["name"]
-        for tr in fig.data
-        if tr["visible"] and gf.check_if_not_exclude(tr["name"])
-    ]
-    number_of_visible_traces: int = len(visible_traces)
+    data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
+    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
-    fig = show_y_axes(fig)
+    visible_traces: list[dict] = [trace for trace in data.values() if trace["visible"]]
+    logger.debug(
+        f"Visible traces in figure '{layout['title']['text']}': \n"
+        f"{[trace['name'] for trace in visible_traces]}"
+    )
+    visible_units: list[str] = gf.sort_list_by_occurance(
+        [trace["meta"]["unit"] for trace in visible_traces]
+    )
+    logger.debug(
+        f"Visible units in figure '{layout['title']['text']}': \n{visible_units}"
+    )
+
+    fig = format_traces(fig, visible_traces, visible_units)
+
+    fig = show_y_axes(fig, visible_units)
 
     fig = show_annos(fig, visible_traces)
 
     # Legende ausblenden, wenn nur eine Linie angezeigt wird
-    fig = fig.update_layout({"showlegend": number_of_visible_traces > 1})
+    fig = fig.update_layout({"showlegend": len(visible_traces) > 1})
 
     if gf.st_get("cb_multi_year"):
         fig = legend_groups_for_multi_year(fig)
@@ -305,7 +316,9 @@ def show_traces(fig: go.Figure) -> go.Figure:
 
 
 @gf.func_timer
-def format_traces(fig: go.Figure) -> go.Figure:
+def format_traces(
+    fig: go.Figure, visible_traces: list[dict], visible_units: list[str]
+) -> go.Figure:
     """Bearbeiten der Anzeige der Linien
     in Bezug auf die Auswahl im Anzeigen-Menu.
         - Linientyp
@@ -315,18 +328,12 @@ def format_traces(fig: go.Figure) -> go.Figure:
     Args:
         - fig (go.Figure): Figure in question
     """
-    data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
     fig_type: str = fgf.fig_type_by_title(fig)
     switch: bool = fig_type == "fig_days"
 
-    visible_traces: list[dict] = [trace for trace in data.values() if trace["visible"]]
-    visible_units: list[str] = gf.sort_list_by_occurance(
-        trace["unit"] for trace in visible_traces
-    )
-
     for trace in visible_traces:
         trace_name: str = trace["name"]
-        index_unit: int = visible_units.index(trace["unit"])
+        index_unit: int = visible_units.index(trace["meta"]["unit"])
         trace_y: str = "y" if index_unit == 0 else f"y{index_unit + 1}"
         line_mode: str = "lines"
         if gf.st_get(f"cb_markers_{trace_name}") or fig_type == "mon":
@@ -382,7 +389,7 @@ def format_traces(fig: go.Figure) -> go.Figure:
 
 
 @gf.func_timer
-def show_y_axes(fig: go.Figure) -> go.Figure:
+def show_y_axes(fig: go.Figure, visible_units: list[str]) -> go.Figure:
     """Y-Achsen ein- bzw. ausblenden.
     ...je nachdem, ob Linien in der Grafik angezeigt werden,
     die sich auf die Achse beziehen.
@@ -391,46 +398,42 @@ def show_y_axes(fig: go.Figure) -> go.Figure:
     Args:
         - fig (go.Figure): Figure in question
     """
-    data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
-    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
+    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
     fig_type: str = fgf.fig_type_by_title(fig, layout=layout)
 
     fig = fig.update_yaxes({"visible": False})  # turn off all y-axes
 
     # show axis if a line is visible, that uses this axis
-    axes_to_show: list[str] = [
-        f'yaxis{(val.get("yaxis") or "y").replace("y", "")}'
-        for val in data.values()
-        if val.get("visible")
-    ]
-    axes_to_show = gf.sort_list_by_occurance(axes_to_show)
-    units_per_axes: dict[str, str] = fgf.get_units_for_all_axes(fig, data=data)
+    # axes_to_show = ["yaxis", "yaxis2", etc.]
+    axes_to_show: list[str] = ["yaxis"]
+    if len(visible_units) > 1:
+        axes_to_show += [
+            f"yaxis{count+1}"
+            for count in [visible_units.index(unit) for unit in visible_units][1:]
+        ]
 
-    y_suffix: str = units_per_axes[axes_to_show[0]]
-    if fig_type == "mon" and y_suffix == " kW":
-        y_suffix = " kWh"
-    fig = fig.update_layout(
-        {axes_to_show[0]: format_primary_y_axis(y_suffix)}, overwrite=True
+    logger.debug(
+        f"Visible y-axes in figure '{layout['title']['text']}': \n{axes_to_show}"
     )
 
-    if len(axes_to_show) > 1:
-        for axis in axes_to_show[1:]:
-            y_suffix = units_per_axes[axis]
+    for count, axis in enumerate(axes_to_show):
+        y_suffix: str = visible_units[count]
+        if axis == "yaxis":
+            if fig_type == "mon" and y_suffix == " kW":
+                y_suffix = " kWh"
             fig = fig.update_layout(
-                {
-                    axis: format_secondary_y_axis(
-                        y_suffix, axes_to_show[0].replace("axis", "")
-                    )
-                    | {"visible": True}
-                },
-                overwrite=True,
+                {"yaxis": {"ticksuffix": y_suffix, "visible": True}}
+            )
+        else:
+            fig = fig.update_layout(
+                {axis: FORMAT_SECONDARY_Y | {"visible": True, "ticksuffix": y_suffix}},
             )
 
     return fig
 
 
-def show_annos(fig: go.Figure, visible_traces: list[str]) -> go.Figure:
+def show_annos(fig: go.Figure, visible_traces: list[dict]) -> go.Figure:
     """Annotations (Pfeile) ein-/ausblenden
 
 
@@ -440,7 +443,7 @@ def show_annos(fig: go.Figure, visible_traces: list[str]) -> go.Figure:
     Returns:
         - go.Figure: Grafik mit bearbeiteter Anzeigt
     """
-
+    visible_lines: list[str] = [trace["name"] for trace in visible_traces]
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
     for anno in layout["annotations"]:
@@ -455,7 +458,7 @@ def show_annos(fig: go.Figure, visible_traces: list[str]) -> go.Figure:
             visible: bool = all(
                 [
                     gf.st_get(f"cb_anno_{an_name_cust}"),
-                    any(trace in an_name for trace in visible_traces),
+                    any(line in an_name for line in visible_lines),
                 ]
             )
 

@@ -669,7 +669,8 @@ def display_options_main() -> bool:
                 st.markdown(columns[col]["Title"], unsafe_allow_html=True)
 
         # Check Boxes for line visibility, fill and color
-        fig: go.Figure = st.session_state["fig_base"]
+        fig: go.Figure = gf.st_get("fig_base")
+
         fig_data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
         fig_layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
         colorway: list[str] = fgf.get_colorway(fig)
@@ -747,17 +748,17 @@ def display_options_main() -> bool:
                         anno_name = anno.split(": ")[0]
 
                 show_cb: bool = True
-                if any(suff in line_name for suff in cont.ARBEIT_LEISTUNG.all_suffixes):
-                    suff: str = [
-                        suff
-                        for suff in cont.ARBEIT_LEISTUNG.all_suffixes
-                        if suff in line_name
-                    ][0]
-                    anno_name: str = anno_name.replace(suff, "")
-                    if "first_suff" not in st.session_state:
-                        st.session_state["first_suff"] = suff
-                    if suff != st.session_state["first_suff"] or not anno_name:
-                        show_cb = False
+                # if any(suff in line_name for suff in cont.ARBEIT_LEISTUNG.all_suffixes):
+                #     suff: str = [
+                #         suff
+                #         for suff in cont.ARBEIT_LEISTUNG.all_suffixes
+                #         if suff in line_name
+                #     ][0]
+                #     anno_name: str = anno_name.replace(suff, "")
+                #     if "first_suff" not in st.session_state:
+                #         st.session_state["first_suff"] = suff
+                #     if suff != st.session_state["first_suff"] or not anno_name:
+                #         show_cb = False
 
                 if show_cb:
                     with cols[list(columns).index("anno")]:

@@ -760,7 +760,7 @@ def display_options_main() -> bool:
                 #     if suff != st.session_state["first_suff"] or not anno_name:
                 #         show_cb = False
 
-                if show_cb:
+                if show_cb and anno_name:
                     with cols[list(columns).index("anno")]:
                         st.checkbox(
                             label=anno_name,

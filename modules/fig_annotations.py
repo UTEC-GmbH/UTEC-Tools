@@ -147,8 +147,11 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
                 else np.nanmax(line["y"])
             )
 
-            if not isinstance(y_val, float):
-                logger.debug(f"Annotation for {line['name']} SKIPPED")
+            if not isinstance(y_val, (float, np.floating)):
+                logger.debug(
+                    f"Annotation for {line['name']} SKIPPED "
+                    f"because y_val is type '{type(y_val)}'."
+                )
                 continue
 
             x_val: datetime | float = line["x"][np.where(line["y"] == y_val)[0][0]]

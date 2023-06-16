@@ -13,7 +13,6 @@ import streamlit_lottie as stlot
 from loguru import logger
 
 from modules import constants as cont
-from modules import classes_errors as cle
 from modules import general_functions as gf
 from modules import setup_logger as slog
 
@@ -75,10 +74,7 @@ def func_timer(func: Callable) -> Callable:
 
 def st_get(key: str) -> Any:
     """Shorter version of st.session_state.get(key)"""
-    entry: Any = st.session_state.get(key, "not in SeSt")
-    if entry == "not in SeSt":
-        raise cle.NotInSessionStateError(key)
-    return entry
+    return st.session_state.get(key)
 
 
 def st_in(key: str) -> bool:

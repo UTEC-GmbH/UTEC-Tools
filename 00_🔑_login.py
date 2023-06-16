@@ -112,7 +112,8 @@ def access_granted() -> None:
         st.markdown(uauth.MessageLog.access_utec.message)
 
     else:
-        st.markdown(uauth.MessageLog.access_other.message)
+        if uauth.MessageLog.access_other is not None:
+            st.markdown(uauth.MessageLog.access_other.message)
 
         if st.session_state["access_until"] < date.max:
             st.markdown(uauth.MessageLog.access_until.message)

@@ -33,11 +33,14 @@ class MessageLogLvl2:
 class MessageLog:
     """Contains instances of the MessageLog class for each error type."""
 
-    until: str | None = (
-        None
-        if gf.st_not_in("access_until")
-        else (gf.st_get("access_until") or f"{gf.st_get('access_until'):%d.%m.%Y}")
-    )
+    until: str | None
+    if "access_until" in st.session_state:
+        until = (
+            st.session_state["access_until"]
+            or f"{st.session_state['access_until']:%d.%m.%Y}"
+        )
+    else:
+        until = None
 
     no_access = MessageLogLvl2(
         message=(
@@ -69,11 +72,7 @@ class MessageLog:
         )
     )
 
-    access_other: MessageLogLvl2 | None = (
-        None
-        if gf.st_not_in("name")
-        else MessageLogLvl2(message=f"Angemeldet als '{gf.st_get('name')}'.")
-    )
+    access_other = MessageLogLvl2(message=(f"Angemeldet als '{gf.st_get('name')}'."))
 
     access_until = MessageLogLvl2(
         message=(

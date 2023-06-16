@@ -58,13 +58,17 @@ class TimeMin:
 
 
 @dataclass(frozen=True, kw_only=True)
-class FigTitles:
+class FigIDs:
     """Title und css-suffixes für Plotly graphen"""
 
     lastgang: str
     jdl: str
     mon: str
-    tage: str
+    days: str
+
+    def list_all(self) -> list[str]:
+        """List all values"""
+        return list(self.__dict__.values())
 
 
 @dataclass(frozen=True)

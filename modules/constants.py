@@ -155,11 +155,18 @@ TIME_MIN: clc.TimeMin = clc.TimeMin(
     quarter_hour=15,
 )
 
-FIG_TITLES: clc.FigTitles = clc.FigTitles(
+FIG_TITLES: clc.FigIDs = clc.FigIDs(
     lastgang="Lastgang",
     jdl="Geordnete Jahresdauerlinie",
     mon="Monatswerte",
-    tage="Vergleich ausgewählter Tage",
+    days="Vergleich ausgewählter Tage",
+)
+
+FIG_KEYS: clc.FigIDs = clc.FigIDs(
+    lastgang="fig_base",
+    jdl="fig_jdl",
+    mon="fig_mon",
+    days="fig_days",
 )
 
 ARBEIT_LEISTUNG: clc.ArbeitLeistung = clc.ArbeitLeistung(

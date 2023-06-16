@@ -14,8 +14,8 @@ from modules import constants as cont
 from modules import fig_annotations as fig_anno
 from modules import fig_formatting as fig_format
 from modules import fig_general_functions as fgf
-from modules import general_functions as gf
 from modules import fig_plotly_plots as ploplo
+from modules import general_functions as gf
 
 
 # Grund-Grafik
@@ -34,7 +34,9 @@ def cr_fig_base(mdf: cl.MetaAndDfs) -> go.Figure:
     tit: str = f"{cont.FIG_TITLES.lastgang}{tit_res}"
 
     if gf.st_get("cb_multi_year"):
-        fig: go.Figure = ploplo.line_plot_y_overlay(mdf, title=tit)
+        fig: go.Figure = ploplo.line_plot_y_overlay(
+            mdf, "df_h_multi" if gf.st_get("cb_h") else "df_multi", title=tit
+        )
     else:
         fig: go.Figure = ploplo.line_plot(
             mdf,
@@ -183,14 +185,14 @@ def cr_fig_days(mdf: cl.MetaAndDfs) -> None:
     """Tagesvergleiche"""
     if not gf.st_get("cb_days"):
         return
-    
+
     tit_res: str = ""
     if gf.st_get("cb_h"):
         tit_res = cont.FIG_TITLES.suff_stunden
     elif st.session_state["metadata"]["td_mean"] == 15:
         tit_res = cont.FIG_TITLES.suff_15min
 
-    tit: str = f"{cont.FIG_TITLES.tage}{tit_res}"
+    tit: str = f"{cont.FIG_TITLES.days}{tit_res}"
 
     st.session_state["fig_days"] = ploplo.line_plot_day_overlay(
         st.session_state["dic_days"], st.session_state["metadata"], tit, "fig_days"
@@ -319,10 +321,7 @@ def html_exp(f_pn: str = "export\\interaktive_grafische_Auswertung.html") -> Non
         fil.write("<style>")
         fil.write("#las{width: 100%; margin-left:auto; margin-right:auto; }")
 
-        if any(
-            "Jahresdauerlinie" in st.session_state[fig].layout.meta.get("title")
-            for fig in st.session_state["lis_figs"]
-        ):
+        if gf.st_get("cb_jdl"):
             fil.write("#jdl{width: 45%; float: left; margin-right: 5%; }")
             fil.write("#mon{width: 45%; float: right; margin-left: 5%; }")
         else:
@@ -330,7 +329,11 @@ def html_exp(f_pn: str = "export\\interaktive_grafische_Auswertung.html") -> Non
 
         fil.write("</style>")
 
-        for fig in st.session_state["lis_figs"]:
+        for fig in [cont.FIG_KEYS.lastgang] + [
+            fig
+            for fig in cont.FIG_KEYS.list_all()
+            if gf.st_get(f"cb_{fig.split('_')[1]}")
+        ]:
             fig_type: str = fgf.fig_type_by_title(st.session_state[fig])
             if "las" in fig_type:
                 fil.write('<div id="las">')

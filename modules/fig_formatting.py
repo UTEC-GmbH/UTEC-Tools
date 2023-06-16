@@ -305,7 +305,7 @@ def show_traces(fig: go.Figure) -> go.Figure:
                 trace_stripped = trace_stripped.replace(suffix, "")
             combos: list[str] = [f"{trace_stripped}{suffix}" for suffix in suffixes]
             trace_visible = any(
-                st.session_state[f"cb_vis_{trace_suff}"] for trace_suff in combos
+                gf.st_get(f"cb_vis_{trace_suff}") for trace_suff in combos
             )
         else:
             trace_visible = st.session_state[f"cb_vis_{new_name}"]

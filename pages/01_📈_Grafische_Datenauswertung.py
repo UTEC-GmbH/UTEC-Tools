@@ -6,6 +6,7 @@ import streamlit as st
 
 from modules import classes_data as cl
 from modules import classes_figs as clf
+from modules import constants as cont
 from modules import df_manipulation as df_man
 from modules import excel_import as ex_in
 from modules import fig_annotations as fig_anno
@@ -121,22 +122,30 @@ def make_graphs(mdf: cl.MetaAndDfs) -> clf.Figs:
     # Grund-Grafik
     if figs.base is None:
         with st.spinner('Momentle bitte - Grafik "Lastgang" wird erzeugt...'):
-            figs.base = clf.FigProp(fig=fig_create.cr_fig_base(mdf), st_key="fig_base")
+            figs.base = clf.FigProp(
+                fig=fig_create.cr_fig_base(mdf), st_key=cont.FIG_KEYS.lastgang
+            )
 
     # Jahresdauerlinie
     if figs.jdl is None and gf.st_not_in("fig_jdl") and gf.st_get("cb_jdl"):
         with st.spinner('Momentle bitte - Grafik "Jahresdauerlinie" wird erzeugt...'):
-            figs.jdl = clf.FigProp(fig=fig_create.cr_fig_jdl(mdf), st_key="fig_jdl")
+            figs.jdl = clf.FigProp(
+                fig=fig_create.cr_fig_jdl(mdf), st_key=cont.FIG_KEYS.jdl
+            )
 
     # Monatswerte
     if figs.mon is None and gf.st_not_in("fig_mon") and gf.st_get("cb_mon"):
         with st.spinner('Momentle bitte - Grafik "Monatswerte" wird erzeugt...'):
-            figs.mon = clf.FigProp(fig=fig_create.cr_fig_mon(mdf), st_key="fig_mon")
+            figs.mon = clf.FigProp(
+                fig=fig_create.cr_fig_mon(mdf), st_key=cont.FIG_KEYS.mon
+            )
 
     # Tagesvergleich
     if figs.days is None and gf.st_get("but_select_graphs") and gf.st_get("cb_days"):
         with st.spinner('Momentle bitte - Grafik "Tagesvergleich" wird erzeugt...'):
-            figs.days = clf.FigProp(fig=fig_create.cr_fig_days(mdf), st_key="fig_days")
+            figs.days = clf.FigProp(
+                fig=fig_create.cr_fig_days(mdf), st_key=cont.FIG_KEYS.days
+            )
 
     figs.write_all_to_st()
 

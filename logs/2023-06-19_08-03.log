@@ -1,0 +1,889 @@
+
+
+08:03:00 🔥🔥🔥 Session Started. Logger Setup Complete. 🔥🔥🔥 
+
+
+08:03:00 👉 function 'general_setup' started 👈 
+
+08:03:01 👉 function 'render_svg' started 👈 
+08:03:01 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+
+08:03:01 👉 function 'get_commit_message_date' started 👈 
+08:03:02 ⏱ execution time of 'get_commit_message_date': 0.8440 s ⏱ 
+
+08:03:02 👉 function 'get_all_user_data' started 👈 
+
+08:03:02 👉 function 'connect_database' started 👈 
+08:03:02 🥳 user_authentication -> connect_database -> line: 122 | Deta-Database connection established 🥳 
+08:03:02 ⏱ execution time of 'connect_database': 0.0160 s ⏱ 
+08:03:02 🥳 user_authentication -> get_all_user_data -> line: 156 | Collected all user data from Database 🥳 
+08:03:02 ⏱ execution time of 'get_all_user_data': 0.1720 s ⏱ 
+08:03:02 💡 setup_stuff -> general_setup -> line: 118 | Pfad 'C:\Users\fl\Documents\Python\UTEC-Tools\export' für die Ausgabe bereits vorhanden 💡 
+
+08:03:02 🦤🦤🦤 Initial Setup Complete 🦤🦤🦤 
+
+08:03:02 ⏱ execution time of 'general_setup': 1.5320 s ⏱ 
+
+08:03:02 👉 function 'page_header_setup' started 👈 
+
+08:03:02 👉 function 'render_svg' started 👈 
+08:03:02 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:03:02 👟 setup_stuff -> page_header_setup -> line: 176 | page header for page 'login' created 👟 
+08:03:02 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:03:02 👉 function 'display_login_page' started 👈 
+
+08:03:02 👉 function 'login_section' started 👈 
+08:03:02 ⏱ execution time of 'login_section': 0.0000 s ⏱ 
+08:03:02 ⏱ execution time of 'display_login_page': 0.0150 s ⏱ 
+08:03:02 🥳 00_🔑_login -> <module> -> line: 155 | Login Page Loaded 🥳 
+
+
+08:03:02 ✨ NEW RUN ✨ 
+
+08:03:02 👉 function 'page_header_setup' started 👈 
+
+08:03:02 👉 function 'render_svg' started 👈 
+08:03:02 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:03:02 👟 setup_stuff -> page_header_setup -> line: 176 | page header for page 'login' created 👟 
+08:03:02 ⏱ execution time of 'page_header_setup': 0.0160 s ⏱ 
+
+08:03:02 👉 function 'display_login_page' started 👈 
+
+08:03:02 👉 function 'login_section' started 👈 
+
+08:03:02 👉 function 'access_granted' started 👈 
+08:03:02 🥳 00_🔑_login -> access_granted -> line: 91 | logged in as: 'fl' (name:'Florian'), access level: 'god' 🥳 
+
+08:03:02 👉 function 'god_mode' started 👈 
+
+08:03:02 👉 function 'user_accounts' started 👈 
+08:03:02 ⏱ execution time of 'user_accounts': 0.0000 s ⏱ 
+08:03:02 ⏱ execution time of 'god_mode': 0.0000 s ⏱ 
+08:03:02 ⏱ execution time of 'access_granted': 0.0000 s ⏱ 
+08:03:02 ⏱ execution time of 'login_section': 0.0000 s ⏱ 
+08:03:02 ⏱ execution time of 'display_login_page': 0.0160 s ⏱ 
+08:03:02 🥳 00_🔑_login -> <module> -> line: 155 | Login Page Loaded 🥳 
+
+
+08:03:03 ✨ NEW RUN ✨ 
+
+08:03:03 👉 function 'page_header_setup' started 👈 
+
+08:03:03 👉 function 'render_svg' started 👈 
+08:03:03 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:03:03 👟 setup_stuff -> page_header_setup -> line: 176 | page header for page 'login' created 👟 
+08:03:03 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:03:03 👉 function 'display_login_page' started 👈 
+
+08:03:03 👉 function 'login_section' started 👈 
+
+08:03:03 👉 function 'access_granted' started 👈 
+
+08:03:03 👉 function 'god_mode' started 👈 
+
+08:03:03 👉 function 'user_accounts' started 👈 
+08:03:03 ⏱ execution time of 'user_accounts': 0.0000 s ⏱ 
+08:03:03 ⏱ execution time of 'god_mode': 0.0000 s ⏱ 
+08:03:03 ⏱ execution time of 'access_granted': 0.0000 s ⏱ 
+08:03:03 ⏱ execution time of 'login_section': 0.0000 s ⏱ 
+08:03:03 ⏱ execution time of 'display_login_page': 0.0160 s ⏱ 
+08:03:03 🥳 00_🔑_login -> <module> -> line: 155 | Login Page Loaded 🥳 
+
+08:03:05 👉 function 'page_header_setup' started 👈 
+
+08:03:05 👉 function 'render_svg' started 👈 
+08:03:05 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:03:05 👟 setup_stuff -> page_header_setup -> line: 176 | page header for page 'graph' created 👟 
+08:03:05 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:03:05 👉 function 'sidebar_file_upload' started 👈 
+08:03:05 ⏱ execution time of 'sidebar_file_upload': 0.0000 s ⏱ 
+
+08:03:08 👉 function 'page_header_setup' started 👈 
+
+08:03:08 👉 function 'render_svg' started 👈 
+08:03:08 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:03:08 👟 setup_stuff -> page_header_setup -> line: 176 | page header for page 'graph' created 👟 
+08:03:08 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:03:08 👉 function 'sidebar_file_upload' started 👈 
+08:03:08 ⏱ execution time of 'sidebar_file_upload': 0.0160 s ⏱ 
+
+08:03:09 👉 function 'page_header_setup' started 👈 
+
+08:03:09 👉 function 'render_svg' started 👈 
+08:03:09 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:03:09 👟 setup_stuff -> page_header_setup -> line: 176 | page header for page 'graph' created 👟 
+08:03:09 ⏱ execution time of 'page_header_setup': 0.0150 s ⏱ 
+
+08:03:09 👉 function 'sidebar_file_upload' started 👈 
+08:03:09 ⏱ execution time of 'sidebar_file_upload': 0.0000 s ⏱ 
+
+08:03:09 👉 function 'import_prefab_excel' started 👈 
+08:03:11 💡 excel_import -> rename_columns -> line: 129 | Index-marker found in column 'column_2' 💡 
+08:03:11 ⚠ excel_import -> clean_up_daylight_savings -> line: 268 | Data deleted due to daylight savings. ️ 
+  shape: (4, 4)
+┌─────────────────────┬─────────────┬───────────┬────────────┐
+│ ↓ Index ↓           ┆ Wärmebedarf ┆ BHKW      ┆ Temperatur │
+│ ---                 ┆ ---         ┆ ---       ┆ ---        │
+│ datetime[μs]        ┆ f32         ┆ f32       ┆ f32        │
+╞═════════════════════╪═════════════╪═══════════╪════════════╡
+│ 2016-03-26 02:00:00 ┆ 203.0       ┆ 69.599998 ┆ 4.7        │
+│ 2017-03-25 02:00:00 ┆ 249.199997  ┆ 69.599998 ┆ 1.7        │
+│ 2018-03-31 02:00:00 ┆ 162.300003  ┆ 69.599998 ┆ 5.8        │
+│ 2019-03-30 02:00:00 ┆ 205.699997  ┆ 69.599998 ┆ 3.7        │
+└─────────────────────┴─────────────┴───────────┴────────────┘  
+
+08:03:11 💡 excel_import -> temporal_metadata -> line: 297 | Index mit zeitlicher Auflösung von 1 Stunde erkannt. 💡 
+08:03:11 🐞 excel_import -> convert_15min_kwh_to_kw -> line: 353 | Skipped 'convert_15min_kwh_to_kw' 🐞 
+  DataFrame head: 
+shape: (5, 5)
+┌─────────────────────┬─────────────┬───────────┬────────────┬─────────────────────┐
+│ ↓ Index ↓           ┆ Wärmebedarf ┆ BHKW      ┆ Temperatur ┆ orgidx              │
+│ ---                 ┆ ---         ┆ ---       ┆ ---        ┆ ---                 │
+│ datetime[μs]        ┆ f32         ┆ f32       ┆ f32        ┆ datetime[μs]        │
+╞═════════════════════╪═════════════╪═══════════╪════════════╪═════════════════════╡
+│ 2016-01-01 00:00:00 ┆ 206.5       ┆ 69.599998 ┆ 2.4        ┆ 2016-01-01 00:00:00 │
+│ 2016-01-01 01:00:00 ┆ 207.800003  ┆ 69.599998 ┆ 2.3        ┆ 2016-01-01 01:00:00 │
+│ 2016-01-01 02:00:00 ┆ 210.5       ┆ 69.599998 ┆ 2.3        ┆ 2016-01-01 02:00:00 │
+│ 2016-01-01 03:00:00 ┆ 215.899994  ┆ 69.599998 ┆ 1.7        ┆ 2016-01-01 03:00:00 │
+│ 2016-01-01 04:00:00 ┆ 211.800003  ┆ 69.599998 ┆ 2.0        ┆ 2016-01-01 04:00:00 │
+└─────────────────────┴─────────────┴───────────┴────────────┴─────────────────────┘ 
+
+DataFrame properties: 
+shape: (9, 6)
+┌────────────┬─────────────────────┬─────────────┬───────────┬────────────┬─────────────────────┐
+│ describe   ┆ ↓ Index ↓           ┆ Wärmebedarf ┆ BHKW      ┆ Temperatur ┆ orgidx              │
+│ ---        ┆ ---                 ┆ ---         ┆ ---       ┆ ---        ┆ ---                 │
+│ str        ┆ str                 ┆ f64         ┆ f64       ┆ f64        ┆ str                 │
+╞════════════╪═════════════════════╪═════════════╪═══════════╪════════════╪═════════════════════╡
+│ count      ┆ 35036               ┆ 35036.0     ┆ 35036.0   ┆ 35036.0    ┆ 35036               │
+│ null_count ┆ 0                   ┆ 0.0         ┆ 0.0       ┆ 0.0        ┆ 0                   │
+│ mean       ┆ null                ┆ 140.687103  ┆ 61.512844 ┆ 10.589154  ┆ null                │
+│ std        ┆ null                ┆ 75.785156   ┆ 22.304039 ┆ 7.553053   ┆ null                │
+│ min        ┆ 2016-01-01 00:00:00 ┆ 0.0         ┆ 0.0       ┆ -11.2      ┆ 2016-01-01 00:00:00 │
+│ max        ┆ 2019-12-31 23:00:00 ┆ 387.100006  ┆ 69.599998 ┆ 36.900002  ┆ 2019-12-31 23:00:00 │
+│ median     ┆ null                ┆ 146.399994  ┆ 69.599998 ┆ 10.1       ┆ null                │
+│ 25%        ┆ null                ┆ 88.0        ┆ 69.599998 ┆ 5.0        ┆ null                │
+│ 75%        ┆ null                ┆ 194.399994  ┆ 69.599998 ┆ 16.1       ┆ null                │
+└────────────┴─────────────────────┴─────────────┴───────────┴────────────┴─────────────────────┘  
+
+08:03:11 🐞 df_manipulation -> split_multi_years -> line: 141 | Meta for following lines available: 
+['Wärmebedarf', 'BHKW', 'Temperatur', 'Wärmebedarf 2016', 'BHKW 2016', 'Temperatur 2016', 'Wärmebedarf 2017', 'BHKW 2017', 'Temperatur 2017', 'Wärmebedarf 2018', 'BHKW 2018', 'Temperatur 2018', 'Wärmebedarf 2019', 'BHKW 2019', 'Temperatur 2019'] 🐞 
+08:03:11 🥳 excel_import -> import_prefab_excel -> line: 71 | Excel-Datei importiert. 🥳 
+08:03:11 💡 excel_import -> import_prefab_excel -> line: 72 | Imported lines: 
+['Wärmebedarf', 'BHKW', 'Temperatur', 'Wärmebedarf 2016', 'BHKW 2016', 'Temperatur 2016', 'Wärmebedarf 2017', 'BHKW 2017', 'Temperatur 2017', 'Wärmebedarf 2018', 'BHKW 2018', 'Temperatur 2018', 'Wärmebedarf 2019', 'BHKW 2019', 'Temperatur 2019'] 💡 
+08:03:11 ⏱ execution time of 'import_prefab_excel': 1.6250 s ⏱ 
+
+08:03:11 👉 function 'base_settings' started 👈 
+08:03:11 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+
+08:03:11 👉 function 'select_graphs' started 👈 
+08:03:11 ⏱ execution time of 'select_graphs': 0.0000 s ⏱ 
+
+08:03:11 👉 function 'meteo_sidebar' started 👈 
+08:03:11 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+08:03:11 👉 function 'df_h' started 👈 
+08:03:11 🐞 df_manipulation -> split_multi_years -> line: 141 | Meta for following lines available: 
+['Wärmebedarf', 'BHKW', 'Temperatur', 'Wärmebedarf 2016', 'BHKW 2016', 'Temperatur 2016', 'Wärmebedarf 2017', 'BHKW 2017', 'Temperatur 2017', 'Wärmebedarf 2018', 'BHKW 2018', 'Temperatur 2018', 'Wärmebedarf 2019', 'BHKW 2019', 'Temperatur 2019'] 🐞 
+08:03:11 🥳 df_manipulation -> df_h -> line: 192 | DataFrame mit Stundenwerten erstellt. 🥳 
+  shape: (5, 5)
+┌─────────────────────┬─────────────┬───────────┬────────────┬─────────────────────┐
+│ ↓ Index ↓           ┆ Wärmebedarf ┆ BHKW      ┆ Temperatur ┆ orgidx              │
+│ ---                 ┆ ---         ┆ ---       ┆ ---        ┆ ---                 │
+│ datetime[μs]        ┆ f32         ┆ f32       ┆ f32        ┆ datetime[μs]        │
+╞═════════════════════╪═════════════╪═══════════╪════════════╪═════════════════════╡
+│ 2016-01-01 00:00:00 ┆ 206.5       ┆ 69.599998 ┆ 2.4        ┆ 2016-01-01 00:00:00 │
+│ 2016-01-01 01:00:00 ┆ 207.800003  ┆ 69.599998 ┆ 2.3        ┆ 2016-01-01 01:00:00 │
+│ 2016-01-01 02:00:00 ┆ 210.5       ┆ 69.599998 ┆ 2.3        ┆ 2016-01-01 02:00:00 │
+│ 2016-01-01 03:00:00 ┆ 215.899994  ┆ 69.599998 ┆ 1.7        ┆ 2016-01-01 03:00:00 │
+│ 2016-01-01 04:00:00 ┆ 211.800003  ┆ 69.599998 ┆ 2.0        ┆ 2016-01-01 04:00:00 │
+└─────────────────────┴─────────────┴───────────┴────────────┴─────────────────────┘  
+
+08:03:11 💡 df_manipulation -> df_h -> line: 194 | Cols: ['↓ Index ↓', 'Wärmebedarf', 'BHKW', 'Temperatur', 'orgidx'] 💡 
+08:03:11 ⏱ execution time of 'df_h': 0.0160 s ⏱ 
+
+08:03:11 👉 function 'jdl' started 👈 
+08:03:11 🥳 df_manipulation -> jdl -> line: 241 | DataFrame für Jahresdauerlinie erstellt. 🥳 
+  shape: (5, 25)
+┌────────────┬──────────────────┬───────────────────────────┬───────────┬───┬───────────┬─────────────────────┬─────────────────┬──────────────────────────┐
+│ ↓ Index ↓  ┆ Wärmebedarf 2016 ┆ Wärmebedarf 2016 - orgidx ┆ BHKW 2016 ┆ … ┆ BHKW 2019 ┆ BHKW 2019 - orgidx  ┆ Temperatur 2019 ┆ Temperatur 2019 - orgidx │
+│ ---        ┆ ---              ┆ ---                       ┆ ---       ┆   ┆ ---       ┆ ---                 ┆ ---             ┆ ---                      │
+│ u32        ┆ f32              ┆ datetime[μs]              ┆ f32       ┆   ┆ f32       ┆ datetime[μs]        ┆ f32             ┆ datetime[μs]             │
+╞════════════╪══════════════════╪═══════════════════════════╪═══════════╪═══╪═══════════╪═════════════════════╪═════════════════╪══════════════════════════╡
+│ 0          ┆ 369.100006       ┆ 2016-01-22 08:00:00       ┆ 69.599998 ┆ … ┆ 69.599998 ┆ 2019-01-01 00:00:00 ┆ 36.900002       ┆ 2019-07-25 13:00:00      │
+│ 1          ┆ 367.700012       ┆ 2016-01-22 07:00:00       ┆ 69.599998 ┆ … ┆ 69.599998 ┆ 2019-01-01 01:00:00 ┆ 36.900002       ┆ 2019-07-25 14:00:00      │
+│ 2          ┆ 363.700012       ┆ 2016-01-21 01:00:00       ┆ 69.599998 ┆ … ┆ 69.599998 ┆ 2019-01-01 02:00:00 ┆ 36.5            ┆ 2019-07-25 15:00:00      │
+│ 3          ┆ 358.299988       ┆ 2016-01-22 09:00:00       ┆ 69.599998 ┆ … ┆ 69.599998 ┆ 2019-01-01 03:00:00 ┆ 35.599998       ┆ 2019-07-25 12:00:00      │
+│ 4          ┆ 357.0            ┆ 2016-01-19 04:00:00       ┆ 69.599998 ┆ … ┆ 69.599998 ┆ 2019-01-01 04:00:00 ┆ 35.5            ┆ 2019-07-25 16:00:00      │
+└────────────┴──────────────────┴───────────────────────────┴───────────┴───┴───────────┴─────────────────────┴─────────────────┴──────────────────────────┘  
+
+08:03:11 💡 df_manipulation -> jdl -> line: 243 | Cols: ['↓ Index ↓', 'Wärmebedarf 2016', 'Wärmebedarf 2016 - orgidx', 'BHKW 2016', 'BHKW 2016 - orgidx', 'Temperatur 2016', 'Temperatur 2016 - orgidx', 'Wärmebedarf 2017', 'Wärmebedarf 2017 - orgidx', 'BHKW 2017', 'BHKW 2017 - orgidx', 'Temperatur 2017', 'Temperatur 2017 - orgidx', 'Wärmebedarf 2018', 'Wärmebedarf 2018 - orgidx', 'BHKW 2018', 'BHKW 2018 - orgidx', 'Temperatur 2018', 'Temperatur 2018 - orgidx', 'Wärmebedarf 2019', 'Wärmebedarf 2019 - orgidx', 'BHKW 2019', 'BHKW 2019 - orgidx', 'Temperatur 2019', 'Temperatur 2019 - orgidx'] 💡 
+08:03:11 ⏱ execution time of 'jdl': 0.0150 s ⏱ 
+
+08:03:11 👉 function 'mon' started 👈 
+08:03:11 🐞 df_manipulation -> split_multi_years -> line: 141 | Meta for following lines available: 
+['Wärmebedarf', 'BHKW', 'Temperatur', 'Wärmebedarf 2016', 'BHKW 2016', 'Temperatur 2016', 'Wärmebedarf 2017', 'BHKW 2017', 'Temperatur 2017', 'Wärmebedarf 2018', 'BHKW 2018', 'Temperatur 2018', 'Wärmebedarf 2019', 'BHKW 2019', 'Temperatur 2019'] 🐞 
+08:03:11 🥳 df_manipulation -> mon -> line: 282 | DataFrame mit Monatswerten erstellt. 🥳 
+  shape: (5, 5)
+┌─────────────────────┬───────────────┬──────────────┬────────────┬─────────────────────┐
+│ ↓ Index ↓           ┆ Wärmebedarf   ┆ BHKW         ┆ Temperatur ┆ orgidx              │
+│ ---                 ┆ ---           ┆ ---          ┆ ---        ┆ ---                 │
+│ datetime[μs]        ┆ f32           ┆ f32          ┆ f32        ┆ datetime[μs]        │
+╞═════════════════════╪═══════════════╪══════════════╪════════════╪═════════════════════╡
+│ 2016-01-15 00:00:00 ┆ 162404.875    ┆ 51782.421875 ┆ 1.525134   ┆ 2016-01-01 00:00:00 │
+│ 2016-02-15 00:00:00 ┆ 144711.0      ┆ 48441.824219 ┆ 3.553879   ┆ 2016-02-01 00:00:00 │
+│ 2016-03-15 00:00:00 ┆ 147453.109375 ┆ 51712.820312 ┆ 4.759219   ┆ 2016-03-01 00:00:00 │
+│ 2016-04-15 00:00:00 ┆ 114476.5625   ┆ 49416.246094 ┆ 8.058611   ┆ 2016-04-01 00:00:00 │
+│ 2016-05-15 00:00:00 ┆ 84485.710938  ┆ 45866.566406 ┆ 14.499597  ┆ 2016-05-01 00:00:00 │
+└─────────────────────┴───────────────┴──────────────┴────────────┴─────────────────────┘  
+
+08:03:11 ⏱ execution time of 'mon': 0.0160 s ⏱ 
+
+08:03:11 👉 function 'cr_fig_base' started 👈 
+
+08:03:11 👉 function 'line_plot_y_overlay' started 👈 
+08:03:11 🐞 fig_plotly_plots -> line_plot_y_overlay -> line: 127 | DataFrame df_h_multi 🐞 
+08:03:11 ⏱ execution time of 'line_plot_y_overlay': 0.0470 s ⏱ 
+
+08:03:11 👉 function 'add_arrows_min_max' started 👈 
+
+08:03:11 👉 function 'middle_xaxis' started 👈 
+08:03:11 💡 fig_annotations -> middle_xaxis -> line: 41 | middle of x-axis: 2020-07-01T23:30:00.000000 💡 
+08:03:11 ⏱ execution time of 'middle_xaxis': 0.2030 s ⏱ 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Wärmebedarf 2016 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für BHKW 2016 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Temperatur 2016 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Wärmebedarf 2017 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für BHKW 2017 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Temperatur 2017 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Wärmebedarf 2018 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für BHKW 2018 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Temperatur 2018 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Wärmebedarf 2019 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für BHKW 2019 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Temperatur 2019 hinzugefügt 💡 
+08:03:11 🥳 fig_annotations -> add_arrows_min_max -> line: 173 | Max / Min arrows added to figure 🥳 
+08:03:11 ⏱ execution time of 'add_arrows_min_max': 0.2350 s ⏱ 
+
+08:03:11 👉 function 'standard_axes_and_layout' started 👈 
+
+08:03:11 👉 function 'standard_xaxis' started 👈 
+
+08:03:11 👉 function 'format_tickstops' started 👈 
+08:03:11 ⏱ execution time of 'format_tickstops': 0.0000 s ⏱ 
+08:03:11 ⏱ execution time of 'standard_xaxis': 0.2180 s ⏱ 
+
+08:03:11 👉 function 'standard_layout' started 👈 
+08:03:11 ⏱ execution time of 'standard_layout': 0.0160 s ⏱ 
+08:03:11 ⏱ execution time of 'standard_axes_and_layout': 0.2340 s ⏱ 
+08:03:11 🥳 fig_creation_export -> cr_fig_base -> line: 85 | fig_base created 🥳 
+08:03:11 ⏱ execution time of 'cr_fig_base': 0.5940 s ⏱ 
+
+08:03:11 👉 function 'cr_fig_jdl' started 👈 
+
+08:03:11 👉 function 'line_plot' started 👈 
+08:03:11 💡 fig_plotly_plots -> line_plot -> line: 64 | line: Wärmebedarf 2016, line_org: Wärmebedarf 2016 - orgidx 💡 
+08:03:11 💡 fig_plotly_plots -> line_plot -> line: 64 | line: BHKW 2016, line_org: BHKW 2016 - orgidx 💡 
+08:03:11 💡 fig_plotly_plots -> line_plot -> line: 64 | line: Temperatur 2016, line_org: Temperatur 2016 - orgidx 💡 
+08:03:11 💡 fig_plotly_plots -> line_plot -> line: 64 | line: Wärmebedarf 2017, line_org: Wärmebedarf 2017 - orgidx 💡 
+08:03:11 💡 fig_plotly_plots -> line_plot -> line: 64 | line: BHKW 2017, line_org: BHKW 2017 - orgidx 💡 
+08:03:11 💡 fig_plotly_plots -> line_plot -> line: 64 | line: Temperatur 2017, line_org: Temperatur 2017 - orgidx 💡 
+08:03:11 💡 fig_plotly_plots -> line_plot -> line: 64 | line: Wärmebedarf 2018, line_org: Wärmebedarf 2018 - orgidx 💡 
+08:03:11 💡 fig_plotly_plots -> line_plot -> line: 64 | line: BHKW 2018, line_org: BHKW 2018 - orgidx 💡 
+08:03:11 💡 fig_plotly_plots -> line_plot -> line: 64 | line: Temperatur 2018, line_org: Temperatur 2018 - orgidx 💡 
+08:03:11 💡 fig_plotly_plots -> line_plot -> line: 64 | line: Wärmebedarf 2019, line_org: Wärmebedarf 2019 - orgidx 💡 
+08:03:11 💡 fig_plotly_plots -> line_plot -> line: 64 | line: BHKW 2019, line_org: BHKW 2019 - orgidx 💡 
+08:03:11 💡 fig_plotly_plots -> line_plot -> line: 64 | line: Temperatur 2019, line_org: Temperatur 2019 - orgidx 💡 
+08:03:11 ⏱ execution time of 'line_plot': 0.0310 s ⏱ 
+
+08:03:11 👉 function 'add_arrows_min_max' started 👈 
+
+08:03:11 👉 function 'middle_xaxis' started 👈 
+08:03:11 💡 fig_annotations -> middle_xaxis -> line: 41 | middle of x-axis: 4379.0 💡 
+08:03:11 ⏱ execution time of 'middle_xaxis': 0.0000 s ⏱ 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Wärmebedarf 2016 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für BHKW 2016 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Temperatur 2016 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Wärmebedarf 2017 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für BHKW 2017 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Temperatur 2017 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Wärmebedarf 2018 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für BHKW 2018 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Temperatur 2018 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Wärmebedarf 2019 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für BHKW 2019 hinzugefügt 💡 
+08:03:11 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Temperatur 2019 hinzugefügt 💡 
+08:03:11 🥳 fig_annotations -> add_arrows_min_max -> line: 173 | Max / Min arrows added to figure 🥳 
+08:03:11 ⏱ execution time of 'add_arrows_min_max': 0.0150 s ⏱ 
+
+08:03:11 👉 function 'standard_axes_and_layout' started 👈 
+
+08:03:11 👉 function 'standard_xaxis' started 👈 
+08:03:11 ⏱ execution time of 'standard_xaxis': 0.0160 s ⏱ 
+
+08:03:11 👉 function 'standard_layout' started 👈 
+08:03:11 ⏱ execution time of 'standard_layout': 0.0000 s ⏱ 
+08:03:11 ⏱ execution time of 'standard_axes_and_layout': 0.0160 s ⏱ 
+08:03:11 🥳 fig_creation_export -> cr_fig_jdl -> line: 129 | fig_jdl created 🥳 
+08:03:11 ⏱ execution time of 'cr_fig_jdl': 0.0930 s ⏱ 
+
+08:03:11 👉 function 'cr_fig_mon' started 👈 
+
+08:03:11 👉 function 'line_plot_y_overlay' started 👈 
+08:03:11 🐞 fig_plotly_plots -> line_plot_y_overlay -> line: 127 | DataFrame mon_multi 🐞 
+08:03:11 ⏱ execution time of 'line_plot_y_overlay': 0.0160 s ⏱ 
+
+08:03:11 👉 function 'standard_axes_and_layout' started 👈 
+
+08:03:11 👉 function 'standard_xaxis' started 👈 
+
+08:03:11 👉 function 'format_tickstops' started 👈 
+08:03:11 ⏱ execution time of 'format_tickstops': 0.0000 s ⏱ 
+08:03:11 ⏱ execution time of 'standard_xaxis': 0.0000 s ⏱ 
+
+08:03:11 👉 function 'standard_layout' started 👈 
+08:03:11 ⏱ execution time of 'standard_layout': 0.0150 s ⏱ 
+08:03:11 ⏱ execution time of 'standard_axes_and_layout': 0.0150 s ⏱ 
+08:03:11 🥳 fig_creation_export -> cr_fig_mon -> line: 178 | fig_mon created 🥳 
+08:03:11 ⏱ execution time of 'cr_fig_mon': 0.0470 s ⏱ 
+08:03:11 🐞 classes_figs -> write_all_to_st -> line: 138 | figs with data: ['fig_base', 'fig_jdl', 'fig_mon'] 🐞 
+
+08:03:11 👉 function 'h_v_lines' started 👈 
+08:03:11 ⏱ execution time of 'h_v_lines': 0.0160 s ⏱ 
+
+08:03:11 👉 function 'clean_outliers' started 👈 
+08:03:11 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+08:03:11 👉 function 'display_options_main' started 👈 
+08:03:11 ⏱ execution time of 'display_options_main': 0.0620 s ⏱ 
+
+08:03:11 👉 function 'display_smooth_main' started 👈 
+08:03:12 ⏱ execution time of 'display_smooth_main': 0.0320 s ⏱ 
+08:03:12 🐞 classes_figs -> update_all_figs -> line: 148 | figs with data: ['fig_base', 'fig_jdl', 'fig_mon'] 🐞 
+
+08:03:12 👉 function 'update_main' started 👈 
+
+08:03:12 👉 function 'show_traces' started 👈 
+
+08:03:12 👉 function 'smooth' started 👈 
+08:03:12 ⏱ execution time of 'smooth': 0.0000 s ⏱ 
+08:03:12 ⏱ execution time of 'show_traces': 0.0150 s ⏱ 
+08:03:12 🐞 fig_formatting -> update_main -> line: 242 | Visible traces in figure 'Lastgang<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+['Wärmebedarf 2016', 'BHKW 2016', 'Temperatur 2016', 'Wärmebedarf 2017', 'BHKW 2017', 'Temperatur 2017', 'Wärmebedarf 2018', 'BHKW 2018', 'Temperatur 2018', 'Wärmebedarf 2019', 'BHKW 2019', 'Temperatur 2019'] 🐞 
+08:03:12 🐞 fig_formatting -> update_main -> line: 249 | Visible units in figure 'Lastgang<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+[' kWh', ' °C'] 🐞 
+
+08:03:12 👉 function 'format_traces' started 👈 
+08:03:12 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+08:03:12 👉 function 'show_y_axes' started 👈 
+08:03:12 🐞 fig_formatting -> show_y_axes -> line: 416 | Visible y-axes in figure 'Lastgang<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+['yaxis', 'yaxis2'] 🐞 
+08:03:12 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+08:03:12 🐞 fig_formatting -> legend_groups_for_multi_year -> line: 502 | number of traces in groups: {'2016': 3, '2017': 3, '2018': 3, '2019': 3} 🐞 
+08:03:12 ⏱ execution time of 'update_main': 0.0620 s ⏱ 
+
+08:03:12 👉 function 'update_main' started 👈 
+
+08:03:12 👉 function 'show_traces' started 👈 
+08:03:12 ⏱ execution time of 'show_traces': 0.0000 s ⏱ 
+08:03:12 🐞 fig_formatting -> update_main -> line: 242 | Visible traces in figure 'Geordnete Jahresdauerlinie<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+['Wärmebedarf 2016', 'BHKW 2016', 'Temperatur 2016', 'Wärmebedarf 2017', 'BHKW 2017', 'Temperatur 2017', 'Wärmebedarf 2018', 'BHKW 2018', 'Temperatur 2018', 'Wärmebedarf 2019', 'BHKW 2019', 'Temperatur 2019'] 🐞 
+08:03:12 🐞 fig_formatting -> update_main -> line: 249 | Visible units in figure 'Geordnete Jahresdauerlinie<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+[' kW', ' °C'] 🐞 
+
+08:03:12 👉 function 'format_traces' started 👈 
+08:03:12 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+08:03:12 👉 function 'show_y_axes' started 👈 
+08:03:12 🐞 fig_formatting -> show_y_axes -> line: 416 | Visible y-axes in figure 'Geordnete Jahresdauerlinie<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+['yaxis', 'yaxis2'] 🐞 
+08:03:12 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+08:03:12 🐞 fig_formatting -> legend_groups_for_multi_year -> line: 502 | number of traces in groups: {'2016': 3, '2017': 3, '2018': 3, '2019': 3} 🐞 
+08:03:12 ⏱ execution time of 'update_main': 0.0470 s ⏱ 
+
+08:03:12 👉 function 'update_main' started 👈 
+
+08:03:12 👉 function 'show_traces' started 👈 
+08:03:12 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+08:03:12 🐞 fig_formatting -> update_main -> line: 242 | Visible traces in figure 'Monatswerte': 
+['Wärmebedarf 2016', 'BHKW 2016', 'Temperatur 2016', 'Wärmebedarf 2017', 'BHKW 2017', 'Temperatur 2017', 'Wärmebedarf 2018', 'BHKW 2018', 'Temperatur 2018', 'Wärmebedarf 2019', 'BHKW 2019', 'Temperatur 2019'] 🐞 
+08:03:12 🐞 fig_formatting -> update_main -> line: 249 | Visible units in figure 'Monatswerte': 
+[' kWh', ' °C'] 🐞 
+
+08:03:12 👉 function 'format_traces' started 👈 
+08:03:12 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+08:03:12 👉 function 'show_y_axes' started 👈 
+08:03:12 🐞 fig_formatting -> show_y_axes -> line: 416 | Visible y-axes in figure 'Monatswerte': 
+['yaxis', 'yaxis2'] 🐞 
+08:03:12 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+08:03:12 🐞 fig_formatting -> legend_groups_for_multi_year -> line: 502 | number of traces in groups: {'2016': 3, '2017': 3, '2018': 3, '2019': 3} 🐞 
+08:03:12 ⏱ execution time of 'update_main': 0.0470 s ⏱ 
+08:03:12 🐞 classes_figs -> write_all_to_st -> line: 138 | figs with data: ['fig_base', 'fig_jdl', 'fig_mon'] 🐞 
+
+08:03:12 👉 function 'plot_figs' started 👈 
+08:03:12 ⏱ execution time of 'plot_figs': 0.2500 s ⏱ 
+
+08:03:12 👉 function 'downloads' started 👈 
+08:03:12 ⏱ execution time of 'downloads': 0.0000 s ⏱ 
+
+08:03:25 👉 function 'page_header_setup' started 👈 
+
+08:03:25 👉 function 'render_svg' started 👈 
+08:03:25 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:03:25 👟 setup_stuff -> page_header_setup -> line: 176 | page header for page 'graph' created 👟 
+08:03:25 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:03:25 👉 function 'sidebar_file_upload' started 👈 
+08:03:25 ⏱ execution time of 'sidebar_file_upload': 0.0000 s ⏱ 
+
+08:03:25 👉 function 'base_settings' started 👈 
+08:03:25 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+08:03:25 ⚠ general_functions -> st_delete -> line: 113 | st.session_state Eintrag fig_base gelöscht ️ 
+08:03:25 ⚠ general_functions -> st_delete -> line: 113 | st.session_state Eintrag fig_jdl gelöscht ️ 
+08:03:25 ⚠ general_functions -> st_delete -> line: 113 | st.session_state Eintrag fig_mon gelöscht ️ 
+
+08:03:25 👉 function 'select_graphs' started 👈 
+08:03:25 ⏱ execution time of 'select_graphs': 0.0150 s ⏱ 
+
+08:03:25 👉 function 'meteo_sidebar' started 👈 
+08:03:25 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+08:03:25 👉 function 'df_h' started 👈 
+08:03:25 🥳 df_manipulation -> df_h -> line: 192 | DataFrame mit Stundenwerten erstellt. 🥳 
+  shape: (5, 5)
+┌─────────────────────┬─────────────┬───────────┬────────────┬─────────────────────┐
+│ ↓ Index ↓           ┆ Wärmebedarf ┆ BHKW      ┆ Temperatur ┆ orgidx              │
+│ ---                 ┆ ---         ┆ ---       ┆ ---        ┆ ---                 │
+│ datetime[μs]        ┆ f32         ┆ f32       ┆ f32        ┆ datetime[μs]        │
+╞═════════════════════╪═════════════╪═══════════╪════════════╪═════════════════════╡
+│ 2016-01-01 00:00:00 ┆ 206.5       ┆ 69.599998 ┆ 2.4        ┆ 2016-01-01 00:00:00 │
+│ 2016-01-01 01:00:00 ┆ 207.800003  ┆ 69.599998 ┆ 2.3        ┆ 2016-01-01 01:00:00 │
+│ 2016-01-01 02:00:00 ┆ 210.5       ┆ 69.599998 ┆ 2.3        ┆ 2016-01-01 02:00:00 │
+│ 2016-01-01 03:00:00 ┆ 215.899994  ┆ 69.599998 ┆ 1.7        ┆ 2016-01-01 03:00:00 │
+│ 2016-01-01 04:00:00 ┆ 211.800003  ┆ 69.599998 ┆ 2.0        ┆ 2016-01-01 04:00:00 │
+└─────────────────────┴─────────────┴───────────┴────────────┴─────────────────────┘  
+
+08:03:25 💡 df_manipulation -> df_h -> line: 194 | Cols: ['↓ Index ↓', 'Wärmebedarf', 'BHKW', 'Temperatur', 'orgidx'] 💡 
+08:03:25 ⏱ execution time of 'df_h': 0.0000 s ⏱ 
+
+08:03:25 👉 function 'jdl' started 👈 
+08:03:25 🥳 df_manipulation -> jdl -> line: 241 | DataFrame für Jahresdauerlinie erstellt. 🥳 
+  shape: (5, 7)
+┌────────────┬─────────────┬──────────────────────┬───────────┬─────────────────────┬────────────┬─────────────────────┐
+│ ↓ Index ↓  ┆ Wärmebedarf ┆ Wärmebedarf - orgidx ┆ BHKW      ┆ BHKW - orgidx       ┆ Temperatur ┆ Temperatur - orgidx │
+│ ---        ┆ ---         ┆ ---                  ┆ ---       ┆ ---                 ┆ ---        ┆ ---                 │
+│ u32        ┆ f32         ┆ datetime[μs]         ┆ f32       ┆ datetime[μs]        ┆ f32        ┆ datetime[μs]        │
+╞════════════╪═════════════╪══════════════════════╪═══════════╪═════════════════════╪════════════╪═════════════════════╡
+│ 0          ┆ 387.100006  ┆ 2018-02-28 06:00:00  ┆ 69.599998 ┆ 2016-01-01 00:00:00 ┆ 36.900002  ┆ 2019-07-25 13:00:00 │
+│ 1          ┆ 387.100006  ┆ 2018-02-28 07:00:00  ┆ 69.599998 ┆ 2016-01-01 01:00:00 ┆ 36.900002  ┆ 2019-07-25 14:00:00 │
+│ 2          ┆ 379.100006  ┆ 2018-02-28 05:00:00  ┆ 69.599998 ┆ 2016-01-01 02:00:00 ┆ 36.5       ┆ 2019-07-25 15:00:00 │
+│ 3          ┆ 377.5       ┆ 2018-02-28 08:00:00  ┆ 69.599998 ┆ 2016-01-01 03:00:00 ┆ 35.799999  ┆ 2018-08-07 15:00:00 │
+│ 4          ┆ 377.200012  ┆ 2018-03-02 07:00:00  ┆ 69.599998 ┆ 2016-01-01 04:00:00 ┆ 35.799999  ┆ 2018-08-07 16:00:00 │
+└────────────┴─────────────┴──────────────────────┴───────────┴─────────────────────┴────────────┴─────────────────────┘  
+
+08:03:25 💡 df_manipulation -> jdl -> line: 243 | Cols: ['↓ Index ↓', 'Wärmebedarf', 'Wärmebedarf - orgidx', 'BHKW', 'BHKW - orgidx', 'Temperatur', 'Temperatur - orgidx'] 💡 
+08:03:25 ⏱ execution time of 'jdl': 0.0160 s ⏱ 
+
+08:03:25 👉 function 'mon' started 👈 
+08:03:25 🥳 df_manipulation -> mon -> line: 282 | DataFrame mit Monatswerten erstellt. 🥳 
+  shape: (5, 5)
+┌─────────────────────┬───────────────┬──────────────┬────────────┬─────────────────────┐
+│ ↓ Index ↓           ┆ Wärmebedarf   ┆ BHKW         ┆ Temperatur ┆ orgidx              │
+│ ---                 ┆ ---           ┆ ---          ┆ ---        ┆ ---                 │
+│ datetime[μs]        ┆ f32           ┆ f32          ┆ f32        ┆ datetime[μs]        │
+╞═════════════════════╪═══════════════╪══════════════╪════════════╪═════════════════════╡
+│ 2016-01-15 00:00:00 ┆ 162404.875    ┆ 51782.421875 ┆ 1.525134   ┆ 2016-01-01 00:00:00 │
+│ 2016-02-15 00:00:00 ┆ 144711.0      ┆ 48441.824219 ┆ 3.553879   ┆ 2016-02-01 00:00:00 │
+│ 2016-03-15 00:00:00 ┆ 147453.109375 ┆ 51712.820312 ┆ 4.759219   ┆ 2016-03-01 00:00:00 │
+│ 2016-04-15 00:00:00 ┆ 114476.5625   ┆ 49416.246094 ┆ 8.058611   ┆ 2016-04-01 00:00:00 │
+│ 2016-05-15 00:00:00 ┆ 84485.710938  ┆ 45866.566406 ┆ 14.499597  ┆ 2016-05-01 00:00:00 │
+└─────────────────────┴───────────────┴──────────────┴────────────┴─────────────────────┘  
+
+08:03:25 ⏱ execution time of 'mon': 0.0000 s ⏱ 
+
+08:03:25 👉 function 'cr_fig_base' started 👈 
+
+08:03:25 👉 function 'line_plot' started 👈 
+08:03:25 💡 fig_plotly_plots -> line_plot -> line: 64 | line: Wärmebedarf, line_org: Wärmebedarf - orgidx 💡 
+08:03:25 ⚠ fig_plotly_plots -> line_plot -> line: 69 | Line 'Wärmebedarf - orgidx' not found in 'df_h'! Available columns: 
+['↓ Index ↓', 'Wärmebedarf', 'BHKW', 'Temperatur', 'orgidx'] ️ 
+08:03:25 💡 fig_plotly_plots -> line_plot -> line: 64 | line: BHKW, line_org: BHKW - orgidx 💡 
+08:03:25 ⚠ fig_plotly_plots -> line_plot -> line: 69 | Line 'BHKW - orgidx' not found in 'df_h'! Available columns: 
+['↓ Index ↓', 'Wärmebedarf', 'BHKW', 'Temperatur', 'orgidx'] ️ 
+08:03:25 💡 fig_plotly_plots -> line_plot -> line: 64 | line: Temperatur, line_org: Temperatur - orgidx 💡 
+08:03:25 ⚠ fig_plotly_plots -> line_plot -> line: 69 | Line 'Temperatur - orgidx' not found in 'df_h'! Available columns: 
+['↓ Index ↓', 'Wärmebedarf', 'BHKW', 'Temperatur', 'orgidx'] ️ 
+08:03:25 ⏱ execution time of 'line_plot': 0.0310 s ⏱ 
+
+08:03:25 👉 function 'add_arrows_min_max' started 👈 
+
+08:03:25 👉 function 'middle_xaxis' started 👈 
+08:03:25 💡 fig_annotations -> middle_xaxis -> line: 41 | middle of x-axis: 2017-12-31T11:30:00.000000 💡 
+08:03:25 ⏱ execution time of 'middle_xaxis': 0.2030 s ⏱ 
+08:03:25 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Wärmebedarf hinzugefügt 💡 
+08:03:25 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für BHKW hinzugefügt 💡 
+08:03:25 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Temperatur hinzugefügt 💡 
+08:03:25 🥳 fig_annotations -> add_arrows_min_max -> line: 173 | Max / Min arrows added to figure 🥳 
+08:03:26 ⏱ execution time of 'add_arrows_min_max': 0.2030 s ⏱ 
+
+08:03:26 👉 function 'standard_axes_and_layout' started 👈 
+
+08:03:26 👉 function 'standard_xaxis' started 👈 
+
+08:03:26 👉 function 'format_tickstops' started 👈 
+08:03:26 ⏱ execution time of 'format_tickstops': 0.0000 s ⏱ 
+08:03:26 ⏱ execution time of 'standard_xaxis': 0.2030 s ⏱ 
+
+08:03:26 👉 function 'standard_layout' started 👈 
+08:03:26 ⏱ execution time of 'standard_layout': 0.0160 s ⏱ 
+08:03:26 ⏱ execution time of 'standard_axes_and_layout': 0.2190 s ⏱ 
+08:03:26 🥳 fig_creation_export -> cr_fig_base -> line: 85 | fig_base created 🥳 
+08:03:26 ⏱ execution time of 'cr_fig_base': 0.4690 s ⏱ 
+
+08:03:26 👉 function 'cr_fig_jdl' started 👈 
+
+08:03:26 👉 function 'line_plot' started 👈 
+08:03:26 💡 fig_plotly_plots -> line_plot -> line: 64 | line: Wärmebedarf, line_org: Wärmebedarf - orgidx 💡 
+08:03:26 💡 fig_plotly_plots -> line_plot -> line: 64 | line: BHKW, line_org: BHKW - orgidx 💡 
+08:03:26 💡 fig_plotly_plots -> line_plot -> line: 64 | line: Temperatur, line_org: Temperatur - orgidx 💡 
+08:03:26 ⏱ execution time of 'line_plot': 0.0310 s ⏱ 
+
+08:03:26 👉 function 'add_arrows_min_max' started 👈 
+
+08:03:26 👉 function 'middle_xaxis' started 👈 
+08:03:26 💡 fig_annotations -> middle_xaxis -> line: 41 | middle of x-axis: 17517.5 💡 
+08:03:26 ⏱ execution time of 'middle_xaxis': 0.0000 s ⏱ 
+08:03:26 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Wärmebedarf hinzugefügt 💡 
+08:03:26 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für BHKW hinzugefügt 💡 
+08:03:26 💡 fig_annotations -> add_arrows_min_max -> line: 171 | Pfeil für Temperatur hinzugefügt 💡 
+08:03:26 🥳 fig_annotations -> add_arrows_min_max -> line: 173 | Max / Min arrows added to figure 🥳 
+08:03:26 ⏱ execution time of 'add_arrows_min_max': 0.0000 s ⏱ 
+
+08:03:26 👉 function 'standard_axes_and_layout' started 👈 
+
+08:03:26 👉 function 'standard_xaxis' started 👈 
+08:03:26 ⏱ execution time of 'standard_xaxis': 0.0000 s ⏱ 
+
+08:03:26 👉 function 'standard_layout' started 👈 
+08:03:26 ⏱ execution time of 'standard_layout': 0.0150 s ⏱ 
+08:03:26 ⏱ execution time of 'standard_axes_and_layout': 0.0150 s ⏱ 
+08:03:26 🥳 fig_creation_export -> cr_fig_jdl -> line: 129 | fig_jdl created 🥳 
+08:03:26 ⏱ execution time of 'cr_fig_jdl': 0.0620 s ⏱ 
+
+08:03:26 👉 function 'cr_fig_mon' started 👈 
+
+08:03:26 👉 function 'line_plot' started 👈 
+08:03:26 💡 fig_plotly_plots -> line_plot -> line: 64 | line: Wärmebedarf, line_org: Wärmebedarf - orgidx 💡 
+08:03:26 ⚠ fig_plotly_plots -> line_plot -> line: 69 | Line 'Wärmebedarf - orgidx' not found in 'mon'! Available columns: 
+['↓ Index ↓', 'Wärmebedarf', 'BHKW', 'Temperatur', 'orgidx'] ️ 
+08:03:26 💡 fig_plotly_plots -> line_plot -> line: 64 | line: BHKW, line_org: BHKW - orgidx 💡 
+08:03:26 ⚠ fig_plotly_plots -> line_plot -> line: 69 | Line 'BHKW - orgidx' not found in 'mon'! Available columns: 
+['↓ Index ↓', 'Wärmebedarf', 'BHKW', 'Temperatur', 'orgidx'] ️ 
+08:03:26 💡 fig_plotly_plots -> line_plot -> line: 64 | line: Temperatur, line_org: Temperatur - orgidx 💡 
+08:03:26 ⚠ fig_plotly_plots -> line_plot -> line: 69 | Line 'Temperatur - orgidx' not found in 'mon'! Available columns: 
+['↓ Index ↓', 'Wärmebedarf', 'BHKW', 'Temperatur', 'orgidx'] ️ 
+08:03:26 ⏱ execution time of 'line_plot': 0.0160 s ⏱ 
+
+08:03:26 👉 function 'standard_axes_and_layout' started 👈 
+
+08:03:26 👉 function 'standard_xaxis' started 👈 
+
+08:03:26 👉 function 'format_tickstops' started 👈 
+08:03:26 ⏱ execution time of 'format_tickstops': 0.0000 s ⏱ 
+08:03:26 ⏱ execution time of 'standard_xaxis': 0.0160 s ⏱ 
+
+08:03:26 👉 function 'standard_layout' started 👈 
+08:03:26 ⏱ execution time of 'standard_layout': 0.0000 s ⏱ 
+08:03:26 ⏱ execution time of 'standard_axes_and_layout': 0.0160 s ⏱ 
+08:03:26 🥳 fig_creation_export -> cr_fig_mon -> line: 178 | fig_mon created 🥳 
+08:03:26 ⏱ execution time of 'cr_fig_mon': 0.0320 s ⏱ 
+08:03:26 🐞 classes_figs -> write_all_to_st -> line: 138 | figs with data: ['fig_base', 'fig_jdl', 'fig_mon'] 🐞 
+
+08:03:26 👉 function 'h_v_lines' started 👈 
+08:03:26 ⏱ execution time of 'h_v_lines': 0.0000 s ⏱ 
+
+08:03:26 👉 function 'clean_outliers' started 👈 
+08:03:26 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+08:03:26 👉 function 'display_options_main' started 👈 
+08:03:26 ⏱ execution time of 'display_options_main': 0.0150 s ⏱ 
+
+08:03:26 👉 function 'display_smooth_main' started 👈 
+08:03:26 ⏱ execution time of 'display_smooth_main': 0.0000 s ⏱ 
+08:03:26 🐞 classes_figs -> update_all_figs -> line: 148 | figs with data: ['fig_base', 'fig_jdl', 'fig_mon'] 🐞 
+
+08:03:26 👉 function 'update_main' started 👈 
+
+08:03:26 👉 function 'show_traces' started 👈 
+
+08:03:26 👉 function 'smooth' started 👈 
+08:03:26 ⏱ execution time of 'smooth': 0.0000 s ⏱ 
+08:03:26 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+08:03:26 🐞 fig_formatting -> update_main -> line: 242 | Visible traces in figure 'Lastgang<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+['Wärmebedarf', 'BHKW', 'Temperatur'] 🐞 
+08:03:26 🐞 fig_formatting -> update_main -> line: 249 | Visible units in figure 'Lastgang<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+[' kW', ' °C'] 🐞 
+
+08:03:26 👉 function 'format_traces' started 👈 
+08:03:26 ⏱ execution time of 'format_traces': 0.0000 s ⏱ 
+
+08:03:26 👉 function 'show_y_axes' started 👈 
+08:03:26 🐞 fig_formatting -> show_y_axes -> line: 416 | Visible y-axes in figure 'Lastgang<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+['yaxis', 'yaxis2'] 🐞 
+08:03:26 ⏱ execution time of 'show_y_axes': 0.0160 s ⏱ 
+08:03:26 ⏱ execution time of 'update_main': 0.0320 s ⏱ 
+
+08:03:26 👉 function 'update_main' started 👈 
+
+08:03:26 👉 function 'show_traces' started 👈 
+08:03:26 ⏱ execution time of 'show_traces': 0.0000 s ⏱ 
+08:03:26 🐞 fig_formatting -> update_main -> line: 242 | Visible traces in figure 'Geordnete Jahresdauerlinie<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+['Wärmebedarf', 'BHKW', 'Temperatur'] 🐞 
+08:03:26 🐞 fig_formatting -> update_main -> line: 249 | Visible units in figure 'Geordnete Jahresdauerlinie<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+[' kW', ' °C'] 🐞 
+
+08:03:26 👉 function 'format_traces' started 👈 
+08:03:26 ⏱ execution time of 'format_traces': 0.0150 s ⏱ 
+
+08:03:26 👉 function 'show_y_axes' started 👈 
+08:03:26 🐞 fig_formatting -> show_y_axes -> line: 416 | Visible y-axes in figure 'Geordnete Jahresdauerlinie<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+['yaxis', 'yaxis2'] 🐞 
+08:03:26 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+08:03:26 ⏱ execution time of 'update_main': 0.0150 s ⏱ 
+
+08:03:26 👉 function 'update_main' started 👈 
+
+08:03:26 👉 function 'show_traces' started 👈 
+08:03:26 ⏱ execution time of 'show_traces': 0.0000 s ⏱ 
+08:03:26 🐞 fig_formatting -> update_main -> line: 242 | Visible traces in figure 'Monatswerte': 
+['Wärmebedarf', 'BHKW', 'Temperatur'] 🐞 
+08:03:26 🐞 fig_formatting -> update_main -> line: 249 | Visible units in figure 'Monatswerte': 
+[' kW', ' °C'] 🐞 
+
+08:03:26 👉 function 'format_traces' started 👈 
+08:03:26 ⏱ execution time of 'format_traces': 0.0000 s ⏱ 
+
+08:03:26 👉 function 'show_y_axes' started 👈 
+08:03:26 🐞 fig_formatting -> show_y_axes -> line: 416 | Visible y-axes in figure 'Monatswerte': 
+['yaxis', 'yaxis2'] 🐞 
+08:03:26 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+08:03:26 ⏱ execution time of 'update_main': 0.0160 s ⏱ 
+08:03:26 🐞 classes_figs -> write_all_to_st -> line: 138 | figs with data: ['fig_base', 'fig_jdl', 'fig_mon'] 🐞 
+
+08:03:26 👉 function 'plot_figs' started 👈 
+08:03:26 ⏱ execution time of 'plot_figs': 0.2660 s ⏱ 
+
+08:03:26 👉 function 'downloads' started 👈 
+08:03:26 ⏱ execution time of 'downloads': 0.0000 s ⏱ 
+
+08:04:55 👉 function 'page_header_setup' started 👈 
+
+08:04:55 👉 function 'render_svg' started 👈 
+08:04:55 ⏱ execution time of 'render_svg': 0.0000 s ⏱ 
+08:04:55 👟 setup_stuff -> page_header_setup -> line: 176 | page header for page 'graph' created 👟 
+08:04:55 ⏱ execution time of 'page_header_setup': 0.0000 s ⏱ 
+
+08:04:55 👉 function 'sidebar_file_upload' started 👈 
+08:04:55 ⏱ execution time of 'sidebar_file_upload': 0.0000 s ⏱ 
+
+08:04:55 👉 function 'import_prefab_excel' started 👈 
+08:04:57 💡 excel_import -> rename_columns -> line: 129 | Index-marker found in column 'column_2' 💡 
+08:04:57 ⚠ excel_import -> clean_up_daylight_savings -> line: 268 | Data deleted due to daylight savings. ️ 
+  shape: (4, 4)
+┌─────────────────────┬─────────────┬───────────┬────────────┐
+│ ↓ Index ↓           ┆ Wärmebedarf ┆ BHKW      ┆ Temperatur │
+│ ---                 ┆ ---         ┆ ---       ┆ ---        │
+│ datetime[μs]        ┆ f32         ┆ f32       ┆ f32        │
+╞═════════════════════╪═════════════╪═══════════╪════════════╡
+│ 2016-03-26 02:00:00 ┆ 203.0       ┆ 69.599998 ┆ 4.7        │
+│ 2017-03-25 02:00:00 ┆ 249.199997  ┆ 69.599998 ┆ 1.7        │
+│ 2018-03-31 02:00:00 ┆ 162.300003  ┆ 69.599998 ┆ 5.8        │
+│ 2019-03-30 02:00:00 ┆ 205.699997  ┆ 69.599998 ┆ 3.7        │
+└─────────────────────┴─────────────┴───────────┴────────────┘  
+
+08:04:57 💡 excel_import -> temporal_metadata -> line: 297 | Index mit zeitlicher Auflösung von 1 Stunde erkannt. 💡 
+08:04:57 🐞 excel_import -> convert_15min_kwh_to_kw -> line: 353 | Skipped 'convert_15min_kwh_to_kw' 🐞 
+  DataFrame head: 
+shape: (5, 5)
+┌─────────────────────┬─────────────┬───────────┬────────────┬─────────────────────┐
+│ ↓ Index ↓           ┆ Wärmebedarf ┆ BHKW      ┆ Temperatur ┆ orgidx              │
+│ ---                 ┆ ---         ┆ ---       ┆ ---        ┆ ---                 │
+│ datetime[μs]        ┆ f32         ┆ f32       ┆ f32        ┆ datetime[μs]        │
+╞═════════════════════╪═════════════╪═══════════╪════════════╪═════════════════════╡
+│ 2016-01-01 00:00:00 ┆ 206.5       ┆ 69.599998 ┆ 2.4        ┆ 2016-01-01 00:00:00 │
+│ 2016-01-01 01:00:00 ┆ 207.800003  ┆ 69.599998 ┆ 2.3        ┆ 2016-01-01 01:00:00 │
+│ 2016-01-01 02:00:00 ┆ 210.5       ┆ 69.599998 ┆ 2.3        ┆ 2016-01-01 02:00:00 │
+│ 2016-01-01 03:00:00 ┆ 215.899994  ┆ 69.599998 ┆ 1.7        ┆ 2016-01-01 03:00:00 │
+│ 2016-01-01 04:00:00 ┆ 211.800003  ┆ 69.599998 ┆ 2.0        ┆ 2016-01-01 04:00:00 │
+└─────────────────────┴─────────────┴───────────┴────────────┴─────────────────────┘ 
+
+DataFrame properties: 
+shape: (9, 6)
+┌────────────┬─────────────────────┬─────────────┬───────────┬────────────┬─────────────────────┐
+│ describe   ┆ ↓ Index ↓           ┆ Wärmebedarf ┆ BHKW      ┆ Temperatur ┆ orgidx              │
+│ ---        ┆ ---                 ┆ ---         ┆ ---       ┆ ---        ┆ ---                 │
+│ str        ┆ str                 ┆ f64         ┆ f64       ┆ f64        ┆ str                 │
+╞════════════╪═════════════════════╪═════════════╪═══════════╪════════════╪═════════════════════╡
+│ count      ┆ 35036               ┆ 35036.0     ┆ 35036.0   ┆ 35036.0    ┆ 35036               │
+│ null_count ┆ 0                   ┆ 0.0         ┆ 0.0       ┆ 0.0        ┆ 0                   │
+│ mean       ┆ null                ┆ 140.687103  ┆ 61.512844 ┆ 10.589154  ┆ null                │
+│ std        ┆ null                ┆ 75.785156   ┆ 22.304039 ┆ 7.553053   ┆ null                │
+│ min        ┆ 2016-01-01 00:00:00 ┆ 0.0         ┆ 0.0       ┆ -11.2      ┆ 2016-01-01 00:00:00 │
+│ max        ┆ 2019-12-31 23:00:00 ┆ 387.100006  ┆ 69.599998 ┆ 36.900002  ┆ 2019-12-31 23:00:00 │
+│ median     ┆ null                ┆ 146.399994  ┆ 69.599998 ┆ 10.1       ┆ null                │
+│ 25%        ┆ null                ┆ 88.0        ┆ 69.599998 ┆ 5.0        ┆ null                │
+│ 75%        ┆ null                ┆ 194.399994  ┆ 69.599998 ┆ 16.1       ┆ null                │
+└────────────┴─────────────────────┴─────────────┴───────────┴────────────┴─────────────────────┘  
+
+08:04:57 🐞 df_manipulation -> split_multi_years -> line: 141 | Meta for following lines available: 
+['Wärmebedarf', 'BHKW', 'Temperatur', 'Wärmebedarf 2016', 'BHKW 2016', 'Temperatur 2016', 'Wärmebedarf 2017', 'BHKW 2017', 'Temperatur 2017', 'Wärmebedarf 2018', 'BHKW 2018', 'Temperatur 2018', 'Wärmebedarf 2019', 'BHKW 2019', 'Temperatur 2019'] 🐞 
+08:04:57 🥳 excel_import -> import_prefab_excel -> line: 71 | Excel-Datei importiert. 🥳 
+08:04:57 💡 excel_import -> import_prefab_excel -> line: 72 | Imported lines: 
+['Wärmebedarf', 'BHKW', 'Temperatur', 'Wärmebedarf 2016', 'BHKW 2016', 'Temperatur 2016', 'Wärmebedarf 2017', 'BHKW 2017', 'Temperatur 2017', 'Wärmebedarf 2018', 'BHKW 2018', 'Temperatur 2018', 'Wärmebedarf 2019', 'BHKW 2019', 'Temperatur 2019'] 💡 
+08:04:57 ⏱ execution time of 'import_prefab_excel': 1.6720 s ⏱ 
+
+08:04:57 👉 function 'base_settings' started 👈 
+08:04:57 ⏱ execution time of 'base_settings': 0.0000 s ⏱ 
+
+08:04:57 👉 function 'select_graphs' started 👈 
+08:04:57 ⏱ execution time of 'select_graphs': 0.0160 s ⏱ 
+
+08:04:57 👉 function 'meteo_sidebar' started 👈 
+08:04:57 ⏱ execution time of 'meteo_sidebar': 0.0000 s ⏱ 
+
+08:04:57 👉 function 'df_h' started 👈 
+08:04:57 🥳 df_manipulation -> df_h -> line: 192 | DataFrame mit Stundenwerten erstellt. 🥳 
+  shape: (5, 5)
+┌─────────────────────┬─────────────┬───────────┬────────────┬─────────────────────┐
+│ ↓ Index ↓           ┆ Wärmebedarf ┆ BHKW      ┆ Temperatur ┆ orgidx              │
+│ ---                 ┆ ---         ┆ ---       ┆ ---        ┆ ---                 │
+│ datetime[μs]        ┆ f32         ┆ f32       ┆ f32        ┆ datetime[μs]        │
+╞═════════════════════╪═════════════╪═══════════╪════════════╪═════════════════════╡
+│ 2016-01-01 00:00:00 ┆ 206.5       ┆ 69.599998 ┆ 2.4        ┆ 2016-01-01 00:00:00 │
+│ 2016-01-01 01:00:00 ┆ 207.800003  ┆ 69.599998 ┆ 2.3        ┆ 2016-01-01 01:00:00 │
+│ 2016-01-01 02:00:00 ┆ 210.5       ┆ 69.599998 ┆ 2.3        ┆ 2016-01-01 02:00:00 │
+│ 2016-01-01 03:00:00 ┆ 215.899994  ┆ 69.599998 ┆ 1.7        ┆ 2016-01-01 03:00:00 │
+│ 2016-01-01 04:00:00 ┆ 211.800003  ┆ 69.599998 ┆ 2.0        ┆ 2016-01-01 04:00:00 │
+└─────────────────────┴─────────────┴───────────┴────────────┴─────────────────────┘  
+
+08:04:57 💡 df_manipulation -> df_h -> line: 194 | Cols: ['↓ Index ↓', 'Wärmebedarf', 'BHKW', 'Temperatur', 'orgidx'] 💡 
+08:04:57 ⏱ execution time of 'df_h': 0.0000 s ⏱ 
+
+08:04:57 👉 function 'jdl' started 👈 
+08:04:57 🥳 df_manipulation -> jdl -> line: 241 | DataFrame für Jahresdauerlinie erstellt. 🥳 
+  shape: (5, 25)
+┌────────────┬──────────────────┬───────────────────────────┬───────────┬───┬───────────┬─────────────────────┬─────────────────┬──────────────────────────┐
+│ ↓ Index ↓  ┆ Wärmebedarf 2016 ┆ Wärmebedarf 2016 - orgidx ┆ BHKW 2016 ┆ … ┆ BHKW 2019 ┆ BHKW 2019 - orgidx  ┆ Temperatur 2019 ┆ Temperatur 2019 - orgidx │
+│ ---        ┆ ---              ┆ ---                       ┆ ---       ┆   ┆ ---       ┆ ---                 ┆ ---             ┆ ---                      │
+│ u32        ┆ f32              ┆ datetime[μs]              ┆ f32       ┆   ┆ f32       ┆ datetime[μs]        ┆ f32             ┆ datetime[μs]             │
+╞════════════╪══════════════════╪═══════════════════════════╪═══════════╪═══╪═══════════╪═════════════════════╪═════════════════╪══════════════════════════╡
+│ 0          ┆ 369.100006       ┆ 2016-01-22 08:00:00       ┆ 69.599998 ┆ … ┆ 69.599998 ┆ 2019-01-01 00:00:00 ┆ 36.900002       ┆ 2019-07-25 13:00:00      │
+│ 1          ┆ 367.700012       ┆ 2016-01-22 07:00:00       ┆ 69.599998 ┆ … ┆ 69.599998 ┆ 2019-01-01 01:00:00 ┆ 36.900002       ┆ 2019-07-25 14:00:00      │
+│ 2          ┆ 363.700012       ┆ 2016-01-21 01:00:00       ┆ 69.599998 ┆ … ┆ 69.599998 ┆ 2019-01-01 02:00:00 ┆ 36.5            ┆ 2019-07-25 15:00:00      │
+│ 3          ┆ 358.299988       ┆ 2016-01-22 09:00:00       ┆ 69.599998 ┆ … ┆ 69.599998 ┆ 2019-01-01 03:00:00 ┆ 35.599998       ┆ 2019-07-25 12:00:00      │
+│ 4          ┆ 357.0            ┆ 2016-01-19 04:00:00       ┆ 69.599998 ┆ … ┆ 69.599998 ┆ 2019-01-01 04:00:00 ┆ 35.5            ┆ 2019-07-25 16:00:00      │
+└────────────┴──────────────────┴───────────────────────────┴───────────┴───┴───────────┴─────────────────────┴─────────────────┴──────────────────────────┘  
+
+08:04:57 💡 df_manipulation -> jdl -> line: 243 | Cols: ['↓ Index ↓', 'Wärmebedarf 2016', 'Wärmebedarf 2016 - orgidx', 'BHKW 2016', 'BHKW 2016 - orgidx', 'Temperatur 2016', 'Temperatur 2016 - orgidx', 'Wärmebedarf 2017', 'Wärmebedarf 2017 - orgidx', 'BHKW 2017', 'BHKW 2017 - orgidx', 'Temperatur 2017', 'Temperatur 2017 - orgidx', 'Wärmebedarf 2018', 'Wärmebedarf 2018 - orgidx', 'BHKW 2018', 'BHKW 2018 - orgidx', 'Temperatur 2018', 'Temperatur 2018 - orgidx', 'Wärmebedarf 2019', 'Wärmebedarf 2019 - orgidx', 'BHKW 2019', 'BHKW 2019 - orgidx', 'Temperatur 2019', 'Temperatur 2019 - orgidx'] 💡 
+08:04:57 ⏱ execution time of 'jdl': 0.0150 s ⏱ 
+
+08:04:57 👉 function 'mon' started 👈 
+08:04:57 🥳 df_manipulation -> mon -> line: 282 | DataFrame mit Monatswerten erstellt. 🥳 
+  shape: (5, 5)
+┌─────────────────────┬───────────────┬──────────────┬────────────┬─────────────────────┐
+│ ↓ Index ↓           ┆ Wärmebedarf   ┆ BHKW         ┆ Temperatur ┆ orgidx              │
+│ ---                 ┆ ---           ┆ ---          ┆ ---        ┆ ---                 │
+│ datetime[μs]        ┆ f32           ┆ f32          ┆ f32        ┆ datetime[μs]        │
+╞═════════════════════╪═══════════════╪══════════════╪════════════╪═════════════════════╡
+│ 2016-01-15 00:00:00 ┆ 162404.875    ┆ 51782.421875 ┆ 1.525134   ┆ 2016-01-01 00:00:00 │
+│ 2016-02-15 00:00:00 ┆ 144711.0      ┆ 48441.824219 ┆ 3.553879   ┆ 2016-02-01 00:00:00 │
+│ 2016-03-15 00:00:00 ┆ 147453.109375 ┆ 51712.820312 ┆ 4.759219   ┆ 2016-03-01 00:00:00 │
+│ 2016-04-15 00:00:00 ┆ 114476.5625   ┆ 49416.246094 ┆ 8.058611   ┆ 2016-04-01 00:00:00 │
+│ 2016-05-15 00:00:00 ┆ 84485.710938  ┆ 45866.566406 ┆ 14.499597  ┆ 2016-05-01 00:00:00 │
+└─────────────────────┴───────────────┴──────────────┴────────────┴─────────────────────┘  
+
+08:04:57 ⏱ execution time of 'mon': 0.0160 s ⏱ 
+08:04:57 🐞 classes_figs -> write_all_to_st -> line: 138 | figs with data: ['fig_base', 'fig_jdl', 'fig_mon'] 🐞 
+
+08:04:57 👉 function 'h_v_lines' started 👈 
+08:04:57 ⏱ execution time of 'h_v_lines': 0.0000 s ⏱ 
+
+08:04:57 👉 function 'clean_outliers' started 👈 
+08:04:57 ⏱ execution time of 'clean_outliers': 0.0000 s ⏱ 
+
+08:04:57 👉 function 'display_options_main' started 👈 
+08:04:57 ⏱ execution time of 'display_options_main': 0.0160 s ⏱ 
+
+08:04:57 👉 function 'display_smooth_main' started 👈 
+08:04:57 ⏱ execution time of 'display_smooth_main': 0.0000 s ⏱ 
+08:04:57 🐞 classes_figs -> update_all_figs -> line: 148 | figs with data: ['fig_base', 'fig_jdl', 'fig_mon'] 🐞 
+
+08:04:57 👉 function 'update_main' started 👈 
+
+08:04:57 👉 function 'show_traces' started 👈 
+
+08:04:57 👉 function 'smooth' started 👈 
+08:04:57 ⏱ execution time of 'smooth': 0.0160 s ⏱ 
+08:04:57 ⏱ execution time of 'show_traces': 0.0160 s ⏱ 
+08:04:57 🐞 fig_formatting -> update_main -> line: 242 | Visible traces in figure 'Lastgang<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+['Wärmebedarf', 'BHKW', 'Temperatur'] 🐞 
+08:04:57 🐞 fig_formatting -> update_main -> line: 249 | Visible units in figure 'Lastgang<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+[' kW', ' °C'] 🐞 
+
+08:04:57 👉 function 'format_traces' started 👈 
+08:04:57 ⏱ execution time of 'format_traces': 0.0000 s ⏱ 
+
+08:04:57 👉 function 'show_y_axes' started 👈 
+08:04:57 🐞 fig_formatting -> show_y_axes -> line: 416 | Visible y-axes in figure 'Lastgang<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+['yaxis', 'yaxis2'] 🐞 
+08:04:57 ⏱ execution time of 'show_y_axes': 0.0150 s ⏱ 
+08:04:57 ⏱ execution time of 'update_main': 0.0310 s ⏱ 
+
+08:04:57 👉 function 'update_main' started 👈 
+
+08:04:57 👉 function 'show_traces' started 👈 
+08:04:57 ⏱ execution time of 'show_traces': 0.0000 s ⏱ 
+08:04:57 🐞 fig_formatting -> update_main -> line: 242 | Visible traces in figure 'Geordnete Jahresdauerlinie<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+['Wärmebedarf', 'BHKW', 'Temperatur'] 🐞 
+08:04:57 🐞 fig_formatting -> update_main -> line: 249 | Visible units in figure 'Geordnete Jahresdauerlinie<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+[' kW', ' °C'] 🐞 
+
+08:04:57 👉 function 'format_traces' started 👈 
+08:04:57 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+08:04:57 👉 function 'show_y_axes' started 👈 
+08:04:57 🐞 fig_formatting -> show_y_axes -> line: 416 | Visible y-axes in figure 'Geordnete Jahresdauerlinie<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>': 
+['yaxis', 'yaxis2'] 🐞 
+08:04:57 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+08:04:57 ⏱ execution time of 'update_main': 0.0160 s ⏱ 
+
+08:04:57 👉 function 'update_main' started 👈 
+
+08:04:57 👉 function 'show_traces' started 👈 
+08:04:57 ⏱ execution time of 'show_traces': 0.0000 s ⏱ 
+08:04:57 🐞 fig_formatting -> update_main -> line: 242 | Visible traces in figure 'Monatswerte': 
+['Wärmebedarf', 'BHKW', 'Temperatur'] 🐞 
+08:04:57 🐞 fig_formatting -> update_main -> line: 249 | Visible units in figure 'Monatswerte': 
+[' kW', ' °C'] 🐞 
+
+08:04:57 👉 function 'format_traces' started 👈 
+08:04:57 ⏱ execution time of 'format_traces': 0.0160 s ⏱ 
+
+08:04:57 👉 function 'show_y_axes' started 👈 
+08:04:57 🐞 fig_formatting -> show_y_axes -> line: 416 | Visible y-axes in figure 'Monatswerte': 
+['yaxis', 'yaxis2'] 🐞 
+08:04:57 ⏱ execution time of 'show_y_axes': 0.0000 s ⏱ 
+08:04:57 ⏱ execution time of 'update_main': 0.0160 s ⏱ 
+08:04:57 🐞 classes_figs -> write_all_to_st -> line: 138 | figs with data: ['fig_base', 'fig_jdl', 'fig_mon'] 🐞 
+
+08:04:57 👉 function 'plot_figs' started 👈 
+08:04:57 ⏱ execution time of 'plot_figs': 0.2500 s ⏱ 
+
+08:04:57 👉 function 'downloads' started 👈 
+08:04:57 ⏱ execution time of 'downloads': 0.0150 s ⏱ 

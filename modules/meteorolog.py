@@ -104,7 +104,7 @@ if not SKIP:
 
     @gf.func_timer
     def all_stations() -> pd.DataFrame:
-        """df aller Stationen"""
+        """DataFrame aller Stationen"""
         df_met = meteostat_stations()
         df_all = df_met.sort_values(["distance"]).reset_index(drop=True)
 

@@ -186,7 +186,7 @@ def df_h(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         .with_columns(pl.col(COL_IND).alias(COL_ORG))
     )
 
-    if mdf.meta.multi_years:
+    if mdf.meta.multi_years and gf.st_get("cb_multi_year"):
         mdf.df_h_multi = split_multi_years(mdf, "df_h")
 
     logger.success("DataFrame mit Stundenwerten erstellt.")
@@ -276,7 +276,7 @@ def mon(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
         )
     )
 
-    if mdf.meta.multi_years:
+    if mdf.meta.multi_years and gf.st_get("cb_multi_year"):
         mdf.mon_multi = split_multi_years(mdf, "mon")
 
     logger.success("DataFrame mit Monatswerten erstellt.")

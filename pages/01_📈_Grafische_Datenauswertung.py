@@ -1,3 +1,4 @@
+# sourcery skip: avoid-global-variables
 """Seite Grafische Datenauswertung"""  # noqa: N999
 
 from typing import Any, Literal

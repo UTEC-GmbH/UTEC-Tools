@@ -5,6 +5,8 @@
 - plotly configuration
 """
 
+import re
+
 from datetime import datetime
 from typing import Any
 
@@ -344,6 +346,9 @@ def format_traces(
         if gf.st_not_in(f"cp_{trace_name}"):
             suff: str = "Arbeit" if fig_type in {"mon"} else "Leistung"
             trace_name = f"{trace_name}{cont.ARBEIT_LEISTUNG.get_suffix(suff)}"
+
+        if gf.st_not_in(f"cp_{trace_name}"):
+            trace_name = re.split(r"\b\d{4}\b", trace_name)[0]
 
         if not switch:
             line_colour: str = st.session_state[f"cp_{trace_name}"]

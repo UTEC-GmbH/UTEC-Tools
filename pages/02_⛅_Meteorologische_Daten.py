@@ -4,8 +4,8 @@ import streamlit as st
 
 from modules import constants as cont
 from modules import fig_formatting as fig_format
-from modules import meteorolog as meteo
 from modules import fig_plotly_plots as ploplo
+from modules import meteorolog as meteo
 from modules import streamlit_menus as sm
 from modules import user_authentication as uauth
 from modules.setup_stuff import page_header_setup

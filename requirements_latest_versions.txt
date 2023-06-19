@@ -17,7 +17,6 @@ pygithub
 pytest
 python-dotenv
 scipy
-sentry-sdk
 streamlit
 streamlit-authenticator
 streamlit-lottie

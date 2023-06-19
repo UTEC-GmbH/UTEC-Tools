@@ -68,7 +68,7 @@ class FigIDs:
 
     def list_all(self) -> list[str]:
         """List all values"""
-        return list(self.__dict__.values())
+        return list(self.__dataclass_fields__.values())
 
 
 @dataclass(frozen=True)
@@ -126,7 +126,7 @@ class StPages:
 
     def get_all_short(self) -> list[str]:
         """Get a list of short page descriptors"""
-        return [getattr(self, attr).short for attr in self.__dict__]
+        return [getattr(self, attr).short for attr in self.__dataclass_fields__]
 
     def get_title(self, short: str) -> str:
         """Get the title by providing the short page descriptor"""
@@ -162,7 +162,7 @@ class ObisElectrical:
 
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
-        return pprint.pformat(vars(self), sort_dicts=False)
+        return pprint.pformat(self.__dataclass_fields__, sort_dicts=False)
 
     def __post_init__(self) -> None:
         """Check if code is valid and fill in the fields"""

@@ -112,7 +112,7 @@ if uauth.authentication(PAGE):
                 _(Auswahl kann zukünftig unten geändert werden)_
                 """
             )
-            for param in meteo.LIS_DEFAULT_PARAMS:
+            for param in meteo.METEO_DEFAULT_PARAMETER:
                 st.markdown(f"- {param}")
 
         st.markdown("###")

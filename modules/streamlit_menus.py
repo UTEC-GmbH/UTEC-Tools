@@ -343,8 +343,6 @@ def meteo_sidebar(page: str) -> None:
     with st.sidebar, st.expander("Außentemperatur", expanded=False), st.form(
         "Außentemperatur"
     ):
-        st.warning("temporär außer Betrieb")
-
         if page in ("graph"):
             st.checkbox(
                 label="anzeigen",
@@ -357,7 +355,7 @@ def meteo_sidebar(page: str) -> None:
                         und in den Grafiken eingefügt.
                         """
                 ),
-                disabled=True,
+                # disabled=True,
             )
 
         if page in ("meteo"):
@@ -372,7 +370,7 @@ def meteo_sidebar(page: str) -> None:
                         """
                 ),
                 key="meteo_start_year",
-                disabled=True,
+                # disabled=True,
             )
 
             st.number_input(
@@ -380,7 +378,7 @@ def meteo_sidebar(page: str) -> None:
                 format="%i",
                 value=2020,
                 key="meteo_end_year",
-                disabled=True,
+                # disabled=True,
             )
 
             st.markdown("###")
@@ -400,12 +398,12 @@ def meteo_sidebar(page: str) -> None:
             # placeholder= 'Cuxhavener Str. 10, 20217 Bremen',
             # autocomplete= '',
             key="ti_adr",
-            disabled=True,
+            # disabled=True,
         )
 
         st.markdown("###")
         st.session_state["but_meteo_sidebar"] = st.form_submit_button(
-            "Knöpfle", disabled=True
+            "Knöpfle",  # disabled=True
         )
         st.markdown("###")
 
@@ -414,7 +412,7 @@ def meteo_sidebar(page: str) -> None:
 def meteo_params_main() -> None:
     """Wetterdaten-Menu auf der Hauptseite"""
 
-    cats = meteo.LIS_CAT_UTEC
+    cats = meteo.UTEC_CATEGORIES
     all_params = meteo.LIS_PARAMS
     set_params = []
     for par in all_params:

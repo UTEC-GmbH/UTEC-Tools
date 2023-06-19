@@ -31,3 +31,11 @@ class NotInSessionStateError(Exception):
     def __init__(self, entry: str) -> None:
         """Initiate"""
         super().__init__(f"Entry '{entry}' not found in Streamlit's Session State.")
+
+
+class SecretNotFoundError(Exception):
+    """Error Message if an entry is not found in the streamlit session state"""
+
+    def __init__(self, entry: str) -> None:
+        """Initiate"""
+        super().__init__(f"Entry '{entry}' not found in Secrets.")

@@ -77,9 +77,11 @@ def st_get(key: str) -> Any:
     return st.session_state.get(key)
 
 
-def st_in(key: str) -> bool:
+def st_in(key: str | list[str]) -> bool:
     """Check if a key is in the st.session_state"""
-    return key in st.session_state
+    if isinstance(key, str):
+        return key in st.session_state
+    return all(key_element in st.session_state for key_element in key)
 
 
 def st_not_in(key: str) -> bool:

@@ -27,7 +27,7 @@ class MetaLine:
 
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
-        return pprint.pformat(vars(self), sort_dicts=False)
+        return pprint.pformat(self.__dataclass_fields__, sort_dicts=False)
 
 
 @dataclass
@@ -52,7 +52,7 @@ class MetaData:
 
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
-        return pprint.pformat(vars(self))
+        return pprint.pformat(self.__dataclass_fields__)
 
     def get_line_by_name(self, line_name: str) -> MetaLine:
         """Get the line object from the string of the line name"""
@@ -93,7 +93,7 @@ class MetaData:
         by copying the meta data of a line and giving it a new name"""
 
         old_line: MetaLine = self.get_line_by_name(old_name)
-        new_line: MetaLine = MetaLine(**vars(old_line))
+        new_line: MetaLine = MetaLine(**old_line.__dataclass_fields__)
         new_line.name = new_name
         new_line.tit = new_name
         new_line.name_orgidx = (
@@ -108,8 +108,12 @@ class MetaData:
         lines: list[dict] = []
         for line in self.lines:
             dic: dict = {}
-            for key, val in vars(line).items():
-                dic[key] = vars(val) if isinstance(val, clc.ObisElectrical) else val
+            for key, val in line.__dataclass_fields__.items():
+                dic[key] = (
+                    val.__dataclass_fields__
+                    if isinstance(val, clc.ObisElectrical)
+                    else val
+                )
                 lines.append(dic)
 
         return {

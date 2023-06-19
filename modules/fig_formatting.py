@@ -277,7 +277,7 @@ def show_traces(fig: go.Figure) -> go.Figure:
 
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
     fig_type: str = "lastgang"
-    for key, value in vars(cont.FIG_TITLES).items():
+    for key, value in cont.FIG_TITLES.__dataclass_fields__.items():
         if value in layout["meta"]["title"]:
             fig_type = key
 

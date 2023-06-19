@@ -76,7 +76,11 @@ def fig_type_by_title(fig: go.Figure, **kwargs) -> str:
     )
 
     return next(
-        (key for key, value in vars(cont.FIG_TITLES).items() if value in title),
+        (
+            key
+            for key, value in cont.FIG_TITLES.__dataclass_fields__.items()
+            if value in title
+        ),
         "type unknown",
     )
 
@@ -147,7 +151,7 @@ def fill_colour_with_opacity(sel_trans: str, line_colour: str) -> str:
 
 
 def del_smooth() -> None:
-    """Löscht gegelättete Linien aus den Grafiken 
+    """Löscht gegelättete Linien aus den Grafiken
     im Stremalit SessionState
     """
 

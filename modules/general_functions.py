@@ -6,17 +6,36 @@ import json
 import time
 from collections import Counter
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Literal
 
 import streamlit as st
+import streamlit_lottie as stlot
 from loguru import logger
 
 from modules import constants as cont
-from modules.logger_setup import LogLevel, logger_setup
+from modules import general_functions as gf
+from modules import setup_logger as slog
+
+
+def lottie_spinner(func: Callable) -> Callable:
+    """Decorator fancy animated spinners while a function runs.
+
+    Returns:
+        - Callable: Function to spin around
+    """
+
+    def wrapper(*args, **kwargs) -> Any:
+        with stlot.st_lottie_spinner(
+            gf.load_lottie_file("animations/bored.json"), height=400
+        ):
+            result: Any = func(*args, **kwargs)
+        return result
+
+    return wrapper
 
 
 def func_timer(func: Callable) -> Callable:
-    """Create Decorator for measuring the execution time of a function.
+    """Decorator for measuring the execution time of a function.
 
     The execution time is writen in the streamlit session state
     and printed in the logs.
@@ -27,22 +46,24 @@ def func_timer(func: Callable) -> Callable:
 
     def wrapper(*args, **kwargs) -> Any:
         start_time: float = time.monotonic()
-
         try:
-            logger.level(LogLevel.FUNC_START.name)
+            logger.level(slog.LVLS.func_start.name)
         except ValueError:
-            logger_setup()
-        logger.log(LogLevel.FUNC_START.name, f"function '{func.__name__}' started")
+            slog.logger_setup()
 
-        if "dic_exe_time" not in st.session_state:
-            st.session_state["dic_exe_time"] = {}
+        logger.log(slog.LVLS.func_start.name, f"function '{func.__name__}' started")
 
         result: Any = func(*args, **kwargs)
 
         exe_time: float = time.monotonic() - start_time
-        st.session_state["dic_exe_time"][func.__name__] = exe_time
+
+        if "dic_exe_time" not in st.session_state:
+            st.session_state["dic_exe_time"] = {}
+        if "dic_exe_time" in st.session_state:
+            st.session_state["dic_exe_time"][func.__name__] = exe_time
+
         logger.log(
-            LogLevel.TIMER.name,
+            slog.LVLS.timer.name,
             f"execution time of '{func.__name__}': {exe_time:.4f} s",
         )
 
@@ -51,7 +72,22 @@ def func_timer(func: Callable) -> Callable:
     return wrapper
 
 
-def st_add(key: str, value: Any) -> None:
+def st_get(key: str) -> Any:
+    """Shorter version of st.session_state.get(key)"""
+    return st.session_state.get(key)
+
+
+def st_in(key: str) -> bool:
+    """Check if a key is in the st.session_state"""
+    return key in st.session_state
+
+
+def st_not_in(key: str) -> bool:
+    """Check if a key is not in the st.session_state"""
+    return key not in st.session_state
+
+
+def st_add_once(key: str, value: Any) -> None:
     """Add something to streamlit's session_state if it doesn't exist yet.
 
     Args:
@@ -62,9 +98,19 @@ def st_add(key: str, value: Any) -> None:
         st.session_state[key] = value
 
 
-def st_get(key: str) -> Any:
-    """Shorter version of st.session_state.get(key)"""
-    return st.session_state.get(key)
+def st_set(key: str, value: Any) -> None:
+    """Add an item to streamlit's session_state
+    or replace it, if it alread exists
+    """
+    st.session_state[key] = value
+
+
+def st_delete(key: str) -> None:
+    """Eintrag in st.session_state löschen"""
+
+    if st_in(key):
+        del st.session_state[key]
+        logger.warning(f"st.session_state Eintrag {key} gelöscht")
 
 
 def load_lottie_file(path: str) -> dict:
@@ -78,19 +124,6 @@ def load_lottie_file(path: str) -> dict:
     """
     with open(path) as file:
         return json.load(file)
-
-
-def del_session_state_entry(key: str) -> None:
-    """Eintrag in st.session_state löschen
-
-    Args:
-        - key (str): zu löschender Eintrag
-    """
-
-    if key in st.session_state:
-        del st.session_state[key]
-
-        logger.warning(f"st.session_state Eintrag {key} gelöscht")
 
 
 def sort_list_by_occurance(list_of_stuff: list[Any]) -> list[Any]:
@@ -201,3 +234,22 @@ def last_day_of_month(any_day: dt.datetime) -> dt.datetime:
     next_month: dt.datetime = any_day.replace(day=28) + dt.timedelta(days=4)
 
     return next_month - dt.timedelta(days=next_month.day)
+
+
+def check_if_not_exclude(
+    line: str, exclude: Literal["base", "index", "suff_arbeit"] = "index"
+) -> bool:
+    """Check if a line is in the exclude list.
+
+    Args:
+        - line (str): line to check
+        - exclude (Literal["base", "index", "suff_arbeit"]):
+            exclude list to check (from cont.EXCLUDE)
+            - base: "hline", smooth (suffix), original index
+            - index: base + Excel index marker
+            - suff_arbeit: index + arbeit (suffix)
+
+    Returns:
+        - bool: True if line is not in exclude list
+    """
+    return all(excl not in line for excl in getattr(cont.EXCLUDE, exclude))

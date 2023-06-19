@@ -12,15 +12,11 @@ from loguru import logger
 from scipy import signal
 
 from modules import constants as cont
-from modules.fig_general_functions import (
-    fig_data_as_dic,
-    fig_layout_as_dic,
-    fill_colour_with_opacity,
-)
-from modules.general_functions import func_timer, nachkomma
+from modules import fig_general_functions as fgf
+from modules import general_functions as gf
 
 
-@func_timer
+@gf.func_timer
 def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> datetime | float:
     """Mitte der x-Achse finden
 
@@ -33,19 +29,14 @@ def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> datetime | float:
     """
 
     data_x: list = [val["x"] for val in fig_data.values()]
-    x_max_temp: datetime | int = max(max(dat) for dat in data_x if len(dat) > 0)
-    x_max: float = (
-        x_max_temp.timestamp() if isinstance(x_max_temp, datetime) else x_max_temp
+    x_max: datetime | np.datetime64 | int = max(
+        max(dat) for dat in data_x if len(dat) > 0
     )
-    x_min_temp: datetime | int = min(min(dat) for dat in data_x if len(dat) > 0)
-    x_min: float = (
-        x_min_temp.timestamp() if isinstance(x_min_temp, datetime) else x_min_temp
+    x_min: datetime | np.datetime64 | int = min(
+        min(dat) for dat in data_x if len(dat) > 0
     )
-    middle: float = x_min + (x_max - x_min) / 2
 
-    if isinstance(x_max_temp, datetime):
-        logger.info(f"middle of x-axis: {datetime.fromtimestamp(middle)}")
-        return datetime.fromtimestamp(middle)
+    middle: float = x_min + (x_max - x_min) / 2
 
     logger.info(f"middle of x-axis: {middle}")
 
@@ -100,11 +91,10 @@ def add_arrow(
     )
 
     # Textausrichtung
-    mid: datetime | float = kwargs.get("middle_xaxis") or middle_xaxis(fig_data)
-    middle: float = mid if isinstance(mid, float) else mid.timestamp()
-    anc: bool = (
-        x_val.timestamp() > middle if isinstance(x_val, datetime) else x_val > middle
+    mid: datetime | np.datetime64 | int = kwargs.get("middle_xaxis") or middle_xaxis(
+        fig_data
     )
+    anc: bool = x_val > mid
     anchor: Literal["right", "left"] = (
         kwargs.get("anchor") or "right" if anc else "left"
     )
@@ -135,7 +125,7 @@ def add_arrow(
     return fig
 
 
-@func_timer
+@gf.func_timer
 def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
     """Pfeile an Maximum und Minimum aller Linien in der Grafik
 
@@ -144,21 +134,24 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
         - fig (go.Figure): Grafik, die Pfeile erhalten soll
     """
 
-    fig_data: dict[str, dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
-    fig_layout: dict[str, Any] = kwargs.get("layout") or fig_layout_as_dic(fig)
+    fig_data: dict[str, dict[str, Any]] = kwargs.get("data") or fgf.fig_data_as_dic(fig)
+    fig_layout: dict[str, Any] = kwargs.get("layout") or fgf.fig_layout_as_dic(fig)
     middle_x: datetime | float = middle_xaxis(fig_data)
 
     # alle Linien in Grafik
     for line in fig_data.values():
-        if all(exclude not in line["name"] for exclude in cont.EXCLUDE):
+        if gf.check_if_not_exclude(line):
             y_val: float = (
                 np.nanmin(line["y"])
                 if line["meta"]["negativ"]
                 else np.nanmax(line["y"])
             )
 
-            if pd.isna(y_val):
-                logger.debug(f"Annotation for {line['name']} SKIPPED")
+            if not isinstance(y_val, (float, np.floating)):
+                logger.debug(
+                    f"Annotation for {line['name']} SKIPPED "
+                    f"because y_val is type '{type(y_val)}'."
+                )
                 continue
 
             x_val: datetime | float = line["x"][np.where(line["y"] == y_val)[0][0]]
@@ -171,7 +164,7 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
                 fig_layout,
                 x_val,
                 y_or_line=y_val,
-                text=f"max {tit}: {nachkomma(abs(y_val))} {unit}",
+                text=f"max {tit}: {gf.nachkomma(abs(y_val))} {unit}",
                 yaxis=line["yaxis"],
                 middle_xaxis=middle_x,
             )
@@ -195,7 +188,7 @@ def hovertext_from_x_val(
     Returns:
         str: Hovertext
     """
-    jdl: bool = cont.FIG_TITLES["jdl"] in title
+    jdl: bool = cont.FIG_TITLES.jdl in title
     if jdl and line_data:
         hov_date: datetime | str = line_data["customdata"][
             np.where(line_data["x"] == x_val)
@@ -215,7 +208,7 @@ def hovertext_from_x_val(
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer
+@gf.func_timer
 def vline(fig: go.Figure, x_val: float or datetime, txt: str, pos: str) -> None:
     """Vertikale Linie einfügen"""
 
@@ -233,12 +226,12 @@ def vline(fig: go.Figure, x_val: float or datetime, txt: str, pos: str) -> None:
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer
+@gf.func_timer
 def hide_hlines(fig: go.Figure) -> None:
     """Horizontale Linien ausblenden (ohne sie zu löschen)"""
 
-    fig_data: dict[str, dict[str, Any]] = fig_data_as_dic(fig)
-    fig_layout: dict[str, Any] = fig_layout_as_dic(fig)
+    fig_data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
+    fig_layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
     for dat in fig_data:
         if "hline" in dat:
@@ -254,7 +247,7 @@ def hide_hlines(fig: go.Figure) -> None:
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer
+@gf.func_timer
 def hline_line(
     fig: go.Figure,
     value: float,
@@ -263,25 +256,30 @@ def hline_line(
     """Horizontale Linie einfügen"""
 
     ti_hor: str | None = None if ti_hor_init in {"", "new text"} else ti_hor_init
-    cb_hor_dash: bool = st.session_state.get("cb_hor_dash") or True
+    cb_hor_dash: bool = gf.st_get("cb_hor_dash") or True
+    y_axis: str = gf.st_get("sb_h_line_y") or "y"
+    y_axis = "y" if y_axis not in fgf.get_set_of_visible_y_axes(fig) else y_axis
     if any("hline" in x for x in [s.name for s in fig.layout.shapes]):
         for shape in fig.layout.shapes:
             if "hline" in shape.name:
                 shape.y0 = shape.y1 = value
                 shape.visible = True
                 shape.line.dash = "dot" if cb_hor_dash else "solid"
+                shape.yref = y_axis
 
         for annot in fig.layout.annotations:
             if "hline" in annot.name:
                 annot.y = value
                 annot.visible = bool(ti_hor)
                 annot.text = ti_hor
+                annot.yref = y_axis
+
         logger.info(f"existing horizontal line moved to y = {value}")
 
     else:
         fig.add_hline(
             y=value,
-            yref="y2",
+            yref=y_axis,
             name="hline",
             line_dash="dot" if cb_hor_dash else "solid",
             line_width=1,
@@ -292,11 +290,12 @@ def hline_line(
             annotation_bgcolor="rgba(" + cont.FARBEN["weiß"] + cont.ALPHA["bg"],
             visible=True,
         )
+
         logger.success(f"horizontal line create at y = {value}")
 
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer
+@gf.func_timer
 def hline_fill(fig: go.Figure, value: float, ms_hor: list) -> go.Figure:
     """Ausfüllen zwischen horizontaler Linie und Linien"""
     dic_fill = {}
@@ -337,13 +336,13 @@ def hline_fill(fig: go.Figure, value: float, ms_hor: list) -> go.Figure:
 
 
 # horizontale / vertikale Linien
-@func_timer
+@gf.func_timer
 def h_v_lines() -> None:
     """Horizontale und vertikale Linien"""
 
     # horizontale Linie
     lis_figs_hor: list[str] = ["fig_base"]
-    if st.session_state.get("cb_jdl"):
+    if gf.st_get("cb_jdl"):
         lis_figs_hor.append("fig_jdl")
 
     for fig in lis_figs_hor:
@@ -372,36 +371,35 @@ def calculate_smooth_values(trace: dict[str, Any]) -> np.ndarray:
     return signal.savgol_filter(
         x=pd.Series(trace["y"]).interpolate("akima"),
         mode="mirror",
-        window_length=int(
-            st.session_state.get("gl_win") or st.session_state["smooth_start_val"]
-        ),
-        polyorder=int(st.session_state.get("gl_deg") or 3),
+        window_length=int(gf.st_get("gl_win") or gf.st_get("smooth_start_val")),
+        polyorder=int(gf.st_get("gl_deg") or 3),
     )
 
 
-@func_timer
+@gf.func_timer
 def smooth(fig: go.Figure, **kwargs) -> go.Figure:
     """geglättete Linien"""
 
-    fig_data: dict[str, dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
+    fig_data: dict[str, dict[str, Any]] = kwargs.get("data") or fgf.fig_data_as_dic(fig)
 
     traces: list[dict] = kwargs.get("traces") or [
-        trace
-        for trace in fig_data.values()
-        if all(excl not in trace["name"] for excl in cont.EXCLUDE)
+        trace for trace in fig_data.values() if gf.check_if_not_exclude(trace["name"])
     ]
-    gl_win: int = st.session_state["gl_win"]
-    gl_deg: int = st.session_state["gl_deg"]
+    gl_win: int = gf.st_get("gl_win")
+    gl_deg: int = gf.st_get("gl_deg") or 3
 
     for trace in traces:
-        smooth_name: str = f"{trace['name']}{cont.SMOOTH_SUFFIX}"
-        smooth_visible: bool = bool(st.session_state.get(f"cb_vis_{smooth_name}"))
+        smooth_name: str = f"{trace['name']}{cont.SUFFIXES.col_smooth}"
+        smooth_visible: bool = bool(gf.st_get(f"cb_vis_{smooth_name}"))
 
         if smooth_visible:
             meta_trace: dict[str, Any] = trace["meta"]
-
+            logger.debug(f"meta data for '{trace['name']}': {meta_trace}")
             if smooth_name not in fig_data:
-                meta_trace = meta_trace.update({"gl_win": gl_win, "gl_deg": gl_deg})
+                meta_trace |= {"gl_win": gl_win, "gl_deg": gl_deg}
+                logger.debug(
+                    f"meta data for '{trace['name']}' after update: {meta_trace}"
+                )
                 smooth_legendgroup: str = trace.get("legendgroup") or "geglättet"
                 fig = fig.add_trace(
                     go.Scatter(
@@ -418,7 +416,7 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
                         meta=meta_trace,
                     )
                 )
-                st.session_state["metadata"][smooth_name] = meta_trace
+                fgf.debug_check_for_missing_meta_data(fig)
 
             elif any(
                 [
@@ -426,7 +424,7 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
                     meta_trace.get("gl_deg") != gl_deg,
                 ]
             ):
-                meta_trace = meta_trace.update({"gl_win": gl_win, "gl_deg": gl_deg})
+                meta_trace |= {"gl_win": gl_win, "gl_deg": gl_deg}
                 fig = fig.update_traces(
                     {"y": calculate_smooth_values(trace), "meta": meta_trace},
                     {"name": smooth_name},
@@ -435,12 +433,14 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
         elif smooth_name in fig_data:
             fig = fig.update_traces({"visible": False}, {"name": smooth_name})
 
+    fgf.debug_check_for_missing_meta_data(fig)
+
     return fig
 
 
 # Ausreißer entfernen
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer
+@gf.func_timer
 def remove_outl(fig: go.Figure, cut_off: float) -> go.Figure:
     """Ausreißerbereinigung"""
     for trace in fig.data:
@@ -457,26 +457,8 @@ def remove_outl(fig: go.Figure, cut_off: float) -> go.Figure:
     return fig
 
 
-# @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@func_timer
-def add_points(fig: go.Figure, df: pd.DataFrame, lines: list) -> None:
-    """Punkte hinzufügen"""
-
-    for line in lines:
-        fig.add_trace(
-            go.Scatter(
-                x=df.index,
-                y=df[line],
-                name=line,
-                hovertemplate=("%{y:,.1f}"),
-                mode="markers",
-                showlegend=False,
-            )
-        )
-
-
 # Ausreißerbereinigung
-@func_timer
+@gf.func_timer
 def clean_outliers() -> None:
     """Ausreißerbereinigung"""
 
@@ -486,111 +468,3 @@ def clean_outliers() -> None:
                 st.session_state[fig] = remove_outl(
                     st.session_state[fig], st.session_state["ni_outl"]
                 )
-
-
-@func_timer
-def update_main() -> None:
-    """Darstellungseinstellungen"""
-
-    for fig in st.session_state["lis_figs"]:
-        switch = fig == "fig_days"
-
-        # anzuzeigende Achsen
-        axes_vis = [
-            dat.yaxis
-            for dat in st.session_state[fig].data
-            if st.session_state.get(f"cb_vis_{dat.legendgroup if switch else dat.name}")
-        ]
-        axes_layout = [x for x in st.session_state[fig].layout if "yaxis" in x]
-
-        for a_x in axes_layout:
-            st.session_state[fig].update_layout(
-                {a_x: {"visible": a_x.replace("axis", "") in axes_vis}}
-            )
-
-        # anzuzeigende Traces
-        for trace in st.session_state[fig].data:
-            line_colour: str = st.session_state[f"cp_{trace.name}"]
-            line_transp: str = st.session_state[
-                f"sb_fill_{trace.legendgroup if switch else trace.name}"
-            ]
-            if not switch:
-                trace.line.color = line_colour
-            trace.visible = st.session_state[
-                f"cb_vis_{trace.legendgroup if switch else trace.name}"
-            ]
-            trace.fill = (
-                "tozeroy" if line_transp != cont.TRANSPARENCY_OPTIONS[0] else None
-            )
-            trace.fillcolor = fill_colour_with_opacity(line_transp, line_colour)
-
-        for annot in st.session_state[fig].layout.annotations:
-            if "hline" not in annot.name:
-                annot.visible = bool(st.session_state.get("cb_anno_" + annot.name))
-
-        # Legende ausblenden, wenn nur eine Linie angezeigt wird
-        st.session_state[fig].update_layout(
-            showlegend=len(
-                [
-                    tr
-                    for tr in st.session_state[fig].data
-                    if tr.visible is True
-                    and all(n not in cont.EXCLUDE for n in tr.name.split())
-                ]
-            )
-            != 1
-        )
-
-    # Gruppierung der Legende ausschalten, wenn nur eine Linie in Gruppe
-    if st.session_state.get("cb_multi_year"):
-        if "lgr" not in st.session_state:
-            st.session_state["lgr"] = {
-                tr.name: tr.legendgroup
-                for tr in st.session_state["fig_base"].data
-                if tr.legendgroup is not None
-            }
-
-        if "lgr_t" not in st.session_state:
-            st.session_state["lgr_t"] = {
-                tr.name: tr.legendgrouptitle
-                for tr in st.session_state["fig_base"].data
-                if tr.legendgrouptitle is not None
-            }
-
-        b_gr = False
-        if (
-            len(
-                {
-                    tr.legendgroup
-                    for tr in st.session_state["fig_base"].data
-                    if tr.visible
-                }
-            )
-            > 1
-        ):
-            for leg_gr in set(st.session_state["lgr"].values()):
-                if (
-                    len(
-                        [
-                            trace
-                            for trace in st.session_state["fig_base"].data
-                            if (
-                                st.session_state["lgr"].get(trace.name) == leg_gr
-                                and trace.visible
-                            )
-                        ]
-                    )
-                    > 1
-                ):
-                    b_gr = True
-
-        if b_gr:
-            for trace in st.session_state["fig_base"].data:
-                if trace.legendgroup is None:
-                    trace.legendgroup = st.session_state["lgr"].get(trace.name)
-                    trace.legendgrouptitle = st.session_state["lgr_t"].get(trace.name)
-        else:
-            st.session_state["fig_base"].update_traces(
-                legendgroup=None,
-                legendgrouptitle=None,
-            )

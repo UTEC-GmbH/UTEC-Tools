@@ -1,7 +1,7 @@
 """Sample Data for Tests"""
 
 import json
-from typing import Any, Literal, dict, list
+from typing import Any, Literal
 
 import pandas as pd
 import plotly.graph_objects as go

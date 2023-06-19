@@ -32,6 +32,8 @@ pip install -r requirements.txt
 pip install -r requirements_latest_versions.txt
 
 
+# Create the secrets.toml file in the streamlit directory
+
 
 Create requirements.txt:     
 ------------------------

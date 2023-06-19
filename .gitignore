@@ -146,5 +146,7 @@ cython_debug/
 # other
 .streamlit/secrets.toml
 export/
+~$*.xls*
+logs/
 
 

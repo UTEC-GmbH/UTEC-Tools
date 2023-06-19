@@ -3,29 +3,23 @@
 import datetime
 import secrets
 from glob import glob
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 
+from modules import classes_data as cl
 from modules import constants as cont
-from modules import excel as ex
+from modules import excel_download as ex
 from modules import fig_creation_export as fig_cr
 from modules import fig_general_functions as fgf
+from modules import general_functions as gf
 from modules import meteorolog as meteo
-from modules.fig_general_functions import get_colorway
-from modules.general_functions import (
-    del_session_state_entry,
-    func_timer,
-    text_with_hover,
-)
-from modules.user_authentication import get_all_user_data
-
-if TYPE_CHECKING:
-    import plotly.graph_objects as go
+from modules import user_authentication as uauth
 
 
-@func_timer
+@gf.func_timer
 def user_accounts() -> None:
     """Benutzerkontensteuerung"""
 
@@ -38,7 +32,7 @@ def user_accounts() -> None:
     ]
 
     # Knöpfle für neuen Benutzer, Benutzer löschen...
-    if not any(st.session_state.get(butt) for butt in lis_butt):
+    if not any(gf.st_get(butt) for butt in lis_butt):
         st.button("Liste aller Konten", "butt_list_all")
         st.button("Neuen Benutzer hinzufügen", "butt_add_new_user")
         st.button("Benutzer löschen", "butt_del_user")
@@ -46,31 +40,31 @@ def user_accounts() -> None:
         st.markdown("###")
 
     # Menu für neuen Benutzer
-    if st.session_state.get("butt_add_new_user"):
+    if gf.st_get("butt_add_new_user"):
         new_user_form()
         st.button("abbrechen")
-    st.session_state["butt_sub_new_user"] = st.session_state.get(
+    st.session_state["butt_sub_new_user"] = gf.st_get(
         "FormSubmitter:Neuer Benutzer-Knöpfle"
     )
 
     # Menu zum Löschen von Benutzern
-    if st.session_state.get("butt_del_user"):
+    if gf.st_get("butt_del_user"):
         delete_user_form()
         st.button("abbrechen")
-    st.session_state["butt_sub_del_user"] = st.session_state.get(
+    st.session_state["butt_sub_del_user"] = gf.st_get(
         "FormSubmitter:Benutzer löschen-Knöpfle"
     )
 
-    if st.session_state.get("butt_list_all"):
+    if gf.st_get("butt_list_all"):
         st.markdown("---")
         list_all_accounts()
 
 
-@func_timer
+@gf.func_timer
 def delete_user_form() -> None:
     """Benutzer löschen"""
 
-    users: dict[str, dict[str, str]] = get_all_user_data()
+    users: dict[str, dict[str, str]] = uauth.get_all_user_data()
     with st.form("Benutzer löschen"):
         st.multiselect(
             label="Benutzer wählen, die gelöscht werden sollen",
@@ -86,7 +80,7 @@ def delete_user_form() -> None:
         st.form_submit_button("Knöpfle")
 
 
-@func_timer
+@gf.func_timer
 def new_user_form() -> None:
     """Neuen Benutzer hinzufügen"""
     with st.form("Neuer Benutzer"):
@@ -123,18 +117,22 @@ def new_user_form() -> None:
             label="Zugriffsrechte",
             key="new_user_access",
             help=("Auswahl der Module, auf die dieser Benutzer zugreifen darf."),
-            options=[key for key in cont.PAGES if key not in ("login")],
-            default=[key for key in cont.PAGES if key not in ("login")],
+            options=[
+                key for key in cont.ST_PAGES.get_all_short() if key not in ("login")
+            ],
+            default=[
+                key for key in cont.ST_PAGES.get_all_short() if key not in ("login")
+            ],
         )
 
         st.markdown("###")
         st.form_submit_button("Knöpfle")
 
 
-@func_timer
+@gf.func_timer
 def list_all_accounts() -> None:
     """Liste aller Benutzerkonten"""
-    users: dict[str, dict[str, str]] = get_all_user_data()
+    users: dict[str, dict[str, str]] = uauth.get_all_user_data()
 
     df_users = pd.DataFrame()
     df_users["Benutzername"] = [user["key"] for user in users.values()]
@@ -146,12 +144,12 @@ def list_all_accounts() -> None:
     st.button("ok")
 
 
-@func_timer
+@gf.func_timer
 def sidebar_file_upload() -> Any:
     """Hochgeladene Excel-Datei"""
 
     with st.sidebar, st.expander(
-        "Auszuwertende Daten", expanded=not bool(st.session_state.get("f_up"))
+        "Auszuwertende Daten", expanded=not bool(gf.st_get("f_up"))
     ):
         # Download
         sb_example: str | None = st.selectbox(
@@ -177,19 +175,16 @@ def sidebar_file_upload() -> Any:
             )
 
         # benutze ausgewählte Beispieldatei direkt für debugging
-        if st.session_state.get("access_lvl") == "god":
+        if gf.st_get("access_lvl") == "god":
             st.button("Beispieldatei direkt verwenden", "but_example_direct")
             st.button("RESET", "but_reset")
 
-        if st.session_state.get("but_reset"):
-            del_session_state_entry("f_up")
+        if gf.st_get("but_reset"):
+            gf.st_delete("f_up")
 
         # Upload
         sample_direct: str = f"example_files/{sb_example}.xlsx"
-        if (
-            st.session_state.get("but_example_direct")
-            or st.session_state.get("f_up") == sample_direct
-        ):
+        if gf.st_get("but_example_direct") or gf.st_get("f_up") == sample_direct:
             f_up = sample_direct
             st.session_state["f_up"] = f_up
 
@@ -211,23 +206,19 @@ def sidebar_file_upload() -> Any:
     return f_up
 
 
-@func_timer
-def base_settings() -> None:
+@gf.func_timer
+def base_settings(mdf: cl.MetaAndDfs) -> None:
     """Grundeinstellungen (Stundenwerte, JDL, Monatswerte)"""
 
-    if "metadata" not in st.session_state:
-        with st.spinner("Momentle bitte - Datei wird importiert..."):
-            ex.import_prefab_excel(st.session_state["f_up"])
+    if not mdf.meta.td_mnts:
+        return
 
-    if st.session_state["metadata"]["index"]["td_mean"] == pd.Timedelta(hours=1):
-        st.session_state["cb_h"] = True
+    if mdf.meta.td_mnts == cont.TIME_MIN.hour:
+        gf.st_set("cb_h", value=True)
 
-    if (
-        st.session_state["metadata"]["index"]["td_mean"] < pd.Timedelta(hours=1)
-        or len(st.session_state["years"]) > 1
-    ):
+    if mdf.meta.td_mnts < cont.TIME_MIN.hour or mdf.meta.multi_years:
         with st.sidebar, st.form("Grundeinstellungen"):
-            if st.session_state["metadata"]["index"]["td_mean"] < pd.Timedelta(hours=1):
+            if mdf.meta.td_mnts < cont.TIME_MIN.hour:
                 st.checkbox(
                     label="Umrechnung in Stundenwerte",
                     help=(
@@ -243,7 +234,7 @@ def base_settings() -> None:
                     key="cb_h",
                 )
 
-            if len(st.session_state["years"]) > 1:
+            if mdf.meta.multi_years:
                 st.checkbox(
                     label="mehrere Jahre übereinander",
                     help=(
@@ -257,11 +248,11 @@ def base_settings() -> None:
                     # disabled=True,
                 )
 
-            st.session_state["but_base_settings"] = st.form_submit_button("Knöpfle")
+            gf.st_set("but_base_settings", st.form_submit_button("Knöpfle"))
 
 
-@func_timer
-def select_graphs() -> None:
+@gf.func_timer
+def select_graphs(mdf: cl.MetaAndDfs) -> None:
     """Auswahl der anzuzeigenden Grafiken"""
     with st.sidebar, st.expander("anzuzeigende Grafiken", expanded=False), st.form(
         "anzuzeigende Grafiken"
@@ -312,7 +303,7 @@ def select_graphs() -> None:
             ),
             value=False,
             key="cb_days",
-            # disabled=True,
+            disabled=True,
         )
 
         st.number_input(
@@ -330,12 +321,13 @@ def select_graphs() -> None:
             key="ni_days",
         )
 
-        for num in range(int(st.session_state["ni_days"])):
+        for num in range(int(gf.st_get("ni_days"))):
             st.date_input(
                 label=f"Tag {num + 1!s}",
-                min_value=st.session_state["df"].index.min(),
-                max_value=st.session_state["df"].index.max(),
-                value=st.session_state["df"].index.min() + pd.DateOffset(days=num),
+                min_value=mdf.df.get_column(cont.SPECIAL_COLS.original_index).min(),
+                max_value=mdf.df.get_column(cont.SPECIAL_COLS.original_index).max(),
+                value=mdf.df.get_column(cont.SPECIAL_COLS.original_index).min()
+                + pd.DateOffset(days=num),
                 key=f"day_{num!s}",
             )
 
@@ -345,11 +337,12 @@ def select_graphs() -> None:
         st.session_state["but_select_graphs"] = st.form_submit_button("Knöpfle")
 
 
-@func_timer
+@gf.func_timer
 def meteo_sidebar(page: str) -> None:
     """sidebar-Menu zur Außentemperatur"""
-
-    with st.form("Außentemperatur"):
+    with st.sidebar, st.expander("Außentemperatur", expanded=False), st.form(
+        "Außentemperatur"
+    ):
         st.warning("temporär außer Betrieb")
 
         if page in ("graph"):
@@ -359,10 +352,10 @@ def meteo_sidebar(page: str) -> None:
                 key="cb_temp",
                 help=(
                     """
-                    Außentemperaturen  werden 
-                    für den unten eingegebenen Ort heruntergeladen 
-                    und in den Grafiken eingefügt.
-                    """
+                        Außentemperaturen  werden 
+                        für den unten eingegebenen Ort heruntergeladen 
+                        und in den Grafiken eingefügt.
+                        """
                 ),
                 disabled=True,
             )
@@ -374,9 +367,9 @@ def meteo_sidebar(page: str) -> None:
                 value=2020,
                 help=(
                     """
-                    Falls nur ein Jahr ausgegeben werden soll, 
-                    in beide Felder das gleiche Jahr eingeben.
-                    """
+                        Falls nur ein Jahr ausgegeben werden soll, 
+                        in beide Felder das gleiche Jahr eingeben.
+                        """
                 ),
                 key="meteo_start_year",
                 disabled=True,
@@ -397,12 +390,12 @@ def meteo_sidebar(page: str) -> None:
             value=("Cuxhavener Str. 10  \n20217 Bremen"),
             help=(
                 """
-                Je genauer, desto besser, 
-                aber es reicht auch nur eine Stadt.  \n
-                _(Wird oben "anzeigen" ausgewählt und as Knöpfle gedrückt, 
-                wird eine Karte eingeblendet, mit der kontrolliert werden kann, 
-                ob die richtige Adresse gefunden wurde.)_
-                """
+                    Je genauer, desto besser, 
+                    aber es reicht auch nur eine Stadt.  \n
+                    _(Wird oben "anzeigen" ausgewählt und as Knöpfle gedrückt, 
+                    wird eine Karte eingeblendet, mit der kontrolliert werden kann, 
+                    ob die richtige Adresse gefunden wurde.)_
+                    """
             ),
             # placeholder= 'Cuxhavener Str. 10, 20217 Bremen',
             # autocomplete= '',
@@ -417,7 +410,7 @@ def meteo_sidebar(page: str) -> None:
         st.markdown("###")
 
 
-@func_timer
+@gf.func_timer
 def meteo_params_main() -> None:
     """Wetterdaten-Menu auf der Hauptseite"""
 
@@ -459,7 +452,7 @@ def meteo_params_main() -> None:
         st.session_state["but_meteo_main"] = st.form_submit_button("Knöpfle")
 
 
-@func_timer
+@gf.func_timer
 def clean_outliers() -> None:
     """Menu zur Ausreißerbereinigung"""
 
@@ -495,7 +488,7 @@ def clean_outliers() -> None:
         st.session_state["but_clean_outliers"] = st.form_submit_button("Knöpfle")
 
 
-@func_timer
+@gf.func_timer
 def smooth() -> None:
     """Einstellungen für die geglätteten Linien"""
 
@@ -542,9 +535,12 @@ def smooth() -> None:
         st.session_state["but_smooth"] = st.form_submit_button("Knöpfle")
 
 
-@func_timer
-def h_v_lines() -> None:
+@gf.func_timer
+def h_v_lines(fig: go.Figure | None = None) -> None:
     """Menu für horizontale und vertikale Linien"""
+    fig = fig or gf.st_get("fig_base")
+    if fig is None:
+        return
 
     with st.sidebar, st.expander(
         "horizontale / vertikale Linien", expanded=False
@@ -566,6 +562,19 @@ def h_v_lines() -> None:
             key="ni_hor",
             step=1.0,
         )
+
+        if len(fgf.get_set_of_visible_y_axes(fig)) > 1:
+            st.selectbox(
+                label="Y-Achse",
+                options=fgf.get_set_of_visible_y_axes(fig),
+                help=(
+                    """
+                    Die Y-Achse, auf die sich die Linie beziehen soll.  \n
+                    (nicht wundern - die Reihenfolge ist "y", "y2", "y3" etc.)
+                    """
+                ),
+                key="sb_h_line_y",
+            )
 
         # st.multiselect(
         #     label= 'ausfüllen',
@@ -593,7 +602,6 @@ def h_v_lines() -> None:
         st.session_state["but_h_v_lines"] = st.form_submit_button("Knöpfle")
 
 
-@func_timer
 def display_options_main_col_settings() -> dict[str, dict]:
     """Settings for the columns of the main display options
     (controlling line color, type, etc.)
@@ -609,37 +617,43 @@ def display_options_main_col_settings() -> dict[str, dict]:
                 - "anno" -> show an arrow pointing to the maximim value of the line
     """
     return {
-        "name": {
-            "Title": text_with_hover("Linie", "Bezeichnung der Linie"),
-            "width": 3,
-        },
+        # "name": {
+        #     "Title": gf.text_with_hover("Linie", "Bezeichnung der Linie"),
+        #     "width": 3,
+        # },
         "vis": {
-            "Title": text_with_hover("Anzeigen", "Linien, die angezeigt werden sollen"),
-            "width": 1,
+            "Title": gf.text_with_hover("Linie", "Linien, die angezeigt werden sollen"),
+            "width": 4,
         },
         "colour": {
-            "Title": text_with_hover("Farbe", "Linienfarbe wählen"),
+            "Title": gf.text_with_hover("Farbe", "Linienfarbe wählen"),
             "width": 1,
         },
         "type": {
-            "Title": text_with_hover("Linientyp", "Linie gestrichelt darstellen?"),
+            "Title": gf.text_with_hover("Linientyp", "Linie gestrichelt darstellen?"),
             "width": 2,
         },
         "fill": {
-            "Title": text_with_hover(
+            "Title": gf.text_with_hover(
                 "Füllen (Transparenz)",
                 "Linien, die zur x-Achse ausgefüllt werden sollen",
             ),
             "width": 2,
         },
+        "markers": {
+            "Title": gf.text_with_hover(
+                "Punkte", "Markierung (Punkt) an jedem Datenpunkt und deren Größe"
+            ),
+            "width": 2,
+        },
         "anno": {
-            "Title": text_with_hover("Maximum", "Maxima als Anmerkung mit Pfeil"),
+            "Title": gf.text_with_hover("Maximum", "Maxima als Anmerkung mit Pfeil"),
             "width": 4,
         },
     }
 
 
-@func_timer
+@gf.func_timer
 def display_options_main() -> bool:
     """Hauptmenu für die Darstellungsoptionen (Linienfarben, Füllung, etc.)"""
 
@@ -655,14 +669,13 @@ def display_options_main() -> bool:
                 st.markdown(columns[col]["Title"], unsafe_allow_html=True)
 
         # Check Boxes for line visibility, fill and color
-        fig: go.Figure = st.session_state["fig_base"]
+        fig: go.Figure = gf.st_get("fig_base")
+
         fig_data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
         fig_layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
-        colorway: list[str] = get_colorway(fig)
+        colorway: list[str] = fgf.get_colorway(fig)
         lines: list[dict] = [
-            line
-            for line in fig_data.values()
-            if all(ex not in line["name"] for ex in cont.EXCLUDE)
+            line for line in fig_data.values() if gf.check_if_not_exclude(line["name"])
         ]
 
         for count, line in enumerate(lines):
@@ -670,19 +683,26 @@ def display_options_main() -> bool:
             line_name: str = line["name"]
             line_color: str = colorway[count]
             if len(line["x"]) > 0 and line_name is not None and line_color is not None:
-                with cols[list(columns).index("name")]:
-                    st.markdown(line_name)
+                # with cols[list(columns).index("name")]:
+                #     st.markdown(line_name)
                 with cols[list(columns).index("vis")]:
                     st.checkbox(
                         label=line_name,
                         value=all(
                             part not in line_name
                             for part in [
-                                cont.SMOOTH_SUFFIX,
-                                cont.ARBEIT_LEISTUNG["suffix"]["Arbeit"],
+                                cont.SUFFIXES.col_smooth,
+                                cont.SUFFIXES.col_arbeit,
                             ]
                         ),
                         key=f"cb_vis_{line_name}",
+                        # label_visibility="collapsed",
+                    )
+                with cols[list(columns).index("colour")]:
+                    st.color_picker(
+                        label=line_name,
+                        value=line_color,
+                        key=f"cp_{line_name}",
                         label_visibility="collapsed",
                     )
                 with cols[list(columns).index("type")]:
@@ -692,14 +712,22 @@ def display_options_main() -> bool:
                         label_visibility="collapsed",
                         options=list(cont.LINE_TYPES),
                     )
-                with cols[list(columns).index("colour")]:
-                    st.color_picker(
-                        label=line_name,
-                        value=line_color,
-                        key=f"cp_{line_name}",
-                        label_visibility="collapsed",
-                    )
-
+                with cols[list(columns).index("markers")]:
+                    lvl2_1, lvl2_2 = st.columns([1, 3])
+                    with lvl2_1:
+                        st.checkbox(
+                            label="Punkte",
+                            value=False,
+                            key=f"cb_markers_{line_name}",
+                            label_visibility="collapsed",
+                        )
+                    with lvl2_2:
+                        st.number_input(
+                            label="Punkte",
+                            value=6,
+                            key=f"ni_markers_{line_name}",
+                            label_visibility="collapsed",
+                        )
                 with cols[list(columns).index("fill")]:
                     st.selectbox(
                         label=line_name,
@@ -713,28 +741,26 @@ def display_options_main() -> bool:
                 for anno in [
                     anno["name"]
                     for anno in fig_layout["annotations"]
-                    if all(string not in anno["name"] for string in cont.EXCLUDE)
-                    and all(string not in line_name for string in cont.EXCLUDE)
+                    if gf.check_if_not_exclude(anno["name"])
+                    and gf.check_if_not_exclude(line_name)
                 ]:
                     if line_name in anno:
                         anno_name = anno.split(": ")[0]
-                show: bool = True
-                if any(
-                    suff in line_name
-                    for suff in cont.ARBEIT_LEISTUNG["suffix"].values()
-                ):
-                    suff: str = [
-                        suff
-                        for suff in cont.ARBEIT_LEISTUNG["suffix"].values()
-                        if suff in line_name
-                    ][0]
-                    anno_name: str = anno_name.replace(suff, "")
-                    if "first_suff" not in st.session_state:
-                        st.session_state["first_suff"] = suff
-                    if suff != st.session_state["first_suff"]:
-                        show = False
 
-                if show and f"cb_anno_{anno_name}" not in st.session_state:
+                show_cb: bool = True
+                # if any(suff in line_name for suff in cont.ARBEIT_LEISTUNG.all_suffixes):
+                #     suff: str = [
+                #         suff
+                #         for suff in cont.ARBEIT_LEISTUNG.all_suffixes
+                #         if suff in line_name
+                #     ][0]
+                #     anno_name: str = anno_name.replace(suff, "")
+                #     if "first_suff" not in st.session_state:
+                #         st.session_state["first_suff"] = suff
+                #     if suff != st.session_state["first_suff"] or not anno_name:
+                #         show_cb = False
+
+                if show_cb and anno_name:
                     with cols[list(columns).index("anno")]:
                         st.checkbox(
                             label=anno_name,
@@ -748,7 +774,7 @@ def display_options_main() -> bool:
     return but_upd_main
 
 
-@func_timer
+@gf.func_timer
 def display_smooth_main() -> bool:
     """Hauptmenu für die Darstellungsoptionen (Linienfarben, Füllung, etc.)"""
 
@@ -794,7 +820,7 @@ def display_smooth_main() -> bool:
 
         # Überschriften
         for count, col in enumerate(columns):
-            if count < 4:
+            if count < 3:
                 with cols[count]:
                     st.markdown("###")
                     st.markdown(columns[col]["Title"], unsafe_allow_html=True)
@@ -802,16 +828,14 @@ def display_smooth_main() -> bool:
         # Check Boxes for line visibility, fill and color
         fig: go.Figure = st.session_state["fig_base"]
         fig_data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
-        colorway: list[str] = get_colorway(fig)
+        colorway: list[str] = fgf.get_colorway(fig)
         lines: list[dict] = [
-            line
-            for line in fig_data.values()
-            if all(ex not in line["name"] for ex in cont.EXCLUDE)
+            line for line in fig_data.values() if gf.check_if_not_exclude(line["name"])
         ]
 
         for count, line in enumerate(lines):
             cols: list = st.columns([col["width"] for col in columns.values()])
-            line_name: str = f'{line["name"]}{cont.SMOOTH_SUFFIX}'
+            line_name: str = f'{line["name"]}{cont.SUFFIXES.col_smooth}'
             line_color: str = colorway[count + len(lines)]
             if (
                 len(line["x"]) > 0
@@ -819,14 +843,14 @@ def display_smooth_main() -> bool:
                 and line_name is not None
                 and line_color is not None
             ):
-                with cols[list(columns).index("name")]:
-                    st.markdown(line_name)
+                # with cols[list(columns).index("name")]:
+                #     st.markdown(line_name)
                 with cols[list(columns).index("vis")]:
                     st.checkbox(
                         label=line_name,
                         value=False,
                         key=f"cb_vis_{line_name}",
-                        label_visibility="collapsed",
+                        # label_visibility="collapsed",
                     )
                 with cols[list(columns).index("type")]:
                     st.selectbox(
@@ -858,7 +882,7 @@ def display_smooth_main() -> bool:
     return but_smooth
 
 
-@func_timer
+@gf.func_timer
 def downloads(page: str = "graph") -> None:
     """Dateidownloads"""
 
@@ -878,9 +902,7 @@ def downloads(page: str = "graph") -> None:
     else:
         xl_file_name = "Datenausgabe.xlsx"
 
-    if "graph" in page and not any(
-        [st.session_state.get("but_html"), st.session_state.get("but_xls")]
-    ):
+    if "graph" in page and not any([gf.st_get("but_html"), gf.st_get("but_xls")]):
         st.markdown("###")
         # st.subheader("Downloads")
 
@@ -900,7 +922,7 @@ def downloads(page: str = "graph") -> None:
             ein Knöpfle zum herunterladen.""",
         )
 
-    if st.session_state.get("but_html"):
+    if gf.st_get("but_html"):
         with st.spinner("Momentle bitte - html-Datei wird erzeugt..."):
             fig_cr.html_exp()
 
@@ -925,7 +947,7 @@ def downloads(page: str = "graph") -> None:
         st.markdown("---")
 
     if any(
-        st.session_state.get(key)
+        gf.st_get(key)
         for key in (
             "but_xls",
             "but_meteo_sidebar",
@@ -944,7 +966,7 @@ def downloads(page: str = "graph") -> None:
                     for x in [
                         d
                         for d in st.session_state["fig_base"].data
-                        if all(e not in d.name for e in cont.EXCLUDE)
+                        if gf.check_if_not_exclude(d.name)
                     ]
                 }
 
@@ -954,7 +976,7 @@ def downloads(page: str = "graph") -> None:
                 st.session_state["df_ex"] = df_ex
 
             if page in ("meteo"):
-                df_ex = st.session_state.get("meteo_data")
+                df_ex = gf.st_get("meteo_data")
 
             dat = ex.excel_download(df_ex, page)
 

@@ -12,7 +12,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from geopy import distance
 
-from modules.general_functions import del_session_state_entry, func_timer
+from modules import general_functions as gf
 
 SKIP = True
 
@@ -29,11 +29,11 @@ if not SKIP:
     # Umkreis für Meteostat-Stationen
     WEATHERSTATIONS_MAX_DISTANCE = 700
 
-    @func_timer
+    @gf.func_timer
     def start_end_time(**kwargs) -> tuple[dt | None, dt | None]:
         """Zeitraum für Daten-Download"""
 
-        page: str = str(kwargs.get("page")) or st.session_state.get("page")
+        page: str = str(kwargs.get("page")) or gf.st_get("page")
 
         if page == "meteo":
             start_year: int = (
@@ -86,9 +86,9 @@ if not SKIP:
         return start_time, end_time
 
     if "page" in st.session_state:
-        start, end = start_end_time(page=st.session_state.get("page"))
+        start, end = start_end_time(page=gf.st_get("page"))
 
-    @func_timer
+    @gf.func_timer
     def geo(address: str) -> dict:
         """Geographische daten (Längengrad, Breitengrad) aus eingegebener Adresse"""
         geolocator = geopy.geocoders.Nominatim(user_agent=os.getenv("GEO_USER_AGENT"))
@@ -102,16 +102,16 @@ if not SKIP:
 
         return dic_geo
 
-    @func_timer
+    @gf.func_timer
     def all_stations() -> pd.DataFrame:
-        """df aller Stationen"""
+        """DataFrame aller Stationen"""
         df_met = meteostat_stations()
         df_all = df_met.sort_values(["distance"]).reset_index(drop=True)
 
         st.session_state["df_all_stations"] = df_all
         return df_all
 
-    @func_timer
+    @gf.func_timer
     def all_stations_without_dups() -> pd.DataFrame:
         """alle Stationen ohne Duplikate"""
         df = (
@@ -123,7 +123,7 @@ if not SKIP:
         st.session_state["all_stations_without_dups"] = df
         return df
 
-    @func_timer
+    @gf.func_timer
     def meteostat_stations(
         lat: float | None = None,
         lon: float | None = None,
@@ -135,10 +135,10 @@ if not SKIP:
         mit stündlichen Daten in der erforderlichen Zeitperiode
         """
         if "start" not in locals():
-            start_time, end_time = start_end_time(st.session_state.get("page"))
+            start_time, end_time = start_end_time(gf.st_get("page"))
 
         if lat is None or lon is None:
-            adr = st.session_state.get("ti_adr")  # or "Bremen"
+            adr = gf.st_get("ti_adr")  # or "Bremen"
             lat = geo(adr)["lat"]
             lon = geo(adr)["lon"]
 
@@ -158,7 +158,7 @@ if not SKIP:
 
         return df_meteostat_stations
 
-    @func_timer
+    @gf.func_timer
     def meteostat_stations_df_edit(df: pd.DataFrame) -> pd.DataFrame:
         """Anpassung auf Format der Meteostat-Stationen"""
         df["station_id"] = df.index
@@ -180,11 +180,11 @@ if not SKIP:
 
         return df
 
-    @func_timer
+    @gf.func_timer
     def meteostat_data_by_stationid(station_id: str) -> pd.DataFrame:
         """Meteostat-Daten eine einzelnen Station"""
         if "start" not in locals():
-            start_time, end_time = start_end_time(st.session_state.get("page"))
+            start_time, end_time = start_end_time(gf.st_get("page"))
 
         meteostat_data_hourly = met.Hourly(
             station_id,
@@ -213,12 +213,12 @@ if not SKIP:
 
         return df_meteostat_data
 
-    @func_timer
+    @gf.func_timer
     def closest_station_with_data(param: str) -> tuple[str | float]:
         """nächstgelegene Station, die Daten zum gewählten Parameter hat"""
 
         df_met_st = (
-            st.session_state.get("df_meteostat_stations")
+            gf.st_get("df_meteostat_stations")
             if "df_meteostat_stations" in st.session_state
             else meteostat_stations()
         )
@@ -237,19 +237,19 @@ if not SKIP:
 
         return station_id, distance_sta
 
-    @func_timer
+    @gf.func_timer
     def selected_params(page: str = "meteo") -> list:
         """ausgewählte Parameter"""
 
         if "graph" in page:
-            lis_sel_params = st.session_state.get("lis_sel_params")
+            lis_sel_params = gf.st_get("lis_sel_params")
         else:
             lis_sel_params = [
-                par for par in LIS_PARAMS if st.session_state.get(f"cb_{par.tit_de}")
+                par for par in LIS_PARAMS if gf.st_get(f"cb_{par.tit_de}")
             ] or [par for par in LIS_PARAMS if par.tit_de in LIS_DEFAULT_PARAMS]
 
         df_met_st = (
-            st.session_state.get("df_meteostat_stations")
+            gf.st_get("df_meteostat_stations")
             if "df_meteostat_stations" in st.session_state
             else meteostat_stations()
         )
@@ -282,7 +282,7 @@ if not SKIP:
         st.session_state["lis_sel_params"] = lis_sel_params
         return lis_sel_params
 
-    @func_timer
+    @gf.func_timer
     def used_stations() -> pd.DataFrame:
         """nur verwendete Stationen"""
         lis_sel_params = (
@@ -320,7 +320,7 @@ if not SKIP:
         st.session_state["df_used_stations"] = df_used_stations
         return df_used_stations
 
-    @func_timer
+    @gf.func_timer
     def used_stations_show() -> pd.DataFrame:
         """df mit verwendeten Stationen für die Darstellung in der app"""
         df = (
@@ -332,7 +332,7 @@ if not SKIP:
         st.session_state["df_used_stations_show"] = df
         return df
 
-    @func_timer
+    @gf.func_timer
     def df_used_show_edit() -> pd.DataFrame:
         """Anpassen und formatieren des df der benutzten Wetterstationen"""
         df = (
@@ -378,22 +378,22 @@ if not SKIP:
 
         return df
 
-    @func_timer
+    @gf.func_timer
     def meteo_data() -> pd.DataFrame:
         """
         Meteorologische Daten für die ausgewählten Parameter
         """
-        page = st.session_state.get("page")
+        page = gf.st_get("page")
         if "start" not in locals():
-            start_time, end_time = start_end_time(st.session_state.get("page"))
+            start_time, end_time = start_end_time(gf.st_get("page"))
 
         # alte Grafiken löschen
         for key, value in st.session_state.items():
             if isinstance(value, go.Figure):
-                del_session_state_entry(key)
+                gf.st_delete(key)
 
         lis_sel_params = (
-            st.session_state.get("lis_sel_params")
+            gf.st_get("lis_sel_params")
             if "lis_sel_params" in st.session_state
             else selected_params()
         )
@@ -432,12 +432,12 @@ if not SKIP:
 
     # ---------------------------------------------------------------------------
 
-    @func_timer
+    @gf.func_timer
     def outside_temp_graph() -> None:
         """
         Außentemperatur in df für Grafiken eintragen
         """
-        page = st.session_state.get("page")
+        page = gf.st_get("page")
         if "graph" not in page:
             return
 
@@ -469,14 +469,14 @@ if not SKIP:
         df.rename(columns={"temp": "Temperatur"}, inplace=True)
         units()
 
-        if st.session_state.get("cb_h") is False:
+        if gf.st_get("cb_h") is False:
             df["Temperatur"] = df["Temperatur"].interpolate(
                 method="akima", axis="index"
             )
 
         st.session_state["df"] = df
 
-    @func_timer
+    @gf.func_timer
     def del_meteo() -> None:
         """vorhandene meteorologische Daten löschen"""
         # Spalten in dfs löschen
@@ -491,7 +491,7 @@ if not SKIP:
                             st.session_state[key].drop(columns=[str(col)], inplace=True)
 
         # Metadaten löschen
-        if st.session_state.get("metadata"):
+        if gf.st_get("metadata"):
             if "Temperatur" in st.session_state["metadata"].keys():
                 del st.session_state["metadata"]["Temperatur"]
             if (
@@ -507,7 +507,7 @@ if not SKIP:
         # Linien löschen
         for key in st.session_state:
             if isinstance(st.session_state[key], go.Figure):
-                del_session_state_entry(key)
+                gf.st_delete(key)
 
     # --------------------------------------------------------------------------
 

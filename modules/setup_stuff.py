@@ -7,20 +7,22 @@ import sys
 from pathlib import Path
 from typing import Any
 
+import dotenv
+import github as gh
+import pandas.io.formats.excel
 import plotly.io as pio
+import pytz
+import sentry_sdk
 import streamlit as st
-from dotenv import load_dotenv
-from github import Github
 from loguru import logger
-from pytz import BaseTzInfo, timezone
 
 from modules import constants as cont
-from modules.general_functions import func_timer, render_svg, st_add
-from modules.logger_setup import LogLevel
-from modules.user_authentication import get_all_user_data
+from modules import general_functions as gf
+from modules import setup_logger as slog
+from modules import user_authentication as uauth
 
 
-@func_timer
+@gf.func_timer
 def get_commit_message_date() -> dict[str, dt.datetime | str]:
     """Commit message and date from GitHub to show in the header.
 
@@ -41,8 +43,8 @@ def get_commit_message_date() -> dict[str, dt.datetime | str]:
             "com_msg": st.session_state["com_msg"],
         }
 
-    utc: BaseTzInfo = timezone("UTC")
-    eur: BaseTzInfo = timezone("Europe/Berlin")
+    utc: pytz.BaseTzInfo = pytz.timezone("UTC")
+    eur: pytz.BaseTzInfo = pytz.timezone("Europe/Berlin")
     date_now: dt.datetime = dt.datetime.now()
     tz_diff: float = (
         utc.localize(date_now) - eur.localize(date_now).astimezone(utc)
@@ -54,7 +56,7 @@ def get_commit_message_date() -> dict[str, dt.datetime | str]:
         logger.error(err_msg)
         return {"com_date": "ERROR", "com_msg": err_msg}
 
-    gith: Github = Github(personal_access_token)
+    gith: gh.Github = gh.Github(personal_access_token)
 
     repo: Any = gith.get_user().get_repo(cont.REPO_NAME)
     if not repo:
@@ -77,7 +79,7 @@ def get_commit_message_date() -> dict[str, dt.datetime | str]:
     }
 
 
-@func_timer
+@gf.func_timer
 def general_setup() -> None:
     """Setup general things (only done once)
     - streamlit page config
@@ -92,10 +94,12 @@ def general_setup() -> None:
     """
 
     locale.setlocale(locale.LC_ALL, "")
-    load_dotenv(".streamlit/secrets.toml")
+    dotenv.load_dotenv(".streamlit/secrets.toml")
     pio.templates.default = "plotly"
+    pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
+    sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), traces_sample_rate=0.1)
 
-    st_add("UTEC_logo", render_svg())
+    gf.st_add_once("UTEC_logo", gf.render_svg())
 
     st.markdown(
         cont.CSS_LABELS,
@@ -107,7 +111,7 @@ def general_setup() -> None:
         st.session_state["com_date"] = commit["com_date"]
         st.session_state["com_msg"] = commit["com_msg"]
 
-    st_add("all_user_data", get_all_user_data())
+    gf.st_add_once("all_user_data", uauth.get_all_user_data())
 
     exp_dir: Path = Path(f"{Path.cwd()}/export")
     if Path.exists(exp_dir):
@@ -117,10 +121,10 @@ def general_setup() -> None:
         logger.info(f"Pfad '{exp_dir}' für die Ausgabe erstellt")
 
     st.session_state["initial_setup"] = True
-    logger.log(LogLevel.ONCE_PER_SESSION.name, "Initial Setup Complete")
+    logger.log(slog.LVLS.once_per_session.name, "Initial Setup Complete")
 
 
-@func_timer
+@gf.func_timer
 def page_header_setup(page: str) -> None:
     """Seitenkopf mit Logo, Titel (je nach Seite) und letzten Änderungen"""
 
@@ -130,7 +134,7 @@ def page_header_setup(page: str) -> None:
     with st.session_state["title_container"]:
         columns: list = st.columns(2)
 
-        st_add("UTEC_logo", render_svg())
+        gf.st_add_once("UTEC_logo", gf.render_svg())
         with columns[0]:
             st.write(st.session_state["UTEC_logo"], unsafe_allow_html=True)
 
@@ -152,7 +156,9 @@ def page_header_setup(page: str) -> None:
                 unsafe_allow_html=True,
             )
 
-            access_lvl_user: str | list | None = st.session_state.get("access_lvl")
+            access_lvl_user: str | list | None = (
+                None if gf.st_not_in("access_lvl") else gf.st_get("access_lvl")
+            )
             if isinstance(access_lvl_user, str) and access_lvl_user in ("god"):
                 st.write(
                     (
@@ -164,7 +170,7 @@ def page_header_setup(page: str) -> None:
                     unsafe_allow_html=True,
                 )
 
-        st.title(cont.PAGES[page]["page_tit"])
+        st.title(cont.ST_PAGES.get_title(page))
         st.markdown("---")
 
-    logger.log(LogLevel.ONCE_PER_RUN.name, f"page header for page '{page}' created")
+    logger.log(slog.LVLS.once_per_run.name, f"page header for page '{page}' created")

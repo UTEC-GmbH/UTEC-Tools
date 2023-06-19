@@ -1,53 +1,53 @@
+# sourcery skip: avoid-global-variables
 """Seite Grafische Datenauswertung"""  # noqa: N999
 
 from typing import Any, Literal
 
 import streamlit as st
-from streamlit_lottie import st_lottie_spinner
 
-from modules import df_manip as dfm
-from modules import excel as ex
+from modules import classes_data as cl
+from modules import classes_figs as clf
+from modules import constants as cont
+from modules import df_manipulation as df_man
+from modules import excel_import as ex_in
 from modules import fig_annotations as fig_anno
 from modules import fig_creation_export as fig_create
 from modules import fig_formatting as fig_format
+from modules import general_functions as gf
 from modules import meteorolog as meteo
+from modules import setup_stuff as set_stuff
 from modules import streamlit_menus as sm
 from modules import user_authentication as uauth
-from modules.general_functions import del_session_state_entry, load_lottie_file
-from modules.setup_stuff import page_header_setup
 
 # setup
-MANUAL_DEBUG: bool = True
-page_header_setup(page="graph")
+MANUAL_DEBUG = True
+set_stuff.page_header_setup(page="graph")
 
 
 def debug_code_run(position: Literal["before", "after"]) -> None:
-    """Anzeige mit für Debugging"""
+    """Anzeige mit st.write() für Debugging"""
 
-    if MANUAL_DEBUG and st.session_state.get("access_lvl") == "god":
+    if MANUAL_DEBUG and gf.st_get("access_lvl") == "god":
         with st.expander(f"Debug {position}", expanded=False):
             st.plotly_chart(
-                fig_create.ploplo.timings(st.session_state["dic_exe_time"]),
+                fig_create.ploplo.timings(gf.st_get("dic_exe_time")),
                 use_container_width=True,
                 config=fig_format.plotly_config(),
             )
 
             se_st_show: list[str] = [
                 "fig_base",
-                "fig_jdl",
-                "fig_mon",
-                "metadata",
-                "dic_days",
             ]
 
             for show in se_st_show:
-                st.write(f"show: {show}")
                 if show in st.session_state:
+                    st.write(f"st.session_state['{show}']:")
                     if "fig" in show:
-                        st.write(st.session_state[show].to_dict())
+                        st.write(gf.st_get(show).to_dict())
                     else:
-                        st.write(st.session_state[show])
-
+                        st.write(gf.st_get(show))
+            st.markdown("---")
+            st.write("Session State:")
             st.write(st.session_state)
 
         st.markdown("---")
@@ -56,153 +56,149 @@ def debug_code_run(position: Literal["before", "after"]) -> None:
     st.session_state["dic_exe_time"] = {}
 
 
+@gf.lottie_spinner
+def gather_and_manipulate_data() -> cl.MetaAndDfs:
+    """Import Excel file and do stuff with the data"""
+
+    if isinstance(gf.st_get("mdf"), cl.MetaAndDfs):
+        mdf: cl.MetaAndDfs = gf.st_get("mdf")
+    else:
+        mdf: cl.MetaAndDfs = ex_in.import_prefab_excel(gf.st_get("f_up"))
+
+    # Grundeinstellungen in der sidebar
+    sm.base_settings(mdf)
+
+    if gf.st_get("but_base_settings"):
+        gf.st_delete("fig_base")
+        gf.st_delete("fig_jdl")
+        gf.st_delete("fig_mon")
+
+    # anzuzeigende Grafiken
+    sm.select_graphs(mdf)
+
+    # Außentemperatur
+    sm.meteo_sidebar("graph")
+
+    if gf.st_get("but_meteo_sidebar"):
+        if gf.st_get("cb_temp"):
+            meteo.outside_temp_graph()
+        else:
+            meteo.del_meteo()
+
+    # df mit Stundenwerten erzeugen
+    if gf.st_get("cb_h"):
+        mdf = df_man.df_h(mdf)
+
+    # df für Tagesvergleich
+    if gf.st_get("but_select_graphs") and gf.st_get("cb_days"):
+        if gf.st_get("cb_h"):
+            df_man.dic_days(mdf.df_h)
+        else:
+            df_man.dic_days(mdf.df)
+
+    # df geordnete Jahresdauerlinie
+    if gf.st_get("cb_jdl"):
+        mdf = df_man.jdl(mdf)
+
+    # df Monatswerte
+    if gf.st_get("cb_mon"):
+        mdf = df_man.mon(mdf)
+
+    gf.st_set("mdf", mdf)
+    return mdf
+
+
+@gf.lottie_spinner
+def make_graphs(mdf: cl.MetaAndDfs) -> clf.Figs:
+    """Grafiken erzeugen"""
+
+    figs: clf.Figs = gf.st_get("figs") or clf.Figs()
+
+    if gf.st_get("but_base_settings"):
+        figs.base = None
+        figs.jdl = None
+        figs.mon = None
+        figs.days = None
+
+    # Grund-Grafik
+    if figs.base is None:
+        with st.spinner('Momentle bitte - Grafik "Lastgang" wird erzeugt...'):
+            figs.base = clf.FigProp(
+                fig=fig_create.cr_fig_base(mdf), st_key=cont.FIG_KEYS.lastgang
+            )
+
+    # Jahresdauerlinie
+    if figs.jdl is None and gf.st_not_in("fig_jdl") and gf.st_get("cb_jdl"):
+        with st.spinner('Momentle bitte - Grafik "Jahresdauerlinie" wird erzeugt...'):
+            figs.jdl = clf.FigProp(
+                fig=fig_create.cr_fig_jdl(mdf), st_key=cont.FIG_KEYS.jdl
+            )
+
+    # Monatswerte
+    if figs.mon is None and gf.st_not_in("fig_mon") and gf.st_get("cb_mon"):
+        with st.spinner('Momentle bitte - Grafik "Monatswerte" wird erzeugt...'):
+            figs.mon = clf.FigProp(
+                fig=fig_create.cr_fig_mon(mdf), st_key=cont.FIG_KEYS.mon
+            )
+
+    # Tagesvergleich
+    if figs.days is None and gf.st_get("but_select_graphs") and gf.st_get("cb_days"):
+        with st.spinner('Momentle bitte - Grafik "Tagesvergleich" wird erzeugt...'):
+            figs.days = clf.FigProp(
+                fig=fig_create.cr_fig_days(mdf), st_key=cont.FIG_KEYS.days
+            )
+
+    figs.write_all_to_st()
+
+    # horizontale / vertikale Linien
+    sm.h_v_lines()
+    if gf.st_get("but_h_v_lines"):
+        fig_anno.h_v_lines()
+
+    # Ausreißerbereinigung
+    sm.clean_outliers()
+    if gf.st_get("but_clean_outliers"):
+        fig_anno.clean_outliers()
+
+    gf.st_set("figs", figs)
+    return figs
+
+
 if uauth.authentication(st.session_state["page"]):
     debug_code_run(position="before")
 
     sm.sidebar_file_upload()
 
-    if any(st.session_state.get(entry) is not None for entry in ("f_up", "df")):
-        with st_lottie_spinner(load_lottie_file("animations/bored.json"), height=400):
-            if any(entry not in st.session_state for entry in ["df", "metadata"]):
-                with st.spinner("Momentle bitte - Datei wird importiert..."):
-                    ex.import_prefab_excel(st.session_state["f_up"])
+    if any(gf.st_get(entry) is not None for entry in ("f_up", "mdf")):
+        mdf: cl.MetaAndDfs = gather_and_manipulate_data()
+        figs: clf.Figs = make_graphs(mdf)
 
-            # Grundeinstellungen in der sidebar
-            sm.base_settings()
-            if st.session_state.get("but_base_settings"):
-                for entry in (
-                    "fig_base",
-                    "fig_jdl",
-                    "fig_mon",
-                    "df_h",
-                    "df_jdl",
-                    "df_mon",
-                ):
-                    del_session_state_entry(entry)
+        tab_grafik: Any
+        tab_download: Any
+        tab_grafik, tab_download = st.tabs(["Datenauswertung", "Downloads"])
 
-            # anzuzeigende Grafiken
-            sm.select_graphs()
+        with tab_grafik:
+            # --- Darstellungsoptionen ---
+            with st.spinner("Momentle bitte - Optionen werden erzeugt..."):
+                sm.display_options_main()
+                sm.display_smooth_main()
 
-            # Außentemperatur
-            with st.sidebar, st.expander("Außentemperatur", expanded=False):
-                sm.meteo_sidebar("graph")
+                figs.update_all_figs()
+                figs.write_all_to_st()
 
-            if st.session_state.get("but_meteo_sidebar"):
-                if st.session_state.get("cb_temp"):
-                    meteo.outside_temp_graph()
-                else:
-                    meteo.del_meteo()
+            with st.spinner("Momentle bitte - Grafiken werden angezeigt..."):
+                fig_create.plot_figs(figs)
 
-            # df mit Stundenwerten erzeugen
-            if st.session_state.get("cb_h") and "df_h" not in st.session_state:
-                with st.spinner("Momentle bitte - Stundenwerte werden erzeugt..."):
-                    st.session_state["df_h"] = dfm.h_from_other(st.session_state["df"])
+        gf.st_set("figs", figs)
 
-            # df für Tagesvergleich
-            if st.session_state.get("but_select_graphs") and st.session_state.get(
-                "cb_days"
-            ):
-                if st.session_state.get("cb_h"):
-                    dfm.dic_days(st.session_state["df_h"])
-                else:
-                    dfm.dic_days(st.session_state["df"])
+        # --- Downloads ---
+        with tab_download:
+            sm.downloads()
 
-            # einzelnes Jahr
-            if (
-                len(st.session_state["years"]) == 1
-                or st.session_state.get("cb_multi_year") is False
-            ):
-                # df geordnete Jahresdauerlinie
-                if st.session_state.get("cb_jdl") and "df_jdl" not in st.session_state:
-                    with st.spinner(
-                        "Momentle bitte - Jahresdauerlinie wird erzeugt..."
-                    ):
-                        dfm.jdl(st.session_state["df"])
+    else:
+        st.info("Bitte Datei hochladen oder Beispiel auswählen")
 
-                # df Monatswerte
-                if st.session_state.get("cb_mon") and "df_mon" not in st.session_state:
-                    with st.spinner("Momentle bitte - Monatswerte werden erzeugt..."):
-                        dfm.mon(st.session_state["df"], st.session_state["metadata"])
+        st.markdown("###")
+        st.markdown("---")
 
-            # mehrere Jahre übereinander
-            else:
-                with st.spinner(
-                    "Momentle bitte - Werte werden auf Jahre aufgeteilt..."
-                ):
-                    if "dic_df_multi" not in st.session_state:
-                        dfm.df_multi_y(
-                            st.session_state["df_h"]
-                            if st.session_state.get("cb_h")
-                            else st.session_state["df"]
-                        )
-
-            # --- Grafiken erzeugen ---
-            # Grund-Grafik
-            st.session_state["lis_figs"] = ["fig_base"]
-            if "fig_base" not in st.session_state:
-                with st.spinner('Momentle bitte - Grafik "Lastgang" wird erzeugt...'):
-                    st.session_state["fig_base"] = fig_create.cr_fig_base()
-
-            # Jahresdauerlinie
-            if st.session_state.get("cb_jdl"):
-                st.session_state["lis_figs"].append("fig_jdl")
-                if "fig_jdl" not in st.session_state:
-                    with st.spinner(
-                        'Momentle bitte - Grafik "Jahresdauerlinie" wird erzeugt...'
-                    ):
-                        fig_create.cr_fig_jdl()
-
-            # Monatswerte
-            if st.session_state.get("cb_mon"):
-                st.session_state["lis_figs"].append("fig_mon")
-                if "fig_mon" not in st.session_state:
-                    with st.spinner(
-                        'Momentle bitte - Grafik "Monatswerte" wird erzeugt...'
-                    ):
-                        fig_create.cr_fig_mon()
-
-            # Tagesvergleich
-            if st.session_state.get("cb_days"):
-                st.session_state["lis_figs"].append("fig_days")
-                if st.session_state.get("but_select_graphs"):
-                    with st.spinner(
-                        'Momentle bitte - Grafik "Tagesvergleich" wird erzeugt...'
-                    ):
-                        fig_create.cr_fig_days()
-
-            # horizontale / vertikale Linien
-            sm.h_v_lines()
-            if st.session_state.get("but_h_v_lines"):
-                fig_anno.h_v_lines()
-
-            # Ausreißerbereinigung
-            sm.clean_outliers()
-            if st.session_state.get("but_clean_outliers"):
-                fig_anno.clean_outliers()
-
-            tab_grafik: Any
-            tab_download: Any
-            tab_grafik, tab_download = st.tabs(["Datenauswertung", "Downloads"])
-
-            with tab_grafik:
-                # --- Darstellungsoptionen ---
-                with st.spinner("Momentle bitte - Optionen werden erzeugt..."):
-                    sm.display_options_main()
-                    sm.display_smooth_main()
-
-                    for fig in st.session_state["lis_figs"]:
-                        st.session_state[fig] = fig_format.update_main(
-                            st.session_state[fig]
-                        )
-
-                with st.spinner("Momentle bitte - Grafiken werden angezeigt..."):
-                    fig_create.plot_figs()
-
-            # --- Downloads ---
-            with tab_download:
-                sm.downloads()
-
-            debug_code_run(position="after")
-
-            st.markdown("###")
-            st.markdown("---")
+    debug_code_run(position="after")

@@ -7,7 +7,7 @@ import numpy as np
 import polars as pl
 from loguru import logger
 
-from modules import classes_data as cl
+from modules import classes_data as cld
 from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
@@ -113,7 +113,7 @@ def interpolate_missing_data(df: pl.DataFrame, method: str = "akima") -> pl.Data
 
 
 def split_multi_years(
-    mdf: cl.MetaAndDfs, frame_to_split: Literal["df", "df_h", "mon"]
+    mdf: cld.MetaAndDfs, frame_to_split: Literal["df", "df_h", "mon"]
 ) -> dict[int, pl.DataFrame]:
     """Split into multiple years"""
 
@@ -159,7 +159,7 @@ def multi_year_column_rename(df: pl.DataFrame, year: int) -> dict[str, str]:
 
 
 @gf.func_timer
-def df_h(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
+def df_h(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Stundenwerte aus anderer zeitlicher Auflösung"""
 
     cols: list[str] = [
@@ -198,7 +198,7 @@ def df_h(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
 
 
 @gf.func_timer
-def jdl(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
+def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Jahresdauerlinie"""
 
     mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h(mdf)
@@ -247,7 +247,7 @@ def jdl(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
 
 
 @gf.func_timer
-def mon(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
+def mon(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Monatswerte"""
 
     mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h(mdf)
@@ -288,7 +288,7 @@ def mon(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
 
 # !!! MUSS NOCH ÜBERARBEITET WERDEN !!!
 @gf.func_timer
-def dic_days(mdf: cl.MetaAndDfs) -> None:
+def dic_days(mdf: cld.MetaAndDfs) -> None:
     """Create Dictionary for Days"""
 
     gf.st_set("dic_days", {})

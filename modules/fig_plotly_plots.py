@@ -9,7 +9,7 @@ import streamlit as st
 from geopy import distance
 from loguru import logger
 
-from modules import classes_data as cl
+from modules import classes_data as cld
 from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
@@ -21,7 +21,9 @@ if TYPE_CHECKING:
 
 @gf.func_timer
 def line_plot(
-    mdf: cl.MetaAndDfs, data_frame: Literal["df", "df_h", "jdl", "mon"] = "df", **kwargs
+    mdf: cld.MetaAndDfs,
+    data_frame: Literal["df", "df_h", "jdl", "mon"] = "df",
+    **kwargs,
 ) -> go.Figure:
     """Liniengrafik für Daten eines einzelnen Jahres
 
@@ -58,7 +60,7 @@ def line_plot(
 
     for line in [lin for lin in lines if gf.check_if_not_exclude(lin)]:
         line_data: pl.Series = df.get_column(line)
-        line_meta: cl.MetaLine = mdf.meta.get_line_by_name(line)
+        line_meta: cld.MetaLine = mdf.meta.get_line_by_name(line)
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
 
         logger.info(f"line: {line}, line_org: {line_meta.name_orgidx}")
@@ -106,7 +108,7 @@ def line_plot(
 # Lastgang mehrerer Jahre übereinander darstellen
 @gf.func_timer
 def line_plot_y_overlay(
-    mdf: cl.MetaAndDfs,
+    mdf: cld.MetaAndDfs,
     data_frame: Literal["df_multi", "df_h_multi", "mon_multi"] = "df_multi",
     **kwargs,
 ) -> go.Figure:
@@ -149,7 +151,7 @@ def line_plot_y_overlay(
     for line in lines:
         year: int = [year for year in mdf.meta.years if str(year) in line][0]
         line_data: pl.Series = dic_df[year].get_column(line)
-        line_meta: cl.MetaLine = mdf.meta.get_line_by_name(line)
+        line_meta: cld.MetaLine = mdf.meta.get_line_by_name(line)
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
         trace_unit: str | None = (
             line_meta.unit_h if data_frame == "df_multi" else line_meta.unit
@@ -330,7 +332,7 @@ def map_weatherstations() -> go.Figure:
     """Karte der Wetterstationen (verwendete hervorgehoben)"""
 
     # alle Stationen ohne Duplikate
-    all_sta = meteo.meteostat_stations()
+    all_sta = meteo.meteo_stations()
 
     # nächstgelegene Station
     clo_sta = all_sta[all_sta.index == all_sta.index[0]].copy()

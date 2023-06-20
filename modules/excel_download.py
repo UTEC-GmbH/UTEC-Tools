@@ -7,14 +7,14 @@ import polars as pl
 import xlsxwriter
 
 from modules import classes_constants as clc
-from modules import classes_data as cl
+from modules import classes_data as cld
 from modules import constants as cont
 from modules import general_functions as gf
 
 
 @gf.func_timer
 def excel_download(
-    df: pl.DataFrame, meta: cl.MetaData, page_short: str = "graph"
+    df: pl.DataFrame, meta: cld.MetaData, page_short: str = "graph"
 ) -> bytes:
     """Download data as an Excel file.
 
@@ -63,7 +63,7 @@ def format_worksheet(
     workbook: Any,
     worksheet: Any,
     df: pl.DataFrame,
-    meta: cl.MetaData,
+    meta: cld.MetaData,
     **kwargs: Any,
 ) -> None:
     """Edit the formatting of the worksheet in the output excel-file

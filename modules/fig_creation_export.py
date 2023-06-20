@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from loguru import logger
 
-from modules import classes_data as cl
+from modules import classes_data as cld
 from modules import classes_figs as clf
 from modules import constants as cont
 from modules import fig_annotations as fig_anno
@@ -20,7 +20,7 @@ from modules import general_functions as gf
 
 # Grund-Grafik
 @gf.func_timer
-def cr_fig_base(mdf: cl.MetaAndDfs) -> go.Figure:
+def cr_fig_base(mdf: cld.MetaAndDfs) -> go.Figure:
     """Lastgang erstellen"""
 
     min_amount_vals: int = 20
@@ -87,7 +87,7 @@ def cr_fig_base(mdf: cl.MetaAndDfs) -> go.Figure:
 
 
 @gf.func_timer
-def cr_fig_jdl(mdf: cl.MetaAndDfs) -> go.Figure:
+def cr_fig_jdl(mdf: cld.MetaAndDfs) -> go.Figure:
     """Jahresdauerlinie erstellen"""
 
     tit: str = f"{cont.FIG_TITLES.jdl}{cont.SUFFIXES.fig_tit_h}"
@@ -132,7 +132,7 @@ def cr_fig_jdl(mdf: cl.MetaAndDfs) -> go.Figure:
 
 
 @gf.func_timer
-def cr_fig_mon(mdf: cl.MetaAndDfs) -> go.Figure:
+def cr_fig_mon(mdf: cld.MetaAndDfs) -> go.Figure:
     """Monatswerte erstellen"""
 
     if gf.st_get("cb_multi_year"):
@@ -181,7 +181,7 @@ def cr_fig_mon(mdf: cl.MetaAndDfs) -> go.Figure:
 
 
 @gf.func_timer
-def cr_fig_days(mdf: cl.MetaAndDfs) -> None:
+def cr_fig_days(mdf: cld.MetaAndDfs) -> None:
     """Tagesvergleiche"""
     if not gf.st_get("cb_days"):
         return

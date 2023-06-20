@@ -2,6 +2,7 @@
 
 import pprint
 from dataclasses import dataclass
+from datetime import datetime as dt
 from typing import Any, Literal
 
 import polars as pl
@@ -10,6 +11,14 @@ from modules import classes_constants as clc
 from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
+
+
+@dataclass
+class TimeSpan:
+    """Start- und Endzeit"""
+
+    start: dt
+    end: dt
 
 
 @dataclass

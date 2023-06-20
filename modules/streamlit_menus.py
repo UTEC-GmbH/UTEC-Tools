@@ -9,7 +9,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from modules import classes_data as cl
+from modules import classes_data as cld
 from modules import constants as cont
 from modules import excel_download as ex
 from modules import fig_creation_export as fig_cr
@@ -207,7 +207,7 @@ def sidebar_file_upload() -> Any:
 
 
 @gf.func_timer
-def base_settings(mdf: cl.MetaAndDfs) -> None:
+def base_settings(mdf: cld.MetaAndDfs) -> None:
     """Grundeinstellungen (Stundenwerte, JDL, Monatswerte)"""
 
     if not mdf.meta.td_mnts:
@@ -252,7 +252,7 @@ def base_settings(mdf: cl.MetaAndDfs) -> None:
 
 
 @gf.func_timer
-def select_graphs(mdf: cl.MetaAndDfs) -> None:
+def select_graphs(mdf: cld.MetaAndDfs) -> None:
     """Auswahl der anzuzeigenden Grafiken"""
     with st.sidebar, st.expander("anzuzeigende Grafiken", expanded=False), st.form(
         "anzuzeigende Grafiken"

@@ -5,7 +5,7 @@ from typing import Any, Literal
 
 import streamlit as st
 
-from modules import classes_data as cl
+from modules import classes_data as cld
 from modules import classes_figs as clf
 from modules import constants as cont
 from modules import df_manipulation as df_man
@@ -57,13 +57,13 @@ def debug_code_run(position: Literal["before", "after"]) -> None:
 
 
 @gf.lottie_spinner
-def gather_and_manipulate_data() -> cl.MetaAndDfs:
+def gather_and_manipulate_data() -> cld.MetaAndDfs:
     """Import Excel file and do stuff with the data"""
 
-    if isinstance(gf.st_get("mdf"), cl.MetaAndDfs):
-        mdf: cl.MetaAndDfs = gf.st_get("mdf")
+    if isinstance(gf.st_get("mdf"), cld.MetaAndDfs):
+        mdf: cld.MetaAndDfs = gf.st_get("mdf")
     else:
-        mdf: cl.MetaAndDfs = ex_in.import_prefab_excel(gf.st_get("f_up"))
+        mdf: cld.MetaAndDfs = ex_in.import_prefab_excel(gf.st_get("f_up"))
 
     # Grundeinstellungen in der sidebar
     sm.base_settings(mdf)
@@ -109,7 +109,7 @@ def gather_and_manipulate_data() -> cl.MetaAndDfs:
 
 
 @gf.lottie_spinner
-def make_graphs(mdf: cl.MetaAndDfs) -> clf.Figs:
+def make_graphs(mdf: cld.MetaAndDfs) -> clf.Figs:
     """Grafiken erzeugen"""
 
     figs: clf.Figs = gf.st_get("figs") or clf.Figs()
@@ -170,7 +170,7 @@ if uauth.authentication(st.session_state["page"]):
     sm.sidebar_file_upload()
 
     if any(gf.st_get(entry) is not None for entry in ("f_up", "mdf")):
-        mdf: cl.MetaAndDfs = gather_and_manipulate_data()
+        mdf: cld.MetaAndDfs = gather_and_manipulate_data()
         figs: clf.Figs = make_graphs(mdf)
 
         tab_grafik: Any

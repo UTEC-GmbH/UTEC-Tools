@@ -8,7 +8,7 @@ import polars as pl
 from loguru import logger
 
 from modules import classes_constants as clc
-from modules import classes_data as cl
+from modules import classes_data as cld
 from modules import constants as cont
 from modules import df_manipulation as df_man
 from modules import general_functions as gf
@@ -18,7 +18,7 @@ TEST_FILE = "example_files/Stromlastgang - mehrere Jahre.xlsx"
 
 
 @gf.func_timer
-def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cl.MetaAndDfs:
+def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
     """Import and download Excel files.
 
     Args:
@@ -47,12 +47,12 @@ def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cl.MetaAndDfs:
     df = rename_columns(df, mark_index)
 
     # extract units
-    meta: cl.MetaData = meta_units(df, mark_index, mark_units)
+    meta: cld.MetaData = meta_units(df, mark_index, mark_units)
 
     # clean up DataFrame
     df = clean_up_df(df, mark_index)
 
-    mdf: cl.MetaAndDfs = cl.MetaAndDfs(meta, df)
+    mdf: cld.MetaAndDfs = cld.MetaAndDfs(meta, df)
     # meta data if obis code in column title
     mdf = meta_from_obis(mdf)
 
@@ -135,7 +135,7 @@ def rename_columns(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
     return df
 
 
-def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cl.MetaData:
+def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cld.MetaData:
     """Get units for dataclass"""
 
     units: dict[str, str] = (
@@ -147,9 +147,9 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cl.MetaDat
     # leerzeichen vor Einheit
     units = {line: f" {unit.strip()}" for line, unit in units.items()}
 
-    meta: cl.MetaData = cl.MetaData(
+    meta: cld.MetaData = cld.MetaData(
         lines=[
-            cl.MetaLine(
+            cld.MetaLine(
                 name=line,
                 name_orgidx=(
                     f"{line}{cont.SUFFIXES.col_original_index}"
@@ -168,7 +168,7 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cl.MetaDat
     return meta
 
 
-def meta_number_format(mdf: cl.MetaAndDfs) -> cl.MetaData:
+def meta_number_format(mdf: cld.MetaAndDfs) -> cld.MetaData:
     """Define Number Formats for Excel-Export"""
 
     # cut-off for decimal places
@@ -273,7 +273,7 @@ def clean_up_daylight_savings(df: pl.DataFrame, mark_index: str) -> CleanUpDLS:
     return CleanUpDLS(df_clean=df_clean, df_deleted=df_deleted)
 
 
-def temporal_metadata(mdf: cl.MetaAndDfs, mark_index: str) -> cl.MetaAndDfs:
+def temporal_metadata(mdf: cld.MetaAndDfs, mark_index: str) -> cld.MetaAndDfs:
     """Get information about the time index."""
 
     if not mdf.df.get_column(mark_index).is_temporal():
@@ -301,7 +301,7 @@ def temporal_metadata(mdf: cl.MetaAndDfs, mark_index: str) -> cl.MetaAndDfs:
     return mdf
 
 
-def meta_from_obis(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
+def meta_from_obis(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Update meta data and column name if there is an obis code in a column title.
 
     If there's an OBIS-code (e.g. 1-1:1.29.0), the following meta data is edited:
@@ -336,7 +336,7 @@ def meta_from_obis(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
     return mdf
 
 
-def convert_15min_kwh_to_kw(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
+def convert_15min_kwh_to_kw(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Falls die Daten als 15-Minuten-Daten vorliegen,
     wird geprüft ob es sich um Verbrauchsdaten handelt.
     Falls dem so ist, werden sie mit 4 multipliziert um
@@ -378,9 +378,9 @@ def convert_15min_kwh_to_kw(mdf: cl.MetaAndDfs) -> cl.MetaAndDfs:
 
 def rename_column_arbeit_leistung(
     original_data_type: Literal["Arbeit", "Leistung"],
-    mdf: cl.MetaAndDfs,
+    mdf: cld.MetaAndDfs,
     col: str,
-) -> cl.MetaAndDfs:
+) -> cld.MetaAndDfs:
     """Wenn Daten als Arbeit oder Leistung in 15-Minuten-Auflösung
     vorliegen, wird die Originalspalte umbenannt (mit Suffix "Arbeit" oder "Leistung")
     und in den Metadaten ein Eintrag für den neuen Spaltennamen eingefügt.
@@ -404,9 +404,9 @@ def rename_column_arbeit_leistung(
 
 def insert_column_arbeit_leistung(
     original_data: Literal["Arbeit", "Leistung"],
-    mdf: cl.MetaAndDfs,
+    mdf: cld.MetaAndDfs,
     col: str,
-) -> cl.MetaAndDfs:
+) -> cld.MetaAndDfs:
     """Wenn Daten als Arbeit oder Leistung in 15-Minuten-Auflösung
     vorliegen, wird eine neue Spalte mit dem jeweils andern Typ eingefügt.
 

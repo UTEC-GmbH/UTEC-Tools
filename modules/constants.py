@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Literal
 
 from modules import classes_constants as clc
+from wetterdienst.provider.dwd.observation import DwdObservationRequest
 
 REPO_NAME: str = "UTEC-Tools"
 
@@ -206,6 +207,7 @@ ST_PAGES: clc.StPages = clc.StPages(
 
 # Umkreis für Meteostat-Stationen in Kilometern
 WEATHERSTATIONS_MAX_DISTANCE = 700
+
 
 # Parameter, die standardmäßig für den Download ausgewählt sind
 METEO_DEFAULT_PARAMETER: list = [

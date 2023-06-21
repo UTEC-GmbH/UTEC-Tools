@@ -135,14 +135,6 @@ class StPages:
 
 
 @dataclass
-class DWDParameter:
-    """Properties of DWD Parameter"""
-
-    long_name: str
-    unit: str = field(init=False)
-
-
-@dataclass
 class MeteoParameter:
     """Properties of Meteo Codes"""
 

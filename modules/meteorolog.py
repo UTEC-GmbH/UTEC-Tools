@@ -25,34 +25,42 @@ from modules import general_functions as gf
 Settings(ts_skip_empty=True, ts_skip_threshold=0.90)
 
 
-def list_all_parameters() -> list[str]:
+def list_all_parameters() -> list[cld.DWDParameter]:
     """List of all availabel DWD-parameters
 
     (including parameters that a specific station might not have data for)
     """
+    all_resolutions: list[str] = list(DwdObservationRequest.discover().keys())
+    all_parameters: list[cld.DWDParameter] = []
+    for res in all_resolutions:
+        for param in DwdObservationRequest.discover()[res]:
+            if param not in [par.name for par in all_parameters]:
+                all_parameters += [
+                    cld.DWDParameter(
+                        name=param,
+                        available_resolutions=[res],
+                        unit=DwdObservationRequest.discover()[res][param]["origin"],
+                    )
+                ]
+            else:
+                for par in all_parameters:
+                    if par.name == param:
+                        par.available_resolutions += [res]
 
-    pars: list[str] = []
-    for val in DwdObservationRequest.discover().values():
-        pars += list(val.keys())
-    pars = list(set(pars))
-
-    logger.info(f"Es stehen {len(pars)} Parameter zur Verfügung")
-
-    return pars
-
-
-def list_all_resolutions() -> list[str]:
-    """List of all available temporal resolutions"""
-    return list(DwdObservationRequest.discover().keys())
+    return all_parameters
 
 
 def start_end_time(**kwargs) -> cld.TimeSpan:
     """Zeitraum für Daten-Download"""
 
-    page: str = str(kwargs.get("page")) or gf.st_get("page")
+    page: str = kwargs.get("page") or gf.st_get("page") or "test"
     mdf: cld.MetaAndDfs | None = kwargs.get("mdf") or gf.st_get("mdf")
 
-    if page == "meteo":
+    if page == "test":
+        start_time = dt(2020, 1, 1)
+        end_time = dt(2020, 12, 31)
+
+    elif page == "meteo":
         start_year: int = (
             min(
                 gf.st_get("meteo_start_year"),
@@ -102,6 +110,32 @@ def geo_locate(address: str = "Bremen") -> geopy.Location:
     return location
 
 
+def check_parameter_availability(parameter: str, resolution: str) -> None:
+    """Check if a parameter name is valid
+    and if it's available in the requested resolution
+    """
+
+    if parameter not in [par.name for par in list_all_parameters()]:
+        logger.critical(f"Parameter '{parameter}' is not a valid DWD-Parameter!")
+        raise cle.NoDWDParameterError(parameter)
+
+    available_resolutions: list[str] = gf.flatten_list_of_lists(
+        [
+            par.available_resolutions
+            for par in list_all_parameters()
+            if par.name == parameter
+        ]
+    )
+    if resolution not in available_resolutions:
+        logger.critical(
+            f"Parameter '{parameter}' not available in '{resolution}' resolution! \n"
+            f"Available resolutions are: {available_resolutions}"
+        )
+        raise cle.NotAvailableInResolutionError(
+            parameter, resolution, available_resolutions
+        )
+
+
 @gf.func_timer
 def meteo_stations(
     address: str = "Bremen",
@@ -132,9 +166,6 @@ def meteo_stations(
             'state',
             'distance'
     """
-    if parameter not in list_all_parameters():
-        logger.critical(f"Parameter '{parameter}' is not a valid DWD-Parameter!")
-        raise ValueError
 
     time_span: cld.TimeSpan = start_end_time(page=gf.st_get("page"))
     location: geopy.Location = geo_locate(address)
@@ -167,63 +198,65 @@ def meteo_stations(
     return stations
 
 
-def closest_station_per_param(
-    resolution: str, address: str, parameters: list[str]
-) -> dict[str, list[str]]:
-    """Returns a dictionary of the closest station for each parameter.
-
-    key: station id
-    value: list of parameters the station has data for
-    """
-    stations: dict[str, list[str]] = {}
-    for parameter in parameters:
-        closest_station_id: str = meteo_stations(address, parameter, resolution)[0][
-            "station_id"
-        ]
-        if closest_station_id in stations:
-            stations[closest_station_id] += [parameter]
-        else:
-            stations[closest_station_id] = [parameter]
-
-    return stations
-
-
 @gf.func_timer
-def meteo_data() -> pd.DataFrame:
+def collect_meteo_data() -> list[cld.DWDParameter]:
     """Meteorologische Daten für die ausgewählten Parameter"""
 
-    parameters: list[str] = gf.st_get("ms_meteo_params") or ["temperature_air_mean_200"]
-    resolution: str = gf.st_get("sb_meteo_resolution") or "hourly"
+    time_res: str = gf.st_get("sb_meteo_resolution") or "hourly"
     address: str = gf.st_get("ti_address") or "Bremen"
+    time_span: cld.TimeSpan = start_end_time()
 
-    stations_parameters: dict[str, list[str]] = closest_station_per_param(
-        resolution=resolution, address=address, parameters=parameters
-    )
+    parameters: list[str] = gf.st_get("ms_meteo_params") or [
+        "temperature_air_mean_200",
+        "precipitation_height",
+    ]
+    for parameter in parameters:
+        check_parameter_availability(parameter, time_res)
 
-    met_data = {}
-    for station in set_used_stations:
-        station_provider = station.split("_")[0]
-        station_id = station.split("_")[1]
-        ren = {}
+    params: list[cld.DWDParameter] = [
+        par for par in list_all_parameters() if par.name in parameters
+    ]
 
-        met_data[station_id] = meteostat_data_by_stationid(station_id)
+    for par in params:
+        par.closest_station_id = str(
+            pl.first(meteo_stations(address, par.name, time_res)["station_id"])
+        )
+        par.resolution = time_res
+        par.data_frame = (
+            DwdObservationRequest(  # noqa: PD011
+                parameter=par.name,
+                resolution=time_res,
+                start_date=time_span.start,
+                end_date=time_span.end,
+            )
+            .filter_by_station_id((par.closest_station_id,))
+            .values.all()
+            .df
+        )
 
-        for col in met_data[station_id]:
-            ren[col] = DIC_METEOSTAT_CODES[col.upper()]["tit"]
-        met_data[station_id].rename(columns=ren, inplace=True)
+    return params
 
-    df = pd.DataFrame()
-    for par in lis_sel_params:
-        station_id = par.closest_station_id.split("_")[1]
-        for col in met_data[station_id]:
-            if col in [param.tit_de for param in lis_sel_params]:
-                df[col] = met_data[station_id][col]
 
-    df = df[df.index >= start_time.replace(tzinfo=None)]
-    df = df[df.index <= end_time.replace(tzinfo=None)]
+def meteo_df() -> pl.DataFrame:
+    """Put all parameter date in one data frame"""
+    params: list[cld.DWDParameter] = collect_meteo_data()
 
-    # df = dls(df)[0]
-    st.session_state["meteo_data"] = df
+    df: pl.DataFrame = pl.DataFrame()
+    for param in params:
+        if param.data_frame is not None:
+            df = df.with_columns(
+                [
+                    pl.Series(
+                        name=param.name, values=param.data_frame.get_column("value")
+                    ),
+                    pl.Series(
+                        name=f"{param.name} - date",
+                        values=param.data_frame.get_column("date").dt.replace_time_zone(
+                            None
+                        ),
+                    ),
+                ]
+            )
 
     return df
 

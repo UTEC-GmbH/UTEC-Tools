@@ -115,6 +115,11 @@ def st_delete(key: str) -> None:
         logger.warning(f"st.session_state Eintrag {key} gelöscht")
 
 
+def flatten_list_of_lists(list_of_lists: list[list]) -> list:
+    """Flatten a list of lists"""
+    return [item for sublist in list_of_lists for item in sublist]
+
+
 def load_lottie_file(path: str) -> dict:
     """Load a Lottie-animation by providing a json-file.
 

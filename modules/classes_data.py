@@ -22,6 +22,18 @@ class TimeSpan:
 
 
 @dataclass
+class DWDParameter:
+    """Properties of DWD Parameter"""
+
+    name: str
+    available_resolutions: list[str]
+    unit: str
+    closest_station_id: str | None = None
+    resolution: str | None = None
+    data_frame: pl.DataFrame | None = None
+
+
+@dataclass
 class MetaLine:
     """Class for meta data of lines (traces)"""
 

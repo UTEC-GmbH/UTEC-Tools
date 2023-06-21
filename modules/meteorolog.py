@@ -5,7 +5,6 @@ from datetime import datetime as dt
 from typing import Any
 
 import geopy
-import pandas as pd
 import plotly.graph_objects as go
 import polars as pl
 import streamlit as st
@@ -25,27 +24,23 @@ from modules import general_functions as gf
 Settings(ts_skip_empty=True, ts_skip_threshold=0.90)
 
 
-def list_all_parameters() -> list[cld.DWDParameter]:
-    """List of all availabel DWD-parameters
+def get_all_parameters() -> dict[str, cld.DWDParameter]:
+    """Dictionary with all availabel DWD-parameters (key = parameter name).
 
     (including parameters that a specific station might not have data for)
     """
     all_resolutions: list[str] = list(DwdObservationRequest.discover().keys())
-    all_parameters: list[cld.DWDParameter] = []
+    all_parameters: dict[str, cld.DWDParameter] = {}
     for res in all_resolutions:
         for param in DwdObservationRequest.discover()[res]:
-            if param not in [par.name for par in all_parameters]:
-                all_parameters += [
-                    cld.DWDParameter(
-                        name=param,
-                        available_resolutions=[res],
-                        unit=DwdObservationRequest.discover()[res][param]["origin"],
-                    )
-                ]
+            if param not in all_parameters:
+                all_parameters[param] = cld.DWDParameter(
+                    name=param,
+                    available_resolutions=[res],
+                    unit=DwdObservationRequest.discover()[res][param]["origin"],
+                )
             else:
-                for par in all_parameters:
-                    if par.name == param:
-                        par.available_resolutions += [res]
+                all_parameters[param].available_resolutions += [res]
 
     return all_parameters
 
@@ -79,8 +74,8 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
             else 2020
         )
 
-        start_time = dt(start_year, 1, 1, 0, 0)  # , tzinfo=ZoneInfo("Europe/Berlin"))
-        end_time = dt(end_year, 12, 31, 23, 59)  # , tzinfo=ZoneInfo("Europe/Berlin"))
+        start_time = dt(start_year, 1, 1, 0, 0)
+        end_time = dt(end_year, 12, 31, 23, 59)
         if end_time.year == dt.now().year:
             end_time = dt.now()
 
@@ -114,26 +109,18 @@ def check_parameter_availability(parameter: str, resolution: str) -> None:
     """Check if a parameter name is valid
     and if it's available in the requested resolution
     """
-
-    if parameter not in [par.name for par in list_all_parameters()]:
+    all_params: dict[str, cld.DWDParameter] = get_all_parameters()
+    if parameter not in all_params:
         logger.critical(f"Parameter '{parameter}' is not a valid DWD-Parameter!")
         raise cle.NoDWDParameterError(parameter)
 
-    available_resolutions: list[str] = gf.flatten_list_of_lists(
-        [
-            par.available_resolutions
-            for par in list_all_parameters()
-            if par.name == parameter
-        ]
-    )
-    if resolution not in available_resolutions:
+    res_available: list[str] = all_params[parameter].available_resolutions
+    if resolution not in res_available:
         logger.critical(
             f"Parameter '{parameter}' not available in '{resolution}' resolution! \n"
-            f"Available resolutions are: {available_resolutions}"
+            f"Available resolutions are: {res_available}"
         )
-        raise cle.NotAvailableInResolutionError(
-            parameter, resolution, available_resolutions
-        )
+        raise cle.NotAvailableInResolutionError(parameter, resolution, res_available)
 
 
 @gf.func_timer
@@ -213,9 +200,7 @@ def collect_meteo_data() -> list[cld.DWDParameter]:
     for parameter in parameters:
         check_parameter_availability(parameter, time_res)
 
-    params: list[cld.DWDParameter] = [
-        par for par in list_all_parameters() if par.name in parameters
-    ]
+    params: list[cld.DWDParameter] = [get_all_parameters()[par] for par in parameters]
 
     for par in params:
         par.closest_station_id = str(
@@ -264,78 +249,78 @@ def meteo_df() -> pl.DataFrame:
 # ---------------------------------------------------------------------------
 
 
-@gf.func_timer
-def outside_temp_graph() -> None:
-    """
-    Außentemperatur in df für Grafiken eintragen
-    """
-    page = gf.st_get("page")
-    if "graph" not in page:
-        return
+# @gf.func_timer
+# def outside_temp_graph() -> None:
+#     """
+#     Außentemperatur in df für Grafiken eintragen
+#     """
+#     page = gf.st_get("page")
+#     if "graph" not in page:
+#         return
 
-    st.session_state["lis_sel_params"] = [ClassParam("temperature_air_mean_200")]
-    if "meteo_data" not in st.session_state:
-        meteo_data()
-    st.session_state["meteo_data"].rename(
-        columns={"Lufttemperatur in 2 m Höhe": "temp"}, inplace=True
-    )
+#     st.session_state["lis_sel_params"] = [ClassParam("temperature_air_mean_200")]
+#     if "meteo_data" not in st.session_state:
+#         meteo_data()
+#     st.session_state["meteo_data"].rename(
+#         columns={"Lufttemperatur in 2 m Höhe": "temp"}, inplace=True
+#     )
 
-    st.session_state["df_temp"] = st.session_state["meteo_data"]["temp"]
+#     st.session_state["df_temp"] = st.session_state["meteo_data"]["temp"]
 
-    st.session_state["metadata"]["Temperatur"] = {
-        "tit": "Temperatur",
-        "orig_tit": "temp",
-        "unit": " °C",
-        "unit": " °C",
-    }
-    if "Temperatur" in st.session_state["df"].columns:
-        st.session_state["df"].drop(columns=["Temperatur"], inplace=True)
+#     st.session_state["metadata"]["Temperatur"] = {
+#         "tit": "Temperatur",
+#         "orig_tit": "temp",
+#         "unit": " °C",
+#         "unit": " °C",
+#     }
+#     if "Temperatur" in st.session_state["df"].columns:
+#         st.session_state["df"].drop(columns=["Temperatur"], inplace=True)
 
-    df = pd.concat(
-        [
-            st.session_state["df"],
-            st.session_state["df_temp"].reindex(st.session_state["df"].index),
-        ],
-        axis=1,
-    )
-    df.rename(columns={"temp": "Temperatur"}, inplace=True)
-    units()
+#     df = pd.concat(
+#         [
+#             st.session_state["df"],
+#             st.session_state["df_temp"].reindex(st.session_state["df"].index),
+#         ],
+#         axis=1,
+#     )
+#     df.rename(columns={"temp": "Temperatur"}, inplace=True)
+#     units()
 
-    if gf.st_get("cb_h") is False:
-        df["Temperatur"] = df["Temperatur"].interpolate(method="akima", axis="index")
+#     if gf.st_get("cb_h") is False:
+#         df["Temperatur"] = df["Temperatur"].interpolate(method="akima", axis="index")
 
-    st.session_state["df"] = df
+#     st.session_state["df"] = df
 
 
-@gf.func_timer
-def del_meteo() -> None:
-    """vorhandene meteorologische Daten löschen"""
-    # Spalten in dfs löschen
-    for key in st.session_state:
-        if isinstance(st.session_state[key], pd.DataFrame):
-            for col in st.session_state[key].columns:
-                for meteo in [
-                    str(DIC_METEOSTAT_CODES[code]["tit"])
-                    for code in DIC_METEOSTAT_CODES
-                ]:
-                    if meteo in col:
-                        st.session_state[key].drop(columns=[str(col)], inplace=True)
+# @gf.func_timer
+# def del_meteo() -> None:
+#     """vorhandene meteorologische Daten löschen"""
+#     # Spalten in dfs löschen
+#     for key in st.session_state:
+#         if isinstance(st.session_state[key], pd.DataFrame):
+#             for col in st.session_state[key].columns:
+#                 for meteo in [
+#                     str(DIC_METEOSTAT_CODES[code]["tit"])
+#                     for code in DIC_METEOSTAT_CODES
+#                 ]:
+#                     if meteo in col:
+#                         st.session_state[key].drop(columns=[str(col)], inplace=True)
 
-    # Metadaten löschen
-    if gf.st_get("metadata"):
-        if "Temperatur" in st.session_state["metadata"].keys():
-            del st.session_state["metadata"]["Temperatur"]
-        if (
-            " °C"
-            not in [
-                st.session_state["metadata"][key].get("unit")
-                for key in st.session_state["metadata"].keys()
-            ]
-            and " °C" in st.session_state["metadata"]["units"]["set"]
-        ):
-            st.session_state["metadata"]["units"]["set"].remove(" °C")
+#     # Metadaten löschen
+#     if gf.st_get("metadata"):
+#         if "Temperatur" in st.session_state["metadata"].keys():
+#             del st.session_state["metadata"]["Temperatur"]
+#         if (
+#             " °C"
+#             not in [
+#                 st.session_state["metadata"][key].get("unit")
+#                 for key in st.session_state["metadata"].keys()
+#             ]
+#             and " °C" in st.session_state["metadata"]["units"]["set"]
+#         ):
+#             st.session_state["metadata"]["units"]["set"].remove(" °C")
 
-    # Linien löschen
-    for key in st.session_state:
-        if isinstance(st.session_state[key], go.Figure):
-            gf.st_delete(key)
+#     # Linien löschen
+#     for key in st.session_state:
+#         if isinstance(st.session_state[key], go.Figure):
+#             gf.st_delete(key)

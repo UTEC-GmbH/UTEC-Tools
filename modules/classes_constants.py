@@ -4,6 +4,7 @@ import pprint
 import re
 from dataclasses import dataclass, field
 from typing import TypedDict
+import polars as pl
 
 from loguru import logger
 

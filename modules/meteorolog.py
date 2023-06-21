@@ -7,7 +7,6 @@ from typing import Any
 import geopy
 import plotly.graph_objects as go
 import polars as pl
-import streamlit as st
 from geopy.geocoders import Nominatim
 from loguru import logger
 from wetterdienst import Settings
@@ -26,21 +25,21 @@ Settings(ts_skip_empty=True, ts_skip_threshold=0.90)
 
 def get_all_parameters() -> dict[str, cld.DWDParameter]:
     """Dictionary with all availabel DWD-parameters (key = parameter name).
-
     (including parameters that a specific station might not have data for)
     """
-    all_resolutions: list[str] = list(DwdObservationRequest.discover().keys())
+
+    discover: dict = DwdObservationRequest.discover()
     all_parameters: dict[str, cld.DWDParameter] = {}
-    for res in all_resolutions:
-        for param in DwdObservationRequest.discover()[res]:
-            if param not in all_parameters:
+    for res, params in discover.items():
+        for param in params:
+            if not all_parameters.get(param):
                 all_parameters[param] = cld.DWDParameter(
                     name=param,
                     available_resolutions=[res],
-                    unit=DwdObservationRequest.discover()[res][param]["origin"],
+                    unit=discover[res][param].get("origin"),
                 )
             else:
-                all_parameters[param].available_resolutions += [res]
+                all_parameters[param].available_resolutions.append(res)
 
     return all_parameters
 
@@ -61,17 +60,14 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
                 gf.st_get("meteo_start_year"),
                 gf.st_get("meteo_end_year"),
             )
-            if gf.st_in(["meteo_start_year", "meteo_end_year"]) in st.session_state
-            else 2020
+            or 2020
         )
-
         end_year: int = (
-            min(
+            max(
                 gf.st_get("meteo_start_year"),
                 gf.st_get("meteo_end_year"),
             )
-            if gf.st_in(["meteo_start_year", "meteo_end_year"]) in st.session_state
-            else 2020
+            or 2020
         )
 
         start_time = dt(start_year, 1, 1, 0, 0)
@@ -84,7 +80,7 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
         start_time: dt = index.min()
         end_time: dt = index.max()
     else:
-        raise TypeError
+        raise ValueError
 
     return cld.TimeSpan(start=start_time, end=end_time)
 
@@ -97,8 +93,8 @@ def geo_locate(address: str = "Bremen") -> geopy.Location:
     if user_agent_secret is None:
         raise cle.SecretNotFoundError(entry="GEO_USER_AGENT")
 
-    geolocator: Any = Nominatim(user_agent=user_agent_secret)
-    location: geopy.Location = geolocator.geocode(address)
+    geolocator: Nominatim = Nominatim(user_agent=user_agent_secret)
+    location: geopy.Location = geolocator.geocode(address)  # type: ignore
 
     gf.st_set("geo_location", location)
 
@@ -110,7 +106,7 @@ def check_parameter_availability(parameter: str, resolution: str) -> None:
     and if it's available in the requested resolution
     """
     all_params: dict[str, cld.DWDParameter] = get_all_parameters()
-    if parameter not in all_params:
+    if all_params.get(parameter) is None:
         logger.critical(f"Parameter '{parameter}' is not a valid DWD-Parameter!")
         raise cle.NoDWDParameterError(parameter)
 
@@ -129,9 +125,12 @@ def meteo_stations(
     parameter: str = "temperature_air_mean_200",
     resolution: str = "hourly",
 ) -> pl.DataFrame:
-    """Verfügbare Wetterstationen
+    """Alle verfügbaren Wetterstationen
     in x Kilometer entfernung zur gegebenen Addresse
-    mit Daten in gewünschter Auflösung und Zeitperiode
+    mit Daten für den gewählten Parameter
+    in gewünschter zeitlicher Auflösung und Zeitperiode
+
+    (die Entfernung ist in der Konstante 'cont.WEATHERSTATIONS_MAX_DISTANCE' definiert)
 
     Args:
         - address (str, optional): Adresse für Entfernung der Stationen.
@@ -222,28 +221,26 @@ def collect_meteo_data() -> list[cld.DWDParameter]:
     return params
 
 
-def meteo_df() -> pl.DataFrame:
+def meteo_df(params_with_data: list[cld.DWDParameter] | None = None) -> pl.DataFrame:
     """Put all parameter date in one data frame"""
-    params: list[cld.DWDParameter] = collect_meteo_data()
 
-    df: pl.DataFrame = pl.DataFrame()
-    for param in params:
-        if param.data_frame is not None:
-            df = df.with_columns(
+    params: list[cld.DWDParameter] = params_with_data or collect_meteo_data()
+
+    return pl.concat(
+        [
+            param.data_frame.select(["value", "date"])
+            .rename({"value": param.name, "date": f"{param.name} - date"})
+            .select(
                 [
-                    pl.Series(
-                        name=param.name, values=param.data_frame.get_column("value")
-                    ),
-                    pl.Series(
-                        name=f"{param.name} - date",
-                        values=param.data_frame.get_column("date").dt.replace_time_zone(
-                            None
-                        ),
-                    ),
+                    pl.col(param.name),
+                    pl.col(f"{param.name} - date").dt.replace_time_zone(None),
                 ]
             )
-
-    return df
+            for param in params
+            if param.data_frame is not None
+        ],
+        how="horizontal",
+    )
 
 
 # ---------------------------------------------------------------------------

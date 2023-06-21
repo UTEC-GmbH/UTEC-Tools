@@ -12,6 +12,7 @@ from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
+from modules import meteorolog as met
 
 if TYPE_CHECKING:
     import datetime as dt
@@ -110,6 +111,14 @@ def interpolate_missing_data(df: pl.DataFrame, method: str = "akima") -> pl.Data
     df_pd = df_pd.interpolate(method=method) or df_pd
     df_pl: pl.DataFrame = pl.from_pandas(df_pd)
     return df_pl
+
+
+def add_temperature(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
+    """Add air temperature for given address to the base data frame"""
+    df: pl.DataFrame = mdf.df
+    df_met: pl.DataFrame = met.meteo_df(df_resolution=mdf.meta.td_mnts)
+    df.with_columns()
+    return mdf
 
 
 def split_multi_years(

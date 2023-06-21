@@ -143,6 +143,7 @@ SPECIAL_COLS: clc.SpecialCols = clc.SpecialCols(
     index=EXCEL_MARKERS.index,
     original_index=SUFFIXES.col_original_index.replace(" - ", ""),
     smooth=SUFFIXES.col_smooth,
+    temp="Außentemperatur",
 )
 
 TIME_MS: clc.TimeMSec = clc.TimeMSec(

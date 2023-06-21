@@ -37,6 +37,7 @@ class SpecialCols:
     index: str
     original_index: str
     smooth: str
+    temp: str
 
 
 @dataclass(frozen=True, kw_only=True)

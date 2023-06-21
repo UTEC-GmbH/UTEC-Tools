@@ -2,10 +2,8 @@
 
 import os
 from datetime import datetime as dt
-from typing import Any
 
 import geopy
-import plotly.graph_objects as go
 import polars as pl
 from geopy.geocoders import Nominatim
 from loguru import logger
@@ -20,7 +18,9 @@ from modules import general_functions as gf
 # Grenze für Daten-Validität
 # einen Wetterstation muss für den angegebenen Zeitraum
 # mind. diesen Anteil an tatsächlich aufgezeichneten Daten haben
-Settings(ts_skip_empty=True, ts_skip_threshold=0.90)
+WETTERDIENST_SETTINGS = Settings(
+    ts_skip_empty=True, ts_skip_threshold=0.90, ts_si_units=False
+)
 
 
 def get_all_parameters() -> dict[str, cld.DWDParameter]:
@@ -51,8 +51,8 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
     mdf: cld.MetaAndDfs | None = kwargs.get("mdf") or gf.st_get("mdf")
 
     if page == "test":
-        start_time = dt(2020, 1, 1)
-        end_time = dt(2020, 12, 31)
+        start_time = dt(2020, 1, 1, 0, 0)
+        end_time = dt(2020, 12, 31, 23, 59)
 
     elif page == "meteo":
         start_year: int = (
@@ -162,6 +162,7 @@ def meteo_stations(
             resolution=resolution,
             start_date=time_span.start,
             end_date=time_span.end,
+            settings=WETTERDIENST_SETTINGS,
         )
         .filter_by_distance(
             latlon=(location.latitude, location.longitude),
@@ -185,17 +186,16 @@ def meteo_stations(
 
 
 @gf.func_timer
-def collect_meteo_data() -> list[cld.DWDParameter]:
+def collect_meteo_data(
+    temporal_resolution: str | None = None,
+) -> list[cld.DWDParameter]:
     """Meteorologische Daten für die ausgewählten Parameter"""
 
-    time_res: str = gf.st_get("sb_meteo_resolution") or "hourly"
+    time_res: str = temporal_resolution or gf.st_get("sb_meteo_resolution") or "hourly"
     address: str = gf.st_get("ti_address") or "Bremen"
     time_span: cld.TimeSpan = start_end_time()
 
-    parameters: list[str] = gf.st_get("ms_meteo_params") or [
-        "temperature_air_mean_200",
-        "precipitation_height",
-    ]
+    parameters: list[str] = gf.st_get("ms_meteo_params") or ["temperature_air_mean_200"]
     for parameter in parameters:
         check_parameter_availability(parameter, time_res)
 
@@ -206,25 +206,54 @@ def collect_meteo_data() -> list[cld.DWDParameter]:
             pl.first(meteo_stations(address, par.name, time_res)["station_id"])
         )
         par.resolution = time_res
-        par.data_frame = (
+        par.data_frame = next(
             DwdObservationRequest(  # noqa: PD011
                 parameter=par.name,
                 resolution=time_res,
                 start_date=time_span.start,
                 end_date=time_span.end,
+                settings=WETTERDIENST_SETTINGS,
             )
             .filter_by_station_id((par.closest_station_id,))
-            .values.all()
-            .df
-        )
+            .values.query()
+        ).df
 
     return params
 
 
-def meteo_df(params_with_data: list[cld.DWDParameter] | None = None) -> pl.DataFrame:
+def match_resolution(df_resolution: int) -> str:
+    """Matches a temporal resolution of a data frame given as an integer
+    to the resolution as string needed for the weather data.
+
+    Args:
+        - df_resolution (int): Temporal Resolution of Data Frame (mdf.meta.td_mnts)
+
+    Returns:
+        - str: resolution as string for the 'resolution' arg in DwdObservationRequest
+    """
+    res_options: dict[int, str] = {
+        5: "minute_1",
+        10: "minute_5",
+        60: "minute_10",
+        60 * 24: "hourly",
+        60 * 24 * 28: "daily",
+    }
+
+    return next(
+        (
+            resolution
+            for threshold, resolution in res_options.items()
+            if df_resolution < threshold
+        ),
+        "monthly",
+    )
+
+
+def meteo_df(df_resolution: int | None = None) -> pl.DataFrame:
     """Put all parameter date in one data frame"""
 
-    params: list[cld.DWDParameter] = params_with_data or collect_meteo_data()
+    time_res: str = match_resolution(df_resolution) if df_resolution else "hourly"
+    params: list[cld.DWDParameter] = collect_meteo_data(time_res)
 
     return pl.concat(
         [

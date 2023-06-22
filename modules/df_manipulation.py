@@ -155,8 +155,8 @@ def split_multi_years(
     for year in mdf.meta.years:
         col_rename: dict[str, str] = multi_year_column_rename(df, year)
         for old_name, new_name in col_rename.items():
-            if new_name not in mdf.meta.get_all_line_names():
-                mdf.meta.copy_line_meta_with_new_name(old_name, new_name)
+            if new_name not in mdf.meta.lines:
+                mdf.meta.lines[new_name] = mdf.meta.lines[old_name]
 
         df_multi[year] = (
             df.filter(pl.col(COL_IND).dt.year() == year)
@@ -170,7 +170,7 @@ def split_multi_years(
 
     logger.debug(
         "  \n".join(
-            ["Meta for following lines available:", *mdf.meta.get_all_line_names()]
+            ["Meta for following lines available:", *mdf.meta.lines]
         )
     )
 
@@ -298,7 +298,7 @@ def mon(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         .agg(
             [
                 pl.col(col).mean()
-                if mdf.meta.get_line_by_name(col).unit in cont.GRP_MEAN
+                if mdf.meta.lines[col].unit in cont.GRP_MEAN
                 else pl.col(col).sum()
                 for col in cols_without_index
             ]

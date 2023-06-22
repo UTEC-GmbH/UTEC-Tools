@@ -54,14 +54,14 @@ def line_plot(
             "meta": {
                 "title": title,
                 "var_name": kwargs.get("var_name"),
-                "metadata": mdf.meta.as_dict(),
+                "metadata": mdf.meta.as_dic(),
             }
         }
     )
 
     for line in [lin for lin in lines if gf.check_if_not_exclude(lin)]:
         line_data: pl.Series = df.get_column(line)
-        line_meta: cld.MetaLine = mdf.meta.get_line_by_name(line)
+        line_meta: cld.MetaLine = mdf.meta.lines[line]
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
 
         logger.info(
@@ -180,7 +180,7 @@ def line_plot_y_overlay(
     for line in lines:
         year: int = [year for year in mdf.meta.years if str(year) in line][0]
         line_data: pl.Series = dic_df[year].get_column(line)
-        line_meta: cld.MetaLine = mdf.meta.get_line_by_name(line)
+        line_meta: cld.MetaLine = mdf.meta.lines[line]
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
         trace_unit: str | None = (
             line_meta.unit_h if data_frame == "df_multi" else line_meta.unit

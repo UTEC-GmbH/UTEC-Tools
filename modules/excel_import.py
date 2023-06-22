@@ -1,7 +1,7 @@
 """Import und Download von Excel-Dateien"""
 
-import io
 import re
+from io import BytesIO
 from typing import Any, Literal, NamedTuple
 
 import polars as pl
@@ -18,7 +18,7 @@ TEST_FILE = "example_files/Stromlastgang - mehrere Jahre.xlsx"
 
 
 @gf.func_timer
-def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
+def import_prefab_excel(file: BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
     """Import and download Excel files.
 
     Args:
@@ -35,6 +35,8 @@ def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
 
     Example test run:
     mdf = import_prefab_excel()
+    or
+    mdf = import_prefab_excel(file)
     """
 
     mark_index: str = cont.EXCEL_MARKERS.index
@@ -69,12 +71,12 @@ def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
         mdf.df_multi = df_man.split_multi_years(mdf, "df")
 
     logger.success("Excel-Datei importiert.")
-    logger.info("  \n".join(["Imported Lines:", *mdf.meta.get_all_line_names()]))
+    logger.info("  \n".join(["Imported Lines:", *mdf.meta.lines]))
 
     return mdf
 
 
-def get_df_from_excel(file: io.BytesIO | str) -> pl.DataFrame:
+def get_df_from_excel(file: BytesIO | str) -> pl.DataFrame:
     """Excel Import via csv-conversion"""
 
     sheet: str = "Daten"
@@ -86,11 +88,11 @@ def get_df_from_excel(file: io.BytesIO | str) -> pl.DataFrame:
     csv_options: dict[str, bool] = {"has_header": False, "try_parse_dates": False}
 
     return pl.read_excel(
-        file,
+        source=file,
         sheet_name=sheet,
         xlsx2csv_options=xlsx_options,
         read_csv_options=csv_options,
-    )
+    )  # type: ignore
 
 
 def remove_empty(df: pl.DataFrame, **kwargs) -> pl.DataFrame:
@@ -148,8 +150,8 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cld.MetaDa
     units = {line: f" {unit.strip()}" for line, unit in units.items()}
 
     meta: cld.MetaData = cld.MetaData(
-        lines=[
-            cld.MetaLine(
+        lines={
+            line: cld.MetaLine(
                 name=line,
                 name_orgidx=(
                     f"{line}{cont.SUFFIXES.col_original_index}"
@@ -162,7 +164,7 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cld.MetaDa
                 unit_h=unit.strip("h"),
             )
             for line, unit in units.items()
-        ],
+        },
     )
 
     return meta
@@ -178,7 +180,7 @@ def meta_number_format(mdf: cld.MetaAndDfs) -> cld.MetaData:
 
     quantiles: pl.DataFrame = mdf.df.quantile(0.95)
 
-    for line in mdf.meta.lines:
+    for line in mdf.meta.lines.values():
         if line.name in mdf.df.columns:
             line_quant: Any = quantiles.get_column(line.name).item()
             if any(isinstance(line_quant, number) for number in [int, float]):
@@ -300,6 +302,7 @@ def temporal_metadata(mdf: cld.MetaAndDfs, mark_index: str) -> cld.MetaAndDfs:
 
 
 def meta_from_obis(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
+    # sourcery skip: extract-method
     """Update meta data and column name if there is an obis code in a column title.
 
     If there's an OBIS-code (e.g. 1-1:1.29.0), the following meta data is edited:
@@ -313,8 +316,8 @@ def meta_from_obis(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     Returns:
         - mdf (MetaAndDfs): Metadaten und DataFrames
     """
-
-    for line in mdf.meta.lines:
+    names_to_change: dict[str, str] = {}
+    for line in mdf.meta.lines.values():
         name: str = line.name
 
         # check if there is an OBIS-code in the column title
@@ -330,6 +333,10 @@ def meta_from_obis(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             line.unit = line.unit or line.obis.unit
 
             mdf.df = mdf.df.rename({name: line.obis.name})
+            names_to_change[name] = line.obis.name
+
+    for old, new in names_to_change.items():
+        mdf.meta.lines[new] = mdf.meta.lines.pop(old)
 
     return mdf
 
@@ -353,23 +360,25 @@ def convert_15min_kwh_to_kw(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 
     suffixes: list[str] = cont.ARBEIT_LEISTUNG.all_suffixes
 
-    for col in mdf.meta.get_all_line_names():
-        unit: str = (mdf.meta.get_line_by_name(col).unit or "").strip()
+    arbeit_leistung_split: dict[str, Literal["Arbeit", "Leistung"]] = {}
+    for col in mdf.meta.lines:
+        unit: str = (mdf.meta.lines[col].unit or "").strip()
         suffix_not_in_col_name: bool = all(suffix not in col for suffix in suffixes)
-        unit_is_leistung_or_arbeit: bool = unit in (
-            cont.ARBEIT_LEISTUNG.arbeit.possible_units
-            + cont.ARBEIT_LEISTUNG.leistung.possible_units
-        )
+        unit_is_leistung_or_arbeit: bool = unit in [
+            *cont.ARBEIT_LEISTUNG.arbeit.possible_units,
+            *cont.ARBEIT_LEISTUNG.leistung.possible_units,
+        ]
         if suffix_not_in_col_name and unit_is_leistung_or_arbeit:
-            originla_type: Literal["Arbeit", "Leistung"] = (
+            original_type: Literal["Arbeit", "Leistung"] = (
                 "Arbeit"
                 if unit in cont.ARBEIT_LEISTUNG.arbeit.possible_units
                 else "Leistung"
             )
-            mdf = insert_column_arbeit_leistung(originla_type, mdf, col)
-            mdf = rename_column_arbeit_leistung(originla_type, mdf, col)
+            arbeit_leistung_split[col] = original_type
 
-            logger.success(f"Arbeit und Leistung für Spalte '{col}' aufgeteilt")
+    for col, org_type in arbeit_leistung_split.items():
+        mdf = insert_column_arbeit_leistung(org_type, mdf, col)
+        mdf = rename_column_arbeit_leistung(org_type, mdf, col)
 
     return mdf
 
@@ -392,8 +401,7 @@ def rename_column_arbeit_leistung(
     """
     new_name: str = f"{col}{cont.ARBEIT_LEISTUNG.get_suffix(original_data_type)}"
     mdf.df = mdf.df.rename({col: new_name})
-    # mdf = copy_line_meta_with_new_name(mdf, col, new_name)
-    mdf.meta.copy_line_meta_with_new_name(col, new_name)
+    mdf.meta.lines[new_name] = mdf.meta.lines[col]
 
     logger.info(f"Spalte '{col}' umbenannt in '{new_name}'")
 
@@ -417,19 +425,18 @@ def insert_column_arbeit_leistung(
     """
     new_col_type: str = "Arbeit" if original_data == "Leistung" else "Leistung"
     new_col_name: str = f"{col}{cont.ARBEIT_LEISTUNG.get_suffix(new_col_type)}"
-    # mdf = copy_line_meta_with_new_name(mdf, col, new_col_name)
-    mdf.meta.copy_line_meta_with_new_name(col, new_col_name)
+    mdf.meta.lines[new_col_name] = mdf.meta.lines[col]
 
     if original_data == "Arbeit":
         mdf.df = mdf.df.with_columns((pl.col(col) * 4).alias(new_col_name))
-        old_unit: str = mdf.meta.get_line_attribute(col, "unit") or " kWh"
+        old_unit: str = mdf.meta.lines[col].unit or " kWh"
         new_unit: str = old_unit[:-1]
     else:
         mdf.df = mdf.df.with_columns((pl.col(col) / 4).alias(new_col_name))
-        old_unit = mdf.meta.get_line_attribute(col, "unit") or " kW"
+        old_unit = mdf.meta.lines[col].unit or " kW"
         new_unit: str = f"{old_unit}h"
 
-    mdf.meta.change_line_attribute(new_col_name, "unit", new_unit)
+    mdf.meta.lines[new_col_name].unit = new_unit
     logger.info(f"Spalte '{new_col_name}' mit Einheit '{new_unit}' eingefügt")
 
     return mdf

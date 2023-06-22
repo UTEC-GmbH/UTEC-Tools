@@ -3,13 +3,11 @@
 import pprint
 from dataclasses import dataclass
 from datetime import datetime as dt
-from typing import Any, Literal
+from typing import Literal
 
 import polars as pl
 
 from modules import classes_constants as clc
-from modules import classes_errors as cle
-from modules import constants as cont
 from modules import general_functions as gf
 
 
@@ -98,26 +96,6 @@ class MetaData:
         """Customize the representation to give a dictionary"""
         return pprint.pformat(self.as_dic())
 
-    def get_line_by_name(self, line_name: str) -> MetaLine:
-        pass
-
-    def get_all_line_names(self) -> list[str]:
-        pass
-
-    def get_all_num_formats(self) -> list[str]:
-        pass
-
-    def get_line_attribute(self, line_name: str, attribute: str) -> Any:
-        pass
-
-    def change_line_attribute(
-        self, line_name: str, attribute: str, new_value: Any
-    ) -> None:
-        pass
-
-    def copy_line_meta_with_new_name(self, old_name: str, new_name: str) -> None:
-        pass
-
 
 @dataclass
 class MetaAndDfs:
@@ -163,3 +141,7 @@ class MetaAndDfs:
                 )
 
         return lines
+
+    def as_dic(self) -> dict:
+        """Dictionary representation"""
+        return {attr: getattr(self, attr) for attr in self.__dataclass_fields__}

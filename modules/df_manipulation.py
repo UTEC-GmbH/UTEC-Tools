@@ -11,8 +11,8 @@ from modules import classes_data as cld
 from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
-from modules import setup_logger as slog
 from modules import meteorolog as met
+from modules import setup_logger as slog
 
 if TYPE_CHECKING:
     import datetime as dt
@@ -113,11 +113,32 @@ def interpolate_missing_data(df: pl.DataFrame, method: str = "akima") -> pl.Data
     return df_pl
 
 
-def add_temperature(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
+def add_air_temperature(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Add air temperature for given address to the base data frame"""
-    df: pl.DataFrame = mdf.df
-    df_met: pl.DataFrame = met.meteo_df(df_resolution=mdf.meta.td_mnts)
-    df.with_columns()
+
+    parameters: list[cld.DWDParameter] = met.meteo_df(mdf)
+
+    for parameter in parameters:
+        df_parameter: pl.DataFrame | None = parameter.data_frame
+        if df_parameter is None:
+            continue
+        mdf.df = mdf.df.join(
+            mdf.df.select(cont.SPECIAL_COLS.index)
+            .join(df_parameter, on=cont.SPECIAL_COLS.index, how="outer")
+            .sort(cont.SPECIAL_COLS.index)
+            .interpolate(),
+            on=cont.SPECIAL_COLS.index,
+        )
+        mdf.meta.lines.append(
+            cld.MetaLine(
+                name=parameter.name,
+                name_orgidx=f"{parameter.name}{cont.SUFFIXES.col_original_index}",
+                orig_tit=parameter.name,
+                tit=parameter.name,  # Translation here?!?
+                unit=parameter.unit,
+            )
+        )
+
     return mdf
 
 
@@ -148,7 +169,9 @@ def split_multi_years(
         )
 
     logger.debug(
-        f"Meta for following lines available: \n{mdf.meta.get_all_line_names()}"
+        "  \n".join(
+            ["Meta for following lines available:", *mdf.meta.get_all_line_names()]
+        )
     )
 
     return df_multi
@@ -200,7 +223,7 @@ def df_h(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 
     logger.success("DataFrame mit Stundenwerten erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.df_h.head())
-    logger.info(f"Cols: {mdf.df_h.columns}")
+    logger.info("  \n".join(["Columns in mdf.df_h:", *mdf.df_h.columns]))
 
     gf.st_set("mdf", mdf)
     return mdf
@@ -212,6 +235,9 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 
     mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h(mdf)
 
+    if mdf.df_h is None:
+        raise ValueError
+
     # Zeit-Spalte für jede Linie kopieren um sie zusammen sortieren zu können
     cols_without_index: list[str] = [
         col for col in mdf.df_h.columns if gf.check_if_not_exclude(col)
@@ -220,7 +246,7 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         [pl.col(COL_IND).alias(f"{col} - {COL_ORG}") for col in cols_without_index]
     )
 
-    if mdf.meta.multi_years:
+    if mdf.meta.multi_years and mdf.meta.years:
         jdl_separate: list[list[pl.Series]] = [
             jdl_first_stage.select(pl.col(col, f"{col} - {COL_ORG}"))
             .filter(pl.col(f"{col} - {COL_ORG}").dt.year() == year)
@@ -249,7 +275,7 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 
     logger.success("DataFrame für Jahresdauerlinie erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.jdl.head())
-    logger.info(f"Cols: {mdf.jdl.columns}")
+    logger.info("  \n".join(["Columns in mdf.jdl:", *mdf.jdl.columns]))
 
     gf.st_set("mdf", mdf)
     return mdf
@@ -260,6 +286,8 @@ def mon(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Monatswerte"""
 
     mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h(mdf)
+    if mdf.df_h is None:
+        raise ValueError
 
     cols_without_index: list[str] = [
         col for col in mdf.df_h.columns if gf.check_if_not_exclude(col)
@@ -290,6 +318,7 @@ def mon(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 
     logger.success("DataFrame mit Monatswerten erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.mon.head())
+    logger.info("  \n".join(["Columns in mdf.mon:", *mdf.mon.columns]))
 
     gf.st_set("mdf", mdf)
     return mdf

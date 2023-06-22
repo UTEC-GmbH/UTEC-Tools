@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Literal
 
 from modules import classes_constants as clc
-from wetterdienst.provider.dwd.observation import DwdObservationRequest
 
 REPO_NAME: str = "UTEC-Tools"
 
@@ -157,6 +156,15 @@ TIME_MIN: clc.TimeMin = clc.TimeMin(
     half_hour=30,
     quarter_hour=15,
 )
+
+DWD_RESOLUTION_OPTIONS: list[str] = [
+    "minute_1",
+    "minute_5",
+    "minute_10",
+    "hourly",
+    "daily",
+    "monthly",
+]
 
 FIG_TITLES: clc.FigIDs = clc.FigIDs(
     lastgang="Lastgang",

@@ -44,6 +44,9 @@ def get_all_parameters() -> dict[str, cld.DWDParameter]:
     return all_parameters
 
 
+ALL_PARAMETERS: dict[str, cld.DWDParameter] = get_all_parameters()
+
+
 def start_end_time(**kwargs) -> cld.TimeSpan:
     """Zeitraum für Daten-Download"""
 
@@ -51,8 +54,8 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
     mdf: cld.MetaAndDfs | None = kwargs.get("mdf") or gf.st_get("mdf")
 
     if page == "test":
-        start_time = dt(2020, 1, 1, 0, 0)
-        end_time = dt(2020, 12, 31, 23, 59)
+        start_time = dt(2017, 1, 1, 0, 0)
+        end_time = dt(2019, 12, 31, 23, 59)
 
     elif page == "meteo":
         start_year: int = (
@@ -101,22 +104,36 @@ def geo_locate(address: str = "Bremen") -> geopy.Location:
     return location
 
 
-def check_parameter_availability(parameter: str, resolution: str) -> None:
-    """Check if a parameter name is valid
-    and if it's available in the requested resolution
+def check_parameter_availability(parameter: str, requested_resolution: str) -> str:
+    """Check if a parameter name is valid.
+
+    If the parameter is available in the requested resolution,
+    it returns the requested resolution, if not, returns the closest available.
     """
-    all_params: dict[str, cld.DWDParameter] = get_all_parameters()
-    if all_params.get(parameter) is None:
+
+    if parameter not in ALL_PARAMETERS:
         logger.critical(f"Parameter '{parameter}' is not a valid DWD-Parameter!")
         raise cle.NoDWDParameterError(parameter)
 
-    res_available: list[str] = all_params[parameter].available_resolutions
-    if resolution not in res_available:
-        logger.critical(
-            f"Parameter '{parameter}' not available in '{resolution}' resolution! \n"
-            f"Available resolutions are: {res_available}"
-        )
-        raise cle.NotAvailableInResolutionError(parameter, resolution, res_available)
+    available_resolutions: list[str] = ALL_PARAMETERS[parameter].available_resolutions
+
+    # check if the parameter has data for the requested resolution
+    if requested_resolution in available_resolutions:
+        return requested_resolution
+
+    index_requested: int = cont.DWD_RESOLUTION_OPTIONS.index(requested_resolution)
+    index_available: list[int] = [
+        cont.DWD_RESOLUTION_OPTIONS.index(res) for res in available_resolutions
+    ]
+
+    # check if there is a higher resolution available
+    for rank in reversed(range(index_requested - 1)):
+        closest: int = index_requested - rank
+        if closest in index_available:
+            return cont.DWD_RESOLUTION_OPTIONS[closest]
+
+    # if no higher resolution is available, return the highest available
+    return available_resolutions[0]
 
 
 @gf.func_timer
@@ -196,20 +213,17 @@ def collect_meteo_data(
     time_span: cld.TimeSpan = start_end_time()
 
     parameters: list[str] = gf.st_get("ms_meteo_params") or ["temperature_air_mean_200"]
-    for parameter in parameters:
-        check_parameter_availability(parameter, time_res)
-
-    params: list[cld.DWDParameter] = [get_all_parameters()[par] for par in parameters]
+    params: list[cld.DWDParameter] = [ALL_PARAMETERS[par] for par in parameters]
 
     for par in params:
+        par.resolution = check_parameter_availability(par.name, time_res)
         par.closest_station_id = str(
-            pl.first(meteo_stations(address, par.name, time_res)["station_id"])
+            pl.first(meteo_stations(address, par.name, par.resolution)["station_id"])
         )
-        par.resolution = time_res
         par.data_frame = next(
             DwdObservationRequest(  # noqa: PD011
                 parameter=par.name,
-                resolution=time_res,
+                resolution=par.resolution,
                 start_date=time_span.start,
                 end_date=time_span.end,
                 settings=WETTERDIENST_SETTINGS,
@@ -232,11 +246,11 @@ def match_resolution(df_resolution: int) -> str:
         - str: resolution as string for the 'resolution' arg in DwdObservationRequest
     """
     res_options: dict[int, str] = {
-        5: "minute_1",
-        10: "minute_5",
-        60: "minute_10",
-        60 * 24: "hourly",
-        60 * 24 * 28: "daily",
+        5: cont.DWD_RESOLUTION_OPTIONS[0],
+        10: cont.DWD_RESOLUTION_OPTIONS[1],
+        60: cont.DWD_RESOLUTION_OPTIONS[2],
+        60 * 24: cont.DWD_RESOLUTION_OPTIONS[3],
+        60 * 24 * 28: cont.DWD_RESOLUTION_OPTIONS[4],
     }
 
     return next(
@@ -245,31 +259,39 @@ def match_resolution(df_resolution: int) -> str:
             for threshold, resolution in res_options.items()
             if df_resolution < threshold
         ),
-        "monthly",
+        cont.DWD_RESOLUTION_OPTIONS[5],
     )
 
 
-def meteo_df(df_resolution: int | None = None) -> pl.DataFrame:
-    """Put all parameter date in one data frame"""
+def meteo_df(
+    mdf: cld.MetaAndDfs | None = None,
+) -> list[cld.DWDParameter]:
+    """Get a DataFrame with date- and value-columns for each parameter"""
 
-    time_res: str = match_resolution(df_resolution) if df_resolution else "hourly"
+    mdf_intern: cld.MetaAndDfs | None = gf.st_get("mdf") or mdf
+    if mdf_intern is None:
+        raise cle.NotInSessionStateError(entry="mdf")
+
+    time_res: str = (
+        match_resolution(mdf_intern.meta.td_mnts)
+        if mdf_intern.meta.td_mnts and gf.st_get("page") != "meteo"
+        else "hourly"
+    )
     params: list[cld.DWDParameter] = collect_meteo_data(time_res)
-
-    return pl.concat(
-        [
+    for param in params:
+        if param.data_frame is None:
+            raise ValueError
+        param.data_frame = (
             param.data_frame.select(["value", "date"])
-            .rename({"value": param.name, "date": f"{param.name} - date"})
+            .rename({"value": param.name, "date": cont.SPECIAL_COLS.index})
             .select(
                 [
                     pl.col(param.name),
-                    pl.col(f"{param.name} - date").dt.replace_time_zone(None),
+                    pl.col(cont.SPECIAL_COLS.index).dt.replace_time_zone(None),
                 ]
             )
-            for param in params
-            if param.data_frame is not None
-        ],
-        how="horizontal",
-    )
+        )
+    return params
 
 
 # ---------------------------------------------------------------------------

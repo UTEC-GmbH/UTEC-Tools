@@ -69,7 +69,7 @@ def import_prefab_excel(file: io.BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
         mdf.df_multi = df_man.split_multi_years(mdf, "df")
 
     logger.success("Excel-Datei importiert.")
-    logger.info(f"Imported lines: \n{mdf.meta.get_all_line_names()}")
+    logger.info("  \n".join(["Imported Lines:", *mdf.meta.get_all_line_names()]))
 
     return mdf
 
@@ -209,9 +209,7 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
     df = clean_up_daylight_savings(df, mark_index).df_clean
 
     # copy index in separate column to preserve if index is changed (multi year)
-    df = df.with_columns(pl.col(mark_index).alias(cont.SPECIAL_COLS.original_index))
-
-    return df
+    return df.with_columns(pl.col(mark_index).alias(cont.SPECIAL_COLS.original_index))
 
 
 class CleanUpDLS(NamedTuple):

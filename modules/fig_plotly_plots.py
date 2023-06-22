@@ -35,6 +35,7 @@ def line_plot(
     Returns:
         - go.Figure: Liniengrafik eines einzelnen Jahres
     """
+    logger.info(f"creating line plot for 'mdf.{data_frame}'")
 
     df: pl.DataFrame = getattr(mdf, data_frame)
     lines: list[str] = kwargs.get("lines") or [
@@ -63,14 +64,26 @@ def line_plot(
         line_meta: cld.MetaLine = mdf.meta.get_line_by_name(line)
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
 
-        logger.info(f"line: {line}, line_org: {line_meta.name_orgidx}")
+        logger.info(
+            f"Adding line '{line}' to DataFrame 'mdf.{data_frame}'  \n"
+            f"(original index: '{line_meta.name_orgidx}')"
+        )
 
         if line_meta.name_orgidx in df.columns:
             cusd: pl.Series = df.get_column(line_meta.name_orgidx)
         else:
             logger.warning(
-                f"Line '{line_meta.name_orgidx}' not found in '{data_frame}'! "
-                f"Available columns: \n{df.columns}"
+                "  \n".join(
+                    [
+                        f"'{line_meta.name_orgidx}' not found in 'mdf.{data_frame}'! ",
+                        "Available columns:",
+                        *df.columns,
+                        " ",
+                        f"Using '{cont.SPECIAL_COLS.original_index}' "
+                        "for custom data instead.",
+                        " ",
+                    ]
+                )
             )
             cusd: pl.Series = df.get_column(cont.SPECIAL_COLS.original_index)
 
@@ -79,6 +92,21 @@ def line_plot(
         )
 
         hovtemp: str = f"{trace_unit} {cusd_format}"
+
+        logger.debug(
+            "  \n".join(
+                [
+                    " ",
+                    f"Type 'x': {type(df.get_column(cont.SPECIAL_COLS.index))}",
+                    f"Type 'y': {type(line_data * manip)}",
+                    f"Type 'customdata': {type(cusd)}",
+                    f"Type 'name': {type(line_meta.tit)}",
+                    f"Type 'trace_unit': {type(trace_unit)}",
+                    " ",
+                ]
+            )
+        )
+
         fig = fig.add_trace(
             go.Scatter(
                 x=df.get_column(cont.SPECIAL_COLS.index),
@@ -127,6 +155,7 @@ def line_plot_y_overlay(
         raise cle.NoYearsError
 
     logger.debug(f"DataFrame {data_frame}")
+
     dic_df: dict[int, pl.DataFrame] = getattr(mdf, data_frame)
     lines: list[str] = kwargs.get("lines") or mdf.get_lines_in_multi_df(data_frame)
 

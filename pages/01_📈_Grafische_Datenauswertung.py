@@ -81,7 +81,7 @@ def gather_and_manipulate_data() -> cld.MetaAndDfs:
 
     if gf.st_get("but_meteo_sidebar"):
         if gf.st_get("cb_temp"):
-            mdf = df_man.add_temperature(mdf)
+            mdf = df_man.add_air_temperature(mdf)
         else:
             mdf.df.drop(cont.SPECIAL_COLS.temp)
 

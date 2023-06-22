@@ -4,8 +4,8 @@ import pprint
 import re
 from dataclasses import dataclass, field
 from typing import TypedDict
-import polars as pl
 
+import polars as pl
 from loguru import logger
 
 
@@ -209,9 +209,13 @@ class ObisElectrical:
     name_kurz: str = field(init=False)
     name_lang: str = field(init=False)
 
+    def as_dic(self) -> dict:
+        """Dictionary representation"""
+        return {attr: getattr(self, attr) for attr in self.__dataclass_fields__}
+
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
-        return pprint.pformat(self.__dataclass_fields__, sort_dicts=False)
+        return pprint.pformat(self.as_dic())
 
     def __post_init__(self) -> None:
         """Check if code is valid and fill in the fields"""

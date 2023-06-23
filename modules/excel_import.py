@@ -404,7 +404,7 @@ def rename_column_arbeit_leistung(
     """
     new_name: str = f"{col}{cont.ARBEIT_LEISTUNG.get_suffix(original_data_type)}"
     mdf.df = mdf.df.rename({col: new_name})
-    mdf.meta.lines[new_name] = mdf.meta.lines[col]
+    mdf.meta.lines[new_name] = copy_line(mdf, col, new_name)
 
     logger.info(f"Spalte '{col}' umbenannt in '{new_name}'")
 

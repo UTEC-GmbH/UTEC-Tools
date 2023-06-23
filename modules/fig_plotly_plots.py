@@ -1,10 +1,11 @@
 """Darstellung der Plots"""
 
 import os
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
 import numpy as np
 import plotly.graph_objects as go
+import polars as pl
 import streamlit as st
 from geopy import distance
 from loguru import logger
@@ -14,9 +15,6 @@ from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import meteorolog as meteo
-
-if TYPE_CHECKING:
-    import polars as pl
 
 
 @gf.func_timer
@@ -44,16 +42,10 @@ def line_plot(
     title: str = kwargs.get("title") or ""
 
     logger.debug(
-        gf.string_new_line_per_item(
-            [lin for lin in lines if gf.check_if_not_exclude(lin)],
-            f"The following Lines will be added to -{title.split('<')[0]}-:",
+        f"The following Lines will be added to '{title.split('<')[0]}':\n"
+        + gf.string_new_line_per_item(
+            [lin for lin in lines if gf.check_if_not_exclude(lin)]
         )
-    )
-
-    cusd_format: str = (
-        "(%{customdata|%a %d. %b %Y %H:%M})"
-        if "Monatswerte" not in title
-        else "(%{customdata|%b %Y})"
     )
 
     fig: go.Figure = go.Figure()
@@ -89,24 +81,13 @@ def line_plot(
             line_meta.unit if data_frame == "df" else line_meta.unit_h
         )
 
-        hovtemp: str = f"{trace_unit} {cusd_format}"
-
         fig = fig.add_trace(
             go.Scatter(
                 x=df.get_column(cont.SPECIAL_COLS.index),
                 y=line_data * manip,
                 customdata=cusd,
                 name=line_meta.tit,
-                hovertemplate=(
-                    np.select(
-                        [abs(line_data) < 10, abs(line_data) < 100],  # noqa: PLR2004
-                        [
-                            "%{y:,.2f}" + hovtemp,
-                            "%{y:,.1f}" + hovtemp,
-                        ],
-                        "%{y:,.0f}" + hovtemp,
-                    )
-                ),
+                hovertemplate=hover_template(title, trace_unit, line_data),
                 mode="lines",
                 visible=True,
                 # yaxis=line_meta.y_axis_h if df_h else line_meta.y_axis,
@@ -114,7 +95,34 @@ def line_plot(
             )
         )
 
+    logger.info(
+        f"Figure '{title.split('<')[0]}' has the following lines:\n"
+        f"{gf.string_new_line_per_item([entry['name'] for entry in fig.data])}"
+    )
     return fig
+
+
+def hover_template(
+    fig_title: str, trace_unit: str | None, line_data: pl.Series
+) -> np.ndarray:
+    """Generate the hover template for the given trace"""
+
+    cusd_format: str = (
+        "(%{customdata|%a %d. %b %Y %H:%M})"
+        if "Monatswerte" not in fig_title
+        else "(%{customdata|%b %Y})"
+    )
+
+    hovtemp: str = f"{trace_unit} {cusd_format}"
+
+    return np.select(
+        [abs(line_data) < 10, abs(line_data) < 100],  # noqa: PLR2004
+        [
+            "%{y:,.2f}" + hovtemp,
+            "%{y:,.1f}" + hovtemp,
+        ],
+        "%{y:,.0f}" + hovtemp,
+    )
 
 
 # Lastgang mehrerer Jahre übereinander darstellen

@@ -118,7 +118,7 @@ def st_delete(key: str) -> None:
 def string_new_line_per_item(
     list_or_dic: list | dict,
     title: str | None = None,
-    start_empty: bool | None = None,
+    leading_empty_lines: int = 0,
 ) -> str:
     """Generate a string that separates each item of the given object with a new line.
     (mainly for logging)
@@ -126,19 +126,19 @@ def string_new_line_per_item(
     Args:
         - list_or_dic (list | dict): List or Dictionary to be represented as string.
         - title (str | None, optional): First line of the string. Defaults to None.
-        - start_empty (bool | None, optional): Start the string with an empty line.
-            Defaults to None.
+        - leading_empty_lines (int, optional): Start the string with x empty lines.
+            Defaults to 0.
 
     Returns:
         - str: String with elements separated by "backslash n"
     """
-    nl: int = 1 if start_empty else 0
+
     if isinstance(list_or_dic, list):
-        return "\n" * nl + "\n".join(
+        return "\n" * leading_empty_lines + "\n".join(
             [f"'{title}'", *list_or_dic] if title else [*list_or_dic]
         )
     if isinstance(list_or_dic, dict):
-        return "\n" * nl + "\n".join(
+        return "\n" * leading_empty_lines + "\n".join(
             [f"'{title}'"] + [f"{key}: '{val}'" for key, val in list_or_dic.items()]
             if title
             else [f"{key}: '{val}'" for key, val in list_or_dic.items()]

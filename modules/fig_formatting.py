@@ -6,7 +6,6 @@
 """
 
 import re
-
 from datetime import datetime
 from typing import Any
 
@@ -238,24 +237,16 @@ def update_main(fig: go.Figure) -> go.Figure:
 
     fig = show_traces(fig)
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
-    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
     visible_traces: list[dict] = [trace for trace in data.values() if trace["visible"]]
-    logger.debug(
-        f"Visible traces in figure '{layout['title']['text']}': \n"
-        f"{[trace['name'] for trace in visible_traces]}"
-    )
     visible_units: list[str] = gf.sort_list_by_occurance(
         [trace["meta"]["unit"] for trace in visible_traces]
     )
-    logger.debug(
-        f"Visible units in figure '{layout['title']['text']}': \n{visible_units}"
-    )
+
+    debug_traces_units(fig, data, visible_traces, visible_units)
 
     fig = format_traces(fig, visible_traces, visible_units)
-
     fig = show_y_axes(fig, visible_units)
-
     fig = show_annos(fig, visible_traces)
 
     # Legende ausblenden, wenn nur eine Linie angezeigt wird
@@ -265,6 +256,26 @@ def update_main(fig: go.Figure) -> go.Figure:
         fig = legend_groups_for_multi_year(fig)
 
     return fig
+
+
+def debug_traces_units(
+    fig: go.Figure,
+    data: dict[str, dict[str, Any]],
+    visible_traces: list[dict],
+    visible_units: list[str],
+) -> None:
+    """Log available traces in figure, as well as visible traces and units"""
+
+    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
+    fig_title: str = layout["title"]["text"].split("<")[0]
+
+    total_traces: list[dict] = list(data.values())
+    logger.debug(
+        f"Traces in figure '{fig_title}': \n"
+        f"Available: {[trace['name'] for trace in total_traces]}  \n"
+        f"Visible:   {[trace['name'] for trace in visible_traces]}"
+    )
+    logger.debug(f"Visible units in figure '{fig_title}': \n{visible_units}")
 
 
 @gf.func_timer
@@ -277,7 +288,7 @@ def show_traces(fig: go.Figure) -> go.Figure:
 
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
     fig_type: str = "lastgang"
-    for key, value in cont.FIG_TITLES.__dataclass_fields__.items():
+    for key, value in cont.FIG_TITLES.as_dic().items():
         if value in layout["meta"]["title"]:
             fig_type = key
 

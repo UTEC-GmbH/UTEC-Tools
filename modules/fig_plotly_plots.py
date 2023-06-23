@@ -35,7 +35,7 @@ def line_plot(
     Returns:
         - go.Figure: Liniengrafik eines einzelnen Jahres
     """
-    logger.info(f"creating line plot for 'mdf.{data_frame}'")
+    logger.info(f"creating line plot from DataFrame 'mdf.{data_frame}'")
 
     df: pl.DataFrame = getattr(mdf, data_frame)
     lines: list[str] = kwargs.get("lines") or [
@@ -64,48 +64,26 @@ def line_plot(
         line_meta: cld.MetaLine = mdf.meta.lines[line]
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
 
-        logger.info(
-            f"Adding line '{line}' to DataFrame 'mdf.{data_frame}'  \n"
-            f"(original index: '{line_meta.name_orgidx}')"
-        )
+        logger.debug(line_meta.as_dic())
 
         if line_meta.name_orgidx in df.columns:
             cusd: pl.Series = df.get_column(line_meta.name_orgidx)
-        else:
-            logger.warning(
-                "  \n".join(
-                    [
-                        f"'{line_meta.name_orgidx}' not found in 'mdf.{data_frame}'! ",
-                        "Available columns:",
-                        *df.columns,
-                        " ",
-                        f"Using '{cont.SPECIAL_COLS.original_index}' "
-                        "for custom data instead.",
-                        " ",
-                    ]
-                )
+            logger.info(
+                f"Adding line '{line_meta.tit}' to Figure '{title.split('<')[0]}' "
+                f"(original index column: '{line_meta.name_orgidx}')"
             )
+        else:
             cusd: pl.Series = df.get_column(cont.SPECIAL_COLS.original_index)
+            logger.info(
+                f"Adding line '{line_meta.tit}' to Figure '{title.split('<')[0]}' "
+                f"(original index column: '{cont.SPECIAL_COLS.original_index}')"
+            )
 
         trace_unit: str | None = (
             line_meta.unit if data_frame == "df" else line_meta.unit_h
         )
 
         hovtemp: str = f"{trace_unit} {cusd_format}"
-
-        logger.debug(
-            "  \n".join(
-                [
-                    " ",
-                    f"Type 'x': {type(df.get_column(cont.SPECIAL_COLS.index))}",
-                    f"Type 'y': {type(line_data * manip)}",
-                    f"Type 'customdata': {type(cusd)}",
-                    f"Type 'name': {type(line_meta.tit)}",
-                    f"Type 'trace_unit': {type(trace_unit)}",
-                    " ",
-                ]
-            )
-        )
 
         fig = fig.add_trace(
             go.Scatter(
@@ -152,7 +130,7 @@ def line_plot_y_overlay(
         - go.Figure: Liniengrafik mit mehreren Jahren übereinander
     """
     if mdf.meta.years is None:
-        raise cle.NoYearsError
+        raise cle.NotFoundError(entry="list of years", where="mdf.meta.years")
 
     logger.debug(f"DataFrame {data_frame}")
 
@@ -172,7 +150,7 @@ def line_plot_y_overlay(
                 "title": (kwargs.get("title") or ""),
                 "var_name": kwargs.get("var_name"),
                 "multi_y": True,
-                "metadata": mdf.meta.as_dict(),
+                "metadata": mdf.meta.as_dic(),
             }
         }
     )

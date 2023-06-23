@@ -70,8 +70,9 @@ def import_prefab_excel(file: BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
     if mdf.meta.multi_years:
         mdf.df_multi = df_man.split_multi_years(mdf, "df")
 
+    logger.debug("\n".join(["mdf.df.columns:", *mdf.df.columns]))
+    logger.info("  \n".join(["lines in mdf.meta.lines:", *mdf.meta.lines]))
     logger.success("Excel-Datei importiert.")
-    logger.info("  \n".join(["Imported Lines:", *mdf.meta.lines]))
 
     return mdf
 
@@ -423,20 +424,49 @@ def insert_column_arbeit_leistung(
         - mdf (MetaAndDfs): Metadaten und DataFrames
         - col (str): Name der (Original-) Spalte
     """
-    new_col_type: str = "Arbeit" if original_data == "Leistung" else "Leistung"
-    new_col_name: str = f"{col}{cont.ARBEIT_LEISTUNG.get_suffix(new_col_type)}"
-    mdf.meta.lines[new_col_name] = mdf.meta.lines[col]
+
+    new_type: str = "Arbeit" if original_data == "Leistung" else "Leistung"
+    new_name: str = f"{col}{cont.ARBEIT_LEISTUNG.get_suffix(new_type)}"
 
     if original_data == "Arbeit":
-        mdf.df = mdf.df.with_columns((pl.col(col) * 4).alias(new_col_name))
+        mdf.df = mdf.df.with_columns((pl.col(col) * 4).alias(new_name))
         old_unit: str = mdf.meta.lines[col].unit or " kWh"
         new_unit: str = old_unit[:-1]
     else:
-        mdf.df = mdf.df.with_columns((pl.col(col) / 4).alias(new_col_name))
+        mdf.df = mdf.df.with_columns((pl.col(col) / 4).alias(new_name))
         old_unit = mdf.meta.lines[col].unit or " kW"
         new_unit: str = f"{old_unit}h"
 
-    mdf.meta.lines[new_col_name].unit = new_unit
-    logger.info(f"Spalte '{new_col_name}' mit Einheit '{new_unit}' eingefügt")
+    mdf.meta.lines[new_name] = copy_line(mdf, col, new_name)
+    mdf.meta.lines[new_name].unit = new_unit
+
+    logger.info(f"Spalte '{new_name}' mit Einheit '{new_unit}' eingefügt.")
+    logger.debug(
+        "\n"
+        + "\n".join(
+            [f"{key}: {val}" for key, val in mdf.meta.lines[new_name].as_dic().items()]
+        )
+    )
 
     return mdf
+
+
+def copy_line(mdf: cld.MetaAndDfs, line_to_copy: str, new_name: str) -> cld.MetaLine:
+    """Copy a line and give the new line a new name"""
+    old_line: cld.MetaLine = mdf.meta.lines[line_to_copy]
+    new_line: cld.MetaLine = cld.MetaLine(
+        "test",
+        "test_org",
+        "Org Title",
+        "Title",
+    )
+    for attr in old_line.as_dic():
+        setattr(new_line, attr, getattr(old_line, attr))
+    new_line.name = new_name
+    new_line.tit = new_name
+    new_line.name_orgidx = (
+        f"{new_name}{cont.SUFFIXES.col_original_index}"
+        if cont.SUFFIXES.col_original_index not in new_name
+        else new_name
+    )
+    return new_line

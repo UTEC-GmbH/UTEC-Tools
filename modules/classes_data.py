@@ -8,6 +8,7 @@ from typing import Literal
 import polars as pl
 
 from modules import classes_constants as clc
+from modules import constants as cont
 from modules import general_functions as gf
 
 
@@ -33,11 +34,13 @@ class DWDParameter:
 
 @dataclass
 class MetaLine:
-    """Class for meta data of lines (traces)"""
+    """Class for meta data of lines (traces)
 
-    # line = MetaLine(
-    #   "test", "test_org", "Org Title", "Title", obis=clc.ObisElectrical("1-1:1.29.0")
-    # )
+    Line for testing:
+    line = MetaLine(
+      "test", "test_org", "Org Title", "Title", obis=clc.ObisElectrical("1-1:1.29.0")
+    )
+    """
 
     name: str
     name_orgidx: str
@@ -51,15 +54,16 @@ class MetaLine:
     def as_dic(self) -> dict:
         """Dictionary representation"""
         return {
-            attr: attr.as_dic()
-            if isinstance(attr, clc.ObisElectrical)
+            attr: getattr(self, attr).as_dic()
+            if isinstance(getattr(self, attr), clc.ObisElectrical)
             else getattr(self, attr)
             for attr in self.__dataclass_fields__
         }
 
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
-        return pprint.pformat(self.as_dic())
+        rep: str = "\n".join([f"{key}: {val}" for key, val in self.as_dic().items()])
+        return f"[{rep}]"
 
 
 @dataclass
@@ -94,7 +98,8 @@ class MetaData:
 
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
-        return pprint.pformat(self.as_dic())
+        rep: str = "\n".join([f"{key}: {val}" for key, val in self.as_dic().items()])
+        return f"[{rep}]"
 
 
 @dataclass

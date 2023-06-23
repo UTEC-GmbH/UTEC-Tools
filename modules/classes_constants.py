@@ -73,6 +73,10 @@ class FigIDs:
         """List all values"""
         return list(self.__dataclass_fields__.values())
 
+    def as_dic(self) -> dict:
+        """Dictionary representation"""
+        return {attr: getattr(self, attr) for attr in self.__dataclass_fields__}
+
 
 @dataclass(frozen=True)
 class SuffixUnit:
@@ -209,13 +213,14 @@ class ObisElectrical:
     name_kurz: str = field(init=False)
     name_lang: str = field(init=False)
 
-    def as_dic(self) -> dict:
+    def as_dic(self) -> dict[str, str]:
         """Dictionary representation"""
         return {attr: getattr(self, attr) for attr in self.__dataclass_fields__}
 
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
-        return pprint.pformat(self.as_dic())
+        rep: str = "\n".join([f"{key}: {val}" for key, val in self.as_dic().items()])
+        return f"[{rep}]"
 
     def __post_init__(self) -> None:
         """Check if code is valid and fill in the fields"""

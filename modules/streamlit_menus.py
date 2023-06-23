@@ -948,7 +948,6 @@ def downloads(page: str = "graph") -> None:
         gf.st_get(key)
         for key in (
             "but_xls",
-            "but_meteo_sidebar",
             "but_meteo_main",
             "excel_download",
             "cancel_excel_download",

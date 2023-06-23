@@ -9,6 +9,7 @@ import streamlit as st
 from loguru import logger
 
 from modules import classes_data as cld
+from modules import classes_errors as cle
 from modules import classes_figs as clf
 from modules import constants as cont
 from modules import fig_annotations as fig_anno
@@ -219,6 +220,8 @@ def plot_figs(figs: clf.Figs) -> None:
     """Grafiken darstellen"""
 
     with st.container():
+        if figs.base is None:
+            raise cle.NotFoundError(entry="base", where="figs class")
         st.plotly_chart(
             figs.base.fig,
             use_container_width=True,
@@ -238,6 +241,8 @@ def plot_figs(figs: clf.Figs) -> None:
 
             columns: list = st.columns(2)
             with columns[0]:
+                if figs.jdl is None:
+                    raise cle.NotFoundError(entry="jdl", where="figs class")
                 st.plotly_chart(
                     figs.jdl.fig,
                     use_container_width=True,
@@ -254,6 +259,8 @@ def plot_figs(figs: clf.Figs) -> None:
                     )
 
             with columns[1]:
+                if figs.mon is None:
+                    raise cle.NotFoundError(entry="mon", where="figs class")
                 st.plotly_chart(
                     figs.mon.fig,
                     use_container_width=True,
@@ -263,7 +270,8 @@ def plot_figs(figs: clf.Figs) -> None:
 
         elif gf.st_get("cb_jdl") and not gf.st_get("cb_mon"):
             st.markdown("###")
-
+            if figs.jdl is None:
+                raise cle.NotFoundError(entry="jdl", where="figs class")
             st.plotly_chart(
                 figs.jdl.fig,
                 use_container_width=True,
@@ -271,6 +279,8 @@ def plot_figs(figs: clf.Figs) -> None:
                 theme=cont.ST_PLOTLY_THEME,
             )
             if gf.st_get("cb_days"):
+                if figs.days is None:
+                    raise cle.NotFoundError(entry="days", where="figs class")
                 st.markdown("###")
                 st.plotly_chart(
                     figs.days.fig,
@@ -281,7 +291,8 @@ def plot_figs(figs: clf.Figs) -> None:
 
         elif gf.st_get("cb_mon") and not gf.st_get("cb_jdl"):
             st.markdown("###")
-
+            if figs.mon is None:
+                raise cle.NotFoundError(entry="mon", where="figs class")
             st.plotly_chart(
                 figs.mon.fig,
                 use_container_width=True,
@@ -289,6 +300,8 @@ def plot_figs(figs: clf.Figs) -> None:
                 theme=cont.ST_PLOTLY_THEME,
             )
             if gf.st_get("cb_days"):
+                if figs.days is None:
+                    raise cle.NotFoundError(entry="days", where="figs class")
                 st.markdown("###")
                 st.plotly_chart(
                     figs.days.fig,

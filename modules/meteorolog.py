@@ -94,7 +94,7 @@ def geo_locate(address: str = "Bremen") -> geopy.Location:
 
     user_agent_secret: str | None = os.environ.get("GEO_USER_AGENT") or "lasinludwig"
     if user_agent_secret is None:
-        raise cle.SecretNotFoundError(entry="GEO_USER_AGENT")
+        raise cle.NotFoundError(entry="GEO_USER_AGENT", where="Secrets")
 
     geolocator: Nominatim = Nominatim(user_agent=user_agent_secret)
     location: geopy.Location = geolocator.geocode(address)  # type: ignore
@@ -270,7 +270,7 @@ def meteo_df(
 
     mdf_intern: cld.MetaAndDfs | None = gf.st_get("mdf") or mdf
     if mdf_intern is None:
-        raise cle.NotInSessionStateError(entry="mdf")
+        raise cle.NotFoundError(entry="mdf", where="Session State")
 
     time_res: str = (
         match_resolution(mdf_intern.meta.td_mnts)

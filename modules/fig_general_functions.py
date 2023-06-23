@@ -76,11 +76,7 @@ def fig_type_by_title(fig: go.Figure, **kwargs) -> str:
     )
 
     return next(
-        (
-            key
-            for key, value in cont.FIG_TITLES.__dataclass_fields__.items()
-            if value in title
-        ),
+        (key for key, value in cont.FIG_TITLES.as_dic().items() if value in title),
         "type unknown",
     )
 

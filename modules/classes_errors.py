@@ -1,28 +1,12 @@
 """Custom Error Messages"""
 
 
-class NoYearsError(Exception):
-    """Error Message if there are no years in the metadata"""
+class NotFoundError(Exception):
+    """Error Message if an entry is not found"""
 
-    def __init__(self) -> None:
+    def __init__(self, entry: str, where: str) -> None:
         """Initiate"""
-        super().__init__("No list of years found in meta data.")
-
-
-class NotInSessionStateError(Exception):
-    """Error Message if an entry is not found in the streamlit session state"""
-
-    def __init__(self, entry: str) -> None:
-        """Initiate"""
-        super().__init__(f"Entry '{entry}' not found in Streamlit's Session State.")
-
-
-class SecretNotFoundError(Exception):
-    """Error Message if an entry is not found in the secrets"""
-
-    def __init__(self, entry: str) -> None:
-        """Initiate"""
-        super().__init__(f"Entry '{entry}' not found in Secrets.")
+        super().__init__(f"Error: '{entry}' not found in '{where}'.")
 
 
 class NoDWDParameterError(Exception):

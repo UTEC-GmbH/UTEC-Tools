@@ -14,7 +14,6 @@ from modules import fig_annotations as fig_anno
 from modules import fig_creation_export as fig_create
 from modules import fig_formatting as fig_format
 from modules import general_functions as gf
-from modules import meteorolog as meteo
 from modules import setup_stuff as set_stuff
 from modules import streamlit_menus as sm
 from modules import user_authentication as uauth
@@ -68,7 +67,7 @@ def gather_and_manipulate_data() -> cld.MetaAndDfs:
     # Grundeinstellungen in der sidebar
     sm.base_settings(mdf)
 
-    if gf.st_get("but_base_settings"):
+    if gf.st_get("but_base_settings") or gf.st_get("but_meteo_sidebar"):
         gf.st_delete("fig_base")
         gf.st_delete("fig_jdl")
         gf.st_delete("fig_mon")
@@ -114,7 +113,7 @@ def make_graphs(mdf: cld.MetaAndDfs) -> clf.Figs:
 
     figs: clf.Figs = gf.st_get("figs") or clf.Figs()
 
-    if gf.st_get("but_base_settings"):
+    if gf.st_get("but_base_settings") or gf.st_get("but_meteo_sidebar"):
         figs.base = None
         figs.jdl = None
         figs.mon = None

@@ -83,7 +83,7 @@ def fix_am_pm(df: pl.DataFrame, time_column: str = "Zeitstempel") -> pl.DataFram
                 .otherwise(
                     pl.when((time_diff.dt.hour() < 0) & (time_diff.dt.day() == 0))
                     .then(pl.duration(hours=12))
-                    .otherwise(pl.when((time_diff.dt.hour())))
+                    .otherwise(pl.when(time_diff.dt.hour()))
                 )
                 .alias("change")
                 .fill_null(strategy="forward")
@@ -129,14 +129,12 @@ def add_air_temperature(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             .interpolate(),
             on=cont.SPECIAL_COLS.index,
         )
-        mdf.meta.lines.append(
-            cld.MetaLine(
-                name=parameter.name,
-                name_orgidx=f"{parameter.name}{cont.SUFFIXES.col_original_index}",
-                orig_tit=parameter.name,
-                tit=parameter.name,  # Translation here?!?
-                unit=parameter.unit,
-            )
+        mdf.meta.lines[parameter.name] = cld.MetaLine(
+            name=parameter.name,
+            name_orgidx=f"{parameter.name}{cont.SUFFIXES.col_original_index}",
+            orig_tit=parameter.name,
+            tit=parameter.name,  # Translation here or before?!?
+            unit=parameter.unit,
         )
 
     return mdf
@@ -149,7 +147,7 @@ def split_multi_years(
 
     df: pl.DataFrame = getattr(mdf, frame_to_split)
     if not mdf.meta.years:
-        raise cle.NoYearsError
+        raise cle.NotFoundError(entry="list of years", where="mdf.meta.years")
 
     df_multi: dict[int, pl.DataFrame] = {}
     for year in mdf.meta.years:
@@ -168,11 +166,7 @@ def split_multi_years(
             .rename(col_rename)
         )
 
-    logger.debug(
-        "  \n".join(
-            ["Meta for following lines available:", *mdf.meta.lines]
-        )
-    )
+    logger.debug("  \n".join(["Meta for following lines available:", *mdf.meta.lines]))
 
     return df_multi
 

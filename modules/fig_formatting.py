@@ -275,7 +275,7 @@ def debug_traces_units(
         f"Available: {[trace['name'] for trace in total_traces]}  \n"
         f"Visible:   {[trace['name'] for trace in visible_traces]}"
     )
-    logger.debug(f"Visible units in figure '{fig_title}': \n{visible_units}")
+    logger.debug(f"Visible units in figure '{fig_title}': {visible_units}")
 
 
 @gf.func_timer
@@ -430,7 +430,8 @@ def show_y_axes(fig: go.Figure, visible_units: list[str]) -> go.Figure:
         ]
 
     logger.debug(
-        f"Visible y-axes in figure '{layout['title']['text']}': \n{axes_to_show}"
+        f"Visible y-axes in figure "
+        f"'{layout['title']['text'].split('<')[0]}': \n{axes_to_show}"
     )
 
     for count, axis in enumerate(axes_to_show):

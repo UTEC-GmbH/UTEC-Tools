@@ -70,8 +70,10 @@ def import_prefab_excel(file: BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
     if mdf.meta.multi_years:
         mdf.df_multi = df_man.split_multi_years(mdf, "df")
 
-    logger.debug("\n".join(["mdf.df.columns:", *mdf.df.columns]))
-    logger.info("  \n".join(["lines in mdf.meta.lines:", *mdf.meta.lines]))
+    logger.debug(gf.string_new_line_per_item(mdf.df.columns, "mdf.df.columns"))
+    logger.debug(
+        gf.string_new_line_per_item(list(mdf.meta.lines), "lines in mdf.meta.lines:")
+    )
     logger.success("Excel-Datei importiert.")
 
     return mdf
@@ -441,12 +443,6 @@ def insert_column_arbeit_leistung(
     mdf.meta.lines[new_name].unit = new_unit
 
     logger.info(f"Spalte '{new_name}' mit Einheit '{new_unit}' eingefügt.")
-    logger.debug(
-        "\n"
-        + "\n".join(
-            [f"{key}: {val}" for key, val in mdf.meta.lines[new_name].as_dic().items()]
-        )
-    )
 
     return mdf
 

@@ -35,13 +35,21 @@ def line_plot(
     Returns:
         - go.Figure: Liniengrafik eines einzelnen Jahres
     """
-    logger.info(f"creating line plot from DataFrame 'mdf.{data_frame}'")
+    logger.info(f"Creating line plot from DataFrame 'mdf.{data_frame}'")
 
     df: pl.DataFrame = getattr(mdf, data_frame)
     lines: list[str] = kwargs.get("lines") or [
         col for col in df.columns if gf.check_if_not_exclude(col)
     ]
     title: str = kwargs.get("title") or ""
+
+    logger.debug(
+        gf.string_new_line_per_item(
+            [lin for lin in lines if gf.check_if_not_exclude(lin)],
+            f"The following Lines will be added to -{title.split('<')[0]}-:",
+        )
+    )
+
     cusd_format: str = (
         "(%{customdata|%a %d. %b %Y %H:%M})"
         if "Monatswerte" not in title
@@ -63,8 +71,6 @@ def line_plot(
         line_data: pl.Series = df.get_column(line)
         line_meta: cld.MetaLine = mdf.meta.lines[line]
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
-
-        logger.debug(line_meta.as_dic())
 
         if line_meta.name_orgidx in df.columns:
             cusd: pl.Series = df.get_column(line_meta.name_orgidx)

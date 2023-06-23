@@ -8,6 +8,7 @@ from typing import Any
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+from loguru import logger
 
 from modules import classes_data as cld
 from modules import constants as cont
@@ -758,7 +759,7 @@ def display_options_main() -> bool:
                 #     if suff != st.session_state["first_suff"] or not anno_name:
                 #         show_cb = False
 
-                if show_cb and anno_name:
+                if show_cb and anno_name and gf.st_not_in(f"cb_anno_{anno_name}"):
                     with cols[list(columns).index("anno")]:
                         st.checkbox(
                             label=anno_name,

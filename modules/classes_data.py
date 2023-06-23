@@ -1,6 +1,5 @@
 """Classes and such"""
 
-import pprint
 from dataclasses import dataclass
 from datetime import datetime as dt
 from typing import Literal
@@ -8,7 +7,6 @@ from typing import Literal
 import polars as pl
 
 from modules import classes_constants as clc
-from modules import constants as cont
 from modules import general_functions as gf
 
 
@@ -62,8 +60,7 @@ class MetaLine:
 
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
-        rep: str = "\n".join([f"{key}: {val}" for key, val in self.as_dic().items()])
-        return f"[{rep}]"
+        return f"[{gf.string_new_line_per_item(self.as_dic())}]"
 
 
 @dataclass
@@ -98,8 +95,7 @@ class MetaData:
 
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
-        rep: str = "\n".join([f"{key}: {val}" for key, val in self.as_dic().items()])
-        return f"[{rep}]"
+        return f"[{gf.string_new_line_per_item(self.as_dic())}]"
 
 
 @dataclass

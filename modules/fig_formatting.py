@@ -178,6 +178,8 @@ def standard_xaxis(
     if isinstance(x_min, datetime):
         x_min = x_min.replace(day=1)
 
+    logger.debug(f"Figure '{title.split('<')[0]}' x-axis range: {[x_min, x_max]}")
+
     return fig.update_xaxes(
         nticks=13,
         tickformat=x_tickformat,
@@ -298,34 +300,44 @@ def show_traces(fig: go.Figure) -> go.Figure:
 
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
 
-    switch: bool = layout["meta"]["title"] == "fig_days"
-
     for name, trace_data in data.items():
         if f"cp_{name}" not in st.session_state:
-            suff: str = "Arbeit" if fig_type in ["mon"] else "Leistung"
-            new_name: str = f"{name}{cont.ARBEIT_LEISTUNG.get_suffix(suff)}"
+            new_name: str = (
+                f"{name}{cont.SUFFIXES.col_arbeit}"
+                if fig_type in ["mon"]
+                else f"{name}{cont.SUFFIXES.col_leistung}"
+            )
         else:
             new_name = name
+
         trace_visible: bool = False
-        if switch:
+
+        if fig_type in ["days"]:
             trace_visible = st.session_state[f'cb_vis_{trace_data["legendgroup"]}']
-        if fig_type in ["mon", "jdl"] and any(
-            suff in new_name for suff in cont.ARBEIT_LEISTUNG.all_suffixes
-        ):
-            suffixes: list[str] = cont.ARBEIT_LEISTUNG.all_suffixes
-            trace_stripped: str = new_name
-            for suffix in suffixes:
-                trace_stripped = trace_stripped.replace(suffix, "")
-            combos: list[str] = [f"{trace_stripped}{suffix}" for suffix in suffixes]
-            trace_visible = any(
-                gf.st_get(f"cb_vis_{trace_suff}") for trace_suff in combos
-            )
+        if fig_type in ["mon", "jdl"]:
+            trace_visible = trace_vis_jdl_mon(new_name)
         else:
             trace_visible = st.session_state[f"cb_vis_{new_name}"]
 
         fig = fig.update_traces({"visible": trace_visible}, {"name": new_name})
+        if name != new_name:
+            fig = fig.update_traces({"visible": trace_visible}, {"name": name})
 
     return fig
+
+
+def trace_vis_jdl_mon(trace_name: str) -> bool:
+    """Trace visibility for additional graphs Jahresdauerlinie und Monatswerte"""
+
+    suffixes: list[str] = cont.ARBEIT_LEISTUNG.all_suffixes
+    trace_stripped: str = trace_name
+    for suffix in suffixes:
+        trace_stripped = trace_stripped.replace(suffix, "")
+    combos: list[str] = [trace_stripped] + [
+        f"{trace_stripped}{suffix}" for suffix in suffixes
+    ]
+
+    return any(gf.st_get(f"cb_vis_{trace}") for trace in combos)
 
 
 @gf.func_timer
@@ -487,9 +499,8 @@ def show_annos(fig: go.Figure, visible_traces: list[dict]) -> go.Figure:
     return fig
 
 
-# TODO: docstring
 def legend_groups_for_multi_year(fig: go.Figure) -> go.Figure:
-    """Docstring"""
+    """Calculates legend groups for multi year plots."""
 
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)

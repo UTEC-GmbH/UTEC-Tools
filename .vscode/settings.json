@@ -9,5 +9,8 @@
     "ruff.logLevel": "warn",
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
-    }
+    },
+    "docify.commentService.programmingLanguage": "python",
+    "docify.commentService.docstringFormat": "Google",
+    "docify.commentService.sidePanelReviewMode": true
 }

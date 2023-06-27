@@ -126,14 +126,16 @@ def add_air_temperature(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             mdf.df.select(cont.SPECIAL_COLS.index)
             .join(df_parameter, on=cont.SPECIAL_COLS.index, how="outer")
             .sort(cont.SPECIAL_COLS.index)
-            .interpolate(),
+            .interpolate()
+            .fill_null(strategy="forward"),
             on=cont.SPECIAL_COLS.index,
         )
-        mdf.meta.lines[parameter.name] = cld.MetaLine(
-            name=parameter.name,
-            name_orgidx=f"{parameter.name}{cont.SUFFIXES.col_original_index}",
-            orig_tit=parameter.name,
-            tit=parameter.name,  # Translation here or before?!?
+        par_nam: str = parameter.name_de or parameter.name
+        mdf.meta.lines[par_nam] = cld.MetaLine(
+            name=par_nam,
+            name_orgidx=f"{par_nam}{cont.SUFFIXES.col_original_index}",
+            orig_tit=par_nam,
+            tit=par_nam,
             unit=parameter.unit,
         )
 

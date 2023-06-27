@@ -25,6 +25,7 @@ class DWDParameter:
     name: str
     available_resolutions: list[str]
     unit: str
+    name_de: str | None = None
     closest_station_id: str | None = None
     resolution: str | None = None
     data_frame: pl.DataFrame | None = None

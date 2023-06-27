@@ -128,8 +128,11 @@ class Figs:
 
     def list_all_figs(self) -> list[FigProp]:
         """Get a list of all figs as custom types"""
-        figs = [self.base, self.jdl, self.mon, self.days]
-        return [fig for fig in figs if fig is not None]
+        return [
+            getattr(self, fig)
+            for fig in self.__dataclass_fields__
+            if getattr(self, fig)
+        ]
 
     def write_all_to_st(self) -> None:
         """Write all figs to streamlit"""

@@ -8,6 +8,7 @@ from collections import Counter
 from collections.abc import Callable
 from typing import Any, Literal
 
+import numpy as np
 import streamlit as st
 import streamlit_lottie as stlot
 from loguru import logger
@@ -257,7 +258,15 @@ def nachkomma(value: float) -> str:
     return str(f"{value:,.2f}").replace(".", ",")
 
 
-def last_day_of_month(any_day: dt.datetime) -> dt.datetime:
+def start_of_month(dt_obj: dt.datetime | np.datetime64) -> dt.datetime:
+    """Replace the day of a datetime with '1' to get the start of the month"""
+
+    if isinstance(dt_obj, np.datetime64):
+        dt_obj: dt.datetime = dt_obj.astype("M8[M]").astype(dt.datetime)
+    return dt_obj.replace(day=1)
+
+
+def end_of_month(dt_obj: dt.datetime | np.datetime64) -> dt.datetime:
     """Find the last day of the month of a given datetime
     The day 28 exists in every month. 4 days later, it's always next month.
     Subtracting the number of the current day brings us back one month.
@@ -269,8 +278,11 @@ def last_day_of_month(any_day: dt.datetime) -> dt.datetime:
         - dt.datetime: datetime value where the day is the last day of that month
     """
 
-    next_month: dt.datetime = any_day.replace(day=28) + dt.timedelta(days=4)
-
+    if isinstance(dt_obj, np.datetime64):
+        dt_obj = dt_obj.astype("M8[M]").astype(dt.datetime)
+    next_month: dt.datetime = dt_obj.replace(day=28) + dt.timedelta(
+        days=4
+    )  # Jump to next month
     return next_month - dt.timedelta(days=next_month.day)
 
 

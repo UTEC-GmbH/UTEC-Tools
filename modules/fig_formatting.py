@@ -9,6 +9,7 @@ import re
 from datetime import datetime
 from typing import Any
 
+import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
 from loguru import logger
@@ -171,14 +172,12 @@ def standard_xaxis(
     """
 
     x_max: Any = max(max(p["x"]) for p in data.values())
-    if isinstance(x_max, datetime):
-        x_max = gf.last_day_of_month(x_max)
+    if isinstance(x_max, datetime | np.datetime64):
+        x_max = gf.end_of_month(x_max)
 
     x_min: Any = min(min(p["x"]) for p in data.values())
-    if isinstance(x_min, datetime):
-        x_min = x_min.replace(day=1)
-
-    logger.debug(f"Figure '{title.split('<')[0]}' x-axis range: {[x_min, x_max]}")
+    if isinstance(x_min, datetime | np.datetime64):
+        x_min = gf.start_of_month(x_min)
 
     return fig.update_xaxes(
         nticks=13,
@@ -443,7 +442,7 @@ def show_y_axes(fig: go.Figure, visible_units: list[str]) -> go.Figure:
 
     logger.debug(
         f"Visible y-axes in figure "
-        f"'{layout['title']['text'].split('<')[0]}': \n{axes_to_show}"
+        f"'{layout['title']['text'].split('<')[0]}': {axes_to_show}"
     )
 
     for count, axis in enumerate(axes_to_show):

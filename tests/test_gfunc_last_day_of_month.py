@@ -4,7 +4,7 @@ import datetime as dt
 
 import pytest
 
-from modules.general_functions import last_day_of_month
+from modules.general_functions import end_of_month
 
 """
 Code Analysis
@@ -40,7 +40,7 @@ class TestLastDayOfMonth:
 
         input_date = dt.datetime(2021, 5, 15)
         expected_output = dt.datetime(2021, 5, 31)
-        assert last_day_of_month(input_date) == expected_output
+        assert end_of_month(input_date) == expected_output
 
     def test_last_day_of_month_edge_case(self) -> None:
         """Tests that the function correctly handles february 28th in both leap and non-leap years, as well as december 31st.
@@ -49,15 +49,15 @@ class TestLastDayOfMonth:
 
         input_date1 = dt.datetime(2020, 2, 28)
         expected_output1 = dt.datetime(2020, 2, 29)
-        assert last_day_of_month(input_date1) == expected_output1
+        assert end_of_month(input_date1) == expected_output1
 
         input_date2 = dt.datetime(2021, 2, 28)
         expected_output2 = dt.datetime(2021, 2, 28)
-        assert last_day_of_month(input_date2) == expected_output2
+        assert end_of_month(input_date2) == expected_output2
 
         input_date3 = dt.datetime(2021, 12, 31)
         expected_output3 = dt.datetime(2021, 12, 31)
-        assert last_day_of_month(input_date3) == expected_output3
+        assert end_of_month(input_date3) == expected_output3
 
     def test_last_day_of_month_general_behavior(self) -> None:
         """Tests that the function does not modify the input datetime object and handles unexpected input formats appropriately.
@@ -66,10 +66,10 @@ class TestLastDayOfMonth:
 
         input_date = "2021-05-15"
         with pytest.raises(TypeError):
-            last_day_of_month(input_date)
+            end_of_month(input_date)
 
         input_date = dt.datetime(2021, 5, 15)
-        last_day_of_month(input_date)
+        end_of_month(input_date)
         assert input_date == dt.datetime(2021, 5, 15)
 
     def test_last_day_of_month_timezone(self) -> None:
@@ -79,4 +79,4 @@ class TestLastDayOfMonth:
         # create datetime object with timezone
         input_datetime = dt.datetime(2021, 5, 15, 12, 0, 0, tzinfo=dt.timezone.utc)
         expected_output = dt.datetime(2021, 5, 31, 12, 0, 0, tzinfo=dt.timezone.utc)
-        assert last_day_of_month(input_datetime) == expected_output
+        assert end_of_month(input_datetime) == expected_output

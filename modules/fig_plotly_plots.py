@@ -116,7 +116,7 @@ def hover_template(
     hovtemp: str = f"{trace_unit} {cusd_format}"
 
     return np.select(
-        [abs(line_data) < 10, abs(line_data) < 100],  # noqa: PLR2004
+        [np.abs(line_data) < 10, np.abs(line_data) < 100],  # noqa: PLR2004
         [
             "%{y:,.2f}" + hovtemp,
             "%{y:,.1f}" + hovtemp,

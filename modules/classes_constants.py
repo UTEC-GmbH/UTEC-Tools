@@ -6,8 +6,6 @@ from typing import TypedDict
 
 from loguru import logger
 
-from modules import general_functions as gf
-
 
 @dataclass(frozen=True, kw_only=True)
 class Suffixes:
@@ -219,7 +217,7 @@ class ObisElectrical:
 
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
-        return f"[{gf.string_new_line_per_item(self.as_dic())}]"
+        return "\n".join([f"{key}: '{val}'" for key, val in self.as_dic().items()])
 
     def __post_init__(self) -> None:
         """Check if code is valid and fill in the fields"""

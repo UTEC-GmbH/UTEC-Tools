@@ -36,7 +36,8 @@ def get_all_parameters() -> dict[str, cld.DWDParameter]:
                 all_parameters[param] = cld.DWDParameter(
                     name=param,
                     available_resolutions=[res],
-                    unit=discover[res][param].get("origin"),
+                    unit=f" {discover[res][param].get('origin')}",
+                    name_de=cont.DWD_TRANSLATION.get(param),
                 )
             else:
                 all_parameters[param].available_resolutions.append(res)
@@ -290,6 +291,7 @@ def meteo_df(
                     pl.col(cont.SPECIAL_COLS.index).dt.replace_time_zone(None),
                 ]
             )
+            .rename({param.name: param.name_de or param.name})
         )
     return params
 

@@ -1,5 +1,5 @@
 # sourcery skip: avoid-global-variables
-"""Seite Grafische Datenauswertung"""  # noqa: N999
+"""Seite Grafische Datenauswertung"""
 
 from typing import Any, Literal
 
@@ -60,94 +60,92 @@ def gather_and_manipulate_data() -> cld.MetaAndDfs:
     """Import Excel file and do stuff with the data"""
 
     if isinstance(gf.st_get("mdf"), cld.MetaAndDfs):
-        mdf: cld.MetaAndDfs = gf.st_get("mdf")
+        mdf_i: cld.MetaAndDfs = gf.st_get("mdf")
     else:
-        mdf: cld.MetaAndDfs = ex_in.import_prefab_excel(gf.st_get("f_up"))
+        mdf_i: cld.MetaAndDfs = ex_in.import_prefab_excel(gf.st_get("f_up"))
 
     # Grundeinstellungen in der sidebar
-    sm.base_settings(mdf)
+    sm.base_settings(mdf_i)
 
     if gf.st_get("but_base_settings") or gf.st_get("but_meteo_sidebar"):
-        gf.st_delete("fig_base")
-        gf.st_delete("fig_jdl")
-        gf.st_delete("fig_mon")
+        # delete all figs in session state
+        for fig in cont.FIG_KEYS.as_dic().values():
+            gf.st_delete(fig)
 
     # anzuzeigende Grafiken
-    sm.select_graphs(mdf)
+    sm.select_graphs(mdf_i)
 
     # Außentemperatur
     sm.meteo_sidebar("graph")
 
     if gf.st_get("but_meteo_sidebar"):
         if gf.st_get("cb_temp"):
-            mdf = df_man.add_air_temperature(mdf)
+            mdf_i = df_man.add_air_temperature(mdf_i)
         else:
-            mdf.df.drop(cont.SPECIAL_COLS.temp)
+            mdf_i.df.drop(cont.SPECIAL_COLS.temp)
 
     # df mit Stundenwerten erzeugen
     if gf.st_get("cb_h"):
-        mdf = df_man.df_h(mdf)
+        mdf_i = df_man.df_h(mdf_i)
 
     # df für Tagesvergleich
     if gf.st_get("but_select_graphs") and gf.st_get("cb_days"):
         if gf.st_get("cb_h"):
-            df_man.dic_days(mdf.df_h)
+            df_man.dic_days(mdf_i.df_h)
         else:
-            df_man.dic_days(mdf.df)
+            df_man.dic_days(mdf_i.df)
 
     # df geordnete Jahresdauerlinie
     if gf.st_get("cb_jdl"):
-        mdf = df_man.jdl(mdf)
+        mdf_i = df_man.jdl(mdf_i)
 
     # df Monatswerte
     if gf.st_get("cb_mon"):
-        mdf = df_man.mon(mdf)
+        mdf_i = df_man.mon(mdf_i)
 
-    gf.st_set("mdf", mdf)
-    return mdf
+    gf.st_set("mdf", mdf_i)
+    return mdf_i
 
 
 @gf.lottie_spinner
-def make_graphs(mdf: cld.MetaAndDfs) -> clf.Figs:
+def make_graphs(mdf_g: cld.MetaAndDfs) -> clf.Figs:
     """Grafiken erzeugen"""
 
-    figs: clf.Figs = gf.st_get("figs") or clf.Figs()
+    figs_i: clf.Figs = gf.st_get("figs") or clf.Figs()
 
     if gf.st_get("but_base_settings") or gf.st_get("but_meteo_sidebar"):
-        figs.base = None
-        figs.jdl = None
-        figs.mon = None
-        figs.days = None
+        for attr in figs_i.__dataclass_fields__:
+            setattr(figs_i, attr, None)
 
     # Grund-Grafik
-    if figs.base is None:
+    if figs_i.base is None:
         with st.spinner('Momentle bitte - Grafik "Lastgang" wird erzeugt...'):
-            figs.base = clf.FigProp(
-                fig=fig_create.cr_fig_base(mdf), st_key=cont.FIG_KEYS.lastgang
+            figs_i.base = clf.FigProp(
+                fig=fig_create.cr_fig_base(mdf_g), st_key=cont.FIG_KEYS.lastgang
             )
 
     # Jahresdauerlinie
-    if figs.jdl is None and gf.st_not_in("fig_jdl") and gf.st_get("cb_jdl"):
+    if gf.st_get("cb_jdl") and (figs_i.jdl is None or gf.st_not_in("fig_jdl")):
         with st.spinner('Momentle bitte - Grafik "Jahresdauerlinie" wird erzeugt...'):
-            figs.jdl = clf.FigProp(
-                fig=fig_create.cr_fig_jdl(mdf), st_key=cont.FIG_KEYS.jdl
+            figs_i.jdl = clf.FigProp(
+                fig=fig_create.cr_fig_jdl(mdf_g), st_key=cont.FIG_KEYS.jdl
             )
 
     # Monatswerte
-    if figs.mon is None and gf.st_not_in("fig_mon") and gf.st_get("cb_mon"):
+    if gf.st_get("cb_mon") and (figs_i.mon is None or gf.st_not_in("fig_mon")):
         with st.spinner('Momentle bitte - Grafik "Monatswerte" wird erzeugt...'):
-            figs.mon = clf.FigProp(
-                fig=fig_create.cr_fig_mon(mdf), st_key=cont.FIG_KEYS.mon
+            figs_i.mon = clf.FigProp(
+                fig=fig_create.cr_fig_mon(mdf_g), st_key=cont.FIG_KEYS.mon
             )
 
     # Tagesvergleich
-    if figs.days is None and gf.st_get("but_select_graphs") and gf.st_get("cb_days"):
+    if gf.st_get("cb_days") and (figs_i.days is None or gf.st_get("but_select_graphs")):
         with st.spinner('Momentle bitte - Grafik "Tagesvergleich" wird erzeugt...'):
-            figs.days = clf.FigProp(
-                fig=fig_create.cr_fig_days(mdf), st_key=cont.FIG_KEYS.days
+            figs_i.days = clf.FigProp(
+                fig=fig_create.cr_fig_days(mdf_g), st_key=cont.FIG_KEYS.days
             )
 
-    figs.write_all_to_st()
+    figs_i.write_all_to_st()
 
     # horizontale / vertikale Linien
     sm.h_v_lines()
@@ -159,8 +157,8 @@ def make_graphs(mdf: cld.MetaAndDfs) -> clf.Figs:
     if gf.st_get("but_clean_outliers"):
         fig_anno.clean_outliers()
 
-    gf.st_set("figs", figs)
-    return figs
+    gf.st_set("figs", figs_i)
+    return figs_i
 
 
 if uauth.authentication(st.session_state["page"]):

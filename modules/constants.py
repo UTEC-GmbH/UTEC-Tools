@@ -166,6 +166,8 @@ DWD_RESOLUTION_OPTIONS: list[str] = [
     "monthly",
 ]
 
+DWD_TRANSLATION: dict[str, str] = {"temperature_air_mean_200": "Außentemperatur"}
+
 FIG_TITLES: clc.FigIDs = clc.FigIDs(
     lastgang="Lastgang",
     jdl="Geordnete Jahresdauerlinie",

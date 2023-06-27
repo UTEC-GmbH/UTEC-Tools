@@ -6,7 +6,7 @@ class NotFoundError(Exception):
 
     def __init__(self, entry: str, where: str) -> None:
         """Initiate"""
-        super().__init__(f"Error: '{entry}' not found in '{where}'.")
+        super().__init__(f"Error: requested object '{entry}' not found in '{where}'.")
 
 
 class NoDWDParameterError(Exception):

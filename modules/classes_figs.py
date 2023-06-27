@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 from loguru import logger
 
 from modules import fig_formatting as fform
-from modules import general_functions as gf
+from modules import streamlit_functions as gf
 
 
 @dataclass(kw_only=True)

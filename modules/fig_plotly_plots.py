@@ -41,13 +41,6 @@ def line_plot(
     ]
     title: str = kwargs.get("title") or ""
 
-    logger.debug(
-        f"The following Lines will be added to '{title.split('<')[0]}':\n"
-        + gf.string_new_line_per_item(
-            [lin for lin in lines if gf.check_if_not_exclude(lin)]
-        )
-    )
-
     fig: go.Figure = go.Figure()
     fig = fig.update_layout(
         {
@@ -64,18 +57,15 @@ def line_plot(
         line_meta: cld.MetaLine = mdf.meta.lines[line]
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
 
+        logger.info(f"Adding line '{line_meta.tit}' to Figure '{title.split('<')[0]}'.")
+        logger.debug(f"original index column in line_meta: '{line_meta.name_orgidx}'")
+
         if line_meta.name_orgidx in df.columns:
             cusd: pl.Series = df.get_column(line_meta.name_orgidx)
-            logger.info(
-                f"Adding line '{line_meta.tit}' to Figure '{title.split('<')[0]}' "
-                f"(original index column: '{line_meta.name_orgidx}')"
-            )
+            logger.debug("original index column found in df")
         else:
             cusd: pl.Series = df.get_column(cont.SPECIAL_COLS.original_index)
-            logger.info(
-                f"Adding line '{line_meta.tit}' to Figure '{title.split('<')[0]}' "
-                f"(original index column: '{cont.SPECIAL_COLS.original_index}')"
-            )
+            logger.debug("original index column NOT found in df")
 
         trace_unit: str | None = (
             line_meta.unit if data_frame == "df" else line_meta.unit_h

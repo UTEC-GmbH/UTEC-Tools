@@ -19,6 +19,7 @@ from loguru import logger
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
+from modules import streamlit_functions as sf
 from modules import user_authentication as uauth
 
 
@@ -99,7 +100,7 @@ def general_setup() -> None:
     pandas.io.formats.excel.ExcelFormatter.header_style = None  # type: ignore
     sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), traces_sample_rate=0.1)
 
-    gf.st_add_once("UTEC_logo", gf.render_svg())
+    sf.st_add_once("UTEC_logo", gf.render_svg())
 
     st.markdown(
         cont.CSS_LABELS,
@@ -111,7 +112,7 @@ def general_setup() -> None:
         st.session_state["com_date"] = commit["com_date"]
         st.session_state["com_msg"] = commit["com_msg"]
 
-    gf.st_add_once("all_user_data", uauth.get_all_user_data())
+    sf.st_add_once("all_user_data", uauth.get_all_user_data())
 
     exp_dir: Path = Path(f"{Path.cwd()}/export")
     if Path.exists(exp_dir):
@@ -127,6 +128,11 @@ def general_setup() -> None:
 @gf.func_timer
 def page_header_setup(page: str) -> None:
     """Seitenkopf mit Logo, Titel (je nach Seite) und letzten Änderungen"""
+    sf.st_add_once("number of runs", 0)
+    sf.st_set("number of runs", sf.st_get("number of runs") + 1)
+    logger.log(
+        slog.LVLS.new_run.name, f"NEW RUN (number {sf.st_get('number of runs')})"
+    )
 
     st.session_state["page"] = page
     st.session_state["title_container"] = st.container()
@@ -134,7 +140,7 @@ def page_header_setup(page: str) -> None:
     with st.session_state["title_container"]:
         columns: list = st.columns(2)
 
-        gf.st_add_once("UTEC_logo", gf.render_svg())
+        sf.st_add_once("UTEC_logo", gf.render_svg())
         with columns[0]:
             st.write(st.session_state["UTEC_logo"], unsafe_allow_html=True)
 
@@ -157,7 +163,7 @@ def page_header_setup(page: str) -> None:
             )
 
             access_lvl_user: str | list | None = (
-                None if gf.st_not_in("access_lvl") else gf.st_get("access_lvl")
+                None if sf.st_not_in("access_lvl") else sf.st_get("access_lvl")
             )
             if isinstance(access_lvl_user, str) and access_lvl_user in ("god"):
                 st.write(

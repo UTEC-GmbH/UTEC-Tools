@@ -5,8 +5,8 @@ import streamlit as st
 from modules import constants as cont
 from modules import fig_formatting as fig_format
 from modules import fig_plotly_plots as ploplo
+from modules import graph_menus as menu_g
 from modules import meteorolog as meteo
-from modules import streamlit_menus as sm
 from modules import user_authentication as uauth
 from modules.setup_stuff import page_header_setup
 
@@ -20,7 +20,7 @@ if uauth.authentication(PAGE):
 
     # Auswahl Ort
     with st.sidebar:
-        sm.meteo_sidebar(PAGE)
+        menu_g.meteo_sidebar(PAGE)
         st.markdown("###")
         st.markdown("###")
 
@@ -89,10 +89,10 @@ if uauth.authentication(PAGE):
                     config=fuan.plotly_config(height=450, title_edit=False),
                 )
                 st.markdown("###")
-                sm.meteo_params_main()
+                menu_g.meteo_params_main()
 
             with tab_down:
-                sm.downloads(PAGE)
+                menu_g.downloads(PAGE)
 
     else:
         col1, col2 = st.columns([4, 3], gap="medium")
@@ -116,4 +116,4 @@ if uauth.authentication(PAGE):
                 st.markdown(f"- {param}")
 
         st.markdown("###")
-        sm.meteo_params_main()
+        menu_g.meteo_params_main()

@@ -13,6 +13,7 @@ from modules import constants as cont
 from modules import general_functions as gf
 from modules import meteorolog as met
 from modules import setup_logger as slog
+from modules import streamlit_functions as sf
 
 if TYPE_CHECKING:
     import datetime as dt
@@ -137,6 +138,7 @@ def add_air_temperature(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             orig_tit=par_nam,
             tit=par_nam,
             unit=parameter.unit,
+            unit_h=parameter.unit,
         )
 
     return mdf
@@ -214,14 +216,14 @@ def df_h(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         .with_columns(pl.col(COL_IND).alias(COL_ORG))
     )
 
-    if mdf.meta.multi_years and gf.st_get("cb_multi_year"):
+    if mdf.meta.multi_years and sf.st_get("cb_multi_year"):
         mdf.df_h_multi = split_multi_years(mdf, "df_h")
 
     logger.success("DataFrame mit Stundenwerten erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.df_h.head())
     logger.info("  \n".join(["Columns in mdf.df_h:", *mdf.df_h.columns]))
 
-    gf.st_set("mdf", mdf)
+    sf.st_set("mdf", mdf)
     return mdf
 
 
@@ -273,7 +275,7 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     logger.log(slog.LVLS.data_frame.name, mdf.jdl.head())
     logger.info("  \n".join(["Columns in mdf.jdl:", *mdf.jdl.columns]))
 
-    gf.st_set("mdf", mdf)
+    sf.st_set("mdf", mdf)
     return mdf
 
 
@@ -309,14 +311,14 @@ def mon(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         )
     )
 
-    if mdf.meta.multi_years and gf.st_get("cb_multi_year"):
+    if mdf.meta.multi_years and sf.st_get("cb_multi_year"):
         mdf.mon_multi = split_multi_years(mdf, "mon")
 
     logger.success("DataFrame mit Monatswerten erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.mon.head())
     logger.info("  \n".join(["Columns in mdf.mon:", *mdf.mon.columns]))
 
-    gf.st_set("mdf", mdf)
+    sf.st_set("mdf", mdf)
     return mdf
 
 
@@ -325,11 +327,11 @@ def mon(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 def dic_days(mdf: cld.MetaAndDfs) -> None:
     """Create Dictionary for Days"""
 
-    gf.st_set("dic_days", {})
-    for num in range(int(gf.st_get("ni_days"))):
-        date: dt.date = gf.st_get(f"day_{num}")
+    sf.st_set("dic_days", {})
+    for num in range(int(sf.st_get("ni_days"))):
+        date: dt.date = sf.st_get(f"day_{num}")
         item: pl.DataFrame = mdf.df.filter(f"{date:%Y-%m-%d}").with_columns(
             pl.col(COL_IND).dt.strftime("2020-1-1 %H:%M:%S").str.strptime(pl.Datetime),
         )
 
-        gf.st_set(f"dic_days_{num}", item)
+        sf.st_set(f"dic_days_{num}", item)

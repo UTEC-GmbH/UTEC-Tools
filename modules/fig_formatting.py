@@ -18,6 +18,7 @@ from modules import constants as cont
 from modules import fig_annotations as fa
 from modules import fig_general_functions as fgf
 from modules import general_functions as gf
+from modules import streamlit_functions as sf
 
 FORMAT_PRIMARY_Y: dict[str, Any] = {
     "tickformat": ",d",
@@ -253,7 +254,7 @@ def update_main(fig: go.Figure) -> go.Figure:
     # Legende ausblenden, wenn nur eine Linie angezeigt wird
     fig = fig.update_layout({"showlegend": len(visible_traces) > 1})
 
-    if gf.st_get("cb_multi_year"):
+    if sf.st_get("cb_multi_year"):
         fig = legend_groups_for_multi_year(fig)
 
     return fig
@@ -336,7 +337,7 @@ def trace_vis_jdl_mon(trace_name: str) -> bool:
         f"{trace_stripped}{suffix}" for suffix in suffixes
     ]
 
-    return any(gf.st_get(f"cb_vis_{trace}") for trace in combos)
+    return any(sf.st_get(f"cb_vis_{trace}") for trace in combos)
 
 
 @gf.func_timer
@@ -360,16 +361,16 @@ def format_traces(
         index_unit: int = visible_units.index(trace["meta"]["unit"])
         trace_y: str = "y" if index_unit == 0 else f"y{index_unit + 1}"
         line_mode: str = "lines"
-        if gf.st_get(f"cb_markers_{trace_name}") or fig_type == "mon":
+        if sf.st_get(f"cb_markers_{trace_name}") or fig_type == "mon":
             line_mode = "markers+lines"
-        if gf.st_get(f"sb_line_dash_{trace_name}") == "keine":
+        if sf.st_get(f"sb_line_dash_{trace_name}") == "keine":
             line_mode = "markers"
 
-        if gf.st_not_in(f"cp_{trace_name}"):
+        if sf.st_not_in(f"cp_{trace_name}"):
             suff: str = "Arbeit" if fig_type in {"mon"} else "Leistung"
             trace_name = f"{trace_name}{cont.ARBEIT_LEISTUNG.get_suffix(suff)}"
 
-        if gf.st_not_in(f"cp_{trace_name}"):
+        if sf.st_not_in(f"cp_{trace_name}"):
             trace_name = re.split(r"\b\d{4}\b", trace_name)[0]
 
         if not switch:
@@ -404,7 +405,7 @@ def format_traces(
                     "marker_size": (
                         15
                         if fig_type == "mon"
-                        else gf.st_get(f"ni_markers_{trace_name}")
+                        else sf.st_get(f"ni_markers_{trace_name}")
                     ),
                     "fill": line_fill,
                     "fillcolor": fill_color,
@@ -473,22 +474,35 @@ def show_annos(fig: go.Figure, visible_traces: list[dict]) -> go.Figure:
     """
     visible_lines: list[str] = [trace["name"] for trace in visible_traces]
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
+    fig_type: str = fgf.fig_type_by_title(fig)
+
+    logger.debug(
+        gf.string_new_line_per_item(
+            [anno["name"] for anno in layout["annotations"]],
+            f"Figure '{fig_type}': available annotations:",
+        )
+    )
 
     for anno in layout["annotations"]:
         an_name: str = anno["name"]
         if "hline" not in an_name:
-            an_name_cust: str = an_name
-            for suff in cont.ARBEIT_LEISTUNG.all_suffixes:
-                if suff in an_name:
-                    an_name_cust: str = an_name.split(suff)[0]
-            an_name_cust = an_name_cust.split(": ")[0]
-
+            an_name_cust: str = an_name.split(": ")[0]
             visible: bool = all(
                 [
-                    gf.st_get(f"cb_anno_{an_name_cust}"),
+                    sf.st_get(f"cb_anno_{an_name_cust}"),
                     any(line in an_name for line in visible_lines),
                 ]
             )
+
+            if all(
+                [
+                    fig_type == "jdl",
+                    not visible,
+                    cont.SUFFIXES.col_leistung not in an_name_cust,
+                    sf.st_get(f"cb_anno_{an_name_cust}{cont.SUFFIXES.col_leistung}"),
+                ]
+            ):
+                visible = True
 
             fig = fig.update_annotations(
                 {"visible": visible},

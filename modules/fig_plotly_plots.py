@@ -52,6 +52,8 @@ def line_plot(
         }
     )
 
+    logger.debug(gf.string_new_line_per_item(lines), "lines in lines:")
+
     for line in [lin for lin in lines if gf.check_if_not_exclude(lin)]:
         line_data: pl.Series = df.get_column(line)
         line_meta: cld.MetaLine = mdf.meta.lines[line]

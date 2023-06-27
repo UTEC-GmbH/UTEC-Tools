@@ -158,7 +158,11 @@ def split_multi_years(
         col_rename: dict[str, str] = multi_year_column_rename(df, year)
         for old_name, new_name in col_rename.items():
             if new_name not in mdf.meta.lines:
-                mdf.meta.lines[new_name] = mdf.meta.lines[old_name]
+                old_line: cld.MetaLine = mdf.meta.lines[old_name]
+                new_line: cld.MetaLine = cld.MetaLine("tmp", "tmp", "tmp", "tmp")
+                for attr in old_line.as_dic():
+                    setattr(new_line, attr, getattr(old_line, attr))
+                mdf.meta.lines[new_name] = new_line
 
         df_multi[year] = (
             df.filter(pl.col(COL_IND).dt.year() == year)

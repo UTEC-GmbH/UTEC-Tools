@@ -79,7 +79,7 @@ LVLS = LogLevels(
         icon="✨",
         custom=True,
         info="",
-        blank_lines_before=2,
+        blank_lines_before=3,
     ),
     func_start=LevelProperties(
         "func_start", icon="👉👈", custom=True, info="", blank_lines_before=1

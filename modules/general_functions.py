@@ -16,6 +16,14 @@ from loguru import logger
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
+from modules import streamlit_functions as sf
+
+
+def log_new_run() -> None:
+    """Log new run"""
+    sf.s_add_once("number of runs", 0)
+    sf.s_set("number of runs", sf.s_get("number of runs") + 1)
+    logger.log(slog.LVLS.new_run.name, f"NEW RUN ( # {sf.s_get('number of runs')} )")
 
 
 def lottie_spinner(func: Callable) -> Callable:

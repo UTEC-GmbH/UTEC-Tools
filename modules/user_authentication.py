@@ -73,7 +73,7 @@ class MessageLog:
         )
     )
 
-    access_other = MessageLogLvl2(message=(f"Angemeldet als '{sf.st_get('name')}'."))
+    access_other = MessageLogLvl2(message=(f"Angemeldet als '{sf.s_get('name')}'."))
 
     access_until = MessageLogLvl2(
         message=(
@@ -90,7 +90,7 @@ class MessageLog:
 def authentication(page: str) -> bool:
     """Authentication object"""
 
-    if not sf.st_get("authentication_status"):
+    if not sf.s_get("authentication_status"):
         MessageLog.no_login.show_message()
         return False
     if page not in st.session_state["access_pages"]:
@@ -241,7 +241,7 @@ def update_user(username: str, updates: dict) -> Any:
 @gf.func_timer
 def delete_user() -> None:
     """Benutzer löschen"""
-    if not sf.st_get("ms_del_users"):
+    if not sf.s_get("ms_del_users"):
         return
 
     all_users: dict[str, dict[str, str]] = get_all_user_data()

@@ -114,7 +114,8 @@ def interpolate_missing_data(df: pl.DataFrame, method: str = "akima") -> pl.Data
     return df_pl
 
 
-def add_air_temperature(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
+@gf.func_timer
+def add_temperature_data(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Add air temperature for given address to the base data frame"""
 
     parameters: list[cld.DWDParameter] = met.meteo_df(mdf)
@@ -140,14 +141,21 @@ def add_air_temperature(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             unit=parameter.unit,
             unit_h=parameter.unit,
         )
-
+    logger.info(
+        gf.string_new_line_per_item(
+            mdf.df.columns, "mdf.df.columns after adding weather data:"
+        )
+    )
     return mdf
 
 
+@gf.func_timer
 def split_multi_years(
     mdf: cld.MetaAndDfs, frame_to_split: Literal["df", "df_h", "mon"]
-) -> dict[int, pl.DataFrame]:
+) -> cld.MetaAndDfs:
     """Split into multiple years"""
+    if frame_to_split not in ["df", "df_h", "mon"]:
+        raise ValueError
 
     df: pl.DataFrame = getattr(mdf, frame_to_split)
     if not mdf.meta.years:
@@ -162,6 +170,8 @@ def split_multi_years(
                 new_line: cld.MetaLine = cld.MetaLine("tmp", "tmp", "tmp", "tmp")
                 for attr in old_line.as_dic():
                     setattr(new_line, attr, getattr(old_line, attr))
+                new_line.tit = new_name
+                new_line.name_orgidx = f"{new_name}{cont.SUFFIXES.col_original_index}"
                 mdf.meta.lines[new_name] = new_line
 
         df_multi[year] = (
@@ -173,12 +183,17 @@ def split_multi_years(
             )
             .rename(col_rename)
         )
+    if frame_to_split == "df":
+        mdf.df_multi = df_multi
+    elif frame_to_split == "df_h":
+        mdf.df_h_multi = df_multi
+    else:
+        mdf.mon_multi = df_multi
 
-    logger.debug("  \n".join(["Meta for following lines available:", *mdf.meta.lines]))
-
-    return df_multi
+    return mdf
 
 
+@gf.func_timer
 def multi_year_column_rename(df: pl.DataFrame, year: int) -> dict[str, str]:
     """Rename columns for multi year data"""
     col_rename: dict[str, str] = {}
@@ -220,20 +235,26 @@ def df_h(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         .with_columns(pl.col(COL_IND).alias(COL_ORG))
     )
 
-    if mdf.meta.multi_years and sf.st_get("cb_multi_year"):
-        mdf.df_h_multi = split_multi_years(mdf, "df_h")
+    if mdf.meta.multi_years and sf.s_get("cb_multi_year"):
+        mdf = split_multi_years(mdf, "df_h")
 
-    logger.success("DataFrame mit Stundenwerten erstellt.")
-    logger.log(slog.LVLS.data_frame.name, mdf.df_h.head())
-    logger.info("  \n".join(["Columns in mdf.df_h:", *mdf.df_h.columns]))
+    if mdf.df_h is not None:
+        logger.success("DataFrame mit Stundenwerten erstellt.")
+        logger.log(slog.LVLS.data_frame.name, mdf.df_h.head())
+        logger.info("  \n".join(["Columns in mdf.df_h:", *mdf.df_h.columns]))
 
-    sf.st_set("mdf", mdf)
+    sf.s_set("mdf", mdf)
     return mdf
 
 
 @gf.func_timer
 def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Jahresdauerlinie"""
+
+    if isinstance(mdf.df_h, pl.DataFrame):
+        logger.info("Vorhandenes df_h für jdl übernommen")
+    else:
+        logger.info("df_h wird für jdl neu erstellt neu erstellt")
 
     mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h(mdf)
 
@@ -277,9 +298,9 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 
     logger.success("DataFrame für Jahresdauerlinie erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.jdl.head())
-    logger.info("  \n".join(["Columns in mdf.jdl:", *mdf.jdl.columns]))
+    logger.info(gf.string_new_line_per_item(mdf.jdl.columns, "Columns in mdf.jdl:"))
 
-    sf.st_set("mdf", mdf)
+    sf.s_set("mdf", mdf)
     return mdf
 
 
@@ -315,14 +336,15 @@ def mon(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         )
     )
 
-    if mdf.meta.multi_years and sf.st_get("cb_multi_year"):
-        mdf.mon_multi = split_multi_years(mdf, "mon")
+    if mdf.meta.multi_years and sf.s_get("cb_multi_year"):
+        mdf = split_multi_years(mdf, "mon")
 
-    logger.success("DataFrame mit Monatswerten erstellt.")
-    logger.log(slog.LVLS.data_frame.name, mdf.mon.head())
-    logger.info("  \n".join(["Columns in mdf.mon:", *mdf.mon.columns]))
+    if mdf.mon is not None:
+        logger.success("DataFrame mit Monatswerten erstellt.")
+        logger.log(slog.LVLS.data_frame.name, mdf.mon.head())
+        logger.info("  \n".join(["Columns in mdf.mon:", *mdf.mon.columns]))
 
-    sf.st_set("mdf", mdf)
+    sf.s_set("mdf", mdf)
     return mdf
 
 
@@ -331,11 +353,11 @@ def mon(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 def dic_days(mdf: cld.MetaAndDfs) -> None:
     """Create Dictionary for Days"""
 
-    sf.st_set("dic_days", {})
-    for num in range(int(sf.st_get("ni_days"))):
-        date: dt.date = sf.st_get(f"day_{num}")
+    sf.s_set("dic_days", {})
+    for num in range(int(sf.s_get("ni_days"))):
+        date: dt.date = sf.s_get(f"day_{num}")
         item: pl.DataFrame = mdf.df.filter(f"{date:%Y-%m-%d}").with_columns(
             pl.col(COL_IND).dt.strftime("2020-1-1 %H:%M:%S").str.strptime(pl.Datetime),
         )
 
-        sf.st_set(f"dic_days_{num}", item)
+        sf.s_set(f"dic_days_{num}", item)

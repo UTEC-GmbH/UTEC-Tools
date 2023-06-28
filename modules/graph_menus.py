@@ -16,14 +16,13 @@ from modules import general_functions as gf
 from modules import streamlit_functions as sf
 
 
-@gf.func_timer
 def sidebar_file_upload() -> Any:
     """Hochgeladene Excel-Datei"""
 
-    with st.sidebar, st.expander(
-        "Auszuwertende Daten",
-        expanded=not bool(sf.st_get("f_up")),
-    ):
+    with st.sidebar:  # , st.expander(
+        #     "Auszuwertende Daten",
+        #     expanded=not bool(sf.st_get("f_up")),
+        # ):
         # Download
         sb_example: str | None = st.selectbox(
             "Beispieldateien",
@@ -37,6 +36,7 @@ def sidebar_file_upload() -> Any:
                 und mit den zu untersuchenden Daten füllen.
                 """
             ),
+            key="sb_example_file",
         )
 
         with open(f"example_files/{sb_example}.xlsx", "rb") as exfile:
@@ -48,38 +48,34 @@ def sidebar_file_upload() -> Any:
             )
 
         # benutze ausgewählte Beispieldatei direkt für debugging
-        if sf.st_get("access_lvl") == "god":
+        if sf.s_get("access_lvl") == "god":
             st.button("Beispieldatei direkt verwenden", "but_example_direct")
-            st.button("RESET", "but_reset")
-
-        if sf.st_get("but_reset"):
-            sf.st_delete("f_up")
 
         # Upload
-        sample_direct: str = f"example_files/{sb_example}.xlsx"
-        if sf.st_get("but_example_direct") or sf.st_get("f_up") == sample_direct:
-            f_up = sample_direct
-            st.session_state["f_up"] = f_up
+        # sample_direct: str = f"example_files/{sb_example}.xlsx"
+        # if sf.s_get("but_example_direct") or sf.s_get("f_up") == sample_direct:
+        #     f_up = sample_direct
+        #     st.session_state["f_up"] = f_up
 
-        else:
-            st.markdown("---")
-            f_up = st.file_uploader(
-                label="Datei hochladen",
-                type=["xlsx", "xlsm"],
-                accept_multiple_files=False,
-                help=(
-                    """
-                    Das Arbeitsblatt "Daten" in der Datei muss
-                    wie eine der Beispieldateien aufgebaut sein.
-                    """
-                ),
-                key="f_up",
-            )
+        # else:
+        st.markdown("---")
+        # f_up = st.file_uploader(
+        st.file_uploader(
+            label="Datei hochladen",
+            type=["xlsx", "xlsm"],
+            accept_multiple_files=False,
+            help=(
+                """
+                Das Arbeitsblatt "Daten" in der Datei muss
+                wie eine der Beispieldateien aufgebaut sein.
+                """
+            ),
+            key="f_up",
+        )
 
-    return f_up
+    return sf.s_get("f_up")
 
 
-@gf.func_timer
 def base_settings(mdf: cld.MetaAndDfs) -> None:
     """Grundeinstellungen (Stundenwerte, JDL, Monatswerte)"""
 
@@ -87,7 +83,7 @@ def base_settings(mdf: cld.MetaAndDfs) -> None:
         return
 
     if mdf.meta.td_mnts == cont.TIME_MIN.hour:
-        sf.st_set("cb_h", value=True)
+        sf.s_set("cb_h", value=True)
 
     if mdf.meta.td_mnts < cont.TIME_MIN.hour or mdf.meta.multi_years:
         with st.sidebar, st.form("Grundeinstellungen"):
@@ -121,10 +117,9 @@ def base_settings(mdf: cld.MetaAndDfs) -> None:
                     # disabled=True,
                 )
 
-            sf.st_set("but_base_settings", st.form_submit_button("Knöpfle"))
+            sf.s_set("but_base_settings", st.form_submit_button("Knöpfle"))
 
 
-@gf.func_timer
 def select_graphs(mdf: cld.MetaAndDfs) -> None:
     """Auswahl der anzuzeigenden Grafiken"""
     with st.sidebar, st.expander("anzuzeigende Grafiken", expanded=False), st.form(
@@ -194,7 +189,7 @@ def select_graphs(mdf: cld.MetaAndDfs) -> None:
             key="ni_days",
         )
 
-        for num in range(int(sf.st_get("ni_days"))):
+        for num in range(int(sf.s_get("ni_days"))):
             st.date_input(
                 label=f"Tag {num + 1!s}",
                 min_value=mdf.df.get_column(cont.SPECIAL_COLS.original_index).min(),
@@ -210,7 +205,6 @@ def select_graphs(mdf: cld.MetaAndDfs) -> None:
         st.session_state["but_select_graphs"] = st.form_submit_button("Knöpfle")
 
 
-@gf.func_timer
 def meteo_sidebar(page: str) -> None:
     """sidebar-Menu zur Außentemperatur"""
     with st.sidebar, st.expander("Außentemperatur", expanded=False), st.form(
@@ -276,12 +270,11 @@ def meteo_sidebar(page: str) -> None:
 
         st.markdown("###")
         st.session_state["but_meteo_sidebar"] = st.form_submit_button(
-            "Knöpfle",  # disabled=True
+            "Knöpfle",
         )
         st.markdown("###")
 
 
-@gf.func_timer
 def clean_outliers() -> None:
     """Menu zur Ausreißerbereinigung"""
 
@@ -317,7 +310,6 @@ def clean_outliers() -> None:
         st.session_state["but_clean_outliers"] = st.form_submit_button("Knöpfle")
 
 
-@gf.func_timer
 def smooth() -> None:
     """Einstellungen für die geglätteten Linien"""
 
@@ -364,10 +356,9 @@ def smooth() -> None:
         st.session_state["but_smooth"] = st.form_submit_button("Knöpfle")
 
 
-@gf.func_timer
 def h_v_lines(fig: go.Figure | None = None) -> None:
     """Menu für horizontale und vertikale Linien"""
-    fig = fig or sf.st_get("fig_base")
+    fig = fig or sf.s_get("fig_base")
     if fig is None:
         return
 
@@ -482,7 +473,6 @@ def display_options_main_col_settings() -> dict[str, dict]:
     }
 
 
-@gf.func_timer
 def display_options_main() -> bool:
     """Hauptmenu für die Darstellungsoptionen (Linienfarben, Füllung, etc.)"""
 
@@ -498,7 +488,7 @@ def display_options_main() -> bool:
                 st.markdown(columns[col]["Title"], unsafe_allow_html=True)
 
         # Check Boxes for line visibility, fill and color
-        fig: go.Figure = sf.st_get("fig_base")
+        fig: go.Figure = sf.s_get("fig_base")
 
         fig_data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
         fig_layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
@@ -587,7 +577,6 @@ def display_options_main() -> bool:
     return but_upd_main
 
 
-@gf.func_timer
 def display_smooth_main() -> bool:
     """Hauptmenu für die Darstellungsoptionen (Linienfarben, Füllung, etc.)"""
 
@@ -695,7 +684,6 @@ def display_smooth_main() -> bool:
     return but_smooth
 
 
-@gf.func_timer
 def downloads(page: str = "graph") -> None:
     """Dateidownloads"""
 
@@ -717,8 +705,8 @@ def downloads(page: str = "graph") -> None:
 
     if "graph" in page and not any(
         [
-            sf.st_get("but_html"),
-            sf.st_get("but_xls"),
+            sf.s_get("but_html"),
+            sf.s_get("but_xls"),
         ]
     ):
         st.markdown("###")
@@ -740,7 +728,7 @@ def downloads(page: str = "graph") -> None:
             ein Knöpfle zum herunterladen.""",
         )
 
-    if sf.st_get("but_html"):
+    if sf.s_get("but_html"):
         with st.spinner("Momentle bitte - html-Datei wird erzeugt..."):
             fig_cr.html_exp()
 
@@ -765,7 +753,7 @@ def downloads(page: str = "graph") -> None:
         st.markdown("---")
 
     if any(
-        sf.st_get(key)
+        sf.s_get(key)
         for key in (
             "but_xls",
             "but_meteo_main",
@@ -793,7 +781,7 @@ def downloads(page: str = "graph") -> None:
                 st.session_state["df_ex"] = df_ex
 
             if page in ("meteo"):
-                df_ex = sf.st_get("meteo_data")
+                df_ex = sf.s_get("meteo_data")
 
             dat = ex.excel_download(df_ex, page)
 

@@ -136,14 +136,14 @@ class Figs:
 
     def write_all_to_st(self) -> None:
         """Write all figs to streamlit"""
-        gf.st_set("figs", self)
+        gf.s_set("figs", self)
         if valid_figs := self.list_all_figs():
             logger.debug(
                 f"figs with data: "
                 f"{[fig.st_key for fig in valid_figs if fig is not None]}"
             )
             for fig in valid_figs:
-                gf.st_set(fig.st_key, fig.fig)
+                gf.s_set(fig.st_key, fig.fig)
 
     def update_all_figs(self) -> None:
         """Update all figs"""

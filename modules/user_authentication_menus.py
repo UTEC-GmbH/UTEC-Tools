@@ -5,13 +5,12 @@ import datetime
 import secrets
 
 import pandas as pd
+import streamlit as st
+
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import streamlit_functions as sf
 from modules import user_authentication as uauth
-
-
-import streamlit as st
 
 
 @gf.func_timer
@@ -111,7 +110,7 @@ def user_accounts() -> None:
     ]
 
     # Knöpfle für neuen Benutzer, Benutzer löschen...
-    if not any(sf.st_get(butt) for butt in lis_butt):
+    if not any(sf.s_get(butt) for butt in lis_butt):
         st.button("Liste aller Konten", "butt_list_all")
         st.button("Neuen Benutzer hinzufügen", "butt_add_new_user")
         st.button("Benutzer löschen", "butt_del_user")
@@ -119,21 +118,21 @@ def user_accounts() -> None:
         st.markdown("###")
 
     # Menu für neuen Benutzer
-    if sf.st_get("butt_add_new_user"):
+    if sf.s_get("butt_add_new_user"):
         new_user_form()
         st.button("abbrechen")
-    st.session_state["butt_sub_new_user"] = sf.st_get(
+    st.session_state["butt_sub_new_user"] = sf.s_get(
         "FormSubmitter:Neuer Benutzer-Knöpfle"
     )
 
     # Menu zum Löschen von Benutzern
-    if sf.st_get("butt_del_user"):
+    if sf.s_get("butt_del_user"):
         delete_user_form()
         st.button("abbrechen")
-    st.session_state["butt_sub_del_user"] = sf.st_get(
+    st.session_state["butt_sub_del_user"] = sf.s_get(
         "FormSubmitter:Benutzer löschen-Knöpfle"
     )
 
-    if sf.st_get("butt_list_all"):
+    if sf.s_get("butt_list_all"):
         st.markdown("---")
         list_all_accounts()

@@ -25,10 +25,10 @@ def generate_response(input_text: str) -> None:
     response: str = llm(input_text)
 
     history: list[str] = [f"Frage: {input_text}", f"Antwort: {response}"]
-    old_his: list[str] | None = sf.st_get(HISTORY_KEY)
+    old_his: list[str] | None = sf.s_get(HISTORY_KEY)
     if old_his and response not in old_his:
         history += old_his
-    sf.st_set(HISTORY_KEY, history)
+    sf.s_set(HISTORY_KEY, history)
 
     st.info(response, icon="🤖")
 
@@ -46,7 +46,7 @@ with st.form("my_form"):
     if submitted and OPENAI_KEY.startswith("sk-"):
         generate_response(text)
 
-if sf.st_in(HISTORY_KEY):
+if sf.s_in(HISTORY_KEY):
     with st.expander("Chat Verlauf"):
-        for element in sf.st_get(HISTORY_KEY):
+        for element in sf.s_get(HISTORY_KEY):
             st.info(element, icon="🤔" if "Frage: " in element else "🤖")

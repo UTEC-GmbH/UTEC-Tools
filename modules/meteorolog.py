@@ -52,8 +52,8 @@ ALL_PARAMETERS: dict[str, cld.DWDParameter] = get_all_parameters()
 def start_end_time(**kwargs) -> cld.TimeSpan:
     """Zeitraum für Daten-Download"""
 
-    page: str = kwargs.get("page") or sf.st_get("page") or "test"
-    mdf: cld.MetaAndDfs | None = kwargs.get("mdf") or sf.st_get("mdf")
+    page: str = kwargs.get("page") or sf.s_get("page") or "test"
+    mdf: cld.MetaAndDfs | None = kwargs.get("mdf") or sf.s_get("mdf")
 
     if page == "test":
         start_time = dt(2017, 1, 1, 0, 0)
@@ -62,15 +62,15 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
     elif page == "meteo":
         start_year: int = (
             min(
-                sf.st_get("meteo_start_year"),
-                sf.st_get("meteo_end_year"),
+                sf.s_get("meteo_start_year"),
+                sf.s_get("meteo_end_year"),
             )
             or 2020
         )
         end_year: int = (
             max(
-                sf.st_get("meteo_start_year"),
-                sf.st_get("meteo_end_year"),
+                sf.s_get("meteo_start_year"),
+                sf.s_get("meteo_end_year"),
             )
             or 2020
         )
@@ -101,7 +101,7 @@ def geo_locate(address: str = "Bremen") -> geopy.Location:
     geolocator: Nominatim = Nominatim(user_agent=user_agent_secret)
     location: geopy.Location = geolocator.geocode(address)  # type: ignore
 
-    sf.st_set("geo_location", location)
+    sf.s_set("geo_location", location)
 
     return location
 
@@ -172,7 +172,7 @@ def meteo_stations(
             'distance'
     """
 
-    time_span: cld.TimeSpan = start_end_time(page=sf.st_get("page"))
+    time_span: cld.TimeSpan = start_end_time(page=sf.s_get("page"))
     location: geopy.Location = geo_locate(address)
 
     stations: pl.DataFrame = (
@@ -210,11 +210,11 @@ def collect_meteo_data(
 ) -> list[cld.DWDParameter]:
     """Meteorologische Daten für die ausgewählten Parameter"""
 
-    time_res: str = temporal_resolution or sf.st_get("sb_meteo_resolution") or "hourly"
-    address: str = sf.st_get("ti_address") or "Bremen"
+    time_res: str = temporal_resolution or sf.s_get("sb_meteo_resolution") or "hourly"
+    address: str = sf.s_get("ti_address") or "Bremen"
     time_span: cld.TimeSpan = start_end_time()
 
-    parameters: list[str] = sf.st_get("ms_meteo_params") or ["temperature_air_mean_200"]
+    parameters: list[str] = sf.s_get("ms_meteo_params") or ["temperature_air_mean_200"]
     params: list[cld.DWDParameter] = [ALL_PARAMETERS[par] for par in parameters]
 
     for par in params:
@@ -270,13 +270,13 @@ def meteo_df(
 ) -> list[cld.DWDParameter]:
     """Get a DataFrame with date- and value-columns for each parameter"""
 
-    mdf_intern: cld.MetaAndDfs | None = sf.st_get("mdf") or mdf
+    mdf_intern: cld.MetaAndDfs | None = sf.s_get("mdf") or mdf
     if mdf_intern is None:
         raise cle.NotFoundError(entry="mdf", where="Session State")
 
     time_res: str = (
         match_resolution(mdf_intern.meta.td_mnts)
-        if mdf_intern.meta.td_mnts and sf.st_get("page") != "meteo"
+        if mdf_intern.meta.td_mnts and sf.s_get("page") != "meteo"
         else "hourly"
     )
     params: list[cld.DWDParameter] = collect_meteo_data(time_res)

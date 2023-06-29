@@ -8,7 +8,8 @@ import plotly.graph_objects as go
 import streamlit as st
 from loguru import logger
 
-from modules import classes_data as cl
+from modules import classes_data as cld
+from modules import classes_errors as cle
 from modules import classes_figs as clf
 from modules import constants as cont
 from modules import fig_annotations as fig_anno
@@ -16,31 +17,34 @@ from modules import fig_formatting as fig_format
 from modules import fig_general_functions as fgf
 from modules import fig_plotly_plots as ploplo
 from modules import general_functions as gf
+from modules import streamlit_functions as sf
 
 
 # Grund-Grafik
 @gf.func_timer
-def cr_fig_base(mdf: cl.MetaAndDfs) -> go.Figure:
+def cr_fig_base(mdf: cld.MetaAndDfs) -> go.Figure:
     """Lastgang erstellen"""
 
     min_amount_vals: int = 20
 
     tit_res: str = ""
-    if gf.st_get("cb_h"):
+    if sf.s_get("cb_h"):
         tit_res = cont.SUFFIXES.fig_tit_h
     elif mdf.meta.td_mnts == cont.TIME_MIN.quarter_hour:
         tit_res = cont.SUFFIXES.fig_tit_15
 
     tit: str = f"{cont.FIG_TITLES.lastgang}{tit_res}"
 
-    if gf.st_get("cb_multi_year"):
+    if sf.s_get("cb_multi_year"):
         fig: go.Figure = ploplo.line_plot_y_overlay(
-            mdf, "df_h_multi" if gf.st_get("cb_h") else "df_multi", title=tit
+            mdf,
+            "df_h_multi" if sf.s_get("cb_h") else "df_multi",
+            title=tit,
         )
     else:
         fig: go.Figure = ploplo.line_plot(
             mdf,
-            "df_h" if gf.st_get("cb_h") else "df",
+            "df_h" if sf.s_get("cb_h") else "df",
             title=tit,
         )
 
@@ -87,12 +91,12 @@ def cr_fig_base(mdf: cl.MetaAndDfs) -> go.Figure:
 
 
 @gf.func_timer
-def cr_fig_jdl(mdf: cl.MetaAndDfs) -> go.Figure:
+def cr_fig_jdl(mdf: cld.MetaAndDfs) -> go.Figure:
     """Jahresdauerlinie erstellen"""
 
     tit: str = f"{cont.FIG_TITLES.jdl}{cont.SUFFIXES.fig_tit_h}"
 
-    # if gf.st_get("cb_multi_year"):
+    # if sf.st_get("cb_multi_year"):
     #     fig: go.Figure = ploplo.line_plot_y_overlay(mdf, "jdl", title=tit)
     # else:
     #     fig: go.Figure = ploplo.line_plot(mdf, "jdl", title=tit)
@@ -132,10 +136,10 @@ def cr_fig_jdl(mdf: cl.MetaAndDfs) -> go.Figure:
 
 
 @gf.func_timer
-def cr_fig_mon(mdf: cl.MetaAndDfs) -> go.Figure:
+def cr_fig_mon(mdf: cld.MetaAndDfs) -> go.Figure:
     """Monatswerte erstellen"""
 
-    if gf.st_get("cb_multi_year"):
+    if sf.s_get("cb_multi_year"):
         fig: go.Figure = ploplo.line_plot_y_overlay(
             mdf, "mon_multi", title=cont.FIG_TITLES.mon
         )
@@ -150,11 +154,11 @@ def cr_fig_mon(mdf: cl.MetaAndDfs) -> go.Figure:
     colorway: list[str] = fgf.get_colorway(fig, data=data, layout=layout)
 
     fig.update_layout(
-        xaxis_tickformat="%b<br>%Y" if gf.st_get("cb_multi_year") is False else "%b",
+        xaxis_tickformat="%b<br>%Y" if sf.s_get("cb_multi_year") is False else "%b",
         xaxis_tickformatstops=[
             {
                 "dtickrange": [None, None],
-                "value": "%b<br>%Y" if gf.st_get("cb_multi_year") is False else "%b",
+                "value": "%b<br>%Y" if sf.s_get("cb_multi_year") is False else "%b",
             },
         ],
         title_text=fig.layout.meta.get("title"),
@@ -181,13 +185,13 @@ def cr_fig_mon(mdf: cl.MetaAndDfs) -> go.Figure:
 
 
 @gf.func_timer
-def cr_fig_days(mdf: cl.MetaAndDfs) -> None:
+def cr_fig_days(mdf: cld.MetaAndDfs) -> None:
     """Tagesvergleiche"""
-    if not gf.st_get("cb_days"):
+    if not sf.s_get("cb_days"):
         return
 
     tit_res: str = ""
-    if gf.st_get("cb_h"):
+    if sf.s_get("cb_h"):
         tit_res = cont.FIG_TITLES.suff_stunden
     elif st.session_state["metadata"]["td_mean"] == 15:
         tit_res = cont.FIG_TITLES.suff_15min
@@ -219,6 +223,8 @@ def plot_figs(figs: clf.Figs) -> None:
     """Grafiken darstellen"""
 
     with st.container():
+        if figs.base is None:
+            raise cle.NotFoundError(entry="base", where="figs class")
         st.plotly_chart(
             figs.base.fig,
             use_container_width=True,
@@ -228,8 +234,8 @@ def plot_figs(figs: clf.Figs) -> None:
 
         if all(
             [
-                gf.st_get("cb_jdl"),
-                gf.st_get("cb_mon"),
+                sf.s_get("cb_jdl"),
+                sf.s_get("cb_mon"),
                 figs.jdl is not None,
                 figs.mon is not None,
             ]
@@ -238,13 +244,15 @@ def plot_figs(figs: clf.Figs) -> None:
 
             columns: list = st.columns(2)
             with columns[0]:
+                if figs.jdl is None:
+                    raise cle.NotFoundError(entry="jdl", where="figs class")
                 st.plotly_chart(
                     figs.jdl.fig,
                     use_container_width=True,
                     config=fig_format.plotly_config(),
                     theme=cont.ST_PLOTLY_THEME,
                 )
-                if gf.st_get("cb_days") and figs.days is not None:
+                if sf.s_get("cb_days") and figs.days is not None:
                     st.markdown("###")
                     st.plotly_chart(
                         figs.days.fig,
@@ -254,6 +262,8 @@ def plot_figs(figs: clf.Figs) -> None:
                     )
 
             with columns[1]:
+                if figs.mon is None:
+                    raise cle.NotFoundError(entry="mon", where="figs class")
                 st.plotly_chart(
                     figs.mon.fig,
                     use_container_width=True,
@@ -261,16 +271,19 @@ def plot_figs(figs: clf.Figs) -> None:
                     theme=cont.ST_PLOTLY_THEME,
                 )
 
-        elif gf.st_get("cb_jdl") and not gf.st_get("cb_mon"):
+        elif sf.s_get("cb_jdl") and not sf.s_get("cb_mon"):
             st.markdown("###")
-
+            if figs.jdl is None:
+                raise cle.NotFoundError(entry="jdl", where="figs class")
             st.plotly_chart(
                 figs.jdl.fig,
                 use_container_width=True,
                 config=fig_format.plotly_config(),
                 theme=cont.ST_PLOTLY_THEME,
             )
-            if gf.st_get("cb_days"):
+            if sf.s_get("cb_days"):
+                if figs.days is None:
+                    raise cle.NotFoundError(entry="days", where="figs class")
                 st.markdown("###")
                 st.plotly_chart(
                     figs.days.fig,
@@ -279,16 +292,19 @@ def plot_figs(figs: clf.Figs) -> None:
                     theme=cont.ST_PLOTLY_THEME,
                 )
 
-        elif gf.st_get("cb_mon") and not gf.st_get("cb_jdl"):
+        elif sf.s_get("cb_mon") and not sf.s_get("cb_jdl"):
             st.markdown("###")
-
+            if figs.mon is None:
+                raise cle.NotFoundError(entry="mon", where="figs class")
             st.plotly_chart(
                 figs.mon.fig,
                 use_container_width=True,
                 config=fig_format.plotly_config(),
                 theme=cont.ST_PLOTLY_THEME,
             )
-            if gf.st_get("cb_days"):
+            if sf.s_get("cb_days"):
+                if figs.days is None:
+                    raise cle.NotFoundError(entry="days", where="figs class")
                 st.markdown("###")
                 st.plotly_chart(
                     figs.days.fig,
@@ -321,7 +337,7 @@ def html_exp(f_pn: str = "export\\interaktive_grafische_Auswertung.html") -> Non
         fil.write("<style>")
         fil.write("#las{width: 100%; margin-left:auto; margin-right:auto; }")
 
-        if gf.st_get("cb_jdl"):
+        if sf.s_get("cb_jdl"):
             fil.write("#jdl{width: 45%; float: left; margin-right: 5%; }")
             fil.write("#mon{width: 45%; float: right; margin-left: 5%; }")
         else:
@@ -332,7 +348,7 @@ def html_exp(f_pn: str = "export\\interaktive_grafische_Auswertung.html") -> Non
         for fig in [cont.FIG_KEYS.lastgang] + [
             fig
             for fig in cont.FIG_KEYS.list_all()
-            if gf.st_get(f"cb_{fig.split('_')[1]}")
+            if sf.s_get(f"cb_{fig.split('_')[1]}")
         ]:
             fig_type: str = fgf.fig_type_by_title(st.session_state[fig])
             if "las" in fig_type:

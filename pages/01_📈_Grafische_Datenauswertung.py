@@ -1,11 +1,12 @@
 # sourcery skip: avoid-global-variables
-"""Seite Grafische Datenauswertung"""  # noqa: N999
+"""Seite Grafische Datenauswertung"""
 
 from typing import Any, Literal
 
 import streamlit as st
+from loguru import logger
 
-from modules import classes_data as cl
+from modules import classes_data as cld
 from modules import classes_figs as clf
 from modules import constants as cont
 from modules import df_manipulation as df_man
@@ -14,23 +15,24 @@ from modules import fig_annotations as fig_anno
 from modules import fig_creation_export as fig_create
 from modules import fig_formatting as fig_format
 from modules import general_functions as gf
-from modules import meteorolog as meteo
+from modules import graph_menus as menu_g
 from modules import setup_stuff as set_stuff
-from modules import streamlit_menus as sm
+from modules import streamlit_functions as sf
 from modules import user_authentication as uauth
 
-# setup
+# setup stuff
+gf.log_new_run()
 MANUAL_DEBUG = True
 set_stuff.page_header_setup(page="graph")
 
 
 def debug_code_run(position: Literal["before", "after"]) -> None:
-    """Anzeige mit st.write() für Debugging"""
+    """Infos zum Durchlauf des Programms mit st.write() für Debugging"""
 
-    if MANUAL_DEBUG and gf.st_get("access_lvl") == "god":
+    if MANUAL_DEBUG and sf.s_get("access_lvl") == "god":
         with st.expander(f"Debug {position}", expanded=False):
             st.plotly_chart(
-                fig_create.ploplo.timings(gf.st_get("dic_exe_time")),
+                fig_create.ploplo.timings(sf.s_get("dic_exe_time")),
                 use_container_width=True,
                 config=fig_format.plotly_config(),
             )
@@ -43,9 +45,9 @@ def debug_code_run(position: Literal["before", "after"]) -> None:
                 if show in st.session_state:
                     st.write(f"st.session_state['{show}']:")
                     if "fig" in show:
-                        st.write(gf.st_get(show).to_dict())
+                        st.write(sf.s_get(show).to_dict())
                     else:
-                        st.write(gf.st_get(show))
+                        st.write(sf.s_get(show))
             st.markdown("---")
             st.write("Session State:")
             st.write(st.session_state)
@@ -56,121 +58,157 @@ def debug_code_run(position: Literal["before", "after"]) -> None:
     st.session_state["dic_exe_time"] = {}
 
 
+def mdf_from_excel_or_st() -> cld.MetaAndDfs:
+    """MDF aus Excel-Datei erzeugen oder aus session_state übernehmen"""
+
+    if isinstance(sf.s_get("mdf"), cld.MetaAndDfs):
+        mdf_i: cld.MetaAndDfs = sf.s_get("mdf")
+        logger.info("Excel-Datei schon importiert - mdf aus session_state übernommen")
+    else:
+        mdf_i: cld.MetaAndDfs = ex_in.import_prefab_excel(sf.s_get("f_up"))
+
+    return mdf_i
+
+
 @gf.lottie_spinner
-def gather_and_manipulate_data() -> cl.MetaAndDfs:
+def gather_and_manipulate_data() -> cld.MetaAndDfs:
     """Import Excel file and do stuff with the data"""
 
-    if isinstance(gf.st_get("mdf"), cl.MetaAndDfs):
-        mdf: cl.MetaAndDfs = gf.st_get("mdf")
-    else:
-        mdf: cl.MetaAndDfs = ex_in.import_prefab_excel(gf.st_get("f_up"))
+    mdf_i: cld.MetaAndDfs = mdf_from_excel_or_st()
 
-    # Grundeinstellungen in der sidebar
-    sm.base_settings(mdf)
+    # sidebar menus
+    menu_g.base_settings(mdf_i)
+    menu_g.select_graphs(mdf_i)
+    menu_g.meteo_sidebar("graph")
 
-    if gf.st_get("but_base_settings"):
-        gf.st_delete("fig_base")
-        gf.st_delete("fig_jdl")
-        gf.st_delete("fig_mon")
+    if any([sf.s_get("but_base_settings"), sf.s_get("but_meteo_sidebar")]):
+        for df in ["df_h", "jdl", "mon", "df_multi", "df_h_multi", "mon_multi"]:
+            setattr(mdf_i, df, None)
+        logger.info(
+            "Data Frames \n"
+            '["df_h", "jdl", "mon", "df_multi", "df_h_multi", "mon_multi"]\n'
+            "aus mdf entfernt."
+        )
 
-    # anzuzeigende Grafiken
-    sm.select_graphs(mdf)
-
-    # Außentemperatur
-    sm.meteo_sidebar("graph")
-
-    if gf.st_get("but_meteo_sidebar"):
-        if gf.st_get("cb_temp"):
-            meteo.outside_temp_graph()
+    if sf.s_get("but_meteo_sidebar"):
+        if sf.s_get("cb_temp"):
+            mdf_i = df_man.add_temperature_data(mdf_i)
         else:
-            meteo.del_meteo()
+            mdf_i.df.drop(cont.SPECIAL_COLS.temp)
+
+    # split the base data frame into years if necessary
+    if mdf_i.meta.multi_years and mdf_i.df_multi is None:
+        mdf_i = df_man.split_multi_years(mdf_i, "df")
 
     # df mit Stundenwerten erzeugen
-    if gf.st_get("cb_h"):
-        mdf = df_man.df_h(mdf)
+    if sf.s_get("cb_h"):
+        mdf_i = df_man.df_h(mdf_i)
 
     # df für Tagesvergleich
-    if gf.st_get("but_select_graphs") and gf.st_get("cb_days"):
-        if gf.st_get("cb_h"):
-            df_man.dic_days(mdf.df_h)
+    if sf.s_get("but_select_graphs") and sf.s_get("cb_days"):
+        if sf.s_get("cb_h"):
+            df_man.dic_days(mdf_i.df_h)
         else:
-            df_man.dic_days(mdf.df)
+            df_man.dic_days(mdf_i.df)
 
     # df geordnete Jahresdauerlinie
-    if gf.st_get("cb_jdl"):
-        mdf = df_man.jdl(mdf)
+    if sf.s_get("cb_jdl"):
+        mdf_i = df_man.jdl(mdf_i)
 
     # df Monatswerte
-    if gf.st_get("cb_mon"):
-        mdf = df_man.mon(mdf)
+    if sf.s_get("cb_mon"):
+        mdf_i = df_man.mon(mdf_i)
 
-    gf.st_set("mdf", mdf)
-    return mdf
+    sf.s_set("mdf", mdf_i)
+    return mdf_i
 
 
 @gf.lottie_spinner
-def make_graphs(mdf: cl.MetaAndDfs) -> clf.Figs:
+def make_graphs(mdf_g: cld.MetaAndDfs) -> clf.Figs:
     """Grafiken erzeugen"""
 
-    figs: clf.Figs = gf.st_get("figs") or clf.Figs()
+    figs_i: clf.Figs = sf.s_get("figs") or clf.Figs()
 
-    if gf.st_get("but_base_settings"):
-        figs.base = None
-        figs.jdl = None
-        figs.mon = None
-        figs.days = None
+    if any([sf.s_get("but_base_settings"), sf.s_get("but_meteo_sidebar")]):
+        for attr in figs_i.__dataclass_fields__:
+            setattr(figs_i, attr, None)
+        for key in cont.FIG_KEYS.list_all():
+            sf.s_delete(key)
 
     # Grund-Grafik
-    if figs.base is None:
+    if figs_i.base is None:
         with st.spinner('Momentle bitte - Grafik "Lastgang" wird erzeugt...'):
-            figs.base = clf.FigProp(
-                fig=fig_create.cr_fig_base(mdf), st_key=cont.FIG_KEYS.lastgang
+            figs_i.base = clf.FigProp(
+                fig=fig_create.cr_fig_base(mdf_g), st_key=cont.FIG_KEYS.lastgang
             )
 
     # Jahresdauerlinie
-    if figs.jdl is None and gf.st_not_in("fig_jdl") and gf.st_get("cb_jdl"):
+    if sf.s_get("cb_jdl") and (figs_i.jdl is None or sf.s_not_in("fig_jdl")):
         with st.spinner('Momentle bitte - Grafik "Jahresdauerlinie" wird erzeugt...'):
-            figs.jdl = clf.FigProp(
-                fig=fig_create.cr_fig_jdl(mdf), st_key=cont.FIG_KEYS.jdl
+            figs_i.jdl = clf.FigProp(
+                fig=fig_create.cr_fig_jdl(mdf_g), st_key=cont.FIG_KEYS.jdl
             )
 
     # Monatswerte
-    if figs.mon is None and gf.st_not_in("fig_mon") and gf.st_get("cb_mon"):
+    if sf.s_get("cb_mon") and (figs_i.mon is None or sf.s_not_in("fig_mon")):
         with st.spinner('Momentle bitte - Grafik "Monatswerte" wird erzeugt...'):
-            figs.mon = clf.FigProp(
-                fig=fig_create.cr_fig_mon(mdf), st_key=cont.FIG_KEYS.mon
+            figs_i.mon = clf.FigProp(
+                fig=fig_create.cr_fig_mon(mdf_g), st_key=cont.FIG_KEYS.mon
             )
 
     # Tagesvergleich
-    if figs.days is None and gf.st_get("but_select_graphs") and gf.st_get("cb_days"):
+    if sf.s_get("cb_days") and (figs_i.days is None or sf.s_get("but_select_graphs")):
         with st.spinner('Momentle bitte - Grafik "Tagesvergleich" wird erzeugt...'):
-            figs.days = clf.FigProp(
-                fig=fig_create.cr_fig_days(mdf), st_key=cont.FIG_KEYS.days
+            figs_i.days = clf.FigProp(
+                fig=fig_create.cr_fig_days(mdf_g), st_key=cont.FIG_KEYS.days
             )
 
-    figs.write_all_to_st()
+    figs_i.write_all_to_st()
 
     # horizontale / vertikale Linien
-    sm.h_v_lines()
-    if gf.st_get("but_h_v_lines"):
+    menu_g.h_v_lines()
+    if sf.s_get("but_h_v_lines"):
         fig_anno.h_v_lines()
 
     # Ausreißerbereinigung
-    sm.clean_outliers()
-    if gf.st_get("but_clean_outliers"):
+    menu_g.clean_outliers()
+    if sf.s_get("but_clean_outliers"):
         fig_anno.clean_outliers()
 
-    gf.st_set("figs", figs)
-    return figs
+    sf.s_set("figs", figs_i)
+    return figs_i
 
 
-if uauth.authentication(st.session_state["page"]):
+if uauth.authentication(sf.s_get("page")):
     debug_code_run(position="before")
+    if sf.s_get("but_complete_reset"):
+        sf.s_reset_graph()
 
-    sm.sidebar_file_upload()
+    if sf.s_get("but_example_direct"):
+        st.session_state["f_up"] = f"example_files/{sf.s_get('sb_example_file')}.xlsx"
 
-    if any(gf.st_get(entry) is not None for entry in ("f_up", "mdf")):
-        mdf: cl.MetaAndDfs = gather_and_manipulate_data()
+    if all(sf.s_get(key) is None for key in ["f_up", "mdf"]):
+        logger.warning("No file provided yet.")
+
+        menu_g.sidebar_file_upload()
+
+        st.warning("Bitte Datei hochladen oder Beispiel auswählen")
+
+        st.markdown("###")
+        st.markdown("---")
+    else:
+        logger.info(f"File to analyse: '{sf.s_get('f_up')}'")
+        with st.sidebar:
+            st.markdown("###")
+            st.button(
+                label="✨  Auswertung neu starten  ✨",
+                key="but_complete_reset",
+                use_container_width=True,
+                help="Neue Auswertung mit anderer Datei.",
+            )
+            st.write("---")
+
+        mdf: cld.MetaAndDfs = gather_and_manipulate_data()
         figs: clf.Figs = make_graphs(mdf)
 
         tab_grafik: Any
@@ -180,8 +218,8 @@ if uauth.authentication(st.session_state["page"]):
         with tab_grafik:
             # --- Darstellungsoptionen ---
             with st.spinner("Momentle bitte - Optionen werden erzeugt..."):
-                sm.display_options_main()
-                sm.display_smooth_main()
+                menu_g.display_options_main()
+                menu_g.display_smooth_main()
 
                 figs.update_all_figs()
                 figs.write_all_to_st()
@@ -189,16 +227,10 @@ if uauth.authentication(st.session_state["page"]):
             with st.spinner("Momentle bitte - Grafiken werden angezeigt..."):
                 fig_create.plot_figs(figs)
 
-        gf.st_set("figs", figs)
+        sf.s_set("figs", figs)
 
         # --- Downloads ---
         with tab_download:
-            sm.downloads()
-
-    else:
-        st.info("Bitte Datei hochladen oder Beispiel auswählen")
-
-        st.markdown("###")
-        st.markdown("---")
+            menu_g.downloads()
 
     debug_code_run(position="after")

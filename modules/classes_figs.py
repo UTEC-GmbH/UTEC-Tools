@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 from loguru import logger
 
 from modules import fig_formatting as fform
-from modules import general_functions as gf
+from modules import streamlit_functions as gf
 
 
 @dataclass(kw_only=True)
@@ -128,19 +128,22 @@ class Figs:
 
     def list_all_figs(self) -> list[FigProp]:
         """Get a list of all figs as custom types"""
-        figs = [self.base, self.jdl, self.mon, self.days]
-        return [fig for fig in figs if fig is not None]
+        return [
+            getattr(self, fig)
+            for fig in self.__dataclass_fields__
+            if getattr(self, fig)
+        ]
 
     def write_all_to_st(self) -> None:
         """Write all figs to streamlit"""
-        gf.st_set("figs", self)
+        gf.s_set("figs", self)
         if valid_figs := self.list_all_figs():
             logger.debug(
                 f"figs with data: "
                 f"{[fig.st_key for fig in valid_figs if fig is not None]}"
             )
             for fig in valid_figs:
-                gf.st_set(fig.st_key, fig.fig)
+                gf.s_set(fig.st_key, fig.fig)
 
     def update_all_figs(self) -> None:
         """Update all figs"""

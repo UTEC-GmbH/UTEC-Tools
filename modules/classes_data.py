@@ -1,20 +1,46 @@
 """Classes and such"""
 
-import pprint
 from dataclasses import dataclass
-from typing import Any, Literal
+from datetime import datetime as dt
+from typing import Literal
 
 import polars as pl
 
 from modules import classes_constants as clc
-from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
 
 
 @dataclass
+class TimeSpan:
+    """Start- und Endzeit"""
+
+    start: dt
+    end: dt
+
+
+@dataclass
+class DWDParameter:
+    """Properties of DWD Parameter"""
+
+    name: str
+    available_resolutions: list[str]
+    unit: str
+    name_de: str | None = None
+    closest_station_id: str | None = None
+    resolution: str | None = None
+    data_frame: pl.DataFrame | None = None
+
+
+@dataclass
 class MetaLine:
-    """Class for meta data of lines (traces)"""
+    """Class for meta data of lines (traces)
+
+    Line for testing:
+    line = MetaLine(
+      "test", "test_org", "Org Title", "Title", obis=clc.ObisElectrical("1-1:1.29.0")
+    )
+    """
 
     name: str
     name_orgidx: str
@@ -25,9 +51,18 @@ class MetaLine:
     obis: clc.ObisElectrical | None = None
     excel_number_format: str | None = None
 
+    def as_dic(self) -> dict:
+        """Dictionary representation"""
+        return {
+            attr: getattr(self, attr).as_dic()
+            if isinstance(getattr(self, attr), clc.ObisElectrical)
+            else getattr(self, attr)
+            for attr in self.__dataclass_fields__
+        }
+
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
-        return pprint.pformat(vars(self), sort_dicts=False)
+        return f"[{gf.string_new_line_per_item(self.as_dic())}]"
 
 
 @dataclass
@@ -35,7 +70,8 @@ class MetaData:
     """Meta Daten
 
     Attrs:
-        - lines (list[MetaLine]): Liste aller Linien (Spalten)
+        - lines (dict[str,MetaLine]): Dictionary aller Linien (Spalten).
+            Dictionary key ist der Linienname.
         - datetime (bool): Ob eine Spalten mit Zeiten gefunden wurde
         - years (list[int]): Liste der Jahre, für die Daten vorliegen
         - multi_years (bool): Ob Daten für mehrere Jahre vorliegen
@@ -43,83 +79,41 @@ class MetaData:
         - td_interval (str): "h" bei stündlichen Daten, "15min" bei 15-Minuten-Daten
     """
 
-    lines: list[MetaLine]
+    lines: dict[str, MetaLine]
     datetime: bool = False
     years: list[int] | None = None
     multi_years: bool | None = None
     td_mnts: int | None = None
     td_interval: str | None = None
 
+    def as_dic(self) -> dict:
+        """Dictionary representation"""
+        return {
+            attr: {name: line.as_dic() for name, line in self.lines.items()}
+            if attr == "lines"
+            else getattr(self, attr)
+            for attr in self.__dataclass_fields__
+        }
+
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
-        return pprint.pformat(vars(self))
+        return f"[{gf.string_new_line_per_item(self.as_dic())}]"
 
-    def get_line_by_name(self, line_name: str) -> MetaLine:
-        """Get the line object from the string of the line name"""
-        lines: list[MetaLine] = [line for line in self.lines if line.name == line_name]
-        if not lines:
-            raise cle.LineNotFoundError(line_name)
-        if len(lines) > 1:
-            raise cle.MultipleLinesFoundError(line_name)
-        return lines[0]
+    def copy_line(self, line_to_copy: str, new_line_name: str) -> MetaLine:
+        """Create a MetaLine-object with the same attrs under a new name"""
 
-    def get_all_line_names(self) -> list[str]:
-        """Return a list of all line names"""
-        return [line.name for line in self.lines]
-
-    def get_all_num_formats(self) -> list[str]:
-        """Get the Excel number formats for all lines"""
-        return [(line.excel_number_format or "#.##0,0") for line in self.lines]
-
-    def get_line_attribute(self, line_name: str, attribute: str) -> Any:
-        """Get the value of a specific attribute for a line (trace)"""
-        for line in self.lines:
-            if line.name == line_name:
-                return getattr(line, attribute)
-        raise cle.LineNotFoundError(line_name)
-
-    def change_line_attribute(
-        self, line_name: str, attribute: str, new_value: Any
-    ) -> None:
-        """Change the value of a specific attribute for a line (trace)"""
-        for line in self.lines:
-            if line.name == line_name:
-                setattr(line, attribute, new_value)
-                return
-        raise cle.LineNotFoundError(line_name)
-
-    def copy_line_meta_with_new_name(self, old_name: str, new_name: str) -> None:
-        """Add an entry in the list of lines in the meta data
-        by copying the meta data of a line and giving it a new name"""
-
-        old_line: MetaLine = self.get_line_by_name(old_name)
-        new_line: MetaLine = MetaLine(**vars(old_line))
-        new_line.name = new_name
-        new_line.tit = new_name
-        new_line.name_orgidx = (
-            f"{new_name}{cont.SUFFIXES.col_original_index}"
-            if cont.SUFFIXES.col_original_index not in new_name
-            else new_name
+        new_line = MetaLine(
+            new_line_name,
+            f"{new_line_name}{cont.SUFFIXES.col_original_index}"
+            if cont.SUFFIXES.col_original_index not in new_line_name
+            else new_line_name,
+            new_line_name,
+            new_line_name,
         )
-        self.lines += [new_line]
-
-    def as_dict(self) -> dict[str, Any]:
-        """Get all MetaData as a dictionary"""
-        lines: list[dict] = []
-        for line in self.lines:
-            dic: dict = {}
-            for key, val in vars(line).items():
-                dic[key] = vars(val) if isinstance(val, clc.ObisElectrical) else val
-                lines.append(dic)
-
-        return {
-            "lines": lines,
-            "datetime": self.datetime,
-            "years": self.years,
-            "multi_years": self.multi_years,
-            "td_mnts": self.td_mnts,
-            "td_interval": self.td_interval,
-        }
+        for attr in self.lines[line_to_copy].as_dic():
+            if getattr(new_line, attr) is None:
+                setattr(new_line, attr, getattr(self.lines[line_to_copy], attr))
+        return new_line
 
 
 @dataclass
@@ -152,18 +146,21 @@ class MetaAndDfs:
         """Get all lines in the multi-year data frame"""
 
         lines: list[str] = []
-        df_multi: dict[int, pl.DataFrame] = getattr(self, df)
-        if not isinstance(df_multi, dict):
+        df_dic: dict[int, pl.DataFrame] = getattr(self, df)
+        if not isinstance(df_dic, dict):
             raise TypeError
 
         if self.meta.years:
             for year in self.meta.years:
+                df_year: pl.DataFrame | None = df_dic.get(year)
+                if df_year is None:
+                    raise TypeError
                 lines.extend(
-                    [
-                        col
-                        for col in df_multi[year].columns
-                        if gf.check_if_not_exclude(col)
-                    ]
+                    [col for col in df_year.columns if gf.check_if_not_exclude(col)]
                 )
 
         return lines
+
+    def as_dic(self) -> dict:
+        """Dictionary representation"""
+        return {attr: getattr(self, attr) for attr in self.__dataclass_fields__}

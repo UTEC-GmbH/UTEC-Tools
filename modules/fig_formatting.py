@@ -6,10 +6,10 @@
 """
 
 import re
-
 from datetime import datetime
 from typing import Any
 
+import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
 from loguru import logger
@@ -18,6 +18,7 @@ from modules import constants as cont
 from modules import fig_annotations as fa
 from modules import fig_general_functions as fgf
 from modules import general_functions as gf
+from modules import streamlit_functions as sf
 
 FORMAT_PRIMARY_Y: dict[str, Any] = {
     "tickformat": ",d",
@@ -172,12 +173,12 @@ def standard_xaxis(
     """
 
     x_max: Any = max(max(p["x"]) for p in data.values())
-    if isinstance(x_max, datetime):
-        x_max = gf.last_day_of_month(x_max)
+    if isinstance(x_max, datetime | np.datetime64):
+        x_max = gf.end_of_month(x_max)
 
     x_min: Any = min(min(p["x"]) for p in data.values())
-    if isinstance(x_min, datetime):
-        x_min = x_min.replace(day=1)
+    if isinstance(x_min, datetime | np.datetime64):
+        x_min = gf.start_of_month(x_min)
 
     return fig.update_xaxes(
         nticks=13,
@@ -238,33 +239,45 @@ def update_main(fig: go.Figure) -> go.Figure:
 
     fig = show_traces(fig)
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
-    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
 
     visible_traces: list[dict] = [trace for trace in data.values() if trace["visible"]]
-    logger.debug(
-        f"Visible traces in figure '{layout['title']['text']}': \n"
-        f"{[trace['name'] for trace in visible_traces]}"
-    )
     visible_units: list[str] = gf.sort_list_by_occurance(
         [trace["meta"]["unit"] for trace in visible_traces]
     )
-    logger.debug(
-        f"Visible units in figure '{layout['title']['text']}': \n{visible_units}"
-    )
+
+    debug_traces_units(fig, data, visible_traces, visible_units)
 
     fig = format_traces(fig, visible_traces, visible_units)
-
     fig = show_y_axes(fig, visible_units)
-
     fig = show_annos(fig, visible_traces)
 
     # Legende ausblenden, wenn nur eine Linie angezeigt wird
     fig = fig.update_layout({"showlegend": len(visible_traces) > 1})
 
-    if gf.st_get("cb_multi_year"):
+    if sf.s_get("cb_multi_year"):
         fig = legend_groups_for_multi_year(fig)
 
     return fig
+
+
+def debug_traces_units(
+    fig: go.Figure,
+    data: dict[str, dict[str, Any]],
+    visible_traces: list[dict],
+    visible_units: list[str],
+) -> None:
+    """Log available traces in figure, as well as visible traces and units"""
+
+    layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
+    fig_title: str = layout["title"]["text"].split("<")[0]
+
+    total_traces: list[dict] = list(data.values())
+    logger.debug(
+        f"Traces in figure '{fig_title}': \n"
+        f"Available: {[trace['name'] for trace in total_traces]}  \n"
+        f"Visible:   {[trace['name'] for trace in visible_traces]}"
+    )
+    logger.debug(f"Visible units in figure '{fig_title}': {visible_units}")
 
 
 @gf.func_timer
@@ -277,7 +290,7 @@ def show_traces(fig: go.Figure) -> go.Figure:
 
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
     fig_type: str = "lastgang"
-    for key, value in vars(cont.FIG_TITLES).items():
+    for key, value in cont.FIG_TITLES.as_dic().items():
         if value in layout["meta"]["title"]:
             fig_type = key
 
@@ -287,34 +300,44 @@ def show_traces(fig: go.Figure) -> go.Figure:
 
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
 
-    switch: bool = layout["meta"]["title"] == "fig_days"
-
     for name, trace_data in data.items():
         if f"cp_{name}" not in st.session_state:
-            suff: str = "Arbeit" if fig_type in ["mon"] else "Leistung"
-            new_name: str = f"{name}{cont.ARBEIT_LEISTUNG.get_suffix(suff)}"
+            new_name: str = (
+                f"{name}{cont.SUFFIXES.col_arbeit}"
+                if fig_type in ["mon"]
+                else f"{name}{cont.SUFFIXES.col_leistung}"
+            )
         else:
             new_name = name
+
         trace_visible: bool = False
-        if switch:
+
+        if fig_type in ["days"]:
             trace_visible = st.session_state[f'cb_vis_{trace_data["legendgroup"]}']
-        if fig_type in ["mon", "jdl"] and any(
-            suff in new_name for suff in cont.ARBEIT_LEISTUNG.all_suffixes
-        ):
-            suffixes: list[str] = cont.ARBEIT_LEISTUNG.all_suffixes
-            trace_stripped: str = new_name
-            for suffix in suffixes:
-                trace_stripped = trace_stripped.replace(suffix, "")
-            combos: list[str] = [f"{trace_stripped}{suffix}" for suffix in suffixes]
-            trace_visible = any(
-                gf.st_get(f"cb_vis_{trace_suff}") for trace_suff in combos
-            )
+        if fig_type in ["mon", "jdl"]:
+            trace_visible = trace_vis_jdl_mon(new_name)
         else:
             trace_visible = st.session_state[f"cb_vis_{new_name}"]
 
         fig = fig.update_traces({"visible": trace_visible}, {"name": new_name})
+        if name != new_name:
+            fig = fig.update_traces({"visible": trace_visible}, {"name": name})
 
     return fig
+
+
+def trace_vis_jdl_mon(trace_name: str) -> bool:
+    """Trace visibility for additional graphs Jahresdauerlinie und Monatswerte"""
+
+    suffixes: list[str] = cont.ARBEIT_LEISTUNG.all_suffixes
+    trace_stripped: str = trace_name
+    for suffix in suffixes:
+        trace_stripped = trace_stripped.replace(suffix, "")
+    combos: list[str] = [trace_stripped] + [
+        f"{trace_stripped}{suffix}" for suffix in suffixes
+    ]
+
+    return any(sf.s_get(f"cb_vis_{trace}") for trace in combos)
 
 
 @gf.func_timer
@@ -338,16 +361,16 @@ def format_traces(
         index_unit: int = visible_units.index(trace["meta"]["unit"])
         trace_y: str = "y" if index_unit == 0 else f"y{index_unit + 1}"
         line_mode: str = "lines"
-        if gf.st_get(f"cb_markers_{trace_name}") or fig_type == "mon":
+        if sf.s_get(f"cb_markers_{trace_name}") or fig_type == "mon":
             line_mode = "markers+lines"
-        if gf.st_get(f"sb_line_dash_{trace_name}") == "keine":
+        if sf.s_get(f"sb_line_dash_{trace_name}") == "keine":
             line_mode = "markers"
 
-        if gf.st_not_in(f"cp_{trace_name}"):
+        if sf.s_not_in(f"cp_{trace_name}"):
             suff: str = "Arbeit" if fig_type in {"mon"} else "Leistung"
             trace_name = f"{trace_name}{cont.ARBEIT_LEISTUNG.get_suffix(suff)}"
 
-        if gf.st_not_in(f"cp_{trace_name}"):
+        if sf.s_not_in(f"cp_{trace_name}"):
             trace_name = re.split(r"\b\d{4}\b", trace_name)[0]
 
         if not switch:
@@ -382,7 +405,7 @@ def format_traces(
                     "marker_size": (
                         15
                         if fig_type == "mon"
-                        else gf.st_get(f"ni_markers_{trace_name}")
+                        else sf.s_get(f"ni_markers_{trace_name}")
                     ),
                     "fill": line_fill,
                     "fillcolor": fill_color,
@@ -419,7 +442,8 @@ def show_y_axes(fig: go.Figure, visible_units: list[str]) -> go.Figure:
         ]
 
     logger.debug(
-        f"Visible y-axes in figure '{layout['title']['text']}': \n{axes_to_show}"
+        f"Visible y-axes in figure "
+        f"'{layout['title']['text'].split('<')[0]}': {axes_to_show}"
     )
 
     for count, axis in enumerate(axes_to_show):
@@ -450,22 +474,35 @@ def show_annos(fig: go.Figure, visible_traces: list[dict]) -> go.Figure:
     """
     visible_lines: list[str] = [trace["name"] for trace in visible_traces]
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
+    fig_type: str = fgf.fig_type_by_title(fig)
+
+    logger.debug(
+        gf.string_new_line_per_item(
+            [anno["name"] for anno in layout["annotations"]],
+            f"Figure '{fig_type}': available annotations:",
+        )
+    )
 
     for anno in layout["annotations"]:
         an_name: str = anno["name"]
         if "hline" not in an_name:
-            an_name_cust: str = an_name
-            for suff in cont.ARBEIT_LEISTUNG.all_suffixes:
-                if suff in an_name:
-                    an_name_cust: str = an_name.split(suff)[0]
-            an_name_cust = an_name_cust.split(": ")[0]
-
+            an_name_cust: str = an_name.split(": ")[0]
             visible: bool = all(
                 [
-                    gf.st_get(f"cb_anno_{an_name_cust}"),
+                    sf.s_get(f"cb_anno_{an_name_cust}"),
                     any(line in an_name for line in visible_lines),
                 ]
             )
+
+            if all(
+                [
+                    fig_type == "jdl",
+                    not visible,
+                    cont.SUFFIXES.col_leistung not in an_name_cust,
+                    sf.s_get(f"cb_anno_{an_name_cust}{cont.SUFFIXES.col_leistung}"),
+                ]
+            ):
+                visible = True
 
             fig = fig.update_annotations(
                 {"visible": visible},
@@ -475,9 +512,8 @@ def show_annos(fig: go.Figure, visible_traces: list[dict]) -> go.Figure:
     return fig
 
 
-# TODO: docstring
 def legend_groups_for_multi_year(fig: go.Figure) -> go.Figure:
-    """Docstring"""
+    """Calculates legend groups for multi year plots."""
 
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)

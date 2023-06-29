@@ -63,7 +63,7 @@ LVLS = LogLevels(
     debug=LevelProperties("debug", icon="🐞"),
     error=LevelProperties("error", icon="😱"),
     success=LevelProperties("success", icon="🥳"),
-    warning=LevelProperties("warning", icon="⚠️"),
+    warning=LevelProperties("warning", icon="😬"),
     critical=LevelProperties("critical", icon="☠️"),
     start=LevelProperties(
         "start",
@@ -79,7 +79,7 @@ LVLS = LogLevels(
         icon="✨",
         custom=True,
         info="",
-        blank_lines_before=2,
+        blank_lines_before=3,
     ),
     func_start=LevelProperties(
         "func_start", icon="👉👈", custom=True, info="", blank_lines_before=1

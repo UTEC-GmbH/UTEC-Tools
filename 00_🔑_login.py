@@ -1,4 +1,4 @@
-"""login page"""  # noqa: N999
+"""login page"""
 
 from datetime import date, datetime
 from typing import Any
@@ -12,8 +12,9 @@ from modules import constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
 from modules import setup_stuff
-from modules import streamlit_menus as sm
+from modules import streamlit_functions as sf
 from modules import user_authentication as uauth
+from modules import user_authentication_menus as uauth_m
 
 st.set_page_config(
     page_title="UTEC Online Tools",
@@ -21,13 +22,13 @@ st.set_page_config(
     layout="wide",
 )
 
-# general page config (Favicon, etc.)
-if gf.st_not_in("logger_setup"):
+# logger setup and logging run
+if sf.s_not_in("logger_setup"):
     slog.logger_setup()
+gf.log_new_run()
 
-if gf.st_in("initial_setup"):
-    logger.log(slog.LVLS.new_run.name, "NEW RUN")
-else:
+# general page config (Favicon, etc.)
+if sf.s_not_in("initial_setup"):
     setup_stuff.general_setup()
 
 setup_stuff.page_header_setup(page="login")
@@ -63,13 +64,13 @@ def login_section() -> None:
 
     authenticator.login("Login", "main")
 
-    if gf.st_get("authentication_status"):
+    if sf.s_get("authentication_status"):
         access_granted()
 
         st.markdown("---")
         authenticator.logout("Logout", "main")
 
-    elif gf.st_get("authentication_status") is None:
+    elif sf.s_get("authentication_status") is None:
         st.warning("Bitte Benutzernamen und Passwort eingeben")
     else:
         st.error("Benutzername oder Passwort falsch")
@@ -81,25 +82,25 @@ def access_granted() -> None:
     """If access is granted, do this..."""
 
     # determine the access level
-    user_key: str = gf.st_get("username")
-    all_users: dict[str, dict[str, Any]] = gf.st_get("all_user_data")
+    user_key: str = sf.s_get("username")
+    all_users: dict[str, dict[str, Any]] = sf.s_get("all_user_data")
     access_lvl_user: str | list = all_users[user_key]["access_lvl"]
-    gf.st_set("access_lvl", access_lvl_user)
+    sf.s_set("access_lvl", access_lvl_user)
 
     # log used username and access level
-    if gf.st_not_in("logged_username") or gf.st_get("logged_username") != user_key:
+    if sf.s_not_in("logged_username") or sf.s_get("logged_username") != user_key:
         logger.success(
-            f"logged in as: '{user_key}' (name:'{gf.st_get('name')}'), "
+            f"logged in as: '{user_key}' (name:'{sf.s_get('name')}'), "
             f"access level: '{access_lvl_user}'"
         )
-        gf.st_set("logged_username", user_key)
+        sf.s_set("logged_username", user_key)
 
     if access_lvl_user in ("god", "full"):
-        gf.st_set("access_pages", cont.ST_PAGES.get_all_short())
-        gf.st_set("access_until", date.max)
+        sf.s_set("access_pages", cont.ST_PAGES.get_all_short())
+        sf.s_set("access_until", date.max)
     else:
-        gf.st_set("access_pages", access_lvl_user)
-        gf.st_set(
+        sf.s_set("access_pages", access_lvl_user)
+        sf.s_set(
             "access_until",
             (
                 datetime.strptime(all_users[user_key]["access_until"], "%Y-%m-%d")
@@ -108,7 +109,7 @@ def access_granted() -> None:
             ),
         )
 
-    if gf.st_get("username") in ["utec"]:
+    if sf.s_get("username") in ["utec"]:
         st.markdown(uauth.MessageLog.access_utec.message)
 
     else:
@@ -132,9 +133,9 @@ def access_granted() -> None:
 def god_mode() -> None:
     """Define special stuff for users with access level 'god'"""
 
-    sm.user_accounts()
+    uauth_m.user_accounts()
     # neuen Benutzer eintragen
-    if gf.st_get("butt_sub_new_user"):
+    if sf.s_get("butt_sub_new_user"):
         with st.spinner("Momentle bitte, Benutzer wird hinzugefügt..."):
             uauth.insert_new_user(
                 username=st.session_state["new_user_user"],
@@ -146,7 +147,7 @@ def god_mode() -> None:
             )
 
     # Benutzer löschen
-    if gf.st_get("butt_sub_del_user"):
+    if sf.s_get("butt_sub_del_user"):
         uauth.delete_user()
 
 

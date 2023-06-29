@@ -1,27 +1,27 @@
 """Darstellung der Plots"""
 
 import os
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
 import numpy as np
 import plotly.graph_objects as go
+import polars as pl
 import streamlit as st
 from geopy import distance
 from loguru import logger
 
-from modules import classes_data as cl
+from modules import classes_data as cld
 from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import meteorolog as meteo
 
-if TYPE_CHECKING:
-    import polars as pl
-
 
 @gf.func_timer
 def line_plot(
-    mdf: cl.MetaAndDfs, data_frame: Literal["df", "df_h", "jdl", "mon"] = "df", **kwargs
+    mdf: cld.MetaAndDfs,
+    data_frame: Literal["df", "df_h", "jdl", "mon"] = "df",
+    **kwargs,
 ) -> go.Figure:
     """Liniengrafik für Daten eines einzelnen Jahres
 
@@ -33,17 +33,13 @@ def line_plot(
     Returns:
         - go.Figure: Liniengrafik eines einzelnen Jahres
     """
+    logger.info(f"Creating line plot from DataFrame 'mdf.{data_frame}'")
 
     df: pl.DataFrame = getattr(mdf, data_frame)
     lines: list[str] = kwargs.get("lines") or [
         col for col in df.columns if gf.check_if_not_exclude(col)
     ]
     title: str = kwargs.get("title") or ""
-    cusd_format: str = (
-        "(%{customdata|%a %d. %b %Y %H:%M})"
-        if "Monatswerte" not in title
-        else "(%{customdata|%b %Y})"
-    )
 
     fig: go.Figure = go.Figure()
     fig = fig.update_layout(
@@ -51,48 +47,39 @@ def line_plot(
             "meta": {
                 "title": title,
                 "var_name": kwargs.get("var_name"),
-                "metadata": mdf.meta.as_dict(),
+                "metadata": mdf.meta.as_dic(),
             }
         }
     )
 
+    logger.debug(gf.string_new_line_per_item(lines, "lines in lines:"))
+
     for line in [lin for lin in lines if gf.check_if_not_exclude(lin)]:
         line_data: pl.Series = df.get_column(line)
-        line_meta: cl.MetaLine = mdf.meta.get_line_by_name(line)
+        line_meta: cld.MetaLine = mdf.meta.lines[line]
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
 
-        logger.info(f"line: {line}, line_org: {line_meta.name_orgidx}")
+        logger.info(f"Adding line '{line_meta.tit}' to Figure '{title.split('<')[0]}'.")
+        logger.debug(f"original index column in line_meta: '{line_meta.name_orgidx}'")
 
         if line_meta.name_orgidx in df.columns:
             cusd: pl.Series = df.get_column(line_meta.name_orgidx)
+            logger.debug("original index column found in df")
         else:
-            logger.warning(
-                f"Line '{line_meta.name_orgidx}' not found in '{data_frame}'! "
-                f"Available columns: \n{df.columns}"
-            )
             cusd: pl.Series = df.get_column(cont.SPECIAL_COLS.original_index)
+            logger.debug("original index column NOT found in df")
 
         trace_unit: str | None = (
             line_meta.unit if data_frame == "df" else line_meta.unit_h
         )
 
-        hovtemp: str = f"{trace_unit} {cusd_format}"
         fig = fig.add_trace(
             go.Scatter(
                 x=df.get_column(cont.SPECIAL_COLS.index),
                 y=line_data * manip,
                 customdata=cusd,
                 name=line_meta.tit,
-                hovertemplate=(
-                    np.select(
-                        [abs(line_data) < 10, abs(line_data) < 100],  # noqa: PLR2004
-                        [
-                            "%{y:,.2f}" + hovtemp,
-                            "%{y:,.1f}" + hovtemp,
-                        ],
-                        "%{y:,.0f}" + hovtemp,
-                    )
-                ),
+                hovertemplate=hover_template(title, trace_unit, line_data),
                 mode="lines",
                 visible=True,
                 # yaxis=line_meta.y_axis_h if df_h else line_meta.y_axis,
@@ -100,13 +87,40 @@ def line_plot(
             )
         )
 
+    logger.info(
+        f"Figure '{title.split('<')[0]}' has the following lines:\n"
+        f"{gf.string_new_line_per_item([entry['name'] for entry in fig.data])}"
+    )
     return fig
+
+
+def hover_template(
+    fig_title: str, trace_unit: str | None, line_data: pl.Series
+) -> np.ndarray:
+    """Generate the hover template for the given trace"""
+
+    cusd_format: str = (
+        "(%{customdata|%a %d. %b %Y %H:%M})"
+        if "Monatswerte" not in fig_title
+        else "(%{customdata|%b %Y})"
+    )
+
+    hovtemp: str = f"{trace_unit} {cusd_format}"
+
+    return np.select(
+        [np.abs(line_data) < 10, np.abs(line_data) < 100],  # noqa: PLR2004
+        [
+            "%{y:,.2f}" + hovtemp,
+            "%{y:,.1f}" + hovtemp,
+        ],
+        "%{y:,.0f}" + hovtemp,
+    )
 
 
 # Lastgang mehrerer Jahre übereinander darstellen
 @gf.func_timer
 def line_plot_y_overlay(
-    mdf: cl.MetaAndDfs,
+    mdf: cld.MetaAndDfs,
     data_frame: Literal["df_multi", "df_h_multi", "mon_multi"] = "df_multi",
     **kwargs,
 ) -> go.Figure:
@@ -122,9 +136,10 @@ def line_plot_y_overlay(
         - go.Figure: Liniengrafik mit mehreren Jahren übereinander
     """
     if mdf.meta.years is None:
-        raise cle.NoYearsError
+        raise cle.NotFoundError(entry="list of years", where="mdf.meta.years")
 
-    logger.debug(f"DataFrame {data_frame}")
+    logger.debug(f"Creating line plot from DataFrame '{data_frame}'")
+
     dic_df: dict[int, pl.DataFrame] = getattr(mdf, data_frame)
     lines: list[str] = kwargs.get("lines") or mdf.get_lines_in_multi_df(data_frame)
 
@@ -141,18 +156,21 @@ def line_plot_y_overlay(
                 "title": (kwargs.get("title") or ""),
                 "var_name": kwargs.get("var_name"),
                 "multi_y": True,
-                "metadata": mdf.meta.as_dict(),
+                "metadata": mdf.meta.as_dic(),
             }
         }
     )
+    logger.debug("The following lines will be added to the graph:")
+    for line in lines:
+        logger.debug(gf.string_new_line_per_item(mdf.meta.lines[line].as_dic()))
 
     for line in lines:
         year: int = [year for year in mdf.meta.years if str(year) in line][0]
         line_data: pl.Series = dic_df[year].get_column(line)
-        line_meta: cl.MetaLine = mdf.meta.get_line_by_name(line)
+        line_meta: cld.MetaLine = mdf.meta.lines[line]
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
         trace_unit: str | None = (
-            line_meta.unit_h if data_frame == "df_multi" else line_meta.unit
+            line_meta.unit if data_frame == "df_multi" else line_meta.unit_h
         )
         hovtemp: str = f"{trace_unit} {cusd_format}"
 
@@ -330,7 +348,7 @@ def map_weatherstations() -> go.Figure:
     """Karte der Wetterstationen (verwendete hervorgehoben)"""
 
     # alle Stationen ohne Duplikate
-    all_sta = meteo.meteostat_stations()
+    all_sta = meteo.meteo_stations()
 
     # nächstgelegene Station
     clo_sta = all_sta[all_sta.index == all_sta.index[0]].copy()

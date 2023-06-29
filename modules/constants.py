@@ -130,6 +130,7 @@ SUFFIXES: clc.Suffixes = clc.Suffixes(
     col_original_index=" - orgidx",
     fig_tit_h='<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>',
     fig_tit_15='<i><span style="font-size: 12px;"> (15-Minuten-Werte)</span></i>',
+    h_line="hline",
 )
 
 EXCEL_MARKERS: clc.ExcelMarkers = clc.ExcelMarkers(
@@ -141,6 +142,7 @@ SPECIAL_COLS: clc.SpecialCols = clc.SpecialCols(
     index=EXCEL_MARKERS.index,
     original_index=SUFFIXES.col_original_index.replace(" - ", ""),
     smooth=SUFFIXES.col_smooth,
+    temp="Außentemperatur",
 )
 
 TIME_MS: clc.TimeMSec = clc.TimeMSec(
@@ -154,6 +156,17 @@ TIME_MIN: clc.TimeMin = clc.TimeMin(
     half_hour=30,
     quarter_hour=15,
 )
+
+DWD_RESOLUTION_OPTIONS: list[str] = [
+    "minute_1",
+    "minute_5",
+    "minute_10",
+    "hourly",
+    "daily",
+    "monthly",
+]
+
+DWD_TRANSLATION: dict[str, str] = {"temperature_air_mean_200": "Außentemperatur"}
 
 FIG_TITLES: clc.FigIDs = clc.FigIDs(
     lastgang="Lastgang",
@@ -177,23 +190,23 @@ ARBEIT_LEISTUNG: clc.ArbeitLeistung = clc.ArbeitLeistung(
 
 # Linien, die bei gewissen Operationen übersprungen werden
 EXCLUDE: clc.Exclude = clc.Exclude(
-    base=(
-        "hline",
+    base=[
+        SUFFIXES.h_line,
         SUFFIXES.col_smooth,
         SPECIAL_COLS.original_index,
-    ),
-    index=(
-        "hline",
+    ],
+    index=[
+        SUFFIXES.h_line,
         SUFFIXES.col_smooth,
         SPECIAL_COLS.original_index,
         EXCEL_MARKERS.index,
-    ),
-    suff_arbeit=(
-        "hline",
+    ],
+    suff_arbeit=[
+        SUFFIXES.h_line,
         SUFFIXES.col_smooth,
         SPECIAL_COLS.original_index,
         ARBEIT_LEISTUNG.arbeit.suffix,
-    ),
+    ],
 )
 
 ST_PAGES: clc.StPages = clc.StPages(
@@ -201,6 +214,91 @@ ST_PAGES: clc.StPages = clc.StPages(
     graph=clc.StPageProps("graph", "Grafische Datenauswertung", "Daten"),
     meteo=clc.StPageProps("meteo", "Meteorologische Daten", "Wetterdaten"),
     chat=clc.StPageProps("chat", "ChatGPT"),
+)
+
+# Umkreis für Meteostat-Stationen in Kilometern
+WEATHERSTATIONS_MAX_DISTANCE = 700
+
+
+# Parameter, die standardmäßig für den Download ausgewählt sind
+METEO_DEFAULT_PARAMETER: list = [
+    "Lufttemperatur in 2 m Höhe",
+    "Globalstrahlung",
+    "Windgeschwindigkeit",
+    "Windrichtung",
+]
+
+METEO_CODES: clc.MeteoCodes = clc.MeteoCodes(
+    temp=clc.MeteoParameter(
+        original_name="Air Temperature",
+        title="Lufttemperatur in 2 m Höhe",
+        unit="°C",
+        category_utec="Temperaturen",
+        default_parameter=True,
+    ),
+    dwpt=clc.MeteoParameter(
+        original_name="Dew Point",
+        title="Taupunkt",
+        unit="°C",
+        category_utec="Temperaturen",
+        default_parameter=False,
+    ),
+    prcp=clc.MeteoParameter(
+        original_name="Total Precipitation",
+        title="Niederschlag",
+        unit="mm",
+        category_utec="Feuchte, Luftdruck, Niederschlag",
+        default_parameter=False,
+    ),
+    wdir=clc.MeteoParameter(
+        original_name="Wind (From) Direction",
+        title="Windrichtung",
+        unit="°",
+        category_utec="Sonne und Wind",
+        default_parameter=True,
+    ),
+    wspd=clc.MeteoParameter(
+        original_name="Average Wind Speed",
+        title="Windgeschwindigkeit",
+        unit="km/h",
+        category_utec="Sonne und Wind",
+        default_parameter=True,
+    ),
+    wpgt=clc.MeteoParameter(
+        original_name="Wind Peak Gust",
+        title="max. Windböe",
+        unit="km/h",
+        category_utec="Sonne und Wind",
+        default_parameter=False,
+    ),
+    rhum=clc.MeteoParameter(
+        original_name="Relative Humidity",
+        title="rel. Luftfeuchtigkeit",
+        unit="%",
+        category_utec="Feuchte, Luftdruck, Niederschlag",
+        default_parameter=False,
+    ),
+    pres=clc.MeteoParameter(
+        original_name="Sea-Level Air Pressure",
+        title="Luftdruck (Meereshöhe)",
+        unit="hPa",
+        category_utec="Feuchte, Luftdruck, Niederschlag",
+        default_parameter=False,
+    ),
+    snow=clc.MeteoParameter(
+        original_name="Snow Depth",
+        title="Schneehöhe",
+        unit="m",
+        category_utec="Feuchte, Luftdruck, Niederschlag",
+        default_parameter=False,
+    ),
+    tsun=clc.MeteoParameter(
+        original_name="Total Sunshine Duration",
+        title="Sonnenstunden",
+        unit="min",
+        category_utec="Sonne und Wind",
+        default_parameter=False,
+    ),
 )
 
 

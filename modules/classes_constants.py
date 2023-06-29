@@ -1,6 +1,5 @@
 """Classes and such"""
 
-import pprint
 import re
 from dataclasses import dataclass, field
 from typing import TypedDict
@@ -18,6 +17,7 @@ class Suffixes:
     col_original_index: str
     fig_tit_h: str
     fig_tit_15: str
+    h_line: str
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -35,6 +35,7 @@ class SpecialCols:
     index: str
     original_index: str
     smooth: str
+    temp: str
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -68,7 +69,11 @@ class FigIDs:
 
     def list_all(self) -> list[str]:
         """List all values"""
-        return list(self.__dict__.values())
+        return [getattr(self, attr) for attr in self.__dataclass_fields__]
+
+    def as_dic(self) -> dict:
+        """Dictionary representation"""
+        return {attr: getattr(self, attr) for attr in self.__dataclass_fields__}
 
 
 @dataclass(frozen=True)
@@ -101,9 +106,9 @@ class ArbeitLeistung:
 class Exclude:
     """Column names or suffixes to exclude in order to only get the "normal" data"""
 
-    base: tuple[str]
-    index: tuple[str]
-    suff_arbeit: tuple[str]
+    base: list[str]
+    index: list[str]
+    suff_arbeit: list[str]
 
 
 @dataclass(frozen=True)
@@ -126,11 +131,57 @@ class StPages:
 
     def get_all_short(self) -> list[str]:
         """Get a list of short page descriptors"""
-        return [getattr(self, attr).short for attr in self.__dict__]
+        return [getattr(self, attr).short for attr in self.__dataclass_fields__]
 
     def get_title(self, short: str) -> str:
         """Get the title by providing the short page descriptor"""
         return getattr(self, short.lower()).title
+
+
+@dataclass
+class MeteoParameter:
+    """Properties of Meteo Codes"""
+
+    original_name: str
+    title: str
+    unit: str
+    category_utec: str
+    default_parameter: bool
+    closest_station_id: str | None = None
+    distance_closest: float | None = None
+    num_format: str = field(init=False)
+    pandas_styler: str = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Fill in fields"""
+        self.num_format = f'#,##0.0" {self.unit}"'
+        self.pandas_styler = "{:,.1f} " + self.unit
+
+
+@dataclass
+class MeteoCodes:
+    """Meteo Codes from the Meteostat package"""
+
+    temp: MeteoParameter
+    dwpt: MeteoParameter
+    prcp: MeteoParameter
+    wdir: MeteoParameter
+    wspd: MeteoParameter
+    wpgt: MeteoParameter
+    rhum: MeteoParameter
+    pres: MeteoParameter
+    snow: MeteoParameter
+    tsun: MeteoParameter
+
+    def list_utec_categories(self) -> list[str]:
+        """Returns a list (set) of all used UTEC categories"""
+        return list(
+            {getattr(self, field).category_utec for field in self.__dataclass_fields__}
+        )
+
+    def list_all_params(self) -> list[str]:
+        """Returns a list of available parameters"""
+        return list(self.__dataclass_fields__)
 
 
 class ObisDic(TypedDict):
@@ -160,9 +211,13 @@ class ObisElectrical:
     name_kurz: str = field(init=False)
     name_lang: str = field(init=False)
 
+    def as_dic(self) -> dict[str, str]:
+        """Dictionary representation"""
+        return {attr: getattr(self, attr) for attr in self.__dataclass_fields__}
+
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
-        return pprint.pformat(vars(self), sort_dicts=False)
+        return "\n".join([f"{key}: '{val}'" for key, val in self.as_dic().items()])
 
     def __post_init__(self) -> None:
         """Check if code is valid and fill in the fields"""

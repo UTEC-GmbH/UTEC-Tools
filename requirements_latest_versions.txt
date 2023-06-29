@@ -4,7 +4,6 @@ geopy
 ipykernel
 langchain
 loguru
-meteostat
 mypy
 numpy
 openai
@@ -17,8 +16,10 @@ pygithub
 pytest
 python-dotenv
 scipy
+sentry-sdk
 streamlit
 streamlit-authenticator
 streamlit-lottie
+wetterdienst
 xlsx2csv
 XlsxWriter

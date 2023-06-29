@@ -1,12 +1,12 @@
-"""LangChain and OpenAI"""  # noqa: N999
+"""LangChain and OpenAI"""
 
 import os
 
 import streamlit as st
 from langchain.llms import OpenAI
 
-from modules import general_functions as gf
 from modules import setup_stuff as set_stuff
+from modules import streamlit_functions as sf
 
 set_stuff.page_header_setup(page="chat")
 
@@ -25,10 +25,10 @@ def generate_response(input_text: str) -> None:
     response: str = llm(input_text)
 
     history: list[str] = [f"Frage: {input_text}", f"Antwort: {response}"]
-    old_his: list[str] | None = gf.st_get(HISTORY_KEY)
+    old_his: list[str] | None = sf.s_get(HISTORY_KEY)
     if old_his and response not in old_his:
         history += old_his
-    gf.st_set(HISTORY_KEY, history)
+    sf.s_set(HISTORY_KEY, history)
 
     st.info(response, icon="🤖")
 
@@ -46,7 +46,7 @@ with st.form("my_form"):
     if submitted and OPENAI_KEY.startswith("sk-"):
         generate_response(text)
 
-if gf.st_in(HISTORY_KEY):
+if sf.s_in(HISTORY_KEY):
     with st.expander("Chat Verlauf"):
-        for element in gf.st_get(HISTORY_KEY):
+        for element in sf.s_get(HISTORY_KEY):
             st.info(element, icon="🤔" if "Frage: " in element else "🤖")

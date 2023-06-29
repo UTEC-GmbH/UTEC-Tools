@@ -8,6 +8,7 @@ from collections import Counter
 from collections.abc import Callable
 from typing import Any, Literal
 
+import numpy as np
 import streamlit as st
 import streamlit_lottie as stlot
 from loguru import logger
@@ -15,6 +16,14 @@ from loguru import logger
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
+from modules import streamlit_functions as sf
+
+
+def log_new_run() -> None:
+    """Log new run"""
+    sf.s_add_once("number of runs", 0)
+    sf.s_set("number of runs", sf.s_get("number of runs") + 1)
+    logger.log(slog.LVLS.new_run.name, f"NEW RUN ( # {sf.s_get('number of runs')} )")
 
 
 def lottie_spinner(func: Callable) -> Callable:
@@ -51,7 +60,10 @@ def func_timer(func: Callable) -> Callable:
         except ValueError:
             slog.logger_setup()
 
-        logger.log(slog.LVLS.func_start.name, f"function '{func.__name__}' started")
+        logger.log(
+            slog.LVLS.func_start.name,
+            f"function '{func.__module__} -> {func.__name__}' started",
+        )
 
         result: Any = func(*args, **kwargs)
 
@@ -64,7 +76,8 @@ def func_timer(func: Callable) -> Callable:
 
         logger.log(
             slog.LVLS.timer.name,
-            f"execution time of '{func.__name__}': {exe_time:.4f} s",
+            f"execution time of '{func.__module__} -> {func.__name__}': "
+            f"{exe_time:.4f} s",
         )
 
         return result
@@ -72,45 +85,40 @@ def func_timer(func: Callable) -> Callable:
     return wrapper
 
 
-def st_get(key: str) -> Any:
-    """Shorter version of st.session_state.get(key)"""
-    return st.session_state.get(key)
-
-
-def st_in(key: str) -> bool:
-    """Check if a key is in the st.session_state"""
-    return key in st.session_state
-
-
-def st_not_in(key: str) -> bool:
-    """Check if a key is not in the st.session_state"""
-    return key not in st.session_state
-
-
-def st_add_once(key: str, value: Any) -> None:
-    """Add something to streamlit's session_state if it doesn't exist yet.
+def string_new_line_per_item(
+    list_or_dic: list | dict,
+    title: str | None = None,
+    leading_empty_lines: int = 0,
+) -> str:
+    """Generate a string that separates each item of the given object with a new line.
+    (mainly for logging)
 
     Args:
-        - key (str)
-        - value (Any)
+        - list_or_dic (list | dict): List or Dictionary to be represented as string.
+        - title (str | None, optional): First line of the string. Defaults to None.
+        - leading_empty_lines (int, optional): Start the string with x empty lines.
+            Defaults to 0.
+
+    Returns:
+        - str: String with elements separated by "backslash n"
     """
-    if key not in st.session_state:
-        st.session_state[key] = value
+
+    if isinstance(list_or_dic, list):
+        return "\n" * leading_empty_lines + "\n".join(
+            [f"'{title}'", *list_or_dic] if title else [*list_or_dic]
+        )
+    if isinstance(list_or_dic, dict):
+        return "\n" * leading_empty_lines + "\n".join(
+            [f"'{title}'"] + [f"{key}: '{val}'" for key, val in list_or_dic.items()]
+            if title
+            else [f"{key}: '{val}'" for key, val in list_or_dic.items()]
+        )
+    return "Error: given objekt not a list or dictionary"
 
 
-def st_set(key: str, value: Any) -> None:
-    """Add an item to streamlit's session_state
-    or replace it, if it alread exists
-    """
-    st.session_state[key] = value
-
-
-def st_delete(key: str) -> None:
-    """Eintrag in st.session_state löschen"""
-
-    if st_in(key):
-        del st.session_state[key]
-        logger.warning(f"st.session_state Eintrag {key} gelöscht")
+def flatten_list_of_lists(list_of_lists: list[list]) -> list:
+    """Flatten a list of lists"""
+    return [item for sublist in list_of_lists for item in sublist]
 
 
 def load_lottie_file(path: str) -> dict:
@@ -147,7 +155,6 @@ def sort_list_by_occurance(list_of_stuff: list[Any]) -> list[Any]:
     return sorted(Counter(list_of_stuff), key=list_of_stuff.count, reverse=True)
 
 
-@func_timer
 def render_svg(svg_path: str = "logo/UTEC_logo_text.svg") -> str:
     """SVG-Bild wird so codiert, dass es in Streamlit und html dargestellt werden kann.
 
@@ -219,7 +226,15 @@ def nachkomma(value: float) -> str:
     return str(f"{value:,.2f}").replace(".", ",")
 
 
-def last_day_of_month(any_day: dt.datetime) -> dt.datetime:
+def start_of_month(dt_obj: dt.datetime | np.datetime64) -> dt.datetime:
+    """Replace the day of a datetime with '1' to get the start of the month"""
+
+    if isinstance(dt_obj, np.datetime64):
+        dt_obj: dt.datetime = dt_obj.astype("M8[M]").astype(dt.datetime)
+    return dt_obj.replace(day=1)
+
+
+def end_of_month(dt_obj: dt.datetime | np.datetime64) -> dt.datetime:
     """Find the last day of the month of a given datetime
     The day 28 exists in every month. 4 days later, it's always next month.
     Subtracting the number of the current day brings us back one month.
@@ -231,8 +246,11 @@ def last_day_of_month(any_day: dt.datetime) -> dt.datetime:
         - dt.datetime: datetime value where the day is the last day of that month
     """
 
-    next_month: dt.datetime = any_day.replace(day=28) + dt.timedelta(days=4)
-
+    if isinstance(dt_obj, np.datetime64):
+        dt_obj = dt_obj.astype("M8[M]").astype(dt.datetime)
+    next_month: dt.datetime = dt_obj.replace(day=28) + dt.timedelta(
+        days=4
+    )  # Jump to next month
     return next_month - dt.timedelta(days=next_month.day)
 
 

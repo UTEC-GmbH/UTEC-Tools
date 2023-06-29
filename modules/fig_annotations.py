@@ -14,6 +14,7 @@ from scipy import signal
 from modules import constants as cont
 from modules import fig_general_functions as fgf
 from modules import general_functions as gf
+from modules import streamlit_functions as sf
 
 
 @gf.func_timer
@@ -164,11 +165,14 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
                 fig_layout,
                 x_val,
                 y_or_line=y_val,
-                text=f"max {tit}: {gf.nachkomma(abs(y_val))} {unit}",
+                text=f"max {tit}: {gf.nachkomma(abs(y_val))}{unit}",
                 yaxis=line["yaxis"],
                 middle_xaxis=middle_x,
             )
-            logger.info(f"Pfeil für {line['name']} hinzugefügt")
+            logger.info(
+                f"Pfeil hinzugefügt in '{fig.layout.meta['title'].split('<')[0]}': "
+                f"'max {tit}: {gf.nachkomma(abs(y_val))}{unit}'"
+            )
 
     logger.success("Max / Min arrows added to figure")
 
@@ -256,8 +260,8 @@ def hline_line(
     """Horizontale Linie einfügen"""
 
     ti_hor: str | None = None if ti_hor_init in {"", "new text"} else ti_hor_init
-    cb_hor_dash: bool = gf.st_get("cb_hor_dash") or True
-    y_axis: str = gf.st_get("sb_h_line_y") or "y"
+    cb_hor_dash: bool = sf.s_get("cb_hor_dash") or True
+    y_axis: str = sf.s_get("sb_h_line_y") or "y"
     y_axis = "y" if y_axis not in fgf.get_set_of_visible_y_axes(fig) else y_axis
     if any("hline" in x for x in [s.name for s in fig.layout.shapes]):
         for shape in fig.layout.shapes:
@@ -342,7 +346,7 @@ def h_v_lines() -> None:
 
     # horizontale Linie
     lis_figs_hor: list[str] = ["fig_base"]
-    if gf.st_get("cb_jdl"):
+    if sf.s_get("cb_jdl"):
         lis_figs_hor.append("fig_jdl")
 
     for fig in lis_figs_hor:
@@ -371,8 +375,8 @@ def calculate_smooth_values(trace: dict[str, Any]) -> np.ndarray:
     return signal.savgol_filter(
         x=pd.Series(trace["y"]).interpolate("akima"),
         mode="mirror",
-        window_length=int(gf.st_get("gl_win") or gf.st_get("smooth_start_val")),
-        polyorder=int(gf.st_get("gl_deg") or 3),
+        window_length=int(sf.s_get("gl_win") or sf.s_get("smooth_start_val")),
+        polyorder=int(sf.s_get("gl_deg") or 3),
     )
 
 
@@ -385,12 +389,12 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
     traces: list[dict] = kwargs.get("traces") or [
         trace for trace in fig_data.values() if gf.check_if_not_exclude(trace["name"])
     ]
-    gl_win: int = gf.st_get("gl_win")
-    gl_deg: int = gf.st_get("gl_deg") or 3
+    gl_win: int = sf.s_get("gl_win")
+    gl_deg: int = sf.s_get("gl_deg") or 3
 
     for trace in traces:
         smooth_name: str = f"{trace['name']}{cont.SUFFIXES.col_smooth}"
-        smooth_visible: bool = bool(gf.st_get(f"cb_vis_{smooth_name}"))
+        smooth_visible: bool = bool(sf.s_get(f"cb_vis_{smooth_name}"))
 
         if smooth_visible:
             meta_trace: dict[str, Any] = trace["meta"]

@@ -20,14 +20,14 @@ from modules import setup_stuff as set_stuff
 from modules import streamlit_functions as sf
 from modules import user_authentication as uauth
 
-# setup
+# setup stuff
+gf.log_new_run()
 MANUAL_DEBUG = True
 set_stuff.page_header_setup(page="graph")
-gf.log_new_run()
 
 
 def debug_code_run(position: Literal["before", "after"]) -> None:
-    """Anzeige mit st.write() für Debugging"""
+    """Infos zum Durchlauf des Programms mit st.write() für Debugging"""
 
     if MANUAL_DEBUG and sf.s_get("access_lvl") == "god":
         with st.expander(f"Debug {position}", expanded=False):
@@ -58,35 +58,47 @@ def debug_code_run(position: Literal["before", "after"]) -> None:
     st.session_state["dic_exe_time"] = {}
 
 
+def mdf_from_excel_or_st() -> cld.MetaAndDfs:
+    """MDF aus Excel-Datei erzeugen oder aus session_state übernehmen"""
+
+    if isinstance(sf.s_get("mdf"), cld.MetaAndDfs):
+        mdf_i: cld.MetaAndDfs = sf.s_get("mdf")
+        logger.info("Excel-Datei schon importiert - mdf aus session_state übernommen")
+    else:
+        mdf_i: cld.MetaAndDfs = ex_in.import_prefab_excel(sf.s_get("f_up"))
+
+    return mdf_i
+
+
 @gf.lottie_spinner
 def gather_and_manipulate_data() -> cld.MetaAndDfs:
     """Import Excel file and do stuff with the data"""
 
-    if isinstance(sf.s_get("mdf"), cld.MetaAndDfs):
-        mdf_i: cld.MetaAndDfs = sf.s_get("mdf")
-        logger.info("mdf aus session state übernommen")
-    else:
-        mdf_i: cld.MetaAndDfs = ex_in.import_prefab_excel(sf.s_get("f_up"))
+    mdf_i: cld.MetaAndDfs = mdf_from_excel_or_st()
 
-    # Grundeinstellungen in der sidebar
+    # sidebar menus
     menu_g.base_settings(mdf_i)
-
-    if sf.s_get("but_base_settings") or sf.s_get("but_meteo_sidebar"):
-        for df in ["df_h", "jdl", "mon"]:
-            setattr(mdf, df, None)
-
-        logger.info("Data Frames ['df_h', 'jdl', 'mon'] aus mdf entfernt.")
-
-    # anzuzeigende Grafiken
     menu_g.select_graphs(mdf_i)
-
-    # Außentemperatur
     menu_g.meteo_sidebar("graph")
+
+    if any([sf.s_get("but_base_settings"), sf.s_get("but_meteo_sidebar")]):
+        for df in ["df_h", "jdl", "mon", "df_multi", "df_h_multi", "mon_multi"]:
+            setattr(mdf_i, df, None)
+        logger.info(
+            "Data Frames \n"
+            '["df_h", "jdl", "mon", "df_multi", "df_h_multi", "mon_multi"]\n'
+            "aus mdf entfernt."
+        )
+
     if sf.s_get("but_meteo_sidebar"):
         if sf.s_get("cb_temp"):
             mdf_i = df_man.add_temperature_data(mdf_i)
         else:
             mdf_i.df.drop(cont.SPECIAL_COLS.temp)
+
+    # split the base data frame into years if necessary
+    if mdf_i.meta.multi_years and mdf_i.df_multi is None:
+        mdf_i = df_man.split_multi_years(mdf_i, "df")
 
     # df mit Stundenwerten erzeugen
     if sf.s_get("cb_h"):
@@ -117,9 +129,11 @@ def make_graphs(mdf_g: cld.MetaAndDfs) -> clf.Figs:
 
     figs_i: clf.Figs = sf.s_get("figs") or clf.Figs()
 
-    if sf.s_get("but_base_settings") or sf.s_get("but_meteo_sidebar"):
+    if any([sf.s_get("but_base_settings"), sf.s_get("but_meteo_sidebar")]):
         for attr in figs_i.__dataclass_fields__:
             setattr(figs_i, attr, None)
+        for key in cont.FIG_KEYS.list_all():
+            sf.s_delete(key)
 
     # Grund-Grafik
     if figs_i.base is None:
@@ -183,7 +197,7 @@ if uauth.authentication(sf.s_get("page")):
         st.markdown("###")
         st.markdown("---")
     else:
-        logger.info(f"File to analyse:\n{sf.s_get('f_up')}")
+        logger.info(f"File to analyse: '{sf.s_get('f_up')}'")
         with st.sidebar:
             st.button(
                 label="Auswertung neu starten",

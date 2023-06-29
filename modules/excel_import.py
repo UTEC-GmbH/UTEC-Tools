@@ -67,9 +67,6 @@ def import_prefab_excel(file: BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
 
     slog.log_df(mdf.df)
 
-    if mdf.meta.multi_years:
-        mdf = df_man.split_multi_years(mdf, "df")
-
     logger.debug(gf.string_new_line_per_item(mdf.df.columns, "mdf.df.columns"))
     logger.debug(
         gf.string_new_line_per_item(list(mdf.meta.lines), "lines in mdf.meta.lines:")

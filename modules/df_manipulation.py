@@ -124,13 +124,16 @@ def add_temperature_data(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         df_parameter: pl.DataFrame | None = parameter.data_frame
         if df_parameter is None:
             continue
-        mdf.df = mdf.df.join(
-            mdf.df.select(cont.SPECIAL_COLS.index)
-            .join(df_parameter, on=cont.SPECIAL_COLS.index, how="outer")
-            .sort(cont.SPECIAL_COLS.index)
-            .interpolate()
-            .fill_null(strategy="forward"),
-            on=cont.SPECIAL_COLS.index,
+        mdf.df = (
+            mdf.df.join(
+                mdf.df.select(cont.SPECIAL_COLS.index)
+                .join(df_parameter, on=cont.SPECIAL_COLS.index, how="outer")
+                .sort(cont.SPECIAL_COLS.index)
+                .interpolate(),
+                on=cont.SPECIAL_COLS.index,
+            )
+            .fill_null(strategy="forward")
+            .fill_null(strategy="backward")
         )
         par_nam: str = parameter.name_de or parameter.name
         mdf.meta.lines[par_nam] = cld.MetaLine(
@@ -146,6 +149,13 @@ def add_temperature_data(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             mdf.df.columns, "mdf.df.columns after adding weather data:"
         )
     )
+
+    logger.debug(
+        f"mdf.df['Außentemperatur'].null_count(): "
+        f"{mdf.df['Außentemperatur'].null_count()}"
+    )
+    logger.debug(mdf.df.filter(pl.col("Außentemperatur").is_null()))
+
     return mdf
 
 
@@ -156,6 +166,8 @@ def split_multi_years(
     """Split into multiple years"""
     if frame_to_split not in ["df", "df_h", "mon"]:
         raise ValueError
+
+    logger.info(f"Splitting Data Frame '{frame_to_split}'")
 
     df: pl.DataFrame = getattr(mdf, frame_to_split)
     if not mdf.meta.years:
@@ -183,6 +195,15 @@ def split_multi_years(
             )
             .rename(col_rename)
         )
+
+        # logger debug
+        if any(df_multi[year][col].null_count() > 0 for col in df_multi[year].columns):
+            for col in df_multi[year].columns:
+                if df_multi[year][col].null_count() > 0:
+                    logger.debug(f"Null value found in column '{col}'")
+        else:
+            logger.debug("No null values found")
+
     if frame_to_split == "df":
         mdf.df_multi = df_multi
     elif frame_to_split == "df_h":
@@ -193,7 +214,6 @@ def split_multi_years(
     return mdf
 
 
-@gf.func_timer
 def multi_year_column_rename(df: pl.DataFrame, year: int) -> dict[str, str]:
     """Rename columns for multi year data"""
     col_rename: dict[str, str] = {}
@@ -241,7 +261,9 @@ def df_h(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     if mdf.df_h is not None:
         logger.success("DataFrame mit Stundenwerten erstellt.")
         logger.log(slog.LVLS.data_frame.name, mdf.df_h.head())
-        logger.info("  \n".join(["Columns in mdf.df_h:", *mdf.df_h.columns]))
+        logger.info(
+            gf.string_new_line_per_item(mdf.df_h.columns, "Columns in mdf.df_h:")
+        )
 
     sf.s_set("mdf", mdf)
     return mdf
@@ -254,7 +276,7 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     if isinstance(mdf.df_h, pl.DataFrame):
         logger.info("Vorhandenes df_h für jdl übernommen")
     else:
-        logger.info("df_h wird für jdl neu erstellt neu erstellt")
+        logger.info("df_h wird für jdl neu erstellt")
 
     mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h(mdf)
 
@@ -342,7 +364,7 @@ def mon(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     if mdf.mon is not None:
         logger.success("DataFrame mit Monatswerten erstellt.")
         logger.log(slog.LVLS.data_frame.name, mdf.mon.head())
-        logger.info("  \n".join(["Columns in mdf.mon:", *mdf.mon.columns]))
+        logger.info(gf.string_new_line_per_item(mdf.mon.columns, "Columns in mdf.mon:"))
 
     sf.s_set("mdf", mdf)
     return mdf

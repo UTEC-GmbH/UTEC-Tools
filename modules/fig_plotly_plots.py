@@ -138,7 +138,7 @@ def line_plot_y_overlay(
     if mdf.meta.years is None:
         raise cle.NotFoundError(entry="list of years", where="mdf.meta.years")
 
-    logger.debug(f"DataFrame {data_frame}")
+    logger.debug(f"Creating line plot from DataFrame '{data_frame}'")
 
     dic_df: dict[int, pl.DataFrame] = getattr(mdf, data_frame)
     lines: list[str] = kwargs.get("lines") or mdf.get_lines_in_multi_df(data_frame)

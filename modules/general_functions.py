@@ -60,7 +60,10 @@ def func_timer(func: Callable) -> Callable:
         except ValueError:
             slog.logger_setup()
 
-        logger.log(slog.LVLS.func_start.name, f"function '{func.__name__}' started")
+        logger.log(
+            slog.LVLS.func_start.name,
+            f"function '{func.__module__} -> {func.__name__}' started",
+        )
 
         result: Any = func(*args, **kwargs)
 
@@ -73,7 +76,8 @@ def func_timer(func: Callable) -> Callable:
 
         logger.log(
             slog.LVLS.timer.name,
-            f"execution time of '{func.__name__}': {exe_time:.4f} s",
+            f"execution time of '{func.__module__} -> {func.__name__}': "
+            f"{exe_time:.4f} s",
         )
 
         return result
@@ -151,7 +155,6 @@ def sort_list_by_occurance(list_of_stuff: list[Any]) -> list[Any]:
     return sorted(Counter(list_of_stuff), key=list_of_stuff.count, reverse=True)
 
 
-@func_timer
 def render_svg(svg_path: str = "logo/UTEC_logo_text.svg") -> str:
     """SVG-Bild wird so codiert, dass es in Streamlit und html dargestellt werden kann.
 

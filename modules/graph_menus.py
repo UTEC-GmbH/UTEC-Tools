@@ -269,9 +269,7 @@ def meteo_sidebar(page: str) -> None:
         )
 
         st.markdown("###")
-        st.session_state["but_meteo_sidebar"] = st.form_submit_button(
-            "Knöpfle",
-        )
+        st.session_state["but_meteo_sidebar"] = st.form_submit_button("Knöpfle")
         st.markdown("###")
 
 

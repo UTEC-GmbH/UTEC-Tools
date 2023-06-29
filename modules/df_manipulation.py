@@ -142,7 +142,7 @@ def add_temperature_data(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             orig_tit=par_nam,
             tit=par_nam,
             unit=parameter.unit,
-            unit_h=parameter.unit,
+            unit_h=parameter.unit.strip("h"),
         )
     logger.info(
         gf.string_new_line_per_item(
@@ -178,13 +178,14 @@ def split_multi_years(
         col_rename: dict[str, str] = multi_year_column_rename(df, year)
         for old_name, new_name in col_rename.items():
             if new_name not in mdf.meta.lines:
-                old_line: cld.MetaLine = mdf.meta.lines[old_name]
-                new_line: cld.MetaLine = cld.MetaLine("tmp", "tmp", "tmp", "tmp")
-                for attr in old_line.as_dic():
-                    setattr(new_line, attr, getattr(old_line, attr))
-                new_line.tit = new_name
-                new_line.name_orgidx = f"{new_name}{cont.SUFFIXES.col_original_index}"
-                mdf.meta.lines[new_name] = new_line
+                # old_line: cld.MetaLine = mdf.meta.lines[old_name]
+                # new_line: cld.MetaLine = cld.MetaLine("tmp", "tmp", "tmp", "tmp")
+                # for attr in old_line.as_dic():
+                #     setattr(new_line, attr, getattr(old_line, attr))
+                # new_line.tit = new_name
+                # new_line.name_orgidx = f"{new_name}{cont.SUFFIXES.col_original_index}"
+                # mdf.meta.lines[new_name] = new_line
+                mdf.meta.lines[new_name] = mdf.meta.copy_line(old_name, new_name)
 
         df_multi[year] = (
             df.filter(pl.col(COL_IND).dt.year() == year)

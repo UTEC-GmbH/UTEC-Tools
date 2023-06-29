@@ -19,11 +19,7 @@ from modules import streamlit_functions as sf
 def sidebar_file_upload() -> Any:
     """Hochgeladene Excel-Datei"""
 
-    with st.sidebar:  # , st.expander(
-        #     "Auszuwertende Daten",
-        #     expanded=not bool(sf.st_get("f_up")),
-        # ):
-        # Download
+    with st.sidebar:
         sb_example: str | None = st.selectbox(
             "Beispieldateien",
             options=[
@@ -51,15 +47,7 @@ def sidebar_file_upload() -> Any:
         if sf.s_get("access_lvl") == "god":
             st.button("Beispieldatei direkt verwenden", "but_example_direct")
 
-        # Upload
-        # sample_direct: str = f"example_files/{sb_example}.xlsx"
-        # if sf.s_get("but_example_direct") or sf.s_get("f_up") == sample_direct:
-        #     f_up = sample_direct
-        #     st.session_state["f_up"] = f_up
-
-        # else:
         st.markdown("---")
-        # f_up = st.file_uploader(
         st.file_uploader(
             label="Datei hochladen",
             type=["xlsx", "xlsm"],

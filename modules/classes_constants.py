@@ -69,7 +69,7 @@ class FigIDs:
 
     def list_all(self) -> list[str]:
         """List all values"""
-        return list(self.__dataclass_fields__.values())
+        return [getattr(self, attr) for attr in self.__dataclass_fields__]
 
     def as_dic(self) -> dict:
         """Dictionary representation"""

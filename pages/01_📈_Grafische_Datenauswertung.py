@@ -199,14 +199,15 @@ if uauth.authentication(sf.s_get("page")):
     else:
         logger.info(f"File to analyse: '{sf.s_get('f_up')}'")
         with st.sidebar:
+            st.markdown("###")
             st.button(
-                label="Auswertung neu starten",
+                label="✨  Auswertung neu starten  ✨",
                 key="but_complete_reset",
                 use_container_width=True,
+                help="Neue Auswertung mit anderer Datei.",
             )
             st.write("---")
 
-        # if any(sf.st_get(entry) is not None for entry in ("f_up", "mdf")):
         mdf: cld.MetaAndDfs = gather_and_manipulate_data()
         figs: clf.Figs = make_graphs(mdf)
 

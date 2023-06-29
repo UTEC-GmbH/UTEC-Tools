@@ -331,6 +331,7 @@ def meta_from_obis(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             )
             line.tit = line.obis.name
             line.unit = line.unit or line.obis.unit
+            line.unit_h = line.unit.strip("h")
 
             mdf.df = mdf.df.rename({name: line.obis.name})
             names_to_change[name] = line.obis.name
@@ -401,7 +402,7 @@ def rename_column_arbeit_leistung(
     """
     new_name: str = f"{col}{cont.ARBEIT_LEISTUNG.get_suffix(original_data_type)}"
     mdf.df = mdf.df.rename({col: new_name})
-    mdf.meta.lines[new_name] = copy_line(mdf, col, new_name)
+    mdf.meta.lines[new_name] = mdf.meta.copy_line(col, new_name)
 
     logger.info(f"Spalte '{col}' umbenannt in '{new_name}'")
 
@@ -436,30 +437,9 @@ def insert_column_arbeit_leistung(
         old_unit = mdf.meta.lines[col].unit or " kW"
         new_unit: str = f"{old_unit}h"
 
-    mdf.meta.lines[new_name] = copy_line(mdf, col, new_name)
+    mdf.meta.lines[new_name] = mdf.meta.copy_line(col, new_name)
     mdf.meta.lines[new_name].unit = new_unit
 
     logger.info(f"Spalte '{new_name}' mit Einheit '{new_unit}' eingefügt.")
 
     return mdf
-
-
-def copy_line(mdf: cld.MetaAndDfs, line_to_copy: str, new_name: str) -> cld.MetaLine:
-    """Copy a line and give the new line a new name"""
-    old_line: cld.MetaLine = mdf.meta.lines[line_to_copy]
-    new_line: cld.MetaLine = cld.MetaLine(
-        "test",
-        "test_org",
-        "Org Title",
-        "Title",
-    )
-    for attr in old_line.as_dic():
-        setattr(new_line, attr, getattr(old_line, attr))
-    new_line.name = new_name
-    new_line.tit = new_name
-    new_line.name_orgidx = (
-        f"{new_name}{cont.SUFFIXES.col_original_index}"
-        if cont.SUFFIXES.col_original_index not in new_name
-        else new_name
-    )
-    return new_line

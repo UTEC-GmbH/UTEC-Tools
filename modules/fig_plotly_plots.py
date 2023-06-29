@@ -160,6 +160,9 @@ def line_plot_y_overlay(
             }
         }
     )
+    logger.debug("The following lines will be added to the graph:")
+    for line in lines:
+        logger.debug(gf.string_new_line_per_item(mdf.meta.lines[line].as_dic()))
 
     for line in lines:
         year: int = [year for year in mdf.meta.years if str(year) in line][0]
@@ -167,7 +170,7 @@ def line_plot_y_overlay(
         line_meta: cld.MetaLine = mdf.meta.lines[line]
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
         trace_unit: str | None = (
-            line_meta.unit_h if data_frame == "df_multi" else line_meta.unit
+            line_meta.unit if data_frame == "df_multi" else line_meta.unit_h
         )
         hovtemp: str = f"{trace_unit} {cusd_format}"
 

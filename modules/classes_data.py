@@ -7,6 +7,7 @@ from typing import Literal
 import polars as pl
 
 from modules import classes_constants as clc
+from modules import constants as cont
 from modules import general_functions as gf
 
 
@@ -97,6 +98,22 @@ class MetaData:
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
         return f"[{gf.string_new_line_per_item(self.as_dic())}]"
+
+    def copy_line(self, line_to_copy: str, new_line_name: str) -> MetaLine:
+        """Create a MetaLine-object with the same attrs under a new name"""
+
+        new_line = MetaLine(
+            new_line_name,
+            f"{new_line_name}{cont.SUFFIXES.col_original_index}"
+            if cont.SUFFIXES.col_original_index not in new_line_name
+            else new_line_name,
+            new_line_name,
+            new_line_name,
+        )
+        for attr in self.lines[line_to_copy].as_dic():
+            if getattr(new_line, attr) is None:
+                setattr(new_line, attr, getattr(self.lines[line_to_copy], attr))
+        return new_line
 
 
 @dataclass

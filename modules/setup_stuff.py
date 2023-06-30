@@ -134,7 +134,7 @@ def page_header_setup(page: str) -> None:
                     "letzte Änderungen: "
                     f'{sf.s_get("GitCommit_date"):%d.%m.%Y %H:%M}<br><br>'
                     f'{sf.s_get("GitCommit_major")}<br><br>'
-                    f'{sf.s_get("GitCommit_minor")}<br>'
+                    f'({sf.s_get("GitCommit_minor")})<br>'
                     "</span></i>"
                 ),
                 unsafe_allow_html=True,

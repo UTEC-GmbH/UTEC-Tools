@@ -5,7 +5,6 @@ import locale
 import os
 import sys
 from pathlib import Path
-from typing import Any
 
 import dotenv
 import github as gh
@@ -16,6 +15,7 @@ import sentry_sdk
 import streamlit as st
 from loguru import logger
 
+from modules import classes_data as cld
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
@@ -24,25 +24,15 @@ from modules import user_authentication as uauth
 
 
 @gf.func_timer
-def get_commit_message_date() -> dict[str, dt.datetime | str]:
-    """Commit message and date from GitHub to show in the header.
-
+def get_commit_message_date() -> None:
+    """Write git commit from GitHub to the session_state (for the header).
 
     To create a new personal access token in GitHub:
     on github.com click on the profile and go into
     settings -> developer settings -> personal access tokens
-
-    Returns:
-        - dict[str, dt.datetime | str]:
-            - "com_date" (dt.datetime): date of commit
-            - "com_msg" (str): commit message
     """
 
-    if all(com in st.session_state for com in ["com_date", "com_msg"]):
-        return {
-            "com_date": st.session_state["com_date"],
-            "com_msg": st.session_state["com_msg"],
-        }
+    logger.info("Loading Git commit...")
 
     utc: pytz.BaseTzInfo = pytz.timezone("UTC")
     eur: pytz.BaseTzInfo = pytz.timezone("Europe/Berlin")
@@ -53,31 +43,34 @@ def get_commit_message_date() -> dict[str, dt.datetime | str]:
 
     personal_access_token: str | None = os.environ.get("GITHUB_PAT")
     if not personal_access_token:
-        err_msg: str = "GITHUB_PAT environment variable not set."
-        logger.error(err_msg)
-        return {"com_date": "ERROR", "com_msg": err_msg}
+        logger.error("Invalid GITHUB_PAT!")
+        return
 
     gith: gh.Github = gh.Github(personal_access_token)
 
-    repo: Any = gith.get_user().get_repo(cont.REPO_NAME)
+    repo = gith.get_user().get_repo(cont.REPO_NAME)
     if not repo:
-        err_msg = "Failed to get repository."
-        logger.error(err_msg)
-        return {"com_date": "ERROR", "com_msg": err_msg}
+        logger.error("Repository could not be found.")
+        return
 
-    branch: Any = repo.get_branch("main")
-
+    branch = repo.get_branch("main")
     if not branch:
-        err_msg = "Failed to get 'main' branch for repository."
-        logger.error(err_msg)
-        return {"com_date": "ERROR", "com_msg": err_msg}
+        logger.error("Failed to get 'main' branch for repository.")
+        return
 
-    commit: Any = repo.get_commit(branch.commit.sha).commit
+    latest_commit = repo.get_commit(branch.commit.sha).commit
+    com_date = latest_commit.author.date + dt.timedelta(hours=tz_diff)
+    major: str = ""
+    minor: str = ""
+    commit_page = repo.get_commits(branch.commit.sha).get_page(0)
+    for commit in commit_page:
+        message = commit.commit.message.split("\n\n")
+        minor = message[0]
+        if len(message) > 1:
+            major = message[1]
+            break
 
-    return {
-        "com_date": commit.author.date + dt.timedelta(hours=tz_diff),
-        "com_msg": commit.message.split("\n")[-1],
-    }
+    cld.GitCommit(com_date, major, minor).write_all_to_session_state()
 
 
 @gf.func_timer
@@ -102,15 +95,9 @@ def general_setup() -> None:
 
     sf.s_add_once("UTEC_logo", gf.render_svg())
 
-    st.markdown(
-        cont.CSS_LABELS,
-        unsafe_allow_html=True,
-    )
+    st.markdown(cont.CSS_LABELS, unsafe_allow_html=True)
 
-    if any(entry not in st.session_state for entry in ["com_date", "com_msg"]):
-        commit: dict[str, dt.datetime | str] = get_commit_message_date()
-        st.session_state["com_date"] = commit["com_date"]
-        st.session_state["com_msg"] = commit["com_msg"]
+    get_commit_message_date()
 
     sf.s_add_once("all_user_data", uauth.get_all_user_data())
 
@@ -129,29 +116,25 @@ def general_setup() -> None:
 def page_header_setup(page: str) -> None:
     """Seitenkopf mit Logo, Titel (je nach Seite) und letzten Änderungen"""
 
-    st.session_state["page"] = page
-    st.session_state["title_container"] = st.container()
+    sf.s_set("page", page)
+    sf.s_set("title_container", st.container())
 
-    with st.session_state["title_container"]:
+    with sf.s_get("title_container"):
         columns: list = st.columns(2)
 
-        sf.s_add_once("UTEC_logo", gf.render_svg())
         with columns[0]:
-            st.write(st.session_state["UTEC_logo"], unsafe_allow_html=True)
+            st.write(sf.s_get("UTEC_logo"), unsafe_allow_html=True)
 
         # Version info (latest changes and python version)
-        if any(entry not in st.session_state for entry in ["com_date", "com_msg"]):
-            st.session_state["com_date"] = get_commit_message_date()["com_date"]
-            st.session_state["com_msg"] = get_commit_message_date()["com_msg"]
         with columns[1]:
             st.write(
                 (
                     '<i><span style="line-height: 110%; font-size: 12px; '
                     'float:right; text-align:right">'
-                    "letzte Änderungen:<br>"
-                    f'{st.session_state["com_date"]:%d.%m.%Y}   '
-                    f'{st.session_state["com_date"]:%H:%M}<br><br>'
-                    f'{st.session_state["com_msg"]}'
+                    "letzte Änderungen: "
+                    f'{sf.s_get("GitCommit_date"):%d.%m.%Y %H:%M}<br><br>'
+                    f'{sf.s_get("GitCommit_major")}<br><br>'
+                    f'({sf.s_get("GitCommit_minor")})<br>'
                     "</span></i>"
                 ),
                 unsafe_allow_html=True,

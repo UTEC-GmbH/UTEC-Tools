@@ -9,6 +9,21 @@ import polars as pl
 from modules import classes_constants as clc
 from modules import constants as cont
 from modules import general_functions as gf
+from modules import streamlit_functions as sf
+
+
+@dataclass
+class GitCommit:
+    """Github commit message for the page header"""
+
+    date: dt | str
+    major: str
+    minor: str
+
+    def write_all_to_session_state(self) -> None:
+        """Put all collected Commit information into st_session_state"""
+        for attr in self.__dataclass_fields__:
+            sf.s_set(f"GitCommit_{attr}", getattr(self, attr))
 
 
 @dataclass

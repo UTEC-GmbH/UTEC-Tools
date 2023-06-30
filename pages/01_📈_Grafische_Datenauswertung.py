@@ -94,7 +94,7 @@ def gather_and_manipulate_data() -> cld.MetaAndDfs:
         if sf.s_get("cb_temp"):
             mdf_i = df_man.add_temperature_data(mdf_i)
         else:
-            mdf_i.df.drop(cont.SPECIAL_COLS.temp)
+            mdf_i.df = mdf_i.df.drop(cont.SPECIAL_COLS.temp)
 
     # split the base data frame into years if necessary
     if mdf_i.meta.multi_years and mdf_i.df_multi is None:

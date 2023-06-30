@@ -43,22 +43,19 @@ def get_commit_message_date() -> None:
 
     personal_access_token: str | None = os.environ.get("GITHUB_PAT")
     if not personal_access_token:
-        err_msg: str = "Invalid GITHUB_PAT!"
-        logger.error(err_msg)
+        logger.error("Invalid GITHUB_PAT!")
         return
 
     gith: gh.Github = gh.Github(personal_access_token)
 
     repo = gith.get_user().get_repo(cont.REPO_NAME)
     if not repo:
-        err_msg = "Repository could not be found."
-        logger.error(err_msg)
+        logger.error("Repository could not be found.")
         return
 
     branch = repo.get_branch("main")
     if not branch:
-        err_msg = "Failed to get 'main' branch for repository."
-        logger.error(err_msg)
+        logger.error("Failed to get 'main' branch for repository.")
         return
 
     latest_commit = repo.get_commit(branch.commit.sha).commit
@@ -73,8 +70,7 @@ def get_commit_message_date() -> None:
             major = message[1]
             break
 
-    git_commit: cld.GitCommit = cld.GitCommit(com_date, major, minor)
-    git_commit.write_all_to_session_state()
+    cld.GitCommit(com_date, major, minor).write_all_to_session_state()
 
 
 @gf.func_timer

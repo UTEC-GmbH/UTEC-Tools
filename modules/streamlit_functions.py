@@ -6,9 +6,9 @@ import streamlit as st
 from loguru import logger
 
 
-def s_get(key: str) -> Any:
+def s_get(key: str, default: Any | None = None) -> Any | None:
     """Shorter version of st.session_state.get(key)"""
-    return st.session_state.get(key)
+    return st.session_state.get(key, default)
 
 
 def s_in(key: str | list[str]) -> bool:

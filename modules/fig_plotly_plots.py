@@ -7,7 +7,7 @@ import numpy as np
 import plotly.graph_objects as go
 import polars as pl
 import streamlit as st
-from geopy import distance
+from geopy import distance, Location
 from loguru import logger
 
 from modules import classes_data as cld
@@ -15,6 +15,7 @@ from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import meteorolog as meteo
+from modules import streamlit_functions as sf
 
 
 @gf.func_timer
@@ -291,13 +292,13 @@ def map_dwd_all() -> go.Figure:
     hov_temp = "(lat: %{lat:,.2f}° | lon: %{lon:,.2f}°)<br>%{text}<extra></extra>"
 
     # alle Stationen
-    all_sta = meteo.dwd_req().all().df
+    all_sta: pl.DataFrame = meteo.meteo_stations()
     all_lat = list(all_sta["latitude"])
     all_lon = list(all_sta["longitude"])
     all_nam = list(all_sta["name"])
 
     # alle Stationen
-    fig = go.Figure(
+    fig: go.Figure = go.Figure(
         data=go.Scattermapbox(
             lat=all_lat,
             lon=all_lon,
@@ -323,7 +324,25 @@ def map_dwd_all() -> go.Figure:
         )
     )
 
-    fig = fig.update_layout(
+    # eingegebene Adresse
+    loc: Location | None = sf.s_get("geo_location")
+    if isinstance(loc, Location):
+        address: str = loc.address
+        fig = fig.add_trace(
+            go.Scattermapbox(
+                lat=loc.latitude,
+                lon=loc.longitude,
+                text=address.replace("Germany", "").title(),
+                hovertemplate="<b>%{text}</b><br>→ eingegebener Standort<extra></extra>",
+                mode="markers",
+                marker={
+                    "size": 12,
+                    "color": "limegreen",
+                },
+            )
+        )
+
+    return fig.update_layout(
         title="Wetterstationen des DWD",
         autosize=True,
         showlegend=False,
@@ -339,8 +358,6 @@ def map_dwd_all() -> go.Figure:
             },
         },
     )
-
-    return fig
 
 
 @gf.func_timer

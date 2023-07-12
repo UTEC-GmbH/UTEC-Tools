@@ -5,6 +5,7 @@ from typing import Any, Literal
 
 import pandas as pd
 import plotly.graph_objects as go
+import polars as pl
 
 from modules import constants as cont
 
@@ -12,7 +13,7 @@ from modules import constants as cont
 def sample_df(
     multi_year: Literal["single", "multi"] = "multi",
     index_resolution: Literal["15", "h", "m"] = "h",
-) -> pd.DataFrame:
+) -> pl.DataFrame:
     """Create DataFrame with example data and datetime-index
     The DataFrames are read from parquet files which
     were created from the example files
@@ -33,16 +34,18 @@ def sample_df(
         - Temperatur [°C]
 
     Args:
-        - multi_year (Literal[single, multi], optional): Daten über ein einzelnes oder mehrere Jahre. Defaults to "multi".
-        - index_resolution (Literal[15, h, m], optional): 15-minutes, hourly or monthly resolution of the index. Defaults to "15min".
+        - multi_year (Literal[single, multi], optional):
+            Daten über ein einzelnes oder mehrere Jahre. Defaults to "multi".
+        - index_resolution (Literal[15, h, m], optional):
+            15-minutes, hourly or monthly resolution of the index. Defaults to "15min".
 
     Returns:
         pd.DataFrame
     """
 
     path: str = f"{cont.CWD}\\tests\\sample_data\\"
-    df: pd.DataFrame = pd.read_parquet(
-        f"{path}df_{multi_year}_{index_resolution}.parquet",
+    df: pl.DataFrame = pl.read_parquet(
+        f"{path}df_{multi_year}_{index_resolution}.parquet"
     )
 
     for col in df.columns:

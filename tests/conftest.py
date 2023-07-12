@@ -1,7 +1,5 @@
 """Configuration File for Tests"""
 
-import os
-
 import pandas as pd
 import plotly.graph_objects as go
 import pytest

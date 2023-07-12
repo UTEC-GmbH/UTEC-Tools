@@ -23,7 +23,7 @@ from modules import user_authentication as uauth
 # setup stuff
 gf.log_new_run()
 MANUAL_DEBUG = True
-set_stuff.page_header_setup(page="graph")
+set_stuff.page_header_setup(page=cont.ST_PAGES.graph.short)
 
 
 def debug_code_run(position: Literal["before", "after"]) -> None:

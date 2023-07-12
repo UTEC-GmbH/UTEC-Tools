@@ -301,49 +301,6 @@ def meteo_df(
 
 
 # @gf.func_timer
-# def outside_temp_graph() -> None:
-#     """
-#     Außentemperatur in df für Grafiken eintragen
-#     """
-#     page = gf.st_get("page")
-#     if "graph" not in page:
-#         return
-
-#     st.session_state["lis_sel_params"] = [ClassParam("temperature_air_mean_200")]
-#     if "meteo_data" not in st.session_state:
-#         meteo_data()
-#     st.session_state["meteo_data"].rename(
-#         columns={"Lufttemperatur in 2 m Höhe": "temp"}, inplace=True
-#     )
-
-#     st.session_state["df_temp"] = st.session_state["meteo_data"]["temp"]
-
-#     st.session_state["metadata"]["Temperatur"] = {
-#         "tit": "Temperatur",
-#         "orig_tit": "temp",
-#         "unit": " °C",
-#         "unit": " °C",
-#     }
-#     if "Temperatur" in st.session_state["df"].columns:
-#         st.session_state["df"].drop(columns=["Temperatur"], inplace=True)
-
-#     df = pd.concat(
-#         [
-#             st.session_state["df"],
-#             st.session_state["df_temp"].reindex(st.session_state["df"].index),
-#         ],
-#         axis=1,
-#     )
-#     df.rename(columns={"temp": "Temperatur"}, inplace=True)
-#     units()
-
-#     if gf.st_get("cb_h") is False:
-#         df["Temperatur"] = df["Temperatur"].interpolate(method="akima", axis="index")
-
-#     st.session_state["df"] = df
-
-
-# @gf.func_timer
 # def del_meteo() -> None:
 #     """vorhandene meteorologische Daten löschen"""
 #     # Spalten in dfs löschen

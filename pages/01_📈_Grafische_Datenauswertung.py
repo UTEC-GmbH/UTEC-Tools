@@ -200,15 +200,13 @@ if uauth.authentication(sf.s_get("page")):
         st.markdown("---")
     else:
         logger.info(f"File to analyse: '{sf.s_get('f_up')}'")
-        # TODO: Restart Knopf reparieren
         with st.sidebar:
             st.markdown("###")
             st.button(
                 label="✨  Auswertung neu starten  ✨",
                 key="but_complete_reset",
                 use_container_width=True,
-                help="Funktioniert leider noch nicht",
-                disabled=True,
+                help="Auswertung zurücksetzen um andere Datei hochladen zu können.",
             )
             st.write("---")
 

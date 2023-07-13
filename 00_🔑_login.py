@@ -82,8 +82,8 @@ def access_granted() -> None:
     """If access is granted, do this..."""
 
     # determine the access level
-    user_key: str = sf.s_get("username")
-    all_users: dict[str, dict[str, Any]] = sf.s_get("all_user_data")
+    user_key: str = sf.s_get("username") or "Unknown"
+    all_users: dict[str, dict[str, Any]] = sf.s_get("all_user_data") or {}
     access_lvl_user: str | list = all_users[user_key]["access_lvl"]
     sf.s_set("access_lvl", access_lvl_user)
 

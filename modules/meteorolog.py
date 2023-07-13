@@ -2,6 +2,7 @@
 
 import os
 from datetime import datetime as dt
+from typing import Any
 
 import geopy
 import polars as pl
@@ -60,20 +61,12 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
         end_time = dt(2019, 12, 31, 23, 59)
 
     elif page == "meteo":
-        start_year: int = (
-            min(
-                sf.s_get("meteo_start_year"),
-                sf.s_get("meteo_end_year"),
-            )
-            or 2020
-        )
-        end_year: int = (
-            max(
-                sf.s_get("meteo_start_year"),
-                sf.s_get("meteo_end_year"),
-            )
-            or 2020
-        )
+        st_first_year: Any | None = sf.s_get("meteo_start_year")
+        st_second_year: Any | None = sf.s_get("meteo_end_year")
+        first_year: int = st_first_year if isinstance(st_first_year, int) else 1981
+        second_year: int = st_second_year if isinstance(st_second_year, int) else 1981
+        start_year: int = min(first_year, second_year)
+        end_year: int = max(first_year, second_year)
 
         start_time = dt(start_year, 1, 1, 0, 0)
         end_time = dt(end_year, 12, 31, 23, 59)
@@ -212,6 +205,7 @@ def collect_meteo_data(
 
     time_res: str = temporal_resolution or sf.s_get("sb_meteo_resolution") or "hourly"
     address: str = sf.s_get("ti_address") or "Bremen"
+    location: geopy.Location = sf.s_get("geo_location") or geo_locate(address)
     time_span: cld.TimeSpan = start_end_time()
 
     parameters: list[str] = sf.s_get("ms_meteo_params") or ["temperature_air_mean_200"]
@@ -219,6 +213,8 @@ def collect_meteo_data(
 
     for par in params:
         par.resolution = check_parameter_availability(par.name, time_res)
+        par.location_lat = location.latitude
+        par.location_lon = location.longitude
         par.closest_station_id = str(
             pl.first(meteo_stations(address, par.name, par.resolution)["station_id"])
         )

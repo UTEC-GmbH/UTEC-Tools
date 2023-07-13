@@ -1,8 +1,8 @@
 """Einstellungen und Anmerkungen für plots"""
 
 
-from datetime import datetime
-from typing import Any, Literal
+import datetime as dt
+from typing import Any, Literal, TypeVar
 
 import numpy as np
 import pandas as pd
@@ -16,28 +16,26 @@ from modules import fig_general_functions as fgf
 from modules import general_functions as gf
 from modules import streamlit_functions as sf
 
+DATE_OR_FLOAT = TypeVar("DATE_OR_FLOAT", dt.datetime, float, np.datetime64)
+
 
 @gf.func_timer
-def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> datetime | float:
+def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> dt.datetime | float:
     """Mitte der x-Achse finden
 
     Args:
         - fig (go.Figure): Grafik, die untersucht werden soll
 
     Returns:
-        - datetime | float: je nach Index entweder die Zeit
+        - dt.datetime | float: je nach Index entweder die Zeit
             oder die Zahl in der Mitte der x-Achse
     """
 
     data_x: list = [val["x"] for val in fig_data.values()]
-    x_max: datetime | np.datetime64 | int = max(
-        max(dat) for dat in data_x if len(dat) > 0
-    )
-    x_min: datetime | np.datetime64 | int = min(
-        min(dat) for dat in data_x if len(dat) > 0
-    )
+    x_max = max(max(dat) for dat in data_x if len(dat) > 0)
+    x_min = min(min(dat) for dat in data_x if len(dat) > 0)
 
-    middle: float = x_min + (x_max - x_min) / 2
+    middle: dt.datetime | float = x_min + (x_max - x_min) / 2
 
     logger.info(f"middle of x-axis: {middle}")
 
@@ -48,7 +46,7 @@ def add_arrow(
     fig: go.Figure,
     fig_data: dict[str, dict[str, Any]],
     fig_layout: dict[str, Any],
-    x_val: datetime | float | int,
+    x_val: dt.datetime | float | int,
     y_or_line: float | int | str,
     **kwargs,
 ) -> go.Figure:
@@ -56,7 +54,7 @@ def add_arrow(
 
     Args:
         - fig (go.Figure): Grafik
-        - x_val (datetime, float, int): Wert auf der x-Achse
+        - x_val (dt.datetime, float, int): Wert auf der x-Achse
         - y_or_line (float, int, str): Wert auf der y-Achse (float) oder
             Name der Linie (str), die beschriftet werden soll
 
@@ -69,7 +67,8 @@ def add_arrow(
             in X-Richtung in px; default = 20
         - y_vers (int): Abstand zwischen Pfeilspitze und Beschriftung
             in Y-Richtung in px; default = 10
-        - middle_xaxis (datetime | float): die Mitte der x-Achse (für die Ausrichtung)
+        - middle_xaxis (dt.datetime | float):
+            die Mitte der x-Achse (für die Ausrichtung)
 
     Returns:
         - go.Figure: Grafik mit Pfeilen
@@ -84,7 +83,7 @@ def add_arrow(
         y_val = float(y_or_line)
 
     # Beschriftungstext
-    text: str = kwargs.get("text") or f"{str(x_val)} kW"
+    text: str = kwargs.get("text") or f"{x_val!s} kW"
 
     # Text bei mouse-hover - default: x-Wert (Datum, an dem der y-Wert auftritt)
     hovertext: str = kwargs.get("hovertext") or hovertext_from_x_val(
@@ -92,7 +91,7 @@ def add_arrow(
     )
 
     # Textausrichtung
-    mid: datetime | np.datetime64 | int = kwargs.get("middle_xaxis") or middle_xaxis(
+    mid: dt.datetime | np.datetime64 | int = kwargs.get("middle_xaxis") or middle_xaxis(
         fig_data
     )
     anc: bool = x_val > mid
@@ -137,7 +136,7 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
 
     fig_data: dict[str, dict[str, Any]] = kwargs.get("data") or fgf.fig_data_as_dic(fig)
     fig_layout: dict[str, Any] = kwargs.get("layout") or fgf.fig_layout_as_dic(fig)
-    middle_x: datetime | float = middle_xaxis(fig_data)
+    middle_x: dt.datetime | float = middle_xaxis(fig_data)
 
     # alle Linien in Grafik
     for line in fig_data.values():
@@ -148,14 +147,14 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
                 else np.nanmax(line["y"])
             )
 
-            if not isinstance(y_val, (float, np.floating)):
+            if not isinstance(y_val, float | np.floating):
                 logger.debug(
                     f"Annotation for {line['name']} SKIPPED "
                     f"because y_val is type '{type(y_val)}'."
                 )
                 continue
 
-            x_val: datetime | float = line["x"][np.where(line["y"] == y_val)[0][0]]
+            x_val: dt.datetime | float = line["x"][np.where(line["y"] == y_val)[0][0]]
             unit: str = line["meta"]["unit"]
             tit: str = line["name"]
 
@@ -180,13 +179,13 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
 
 
 def hovertext_from_x_val(
-    title: str, x_val: datetime | float, line_data: dict[str, Any] | None
+    title: str, x_val: dt.datetime | float, line_data: dict[str, Any] | None
 ) -> str:
     """Falls kein Hovertext gegeben wird, erstellt diese Funktion einen aus dem x-Wert
 
     Args:
         jdl (bool): handelt es sich bei der Grafik um eine Jahresdauerlinie
-        x_val (datetime | float): x-Wert, der bezeichnet wird
+        x_val (dt.datetime | float): x-Wert, der bezeichnet wird
         line_data (dict[str, Any] | None): line_data für zu beschriftende Linie
 
     Returns:
@@ -194,18 +193,18 @@ def hovertext_from_x_val(
     """
     jdl: bool = cont.FIG_TITLES.jdl in title
     if jdl and line_data:
-        hov_date: datetime | str = line_data["customdata"][
+        hov_date: dt.datetime | str = line_data["customdata"][
             np.where(line_data["x"] == x_val)
         ][0][0]
 
-    elif isinstance(x_val, datetime):
+    elif isinstance(x_val, dt.datetime):
         hov_date = x_val
 
     else:
         hov_date = str(x_val)
 
     hovertext: str = (
-        f"{hov_date:%d.%m.%Y %H:%M}" if isinstance(hov_date, datetime) else hov_date
+        f"{hov_date:%d.%m.%Y %H:%M}" if isinstance(hov_date, dt.datetime) else hov_date
     )
 
     return hovertext
@@ -213,7 +212,7 @@ def hovertext_from_x_val(
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
 @gf.func_timer
-def vline(fig: go.Figure, x_val: float or datetime, txt: str, pos: str) -> None:
+def vline(fig: go.Figure, x_val: float or dt.datetime, txt: str, pos: str) -> None:
     """Vertikale Linie einfügen"""
 
     fig.add_vline(

@@ -147,9 +147,7 @@ def standard_axes_and_layout(
     fig = standard_xaxis(fig, data, title, x_tickformat)
     fig = fig.update_yaxes(FORMAT_PRIMARY_Y)
 
-    fig = standard_layout(fig, data)
-
-    return fig
+    return standard_layout(fig, data)
 
 
 @gf.func_timer
@@ -561,7 +559,7 @@ def legend_groups_for_multi_year(fig: go.Figure) -> go.Figure:
     return fig
 
 
-def plotly_config(height: int = 420, title_edit: bool = True) -> dict[str, Any]:
+def plotly_config(height: int = 420, *, title_edit: bool = True) -> dict[str, Any]:
     """Anzeigeeinstellungen für Plotly-Grafiken"""
 
     return {

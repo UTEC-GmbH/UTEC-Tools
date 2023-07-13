@@ -1,8 +1,8 @@
 """user authentication"""
 
+import datetime as dt
 import os
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
 from typing import Any
 
 import streamlit as st
@@ -87,16 +87,24 @@ class MessageLog:
     )
 
 
-def authentication(page: str) -> bool:
+def authentication(page: Any | None) -> bool:
     """Authentication object"""
-
     if not sf.s_get("authentication_status"):
         MessageLog.no_login.show_message()
         return False
-    if page not in st.session_state["access_pages"]:
+
+    # Prüfung ob Benutzer Zugirff auf Seite hat
+    if not isinstance(page, str):
+        logger.error("page not defined correctly")
+        return False
+    access_pages: Any | None = sf.s_get("access_pages")
+    if isinstance(access_pages, list) and page not in access_pages:
         MessageLog.no_access.show_message()
         return False
-    if st.session_state["access_until"] < date.today():
+
+    # Prüfung ob Zugriffsrechte abgelaufen sind
+    access_until: Any | None = sf.s_get("access_until")
+    if isinstance(access_until, dt.date) and access_until < dt.date.today():
         MessageLog.too_late.show_message()
         return False
 
@@ -147,7 +155,7 @@ def get_all_user_data() -> dict[str, dict[str, str]]:
 
     # delete old entries if found
     for entry in deta_db.fetch().items:
-        if datetime.strptime(entry["access_until"], "%Y-%m-%d") < datetime.now():
+        if dt.datetime.strptime(entry["access_until"], "%Y-%m-%d") < dt.datetime.now():
             deta_db.delete(entry["key"])
 
     users: dict[str, dict[str, Any]] = {
@@ -197,7 +205,7 @@ def insert_new_user(
         - access_until: str = "",
     """
     access_until: str = kwargs.get("access_until") or str(
-        date.today() + timedelta(weeks=3)
+        dt.date.today() + dt.timedelta(weeks=3)
     )
     name: str = kwargs.get("name") or username.replace("_", " ").title()
     email: str = kwargs.get("email") or ""

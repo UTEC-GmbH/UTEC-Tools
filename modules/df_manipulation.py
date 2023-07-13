@@ -38,7 +38,7 @@ def get_time_col_to_test_am_pm(file_path: str | None) -> pl.DataFrame:
         source=file_path,
         xlsx2csv_options=xlsx_options,
         read_csv_options=csv_options,
-    )
+    ) # type: ignore
 
 
 # FIX_AM_PM FUNKTIONIERT NOCH NICHT

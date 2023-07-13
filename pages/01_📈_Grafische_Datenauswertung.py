@@ -28,32 +28,35 @@ set_stuff.page_header_setup(page=cont.ST_PAGES.graph.short)
 
 def debug_code_run(position: Literal["before", "after"]) -> None:
     """Infos zum Durchlauf des Programms mit st.write() für Debugging"""
+    # sourcery skip: extract-method
 
-    if MANUAL_DEBUG and sf.s_get("access_lvl") == "god":
-        with st.expander(f"Debug {position}", expanded=False):
-            st.plotly_chart(
-                fig_create.ploplo.timings(sf.s_get("dic_exe_time")),
-                use_container_width=True,
-                config=fig_format.plotly_config(),
-            )
+    if not all([MANUAL_DEBUG, sf.s_get("access_lvl") == "god"]):
+        return
 
-            se_st_show: list[str] = [
-                "fig_base",
-            ]
+    with st.expander(f"Debug {position}", expanded=False):
+        exe_time: dict = sf.s_get("dic_exe_time") or {}
+        st.plotly_chart(
+            fig_create.ploplo.timings(exe_time),
+            use_container_width=True,
+            config=fig_format.plotly_config(),
+        )
 
-            for show in se_st_show:
-                if show in st.session_state:
-                    st.write(f"st.session_state['{show}']:")
-                    if "fig" in show:
-                        st.write(sf.s_get(show).to_dict())
-                    else:
-                        st.write(sf.s_get(show))
-            st.markdown("---")
-            st.write("Session State:")
-            st.write(st.session_state)
+        se_st_show: list[str] = [
+            "fig_base",
+        ]
+
+        for show in se_st_show:
+            if show in st.session_state:
+                st.write(f"st.session_state['{show}']:")
+                if item := sf.s_get(show):
+                    st.write(item.to_dict() if "fig" in show else item)
 
         st.markdown("---")
-        st.markdown("###")
+        st.write("Session State:")
+        st.write(st.session_state)
+
+    st.markdown("---")
+    st.markdown("###")
 
     st.session_state["dic_exe_time"] = {}
 
@@ -61,13 +64,13 @@ def debug_code_run(position: Literal["before", "after"]) -> None:
 def mdf_from_excel_or_st() -> cld.MetaAndDfs:
     """MDF aus Excel-Datei erzeugen oder aus session_state übernehmen"""
 
-    if isinstance(sf.s_get("mdf"), cld.MetaAndDfs):
-        mdf_i: cld.MetaAndDfs = sf.s_get("mdf")
-        logger.info("Excel-Datei schon importiert - mdf aus session_state übernommen")
-    else:
-        mdf_i: cld.MetaAndDfs = ex_in.import_prefab_excel(sf.s_get("f_up"))
+    mdf_from_st: Any | None = sf.s_get("mdf")
 
-    return mdf_i
+    if isinstance(mdf_from_st, cld.MetaAndDfs):
+        logger.info("Excel-Datei schon importiert - mdf aus session_state übernommen")
+        return mdf_from_st
+
+    return ex_in.import_prefab_excel(sf.s_get("f_up"))
 
 
 @gf.lottie_spinner
@@ -79,9 +82,11 @@ def gather_and_manipulate_data() -> cld.MetaAndDfs:
     # sidebar menus
     menu_g.base_settings(mdf_i)
     menu_g.select_graphs(mdf_i)
-    menu_g.meteo_sidebar("graph")
+    menu_g.meteo_sidebar(cont.ST_PAGES.graph.short)
 
     if any([sf.s_get("but_base_settings"), sf.s_get("but_meteo_sidebar")]):
+        if cont.SPECIAL_COLS.temp in mdf_i.df.columns:
+            mdf_i.df = mdf_i.df.drop(cont.SPECIAL_COLS.temp)
         for df in ["df_h", "jdl", "mon", "df_multi", "df_h_multi", "mon_multi"]:
             setattr(mdf_i, df, None)
         logger.info(
@@ -90,11 +95,8 @@ def gather_and_manipulate_data() -> cld.MetaAndDfs:
             "aus mdf entfernt."
         )
 
-    if sf.s_get("but_meteo_sidebar"):
-        if sf.s_get("cb_temp"):
-            mdf_i = df_man.add_temperature_data(mdf_i)
-        else:
-            mdf_i.df = mdf_i.df.drop(cont.SPECIAL_COLS.temp)
+    if sf.s_get("but_meteo_sidebar") and sf.s_get("cb_temp"):
+        mdf_i = df_man.add_temperature_data(mdf_i)
 
     # split the base data frame into years if necessary
     if mdf_i.meta.multi_years and mdf_i.df_multi is None:
@@ -198,13 +200,15 @@ if uauth.authentication(sf.s_get("page")):
         st.markdown("---")
     else:
         logger.info(f"File to analyse: '{sf.s_get('f_up')}'")
+        # TODO: Restart Knopf reparieren
         with st.sidebar:
             st.markdown("###")
             st.button(
                 label="✨  Auswertung neu starten  ✨",
                 key="but_complete_reset",
                 use_container_width=True,
-                help="Neue Auswertung mit anderer Datei.",
+                help="Funktioniert leider noch nicht",
+                disabled=True,
             )
             st.write("---")
 

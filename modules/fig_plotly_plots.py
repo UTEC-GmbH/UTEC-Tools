@@ -7,7 +7,7 @@ import numpy as np
 import plotly.graph_objects as go
 import polars as pl
 import streamlit as st
-from geopy import distance, Location
+from geopy import distance
 from loguru import logger
 
 from modules import classes_data as cld
@@ -15,7 +15,6 @@ from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import meteorolog as meteo
-from modules import streamlit_functions as sf
 
 
 @gf.func_timer
@@ -289,7 +288,8 @@ def line_plot_day_overlay(
 def map_dwd_all() -> go.Figure:
     """Karte aller Wetterstationen"""
 
-    hov_temp = "(lat: %{lat:,.2f}° | lon: %{lon:,.2f}°)<br>%{text}<extra></extra>"
+    # hov_temp = "%{text}<br>(lat: %{lat:,.2f}° | lon: %{lon:,.2f}°)<extra></extra>"
+    hov_temp: str = "%{text}<br><i>(Wetterstation)</i><extra></extra>"
 
     # alle Stationen
     all_sta: pl.DataFrame = meteo.meteo_stations()
@@ -308,7 +308,8 @@ def map_dwd_all() -> go.Figure:
                 "size": 4,
                 "color": "blue",
                 # "colorscale": "Portland",  # Blackbody,Bluered,Blues,Cividis,Earth,
-                #   Electric,Greens,Greys,Hot,Jet,Picnic,Portland,Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd
+                #   Electric,Greens,Greys,Hot,Jet,Picnic,Portland,
+                #   Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd
                 # "colorbar": {
                 #     "title": "Entfernung<br>DWD-Station<br>Adresse<br> ----- ",
                 #     "bgcolor": "rgba(255,255,255,0.5)",
@@ -323,24 +324,6 @@ def map_dwd_all() -> go.Figure:
             hovertemplate=hov_temp,
         )
     )
-
-    # eingegebene Adresse
-    loc: Location | None = sf.s_get("geo_location")
-    if isinstance(loc, Location):
-        address: str = loc.address
-        fig = fig.add_trace(
-            go.Scattermapbox(
-                lat=loc.latitude,
-                lon=loc.longitude,
-                text=address.replace("Germany", "").title(),
-                hovertemplate="<b>%{text}</b><br>→ eingegebener Standort<extra></extra>",
-                mode="markers",
-                marker={
-                    "size": 12,
-                    "color": "limegreen",
-                },
-            )
-        )
 
     return fig.update_layout(
         title="Wetterstationen des DWD",

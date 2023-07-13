@@ -5,7 +5,7 @@ import locale
 import os
 import sys
 from pathlib import Path
-
+from typing import Any
 import dotenv
 import github as gh
 import pandas.io.formats.excel
@@ -16,6 +16,7 @@ import streamlit as st
 from loguru import logger
 
 from modules import classes_data as cld
+from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
@@ -118,8 +119,11 @@ def page_header_setup(page: str) -> None:
 
     sf.s_set("page", page)
     sf.s_set("title_container", st.container())
+    tit_cont: Any | None = sf.s_get("title_container")
+    if not tit_cont:
+        raise cle.NotFoundError(entry="title_container", where="Session State")
 
-    with sf.s_get("title_container"):
+    with tit_cont:
         columns: list = st.columns(2)
 
         with columns[0]:

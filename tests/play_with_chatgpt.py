@@ -2,40 +2,27 @@
 
 # sourcery skip: avoid-global-variables
 # pylint: disable=W0105
+# noqa: E501
 
 """
-df_resolution is an integer
+In the following function, the function 'sf.s_get("mdf")' can return the type "Any" or "None".
+The type of the variable 'mdf_i' is declared as 'cld.MetaAndDfs | None'.
+In the line 'mdf_i: cld.MetaAndDfs | None = sf.s_get("mdf")' I get a warning by Pylance saying 
+'Expression of type "Any | None" cannot be assigned to declared type "MetaAndDfs"
+  Type "Any | None" cannot be assigned to type "MetaAndDfs"
+    Type "None" cannot be assigned to type "MetaAndDfs"'
+How can I cange the function 'mdf_from_excel_or_st()' to avoid this warning?
 """
 
 
-def match_resolution(df_resolution: int) -> str:
-    """Matches a temporal resolution of a data frame given as an integer
-    to the resolution as string needed for the weather data.
+def mdf_from_excel_or_st() -> cld.MetaAndDfs:
+    """MDF aus Excel-Datei erzeugen oder aus session_state übernehmen"""
 
-    Args:
-        - df_resolution (int): Temporal Resolution of Data Frame (mdf.meta.td_mnts)
+    mdf_i: cld.MetaAndDfs | None = sf.s_get("mdf")
 
-    Returns:
-        - str: resolution as string for the 'resolution' arg in DwdObservationRequest
-    """
-    res_options: list[str] = [
-        "minute_1",
-        "minute_5",
-        "minute_10",
-        "hourly",
-        "daily",
-        "monthly",
-    ]
+    if mdf_i is not None and isinstance(mdf_i, cld.MetaAndDfs):
+        logger.info("Excel-Datei schon importiert - mdf aus session_state übernommen")
+    else:
+        mdf_i: cld.MetaAndDfs = ex_in.import_prefab_excel(sf.s_get("f_up"))
 
-    res_10: int = 10
-    if df_resolution < res_10:
-        return res_options[0]
-    res_h: int = 60
-    if df_resolution < res_h:
-        return res_options[1]
-    res_d: int = 60 * 24
-    if df_resolution < res_d:
-        return res_options[2]
-
-    res_m: int = 60 * 24 * 28
-    return res_options[3] if df_resolution < res_m else res_options[4]
+    return mdf_i

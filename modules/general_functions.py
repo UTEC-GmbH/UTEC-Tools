@@ -22,7 +22,8 @@ from modules import streamlit_functions as sf
 def log_new_run() -> None:
     """Log new run"""
     sf.s_add_once("number of runs", 0)
-    sf.s_set("number of runs", sf.s_get("number of runs") + 1)
+    run_number: int = sf.s_get("number of runs") or 0
+    sf.s_set("number of runs", run_number + 1)
     logger.log(slog.LVLS.new_run.name, f"NEW RUN ( # {sf.s_get('number of runs')} )")
 
 
@@ -230,8 +231,10 @@ def start_of_month(dt_obj: dt.datetime | np.datetime64) -> dt.datetime:
     """Replace the day of a datetime with '1' to get the start of the month"""
 
     if isinstance(dt_obj, np.datetime64):
-        dt_obj: dt.datetime = dt_obj.astype("M8[M]").astype(dt.datetime)
-    return dt_obj.replace(day=1)
+        dt_object: dt.datetime = dt_obj.astype("M8[M]").astype(dt.datetime)
+    else:
+        dt_object = dt_obj
+    return dt_object.replace(day=1)
 
 
 def end_of_month(dt_obj: dt.datetime | np.datetime64) -> dt.datetime:
@@ -247,8 +250,10 @@ def end_of_month(dt_obj: dt.datetime | np.datetime64) -> dt.datetime:
     """
 
     if isinstance(dt_obj, np.datetime64):
-        dt_obj = dt_obj.astype("M8[M]").astype(dt.datetime)
-    next_month: dt.datetime = dt_obj.replace(day=28) + dt.timedelta(
+        dt_object: dt.datetime = dt_obj.astype("M8[M]").astype(dt.datetime)
+    else:
+        dt_object = dt_obj
+    next_month: dt.datetime = dt_object.replace(day=28) + dt.timedelta(
         days=4
     )  # Jump to next month
     return next_month - dt.timedelta(days=next_month.day)

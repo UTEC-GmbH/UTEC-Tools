@@ -1,13 +1,17 @@
 """UI - Menus"""
 
+import datetime as dt
 from glob import glob
 from typing import Any
 
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
+import polars as pl
 import streamlit as st
 
 from modules import classes_data as cld
+from modules import classes_errors as cle
 from modules import constants as cont
 from modules import excel_download as ex
 from modules import fig_creation_export as fig_cr
@@ -75,37 +79,45 @@ def base_settings(mdf: cld.MetaAndDfs) -> None:
 
     if mdf.meta.td_mnts < cont.TIME_MIN.hour or mdf.meta.multi_years:
         with st.sidebar, st.form("Grundeinstellungen"):
-            if mdf.meta.td_mnts < cont.TIME_MIN.hour:
-                st.checkbox(
-                    label="Umrechnung in Stundenwerte",
-                    help=(
-                        """
-                        Die Werte aus der Excel-Tabelle werden 
-                        in Stundenwerte umgewandelt.  \n
-                        _(abhängig von der angebenen Einheit 
-                        entweder per Summe oder Mittelwert)_
-                        """
-                    ),
-                    value=False,
-                    disabled=False,
-                    key="cb_h",
-                )
-
-            if mdf.meta.multi_years:
-                st.checkbox(
-                    label="mehrere Jahre übereinander",
-                    help=(
-                        """
-                        Die Werte in der Excel-Tabelle werden in Jahre 
-                        gruppiert und übereinander gezeichnet.
-                        """
-                    ),
-                    value=True,
-                    key="cb_multi_year",
-                    # disabled=True,
-                )
+            cb_hourly_multiyear(mdf)
 
             sf.s_set("but_base_settings", st.form_submit_button("Knöpfle"))
+
+
+def cb_hourly_multiyear(mdf: cld.MetaAndDfs) -> None:
+    """Check Boxes for hourly and multi year data"""
+    if not mdf.meta.td_mnts:
+        return
+
+    if mdf.meta.td_mnts < cont.TIME_MIN.hour:
+        st.checkbox(
+            label="Umrechnung in Stundenwerte",
+            help=(
+                """
+                Die Werte aus der Excel-Tabelle werden 
+                in Stundenwerte umgewandelt.  \n
+                _(abhängig von der angebenen Einheit 
+                entweder per Summe oder Mittelwert)_
+                """
+            ),
+            value=False,
+            disabled=False,
+            key="cb_h",
+        )
+
+    if mdf.meta.multi_years:
+        st.checkbox(
+            label="mehrere Jahre übereinander",
+            help=(
+                """
+                Die Werte in der Excel-Tabelle werden in Jahre 
+                gruppiert und übereinander gezeichnet.
+                """
+            ),
+            value=True,
+            key="cb_multi_year",
+            # disabled=True,
+        )
 
 
 def select_graphs(mdf: cld.MetaAndDfs) -> None:
@@ -177,13 +189,26 @@ def select_graphs(mdf: cld.MetaAndDfs) -> None:
             key="ni_days",
         )
 
-        for num in range(int(sf.s_get("ni_days"))):
+        input_days: int = sf.s_get("ni_days") or 0
+        idx: pl.Series = mdf.df.get_column(cont.SPECIAL_COLS.original_index)
+        if idx.is_temporal():
+            maxi: dt.date | dt.datetime | dt.timedelta | None = idx.dt.max()
+            mini: dt.date | dt.datetime | dt.timedelta | None = idx.dt.min()
+            if isinstance(maxi, dt.timedelta | None) or isinstance(
+                mini, dt.timedelta | None
+            ):
+                raise ValueError
+            idx_max: dt.date = maxi.date() if isinstance(maxi, dt.datetime) else maxi
+            idx_min: dt.date = mini.date() if isinstance(mini, dt.datetime) else mini
+        else:
+            idx_max: dt.date = dt.date(1981, 12, 31)
+            idx_min: dt.date = dt.date(1981, 1, 1)
+        for num in range(input_days):
             st.date_input(
-                label=f"Tag {num + 1!s}",
-                min_value=mdf.df.get_column(cont.SPECIAL_COLS.original_index).min(),
-                max_value=mdf.df.get_column(cont.SPECIAL_COLS.original_index).max(),
-                value=mdf.df.get_column(cont.SPECIAL_COLS.original_index).min()
-                + pd.DateOffset(days=num),
+                label=f"Tag {num + 1}",
+                min_value=idx_min,
+                max_value=idx_max,
+                value=idx_min + dt.timedelta(days=num),
                 key=f"day_{num!s}",
             )
 
@@ -255,6 +280,13 @@ def meteo_sidebar(page: str) -> None:
             key="ti_adr",
             # disabled=True,
         )
+
+        if sf.s_get("cb_temp"):
+            st.plotly_chart(
+                fig_cr.cr_meteo_sidebar(),
+                use_container_width=True,
+                theme=cont.ST_PLOTLY_THEME,
+            )
 
         st.markdown("###")
         st.session_state["but_meteo_sidebar"] = st.form_submit_button("Knöpfle")
@@ -348,64 +380,71 @@ def h_v_lines(fig: go.Figure | None = None) -> None:
     if fig is None:
         return
 
-    with st.sidebar, st.expander(
-        "horizontale / vertikale Linien", expanded=False
-    ), st.form("horizontale / vertikale Linien"):
-        st.markdown("__horizontale Linie einfügen__")
+    with (
+        st.sidebar,
+        st.expander("horizontale / vertikale Linien", expanded=False),
+        st.form("horizontale / vertikale Linien"),
+    ):
+        h_v_lines_menu(fig)
 
-        st.text_input(label="Bezeichnung", value="", key="ti_hor")
+        st.session_state["but_h_v_lines"] = st.form_submit_button("Knöpfle")
 
-        st.number_input(
-            value=0.0,
-            label="y-Wert",
-            format="%f",
-            help=(
-                """
+
+def h_v_lines_menu(fig: go.Figure) -> None:
+    """Menu for horizontal and vertical lines"""
+    st.markdown("__horizontale Linie einfügen__")
+
+    st.text_input(label="Bezeichnung", value="", key="ti_hor")
+
+    st.number_input(
+        value=0.0,
+        label="y-Wert",
+        format="%f",
+        help=(
+            """
                 Bei diesem Wert wird eine horizontale Linie eingezeichnet.  \n
                 _(Zum Löschen einfach "0" eingeben und Knöpfle drücken.)_
                 """
-            ),
-            key="ni_hor",
-            step=1.0,
-        )
+        ),
+        key="ni_hor",
+        step=1.0,
+    )
 
-        if len(fgf.get_set_of_visible_y_axes(fig)) > 1:
-            st.selectbox(
-                label="Y-Achse",
-                options=fgf.get_set_of_visible_y_axes(fig),
-                help=(
-                    """
+    if len(fgf.get_set_of_visible_y_axes(fig)) > 1:
+        st.selectbox(
+            label="Y-Achse",
+            options=fgf.get_set_of_visible_y_axes(fig),
+            help=(
+                """
                     Die Y-Achse, auf die sich die Linie beziehen soll.  \n
                     (nicht wundern - die Reihenfolge ist "y", "y2", "y3" etc.)
                     """
-                ),
-                key="sb_h_line_y",
-            )
-
-        # st.multiselect(
-        #     label= 'ausfüllen',
-        #     options= [
-        #         line.name for line in fig_base.data
-        #         if len(line.x) > 0 and
-        #         not any([ex in line.name for ex in fuan.exclude])
-        #     ],
-        #     help=(
-        #         '''Diese Linie(n) wird (werden) zwischen X-Achse und
-        #           hozizontaler Linie ausgefüllt.'''
-        #     ),
-        #     key= 'ms_fil'
-        # )
-
-        st.checkbox(
-            label="gestrichelt",
-            help=("Soll die horizontale Linie gestrichelt sein?"),
-            value=True,
-            key="cb_hor_dash",
+            ),
+            key="sb_h_line_y",
         )
 
-        st.markdown("###")
+    # st.multiselect(
+    #     label= 'ausfüllen',
+    #     options= [
+    #         line.name for line in fig_base.data
+    #         if len(line.x) > 0 and
+    #         not any([ex in line.name for ex in fuan.exclude])
+    #     ],
+    #     help=(
+    #         '''Diese Linie(n) wird (werden) zwischen X-Achse und
+    #           hozizontaler Linie ausgefüllt.'''
+    #     ),
+    #     key= 'ms_fil'
+    # )
 
-        st.session_state["but_h_v_lines"] = st.form_submit_button("Knöpfle")
+    st.checkbox(
+        label="gestrichelt",
+        help=("Soll die horizontale Linie gestrichelt sein?"),
+        value=True,
+        key="cb_hor_dash",
+    )
+
+    st.markdown("###")
 
 
 def display_options_main_col_settings() -> dict[str, dict]:
@@ -474,7 +513,9 @@ def display_options_main() -> bool:
                 st.markdown(columns[col]["Title"], unsafe_allow_html=True)
 
         # Check Boxes for line visibility, fill and color
-        fig: go.Figure = sf.s_get("fig_base")
+        fig: go.Figure | None = sf.s_get("fig_base")
+        if not fig:
+            raise cle.NotFoundError(entry="fig_base", where="Streamlit Session_State")
 
         fig_data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
         fig_layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
@@ -748,6 +789,7 @@ def downloads(page: str = "graph") -> None:
         )
     ):
         with st.spinner("Momentle bitte - Excel-Datei wird erzeugt..."):
+            df_ex: pd.DataFrame = pd.DataFrame()
             if page in ("graph"):
                 dic_df_ex: dict = {
                     x.name: {
@@ -761,13 +803,11 @@ def downloads(page: str = "graph") -> None:
                     ]
                 }
 
-                df_ex: pd.DataFrame = pd.concat(
-                    [dic_df_ex[df]["df"] for df in dic_df_ex], axis=1
-                )
+                df_ex = pd.concat([dic_df_ex[df]["df"] for df in dic_df_ex], axis=1)
                 st.session_state["df_ex"] = df_ex
 
             if page in ("meteo"):
-                df_ex = sf.s_get("meteo_data")
+                df_ex = sf.s_get("meteo_data") or pd.DataFrame()
 
             dat = ex.excel_download(df_ex, page)
 

@@ -24,11 +24,28 @@ COL_IND: str = cont.SPECIAL_COLS.index
 COL_ORG: str = cont.SPECIAL_COLS.original_index
 
 
+def get_time_col_to_test_am_pm(file_path: str | None) -> pl.DataFrame:
+    """Get a df to test the am-pm-function"""
+
+    file_path = file_path or "tests/sample_data/Utbremer_Ring_189_2017.xlsx"
+    xlsx_options: dict[str, bool] = {
+        "skip_empty_lines": True,
+        "skip_trailing_columns": True,
+    }
+    csv_options: dict[str, bool] = {"has_header": True, "try_parse_dates": False}
+
+    return pl.read_excel(
+        source=file_path,
+        xlsx2csv_options=xlsx_options,
+        read_csv_options=csv_options,
+    ) # type: ignore
+
+
 # FIX_AM_PM FUNKTIONIERT NOCH NICHT
 def fix_am_pm(df: pl.DataFrame, time_column: str = "Zeitstempel") -> pl.DataFrame:
     """Zeitreihen ohne Unterscheidung zwischen vormittags und nachmittags
 
-    (korrigiert den Bullshit, den man immer von der SWB bekommt)
+    (Beispieldatei: "tests/sample_data/Utbremer_Ring_189_2017.xlsx")
 
     Args:
         - df (DataFrame): DataFrame to edit
@@ -37,6 +54,7 @@ def fix_am_pm(df: pl.DataFrame, time_column: str = "Zeitstempel") -> pl.DataFram
     Returns:
         - DataFrame: edited DataFrame
     """
+
     col: pl.Series = df.get_column(time_column)
 
     # Stunden haben negative Differenz und Tag bleibt gleich

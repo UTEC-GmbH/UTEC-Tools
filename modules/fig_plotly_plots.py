@@ -288,16 +288,17 @@ def line_plot_day_overlay(
 def map_dwd_all() -> go.Figure:
     """Karte aller Wetterstationen"""
 
-    hov_temp = "(lat: %{lat:,.2f}° | lon: %{lon:,.2f}°)<br>%{text}<extra></extra>"
+    # hov_temp = "%{text}<br>(lat: %{lat:,.2f}° | lon: %{lon:,.2f}°)<extra></extra>"
+    hov_temp: str = "%{text}<br><i>(Wetterstation)</i><extra></extra>"
 
     # alle Stationen
-    all_sta = meteo.dwd_req().all().df
+    all_sta: pl.DataFrame = meteo.meteo_stations()
     all_lat = list(all_sta["latitude"])
     all_lon = list(all_sta["longitude"])
     all_nam = list(all_sta["name"])
 
     # alle Stationen
-    fig = go.Figure(
+    fig: go.Figure = go.Figure(
         data=go.Scattermapbox(
             lat=all_lat,
             lon=all_lon,
@@ -307,7 +308,8 @@ def map_dwd_all() -> go.Figure:
                 "size": 4,
                 "color": "blue",
                 # "colorscale": "Portland",  # Blackbody,Bluered,Blues,Cividis,Earth,
-                #   Electric,Greens,Greys,Hot,Jet,Picnic,Portland,Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd
+                #   Electric,Greens,Greys,Hot,Jet,Picnic,Portland,
+                #   Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd
                 # "colorbar": {
                 #     "title": "Entfernung<br>DWD-Station<br>Adresse<br> ----- ",
                 #     "bgcolor": "rgba(255,255,255,0.5)",
@@ -323,7 +325,7 @@ def map_dwd_all() -> go.Figure:
         )
     )
 
-    fig = fig.update_layout(
+    return fig.update_layout(
         title="Wetterstationen des DWD",
         autosize=True,
         showlegend=False,
@@ -339,8 +341,6 @@ def map_dwd_all() -> go.Figure:
             },
         },
     )
-
-    return fig
 
 
 @gf.func_timer

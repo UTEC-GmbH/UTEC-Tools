@@ -6,6 +6,7 @@ from typing import Any
 
 import plotly.graph_objects as go
 import streamlit as st
+from geopy import Location
 from loguru import logger
 
 from modules import classes_data as cld
@@ -184,6 +185,7 @@ def cr_fig_mon(mdf: cld.MetaAndDfs) -> go.Figure:
     return fig
 
 
+# TODO: MUSS NOCH ANGEPASST WERDEN
 @gf.func_timer
 def cr_fig_days(mdf: cld.MetaAndDfs) -> None:
     """Tagesvergleiche"""
@@ -215,6 +217,47 @@ def cr_fig_days(mdf: cld.MetaAndDfs) -> None:
         tickformatstops=[
             {"dtickrange": [None, None], "value": "%H:%M"},
         ],
+    )
+
+
+@gf.func_timer
+def cr_meteo_sidebar() -> go.Figure:
+    """Kleine Grafik in der side bar um zu sehen,
+    ob die richtige Stadt gefunden wurde
+    """
+    fig: go.Figure = ploplo.map_dwd_all()
+
+    # eingegebene Adresse
+    loc: Location | None = sf.s_get("geo_location")
+    if not isinstance(loc, Location):
+        raise cle.NotFoundError(entry="location", where="Session State")
+
+    address: str = loc.address
+    address = address.replace(", Deutschland", "").title()
+    hov_temp: str = (
+        f"{address}<br><i>(Standort aus gegebener Addresse)</i><extra></extra>"
+    )
+    return fig.add_trace(
+        go.Scattermapbox(
+            lat=[loc.latitude],
+            lon=[loc.longitude],
+            text=address,
+            hovertemplate=hov_temp,
+            mode="markers",
+            marker={
+                "size": 12,
+                "color": "limegreen",
+            },
+        )
+    ).update_layout(
+        title=None,
+        mapbox={
+            "zoom": 6,
+            "center": {
+                "lat": loc.latitude,
+                "lon": loc.longitude,
+            },
+        },
     )
 
 

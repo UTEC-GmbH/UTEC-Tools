@@ -73,6 +73,9 @@ def s_reset_graph() -> None:
         "butt_sub_new_user",
         "UTEC_logo",
         "initial_setup",
+        "GitCommit_date",
+        "GitCommit_major",
+        "GitCommit_minor",
     ]
     for key in st.session_state:
         if key not in initial_keys:

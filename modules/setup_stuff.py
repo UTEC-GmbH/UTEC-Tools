@@ -6,6 +6,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Any
+
 import dotenv
 import github as gh
 import pandas.io.formats.excel
@@ -61,8 +62,8 @@ def get_commit_message_date() -> None:
 
     latest_commit = repo.get_commit(branch.commit.sha).commit
     com_date = latest_commit.author.date + dt.timedelta(hours=tz_diff)
-    major: str = ""
-    minor: str = ""
+    major: str = ""  # commit message
+    minor: str = ""  # comment of merge
     commit_page = repo.get_commits(branch.commit.sha).get_page(0)
     for commit in commit_page:
         message = commit.commit.message.split("\n\n")
@@ -132,15 +133,13 @@ def page_header_setup(page: str) -> None:
         # Version info (latest changes and python version)
         with columns[1]:
             st.write(
-                (
-                    '<i><span style="line-height: 110%; font-size: 12px; '
-                    'float:right; text-align:right">'
-                    "letzte Änderungen: "
-                    f'{sf.s_get("GitCommit_date"):%d.%m.%Y %H:%M}<br><br>'
-                    f'{sf.s_get("GitCommit_major")}<br><br>'
-                    f'({sf.s_get("GitCommit_minor")})<br>'
-                    "</span></i>"
-                ),
+                '<i><span style="line-height: 110%; font-size: 12px; '
+                'float:right; text-align:right">'
+                "letzte Änderungen: "
+                f'{sf.s_get("GitCommit_date"):%d.%m.%Y %H:%M}<br><br>'
+                f'{sf.s_get("GitCommit_major")}<br><br>'
+                f'({sf.s_get("GitCommit_minor")})<br>'
+                "</span></i>",
                 unsafe_allow_html=True,
             )
 

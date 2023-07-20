@@ -1,5 +1,6 @@
 black
 deta
+fastkml
 geopy
 ipykernel
 langchain

@@ -10,11 +10,32 @@ from loguru import logger
 from modules import classes_constants as clc
 from modules import classes_data as cld
 from modules import constants as cont
-from modules import df_manipulation as df_man
 from modules import general_functions as gf
 from modules import setup_logger as slog
 
 TEST_FILE = "example_files/Stromlastgang - mehrere Jahre.xlsx"
+
+
+@gf.func_timer
+def general_excel_import(file: BytesIO | str, worksheet: str, **kwargs) -> pl.DataFrame:
+    """Import an Excel file"""
+
+    xlsx_options: dict[str, str | bool] = {
+        "skip_empty_lines": kwargs.get("skip_empty_lines") or True,
+        "skip_trailing_columns": kwargs.get("skip_trailing_columns") or True,
+        "dateformat": kwargs.get("dateformat") or "%d.%m.%Y %T",
+    }
+    csv_options: dict[str, bool] = {
+        "has_header": kwargs.get("has_header") or False,
+        "try_parse_dates": kwargs.get("try_parse_dates") or False,
+    }
+
+    return pl.read_excel(
+        source=file,
+        sheet_name=worksheet,
+        xlsx2csv_options=xlsx_options,
+        read_csv_options=csv_options,
+    )  # type: ignore
 
 
 @gf.func_timer

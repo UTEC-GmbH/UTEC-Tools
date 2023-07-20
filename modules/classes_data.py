@@ -35,6 +35,15 @@ class TimeSpan:
 
 
 @dataclass
+class Location:
+    """Location data"""
+
+    name: str | None
+    latitude: float
+    longitude: float
+
+
+@dataclass
 class DWDParameter:
     """Properties of DWD Parameter"""
 

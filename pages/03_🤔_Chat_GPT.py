@@ -21,7 +21,11 @@ def generate_response(input_text: str) -> None:
     Args:
         - input_text (str): Question asked
     """
-    llm = OpenAI(temperature=0.7, openai_api_key=OPENAI_KEY)  # type: ignore
+    llm = OpenAI(
+        temperature=0.7,
+        openai_api_key=OPENAI_KEY,
+        model="gpt-3.5-turbo",
+    )  # type: ignore
     response: str = llm(input_text)
 
     history: list[str] = [f"Frage: {input_text}", f"Antwort: {response}"]
@@ -39,7 +43,7 @@ with st.form("my_form"):
         label_visibility="collapsed",
         value="Warum ist die UTEC GmbH "
         "das beste Unternehmen Bremens "
-        "für die Entwiklung und Anwendung "
+        "für die Entwicklung und Anwendung "
         "umweltfreundlicher Technik?",
     )
     submitted: bool = st.form_submit_button("Submit")

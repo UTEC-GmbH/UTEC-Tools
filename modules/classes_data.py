@@ -41,6 +41,8 @@ class Location:
     name: str | None
     latitude: float
     longitude: float
+    attr_size: float | None = None
+    attr_colour: float | None = None
 
 
 @dataclass

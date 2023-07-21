@@ -14,6 +14,7 @@ from loguru import logger
 
 from modules import classes_data as cld
 from modules import classes_errors as cle
+from modules import excel_import as exi
 from modules import streamlit_functions as sf
 
 
@@ -110,34 +111,59 @@ def geo_locate(address: str = "Bremen") -> geopy.Location:
     return location
 
 
-def main_map(locations: list[cld.Location], **kwargs) -> go.Figure:
+def main_map(locations: list[cld.Location] | pl.DataFrame, **kwargs) -> go.Figure:
     """Karte"""
-    # hov_temp: str = "%{text}<br><i>(Wetterstation)</i><extra></extra>"
+
+    standard_size: float = 4
+
+    if isinstance(locations, pl.DataFrame):
+        latitudes: list[float] = list(locations[kwargs.get("col_lat") or "latitude"])
+        longitudes: list[float] = list(locations["longitude"])
+        names: list[str] = list(locations["Liegenschaft"])
+        sizes: list[float] = list(locations["Leistung"])
+        colours: list[float] = list(locations["spezifisch"])
+    elif all(
+        [isinstance(locations, list)]
+        + [isinstance(location, cld.Location) for location in locations]
+    ):
+        latitudes = [loc.latitude for loc in locations]
+        longitudes = [loc.longitude for loc in locations]
+        names = [loc.name or "" for loc in locations]
+        sizes = [loc.attr_size or standard_size for loc in locations]
+        colours = [loc.attr_colour or standard_size for loc in locations]
+    else:
+        raise ValueError
 
     fig: go.Figure = go.Figure(
         data=go.Scattermapbox(
-            lat=[loc.latitude for loc in locations],
-            lon=[loc.longitude for loc in locations],
-            text=[loc.name for loc in locations],
+            lat=latitudes,
+            lon=longitudes,
+            text=names,
             mode="markers",
             marker={
-                "size": 4,
-                "color": "blue",
-                # "colorscale": "Portland",  # Blackbody,Bluered,Blues,Cividis,Earth,
+                "size": sizes,
+                "sizemin": standard_size,
+                "sizeref": max(sizes) / 50,
+                "color": colours,
+                "colorscale": "Portland",  # Blackbody,Bluered,Blues,Cividis,Earth,
                 #   Electric,Greens,Greys,Hot,Jet,Picnic,Portland,
                 #   Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd
-                # "colorbar": {
-                #     "title": "Entfernung<br>DWD-Station<br>Adresse<br> ----- ",
-                #     "bgcolor": "rgba(255,255,255,0.5)",
-                #     "ticksuffix": " km",
-                #     "x": 0,
-                # },
-                # "opacity": 0.5,
-                # "reversescale": True,
+                "colorbar": {
+                    "title": "spezifische<br>Leistung<br> ----- ",
+                    "bgcolor": "rgba(255,255,255,0.5)",
+                    "ticksuffix": " kWh/kWp",
+                    "x": 0,
+                },
+                "opacity": 0.8,
+                "reversescale": False,
                 # "cmax": 400,
                 # "cmin": 0,
             },
-            # hovertemplate=hov_temp,
+            hovertemplate="<b>%{text}</b><br>"
+            "Leistung: %{marker.size:,.1f} kWp<br>"
+            "spezifisch: %{marker.color:,.1f} kWh/kWp"
+            "<extra></extra>",
+            hoverlabel_align="right",
         )
     )
 

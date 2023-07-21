@@ -15,6 +15,8 @@ from loguru import logger
 from modules import classes_data as cld
 from modules import classes_errors as cle
 from modules import excel_import as exi
+from modules import fig_formatting as fig_format
+from modules import general_functions as gf
 from modules import streamlit_functions as sf
 
 
@@ -169,6 +171,7 @@ def main_map(locations: list[cld.Location] | pl.DataFrame, **kwargs) -> go.Figur
 
     return fig.update_layout(
         title=kwargs.get("title"),
+        height=kwargs.get("height") or 750,
         autosize=True,
         showlegend=False,
         font_family="Arial",
@@ -183,3 +186,41 @@ def main_map(locations: list[cld.Location] | pl.DataFrame, **kwargs) -> go.Figur
             },
         },
     )
+
+
+def html_exp(
+    fig: go.Figure, f_pn: str = "export\\Kartografische_Datenauswertung.html"
+) -> None:
+    """html-Export"""
+
+    if Path.exists(Path(f_pn)):
+        Path.unlink(Path(f_pn))
+
+    with open(f_pn, "w", encoding="utf-8") as fil:
+        fil.write("<!DOCTYPE html>")
+        fil.write("<title>Kartografische Datenauswertung</title>")
+        fil.write("<head><style>")
+        fil.write("h1{text-align: left; font-family: sans-serif;}")
+        fil.write("body{width: 85%; margin-left:auto; margin-right:auto}")
+        fil.write("</style></head>")
+        fil.write('<body><h1><a href="https://www.utec-bremen.de/">')
+        fil.write(sf.s_get("UTEC_logo") or gf.render_svg())
+        fil.write("</a><br /><br />")
+        fil.write("Kartografische Datenauswertung")
+        fil.write("</h1><br /><hr><br /><br />")
+
+        fil.write("<style>")
+        fil.write("#map{width: 100%; margin-left:auto; margin-right:auto; }")
+        fil.write("</style>")
+
+        fil.write('<div id="map">')
+        fil.write(
+            fig.to_html(
+                full_html=False,
+                config=fig_format.plotly_config(height=1600, title_edit=False),
+            )
+        )
+
+        fil.write("<br /><br /><hr><br /><br /><br /></div>")
+
+        fil.write("</body></html>")

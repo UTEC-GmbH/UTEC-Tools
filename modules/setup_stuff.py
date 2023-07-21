@@ -133,12 +133,12 @@ def page_header_setup(page: str) -> None:
         # Version info (latest changes and python version)
         with columns[1]:
             st.write(
-                '<i><span style="line-height: 110%; font-size: 12px; '
-                'float:right; text-align:right">'
+                '<span style="line-height: 110%; font-size: 12px; '
+                'float:right; text-align:right"><i>'
                 "letzte Änderungen: "
                 f'{sf.s_get("GitCommit_date"):%d.%m.%Y %H:%M}<br><br>'
-                f'{sf.s_get("GitCommit_major")}<br><br>'
-                f'({sf.s_get("GitCommit_minor")})<br>'
+                f'{sf.s_get("GitCommit_major")}<br>'
+                f'({sf.s_get("GitCommit_minor")})'
                 "</span></i>",
                 unsafe_allow_html=True,
             )
@@ -149,9 +149,9 @@ def page_header_setup(page: str) -> None:
             if isinstance(access_lvl_user, str) and access_lvl_user in ("god"):
                 st.write(
                     (
-                        '<i><span style="line-height: 110%; font-size: 12px; '
-                        'float:right; text-align:right">'
-                        f"(Python version {sys.version.split()[0]})"
+                        '<span style="line-height: 110%; font-size: 12px; '
+                        'float:right; text-align:right"><i>'
+                        f"<br><br>(Python version {sys.version.split()[0]})"
                         "</span></i>"
                     ),
                     unsafe_allow_html=True,

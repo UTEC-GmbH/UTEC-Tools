@@ -41,7 +41,7 @@ if uauth.authentication(sf.s_get("page")):
             label_visibility="collapsed",
             value="Warum ist die UTEC GmbH "
             "das beste Unternehmen Bremens "
-            "für die Entwiklung und Anwendung "
+            "für die Entwicklung und Anwendung "
             "umweltfreundlicher Technik?",
         )
         submitted: bool = st.form_submit_button("Submit")

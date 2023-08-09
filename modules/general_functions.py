@@ -3,6 +3,7 @@
 import base64
 import datetime as dt
 import json
+import locale
 import time
 from collections import Counter
 from collections.abc import Callable
@@ -153,7 +154,7 @@ def sort_list_by_occurance(list_of_stuff: list[Any]) -> list[Any]:
         - list: Set in list form, sorted by number of occurances
     """
 
-    return sorted(Counter(list_of_stuff), key=list_of_stuff.count, reverse=True)
+    return [elem for elem, count in Counter(list_of_stuff).most_common()]
 
 
 def render_svg(svg_path: str = "logo/UTEC_logo_text.svg") -> str:
@@ -199,12 +200,11 @@ def text_with_hover(text: str, hovtxt: str) -> str:
         """
 
 
-def nachkomma(value: float) -> str:
+def number_as_string(value: float) -> str:
     """Zahl als Text mit Nachkommastellen je nach Ziffern in Zahl.
     ...kann z.B. für Anmerkungen (Pfeile) oder Hovertexte in Plots verwendet werden.
 
-    Der Punkt als Trennzeichen wird mit Komma ersetzt und die Zahl wird
-    je nach Größe gerundet.
+    Die Zahl wird je nach Größe gerundet.
     Momentane Einstellung: 3 Ziffern
         → ab 100 keine Nachkommastellen
         → zw. 10 und 100: 1 Nachkommastelle
@@ -217,14 +217,20 @@ def nachkomma(value: float) -> str:
     Returns:
         - str: Zahl als Text mit Nachkommastellen je nach Anzahl Ziffern
     """
-    if abs(value) >= 1000:
-        return str(f"{value:,.0f}").replace(",", ".")
-    if abs(value) >= 100:
-        return str(f"{value:,.0f}").replace(".", ",")
-    if abs(value) >= 10:
-        return str(f"{value:,.1f}").replace(".", ",")
+    locale.setlocale(locale.LC_ALL, "")
+    four_digits = 1000
+    three_digits = 100
+    if abs(value) >= four_digits:
+        return locale.format_string("%.0f", value, grouping=True)
+    if abs(value) >= three_digits:
+        return locale.format_string("%.0f", value, grouping=True)
+    two_digits = 10
 
-    return str(f"{value:,.2f}").replace(".", ",")
+    return (
+        locale.format_string("%.1f", value, grouping=True)
+        if abs(value) >= two_digits
+        else locale.format_string("%.2f", value, grouping=True)
+    )
 
 
 def start_of_month(dt_obj: dt.datetime | np.datetime64) -> dt.datetime:

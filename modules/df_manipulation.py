@@ -45,75 +45,46 @@ def get_df_to_test_am_pm(file_path: str | None = None) -> pl.DataFrame:
     )
 
 
-# FIX_AM_PM FUNKTIONIERT NOCH NICHT
 def fix_am_pm(df: pl.DataFrame, time_column: str = "Zeitstempel") -> pl.DataFrame:
     """Zeitreihen ohne Unterscheidung zwischen vormittags und nachmittags
 
     (Beispieldatei: "tests/sample_data/Utbremer_Ring_189_2017.xlsx")
 
+    col: Zeitspalte wird so geändert, dass es zwei mal täglich 00:00 bis 11:59 gibt
+    offset: Zeitverschiebung um 12h am Nachmittag (0h am Vormittag)
+
     Args:
-        - df (DataFrame): DataFrame to edit
-        - time_column (str, optional): Column with time data. Defaults to "Zeitstempel".
+        - df (DataFrame): DataFrame, der bearbeitet werden soll
+        - time_column (str, optional): Zeitspalte. Default: "Zeitstempel".
 
     Returns:
-        - DataFrame: edited DataFrame
+        - DataFrame: DataFrame mit korrigierter Zeitspalte
     """
 
-    col: pl.Series = df.get_column(time_column)
+    col: pl.DataFrame = df.select(
+        pl.when(pl.col(time_column).dt.hour() == 12)
+        .then(pl.col(time_column).dt.offset_by("-12h"))
+        .otherwise(pl.col(time_column))
+    )
 
-    # Stunden haben negative Differenz und Tag bleibt gleich
-    if any(col.dt.hour().diff() < 0) and any(col.dt.day().diff() == 0):
-        conditions: list = [
-            (col.dt.day().diff() > 0),  # neuer Tag
-            (col.dt.month().diff() != 0),  # neuer Monat
-            (col.dt.year().diff() != 0),  # neues Jahr
-            (
-                (col.dt.hour().diff() < 0)  # Stunden haben negative Differenz
-                & (col.dt.day().diff() == 0)  # Tag bleibt gleich
-            ),
-        ]
-
-        choices: list[Any] = [
-            pl.duration(hours=0),
-            pl.duration(hours=0),
-            pl.duration(hours=0),
-            pl.duration(hours=12),
-        ]
-
-        offset: pl.Series = pl.Series(
-            name="offset",
-            values=np.select(conditions, choices, default=pl.lit(None)),
-        )
-
-        offset[0] = pl.duration(hours=0)
-        offset.fill_null(strategy="forward")
-
-        df[time_column] += offset
-
-        time_diff: pl.Series = df.get_column(time_column)
-
-        new_day: pl.Series = time_diff.dt.day().diff() > 0
-        midday: pl.Series = (time_diff.dt.hour() < 0) & (time_diff.dt.day() == 0)
-
-        df = df.with_columns(
-            [
+    offset: pl.Series = (
+        col.select(
+            pl.when(pl.col(time_column).dt.day().diff().fill_null(1) > 0)
+            .then(pl.duration(hours=0))
+            .otherwise(
                 pl.when(
-                    (time_diff.dt.day().diff() > 0)
-                    | (time_diff.dt.month().diff() != 0)
-                    | (time_diff.dt.year().diff() != 0)
+                    (pl.col(time_column).dt.hour().diff() < 0)
+                    & (pl.col(time_column).dt.day().diff() == 0)
                 )
-                .then(pl.duration(hours=0))
-                .otherwise(
-                    pl.when((time_diff.dt.hour() < 0) & (time_diff.dt.day() == 0))
-                    .then(pl.duration(hours=12))
-                    .otherwise(pl.when(time_diff.dt.hour()))
-                )
-                .alias("change")
-                .fill_null(strategy="forward")
-            ]
+                .then(pl.duration(hours=12))
+                .otherwise(pl.lit(None))
+            )
         )
+        .fill_null(strategy="forward")
+        .to_series()
+    )
 
-    return df
+    return df.with_columns((col.to_series() + offset).alias(time_column))
 
 
 @gf.func_timer

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Literal
 import numpy as np
 import polars as pl
 from loguru import logger
+from scipy import interpolate
 
 from modules import classes_data as cld
 from modules import classes_errors as cle
@@ -87,6 +88,33 @@ def fix_am_pm(df: pl.DataFrame, time_column: str = "Zeitstempel") -> pl.DataFram
     return df.with_columns((col.to_series() + offset).alias(time_column))
 
 
+def interpolate_where_no_diff(
+    df: pl.DataFrame, columns_to_inspect: list[str] | None = None
+) -> pl.DataFrame:
+    """Create gaps where the values don't change and interpolate using Akima"""
+
+    if COL_IND not in df.columns:
+        raise cle.NotFoundError(entry=COL_IND, where="data frame columns")
+
+    cols: list[str] = columns_to_inspect or df.columns
+
+    df = df.with_columns(
+        pl.when(pl.col(col).diff() == 0).then(None).otherwise(pl.col(col)).keep_name()
+        for col in cols
+    )
+
+    no_nulls: pl.DataFrame = df.drop_nulls()
+    index: pl.Series = no_nulls[COL_IND]
+    return df.with_columns(
+        pl.Series(
+            col,
+            interpolate.Akima1DInterpolator(x=index, y=no_nulls[col])(df[COL_IND]),
+        )
+        for col in cols
+        if COL_IND not in col and any(df[col].is_null())
+    )
+
+
 @gf.func_timer
 def interpolate_missing_data(df: pl.DataFrame, method: str = "akima") -> pl.DataFrame:
     """Findet stellen an denen sich von einer Zeile zur nächsten
@@ -156,7 +184,22 @@ def add_temperature_data(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 def split_multi_years(
     mdf: cld.MetaAndDfs, frame_to_split: Literal["df", "df_h", "mon"]
 ) -> cld.MetaAndDfs:
-    """Split into multiple years"""
+    """Split the specified data frame within a MetaAndDfs object
+    into multiple data frames based on the years present in the meta data.
+
+    Args:
+        - mdf (cld.MetaAndDfs): MetaAndDfs object containing the data frame to split.
+        - frame_to_split (Literal["df", "df_h", "mon"]): Name of data frame to split.
+            Must be one of "df", "df_h", or "mon".
+
+    Returns:
+        - cld.MetaAndDfs: The updated MetaAndDfs object with the split data frames.
+
+    Raises:
+        - ValueError: If frame_to_split parameter is not one of the specified options.
+        - cle.NotFoundError: If the list of years is not present in the meta data.
+    """
+
     if frame_to_split not in ["df", "df_h", "mon"]:
         raise ValueError
 
@@ -171,13 +214,6 @@ def split_multi_years(
         col_rename: dict[str, str] = multi_year_column_rename(df, year)
         for old_name, new_name in col_rename.items():
             if new_name not in mdf.meta.lines:
-                # old_line: cld.MetaLine = mdf.meta.lines[old_name]
-                # new_line: cld.MetaLine = cld.MetaLine("tmp", "tmp", "tmp", "tmp")
-                # for attr in old_line.as_dic():
-                #     setattr(new_line, attr, getattr(old_line, attr))
-                # new_line.tit = new_name
-                # new_line.name_orgidx = f"{new_name}{cont.SUFFIXES.col_original_index}"
-                # mdf.meta.lines[new_name] = new_line
                 mdf.meta.lines[new_name] = mdf.meta.copy_line(old_name, new_name)
 
         df_multi[year] = (
@@ -190,14 +226,6 @@ def split_multi_years(
             .rename(col_rename)
         )
 
-        # logger debug
-        if any(df_multi[year][col].null_count() > 0 for col in df_multi[year].columns):
-            for col in df_multi[year].columns:
-                if df_multi[year][col].null_count() > 0:
-                    logger.debug(f"Null value found in column '{col}'")
-        else:
-            logger.debug("No null values found")
-
     if frame_to_split == "df":
         mdf.df_multi = df_multi
     elif frame_to_split == "df_h":
@@ -209,7 +237,15 @@ def split_multi_years(
 
 
 def multi_year_column_rename(df: pl.DataFrame, year: int) -> dict[str, str]:
-    """Rename columns for multi year data"""
+    """Renames columns in a DataFrame for multi-year data.
+
+    Args:
+        - df: The DataFrame to rename columns for.
+        - year: The year to append to the column names.
+
+    Returns:
+        - A dictionary mapping the original column names to the renamed column names.
+    """
     col_rename: dict[str, str] = {}
     for col in [col for col in df.columns if gf.check_if_not_exclude(col)]:
         new_col_name: str = f"{col} {year}"
@@ -321,8 +357,19 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 
 
 @gf.func_timer
-def mon(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
-    """Monatswerte"""
+def calculate_monthly_values(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
+    """Calculate monthly values from the input dataframe.
+
+    Args:
+        - mdf (cld.MetaAndDfs): The input MetaAndDfs object containing the dataframe.
+
+    Returns:
+        - cld.MetaAndDfs: Modified MetaAndDfs object with the monthly values dataframe.
+
+    Raises:
+        - ValueError: If the input dataframe is None.
+
+    """
 
     mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h(mdf)
     if mdf.df_h is None:
@@ -346,7 +393,7 @@ def mon(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             [
                 pl.col(COL_IND).alias(COL_ORG),
                 pl.col(COL_IND)
-                .dt.strftime("%Y-%m-15 %H:%M:%S")
+                .dt.strftime("%Y-%m-%15 %H:%M:%S")
                 .str.strptime(pl.Datetime),
             ]
         )
@@ -356,7 +403,7 @@ def mon(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         mdf = split_multi_years(mdf, "mon")
 
     if mdf.mon is not None:
-        logger.success("DataFrame mit Monatswerten erstellt.")
+        logger.success("DataFrame with monthly values created.")
         logger.log(slog.LVLS.data_frame.name, mdf.mon.head())
         logger.info(gf.string_new_line_per_item(mdf.mon.columns, "Columns in mdf.mon:"))
 

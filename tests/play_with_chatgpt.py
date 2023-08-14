@@ -1,28 +1,32 @@
 """play with ChatGPT"""
 
 # sourcery skip: avoid-global-variables
-# pylint: disable=W0105
-# noqa: E501
+# pylint: disable=W0105,C0413
+# ruff: noqa: E402, E501, RUF100
 
 """
-In the following function, the function 'sf.s_get("mdf")' can return the type "Any" or "None".
-The type of the variable 'mdf_i' is declared as 'cld.MetaAndDfs | None'.
-In the line 'mdf_i: cld.MetaAndDfs | None = sf.s_get("mdf")' I get a warning by Pylance saying 
-'Expression of type "Any | None" cannot be assigned to declared type "MetaAndDfs"
-  Type "Any | None" cannot be assigned to type "MetaAndDfs"
-    Type "None" cannot be assigned to type "MetaAndDfs"'
-How can I cange the function 'mdf_from_excel_or_st()' to avoid this warning?
+I have a DataFrame in which I would like to 
+set the value to "None" if the difference is 0. 
+How can I do this in polars?
 """
 
+import datetime as dt
 
-def mdf_from_excel_or_st() -> cld.MetaAndDfs:
-    """MDF aus Excel-Datei erzeugen oder aus session_state übernehmen"""
+import polars as pl
 
-    mdf_i: cld.MetaAndDfs | None = sf.s_get("mdf")
-
-    if mdf_i is not None and isinstance(mdf_i, cld.MetaAndDfs):
-        logger.info("Excel-Datei schon importiert - mdf aus session_state übernommen")
-    else:
-        mdf_i: cld.MetaAndDfs = ex_in.import_prefab_excel(sf.s_get("f_up"))
-
-    return mdf_i
+df = pl.DataFrame(
+    {
+        "↓ Index ↓": [
+            dt.datetime(2022, 1, 1),
+            dt.datetime(2022, 1, 2),
+            dt.datetime(2022, 1, 3),
+            dt.datetime(2022, 1, 4),
+            dt.datetime(2022, 1, 5),
+        ],
+        "value": [1, 2, 2, 4, 5],
+    }
+)
+df.with_columns(
+    pl.when(pl.col(col).diff() == 0).then(None).otherwise(pl.col(col)).keep_name()
+    for col in df.columns
+)

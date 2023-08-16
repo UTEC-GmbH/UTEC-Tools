@@ -19,7 +19,7 @@ def sidebar_file_upload() -> Any:
             "Beispieldateien",
             options=[
                 x.replace("/", "\\").split("\\")[-1].replace(".xlsx", "")
-                for x in glob("example_files/*.xlsx")
+                for x in glob("example_map/*.xlsx")
             ],
             help=(
                 """
@@ -57,3 +57,14 @@ def sidebar_file_upload() -> Any:
         )
 
     return sf.s_get("f_up")
+
+
+def sidebar_text() -> None:
+    """Menu to define the graph title etc."""
+
+    with st.sidebar:
+        st.text_input(
+            label="Titel der Grafik",
+            help="Titel wird über der Grafik angezeigt",
+            key="ti_title",
+        )

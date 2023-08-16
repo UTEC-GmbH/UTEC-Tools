@@ -6,6 +6,7 @@ from zipfile import ZipFile
 
 import fastkml as fk
 import geopy
+import numpy as np
 import plotly.graph_objects as go
 import polars as pl
 import pygeoif
@@ -137,6 +138,39 @@ def get_hover_template_from_kwargs(given_kwargs: dict) -> str:
     return f"{hovertemplate}<extra></extra>"
 
 
+def get_zoom_level_from_locations(
+    locations: list[cld.Location] | pl.DataFrame, **kwargs
+) -> float:
+    """Get the Zoom level to fit all points
+    (Based on: https://stackoverflow.com/questions/63787612/plotly-automatic-zooming-for-mapbox-maps)
+    """
+
+    deg_to_km = 111  # constant to convert decimal degrees to kilometers
+    factor = 14  # initial factor to manipulate
+
+    if isinstance(locations, pl.DataFrame):
+        latitudes: list[float] = list(locations[kwargs.get("col_lat") or "Breitengrad"])
+        longitudes: list[float] = list(locations[kwargs.get("col_lon") or "Längengrad"])
+
+    elif all(
+        [isinstance(locations, list)]
+        + [isinstance(location, cld.Location) for location in locations]
+    ):
+        latitudes = [loc.latitude for loc in locations]
+        longitudes = [loc.longitude for loc in locations]
+
+    else:
+        raise ValueError
+
+    max_lat: float = max(latitudes)
+    min_lat: float = min(latitudes)
+    max_lon: float = max(longitudes)
+    min_lon: float = min(longitudes)
+    max_bound: float = max(abs(max_lat - min_lat), abs(max_lon - min_lon)) * deg_to_km
+
+    return factor - np.log(max_bound)
+
+
 def main_map_scatter(
     locations: list[cld.Location] | pl.DataFrame, **kwargs
 ) -> go.Figure:
@@ -246,10 +280,10 @@ def main_map_scatter(
         margin={"l": 5, "r": 5, "t": 30, "b": 5},
         mapbox={
             "accesstoken": os.getenv("MAPBOX_TOKEN"),
-            "zoom": kwargs.get("zoom") or 3,
+            "zoom": get_zoom_level_from_locations(locations),
             "center": {
-                "lat": 53.519,
-                "lon": 8.579,
+                "lat": (max(latitudes) + min(latitudes)) / 2,
+                "lon": (max(longitudes) + min(longitudes)) / 2,
             },
         },
     )

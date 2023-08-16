@@ -2,12 +2,10 @@
 
 import datetime as dt
 from glob import glob
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
-import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-import polars as pl
 import streamlit as st
 
 from modules import classes_data as cld
@@ -18,6 +16,9 @@ from modules import fig_creation_export as fig_cr
 from modules import fig_general_functions as fgf
 from modules import general_functions as gf
 from modules import streamlit_functions as sf
+
+if TYPE_CHECKING:
+    import polars as pl
 
 
 def sidebar_file_upload() -> Any:

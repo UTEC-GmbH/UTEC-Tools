@@ -6,6 +6,7 @@ ipykernel
 langchain
 loguru
 mypy
+nbformat
 numpy
 openai
 openpyxl

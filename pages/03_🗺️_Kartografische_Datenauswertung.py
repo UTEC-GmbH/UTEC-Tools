@@ -22,11 +22,11 @@ set_stuff.page_header_setup(page=cont.ST_PAGES.maps.short)
 if uauth.authentication(sf.s_get("page")):
     graph_height: int = 750
     locations: pl.DataFrame = ex_i.general_excel_import(
-        file="tests/sample_data/888 PV-Potenzial py.xlsx", worksheet="Leistungen"
+        file="example_map/Punkte_Längengrad_Breitengrad.xlsx"
     )
     # markers: list[fk.kml.Placemark] = mp.get_all_placemarkers_from_kmz_or_kml()
     # locations: list[cld.Location] = mp.list_or_df_of_locations_from_markers(markers)
-    fig: go.Figure = mp.main_map(
+    fig: go.Figure = mp.main_map_scatter(
         locations,
         zoom=13,
         title="PV-Potenzial Fischereihafen"

@@ -113,17 +113,79 @@ def geo_locate(address: str = "Bremen") -> geopy.Location:
     return location
 
 
-def main_map(locations: list[cld.Location] | pl.DataFrame, **kwargs) -> go.Figure:
-    """Karte"""
+def get_hover_template_from_kwargs(given_kwargs: dict) -> str:
+    """Get a hover template from given kwargs"""
+
+    hovertemplate: str = "<b>%{text}</b>"
+
+    if "ref_size" in given_kwargs and "ref_size_unit" in given_kwargs:
+        hovertemplate = (
+            f"{hovertemplate}<br>"
+            f"{given_kwargs.get('ref_size')}: "
+            "%{marker.size:,.1f}"
+            f" {str(given_kwargs.get('ref_size_unit')).strip()}"
+        )
+
+    if "ref_col" in given_kwargs and "ref_col_unit" in given_kwargs:
+        hovertemplate = (
+            f"{hovertemplate}<br>"
+            f"{given_kwargs.get('ref_col')}: "
+            "%{marker.color:,.1f}"
+            f" {str(given_kwargs.get('ref_col_unit')).strip()}"
+        )
+
+    return f"{hovertemplate}<extra></extra>"
+
+
+def main_map_scatter(
+    locations: list[cld.Location] | pl.DataFrame, **kwargs
+) -> go.Figure:
+    """Karte
+
+    kwargs:
+        - col_name (str): Spaltenüberschrift für Bezeichnung (Name) des Datenpunkts
+        - col_lat (str): Spaltenüberschrift für Breitengrad
+        - col_lon (str): Spaltenüberschrift für Längengrad
+        - col_size (str): Spaltenüberschrift für Punktgröße
+        - col_col (str): Spaltenüberschrift für Punktfarbe
+
+        - ref_size (str): Bezugsgröße für Punktgröße (z.B. "Leistung")
+        - ref_size_unit (str): Einheit der Bezugsgröße für Punktgröße (z.B. "kWp")
+        - ref_col (str): Bezugsgröße für Punktfarbe (z.B. "spezifische Leistung")
+        - ref_col_unit (str): Einheit der Bezugsgröße für Punktfarbe (z.B. "kWh/kWp")
+
+        - title (str): Titel des Karte
+        - height (int): Größe der Karte in px
+        - zoom (int): Zoomfaktor beim ersten Anzeigen der Karte
+
+    DataFrame and Figure from Example File:
+        df=exi.general_excel_import(file="example_map/Punkte_Längengrad_Breitengrad.xlsx")
+        fig = main_map_scatter(
+            locations=df,
+            ref_size="Leistung",
+            ref_size_unit="kWp",
+            ref_col="spezifisch",
+            ref_col_unit="kWh/kWp",
+            title=(
+                "PV-Potenzial Fischereihafen"
+                '<i><span style="font-size: 12px;">'
+                " (Punktgröße referenziert Leistungspotenzial)</span></i>"
+            )
+        )
+
+    Show Fig in VSCode (interactive window):
+        fig.show(renderer="notebook_connected")
+
+    """
 
     standard_size: float = 4
 
     if isinstance(locations, pl.DataFrame):
-        latitudes: list[float] = list(locations[kwargs.get("col_lat") or "latitude"])
-        longitudes: list[float] = list(locations["longitude"])
-        names: list[str] = list(locations["Liegenschaft"])
-        sizes: list[float] = list(locations["Leistung"])
-        colours: list[float] = list(locations["spezifisch"])
+        latitudes: list[float] = list(locations[kwargs.get("col_lat") or "Breitengrad"])
+        longitudes: list[float] = list(locations[kwargs.get("col_lon") or "Längengrad"])
+        names: list[str] = list(locations[kwargs.get("col_name") or "Name"])
+        sizes: list[float] = list(locations[kwargs.get("col_size") or "Punktgröße"])
+        colours: list[float] = list(locations[kwargs.get("col_col") or "Punktfarbe"])
     elif all(
         [isinstance(locations, list)]
         + [isinstance(location, cld.Location) for location in locations]
@@ -151,9 +213,17 @@ def main_map(locations: list[cld.Location] | pl.DataFrame, **kwargs) -> go.Figur
                 #   Electric,Greens,Greys,Hot,Jet,Picnic,Portland,
                 #   Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd
                 "colorbar": {
-                    "title": "spezifische<br>Leistung<br> ----- ",
+                    "title": (
+                        f"{str(kwargs.get('ref_col')).replace(' ', '<br>')}<br> ----- "
+                        if kwargs.get("ref_col")
+                        else None
+                    ),
                     "bgcolor": "rgba(255,255,255,0.5)",
-                    "ticksuffix": " kWh/kWp",
+                    "ticksuffix": (
+                        f" {str(kwargs.get('ref_col_unit')).strip()}"
+                        if kwargs.get("ref_col_unit")
+                        else None
+                    ),
                     "x": 0,
                 },
                 "opacity": 0.8,
@@ -161,10 +231,7 @@ def main_map(locations: list[cld.Location] | pl.DataFrame, **kwargs) -> go.Figur
                 # "cmax": 400,
                 # "cmin": 0,
             },
-            hovertemplate="<b>%{text}</b><br>"
-            "Leistung: %{marker.size:,.1f} kWp<br>"
-            "spezifisch: %{marker.color:,.1f} kWh/kWp"
-            "<extra></extra>",
+            hovertemplate=get_hover_template_from_kwargs(kwargs),
             hoverlabel_align="right",
         )
     )

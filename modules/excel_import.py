@@ -19,14 +19,13 @@ TEST_FILE = "example_files/Stromlastgang - mehrere Jahre.xlsx"
 @gf.func_timer
 def general_excel_import(
     file: BytesIO | str,
-    worksheet: str,
+    worksheet: str = "Tabelle1",
     **kwargs,
 ) -> pl.DataFrame:
     """Import an Excel file
 
     Example:
-    file= "tests/sample_data/888 PV-Potenzial py.xlsx"
-    worksheet="Leistungen"
+    file= "example_map/Punkte_Längengrad_Breitengrad.xlsx"
 
     xlsx_options:
         sheetid - sheet no to convert (0 for all sheets)

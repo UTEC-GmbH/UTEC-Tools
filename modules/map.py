@@ -190,7 +190,6 @@ def main_map_scatter(
 
         - title (str): Titel des Karte
         - height (int): Größe der Karte in px
-        - zoom (int): Zoomfaktor beim ersten Anzeigen der Karte
 
     DataFrame and Figure from Example File:
         df=exi.general_excel_import(file="example_map/Punkte_Längengrad_Breitengrad.xlsx")

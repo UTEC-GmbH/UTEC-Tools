@@ -24,28 +24,33 @@ gf.log_new_run()
 set_stuff.page_header_setup(page=cont.ST_PAGES.maps.short)
 
 
-def plot_map(uploaded_file: BytesIO | str, **kwargs) -> go.Figure:
+def plot_map(uploaded_file: BytesIO | str) -> go.Figure:
     """Plot map"""
     graph_height: int = 750
     locations: pl.DataFrame = ex_i.general_excel_import(file=uploaded_file)
+    tit: str | None = sf.s_get("ti_title")
+    if sf.s_get("ti_title_add") and sf.s_get("ti_title"):
+        tit = (
+            f"{tit}"
+            '<i><span style="font-size: 12px;"> '
+            f"({sf.s_get('ti_title_add')})</span></i>"
+        )
     # markers: list[fk.kml.Placemark] = mp.get_all_placemarkers_from_kmz_or_kml()
     # locations: list[cld.Location] = mp.list_or_df_of_locations_from_markers(markers)
     fig: go.Figure = mp.main_map_scatter(
         locations,
-        title="PV-Potenzial Fischereihafen"
-        '<i><span style="font-size: 12px;">'
-        " (Punktgröße referenziert Leistungspotenzial)</span></i>",
+        title=tit,
         height=graph_height,
-        ref_size=kwargs.get("ref_size") or "Leistung",
-        ref_size_unit="kWp",
-        ref_col="spezifische Leistung",
-        ref_col_unit="kWh/kWp",
+        ref_size=sf.s_get("ti_ref_size"),
+        ref_size_unit=sf.s_get("ti_ref_size_unit"),
+        ref_col=sf.s_get("ti_ref_col"),
+        ref_col_unit=sf.s_get("ti_ref_col_unit"),
     )
     st.plotly_chart(
         fig,
         use_container_width=True,
         theme=cont.ST_PLOTLY_THEME,
-        config=fig_format.plotly_config(height=graph_height, title_edit=False),
+        config=fig_format.plotly_config(height=graph_height),
     )
     return fig
 

@@ -119,7 +119,7 @@ def gather_and_manipulate_data() -> cld.MetaAndDfs:
 
     # df Monatswerte
     if sf.s_get("cb_mon"):
-        mdf_i = df_man.mon(mdf_i)
+        mdf_i = df_man.calculate_monthly_values(mdf_i)
 
     sf.s_set("mdf", mdf_i)
     return mdf_i

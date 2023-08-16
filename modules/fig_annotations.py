@@ -164,13 +164,13 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
                 fig_layout,
                 x_val,
                 y_or_line=y_val,
-                text=f"max {tit}: {gf.nachkomma(abs(y_val))}{unit}",
+                text=f"max {tit}: {gf.number_as_string(abs(y_val))}{unit}",
                 yaxis=line["yaxis"],
                 middle_xaxis=middle_x,
             )
             logger.info(
                 f"Pfeil hinzugefügt in '{fig.layout.meta['title'].split('<')[0]}': "
-                f"'max {tit}: {gf.nachkomma(abs(y_val))}{unit}'"
+                f"'max {tit}: {gf.number_as_string(abs(y_val))}{unit}'"
             )
 
     logger.success("Max / Min arrows added to figure")

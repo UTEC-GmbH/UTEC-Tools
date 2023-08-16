@@ -10,7 +10,6 @@ from loguru import logger
 from modules import classes_constants as clc
 from modules import classes_data as cld
 from modules import constants as cont
-from modules import df_manipulation as df_man
 from modules import general_functions as gf
 from modules import setup_logger as slog
 

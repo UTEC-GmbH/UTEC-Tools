@@ -393,7 +393,7 @@ def calculate_monthly_values(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             [
                 pl.col(COL_IND).alias(COL_ORG),
                 pl.col(COL_IND)
-                .dt.strftime("%Y-%m-%15 %H:%M:%S")
+                .dt.strftime("%Y-%m-15 %H:%M:%S")
                 .str.strptime(pl.Datetime),
             ]
         )

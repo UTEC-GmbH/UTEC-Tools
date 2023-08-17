@@ -44,7 +44,7 @@ def s_delete(key: str) -> None:
         logger.warning(f"st.session_state Eintrag {key} gelöscht")
 
 
-def s_reset_graph() -> None:
+def s_reset_app() -> None:
     """Delete the entire st.session_state"""
     initial_keys: list[str] = [
         "number of runs",

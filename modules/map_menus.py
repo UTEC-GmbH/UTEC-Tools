@@ -28,7 +28,7 @@ def sidebar_file_upload() -> Any:
             key="sb_example_file",
         )
 
-        with open(f"example_files/{sb_example}.xlsx", "rb") as exfile:
+        with open(f"example_map/{sb_example}.xlsx", "rb") as exfile:
             st.download_button(
                 label="Beispieldatei herunterladen",
                 data=exfile,
@@ -53,6 +53,7 @@ def sidebar_file_upload() -> Any:
             ),
             key="f_up",
         )
+        st.markdown("---")
 
     return sf.s_get("f_up")
 
@@ -71,42 +72,50 @@ def sidebar_text() -> None:
             help="Wird kleiner und in Klammern hinter dem Titel angezeigt",
             key="ti_title_add",
         )
-        st.text_input(
-            label="Bezugsgröße für Punktgröße",
-            help=(
-                """
-                Name der Eigenschaft, die die Punktgröße bestimmt 
-                (z.B. 'Leistung')
-                """
-            ),
-            key="ti_ref_size",
-        )
-        st.text_input(
-            label="Einheit für Punktgröße",
-            help=(
-                """
-                Einheit der Eigenschaft, die die Punktgröße bestimmt 
-                (z.B. 'kWp')"""
-            ),
-            key="ti_ref_size_unit",
-        )
-        st.text_input(
-            label="Bezugsgröße für Punktfarbe",
-            help=(
-                """
-                Name der Eigenschaft, die die Punktfarbe bestimmt 
-                (z.B. 'spezifische Leistung')
-                """
-            ),
-            key="ti_ref_col",
-        )
-        st.text_input(
-            label="Einheit für Punktfarbe",
-            help=(
-                """
-                Einheit der Eigenschaft, die die Punktfarbe bestimmt 
-                (z.B. 'kWh/kWp')
-                """
-            ),
-            key="ti_ref_col_unit",
-        )
+
+        cols: list = st.columns([2, 1])
+        with cols[0]:
+            st.text_input(
+                label="Punktgröße",
+                help=(
+                    """
+                    Name der Eigenschaft, die die Punktgröße bestimmt 
+                    (z.B. 'Leistung')
+                    """
+                ),
+                key="ti_ref_size",
+            )
+        with cols[1]:
+            st.text_input(
+                label="Einheit",
+                help=(
+                    """
+                    Einheit der Eigenschaft, die die Punktgröße bestimmt 
+                    (z.B. 'kWp')"""
+                ),
+                key="ti_ref_size_unit",
+            )
+
+        cols: list = st.columns([2, 1])
+        with cols[0]:
+            st.text_input(
+                label="Punktfarbe",
+                help=(
+                    """
+                    Name der Eigenschaft, die die Punktfarbe bestimmt 
+                    (z.B. 'spezifische Leistung')
+                    """
+                ),
+                key="ti_ref_col",
+            )
+        with cols[1]:
+            st.text_input(
+                label="Einheit",
+                help=(
+                    """
+                    Einheit der Eigenschaft, die die Punktfarbe bestimmt 
+                    (z.B. 'kWh/kWp')
+                    """
+                ),
+                key="ti_ref_col_unit",
+            )

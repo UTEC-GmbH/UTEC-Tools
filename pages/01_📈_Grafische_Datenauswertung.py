@@ -184,7 +184,7 @@ def make_graphs(mdf_g: cld.MetaAndDfs) -> clf.Figs:
 if uauth.authentication(sf.s_get("page")):
     debug_code_run(position="before")
     if sf.s_get("but_complete_reset"):
-        sf.s_reset_graph()
+        sf.s_reset_app()
 
     if sf.s_get("but_example_direct"):
         st.session_state["f_up"] = f"example_files/{sf.s_get('sb_example_file')}.xlsx"

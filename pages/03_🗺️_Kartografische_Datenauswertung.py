@@ -9,6 +9,7 @@ import polars as pl
 import streamlit as st
 from loguru import logger
 
+from modules import classes_data as cld
 from modules import constants as cont
 from modules import excel_import as ex_i
 from modules import fig_formatting as fig_format
@@ -27,7 +28,15 @@ set_stuff.page_header_setup(page=cont.ST_PAGES.maps.short)
 def plot_map(uploaded_file: BytesIO | str) -> go.Figure:
     """Plot map"""
     graph_height: int = 750
-    locations: pl.DataFrame = ex_i.general_excel_import(file=uploaded_file)
+
+    sf.s_add_once("map_df", ex_i.general_excel_import(file=uploaded_file))
+    df: pl.DataFrame = sf.s_get("map_df", ex_i.general_excel_import(file=uploaded_file))
+
+    locations: list[cld.Location] = sf.s_get(
+        "map_locations"
+    ) or mp.create_list_of_locations_from_df(df)
+    sf.s_add_once("map_locations", locations)
+
     tit: str | None = sf.s_get("ti_title")
     if sf.s_get("ti_title_add") and sf.s_get("ti_title"):
         tit = (
@@ -37,7 +46,7 @@ def plot_map(uploaded_file: BytesIO | str) -> go.Figure:
         )
     # markers: list[fk.kml.Placemark] = mp.get_all_placemarkers_from_kmz_or_kml()
     # locations: list[cld.Location] = mp.list_or_df_of_locations_from_markers(markers)
-    fig: go.Figure = mp.main_map_scatter(
+    fig_map: go.Figure = mp.main_map_scatter(
         locations,
         title=tit,
         height=graph_height,
@@ -47,21 +56,21 @@ def plot_map(uploaded_file: BytesIO | str) -> go.Figure:
         ref_col_unit=sf.s_get("ti_ref_col_unit"),
     )
     st.plotly_chart(
-        fig,
+        fig_map,
         use_container_width=True,
         theme=cont.ST_PLOTLY_THEME,
         config=fig_format.plotly_config(height=graph_height),
     )
-    return fig
+    return fig_map
 
 
-def export_to_html(fig: go.Figure) -> None:
+def export_to_html(fig_to_convert: go.Figure) -> None:
     """Export to html"""
 
     st.markdown("---")
 
     if sf.s_get("butt_html_map"):
-        mp.html_exp(fig)
+        mp.html_exp(fig_to_convert)
         f_pn = "export\\Kartografische_Datenauswertung.html"
         cols: list = st.columns(3)
         ani_height = 30
@@ -86,6 +95,9 @@ def export_to_html(fig: go.Figure) -> None:
 
 
 if uauth.authentication(sf.s_get("page")):
+    if sf.s_get("but_complete_reset"):
+        sf.s_reset_app()
+
     if sf.s_get("but_example_direct"):
         st.session_state["f_up"] = f"example_map/{sf.s_get('sb_example_file')}.xlsx"
 
@@ -93,13 +105,14 @@ if uauth.authentication(sf.s_get("page")):
         logger.warning("No file provided yet.")
 
         menu_m.sidebar_file_upload()
-
+        menu_m.sidebar_text()
         st.warning("Bitte Datei hochladen oder Beispiel auswählen")
 
         st.markdown("###")
         st.markdown("---")
     else:
         logger.info(f"File to analyse: '{sf.s_get('f_up')}'")
+        menu_m.sidebar_text()
         with st.sidebar:
             st.markdown("###")
             st.button(

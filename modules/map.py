@@ -99,6 +99,7 @@ def list_or_df_of_locations_from_markers(
     ]
 
 
+@gf.func_timer
 def geo_locate(address: str = "Bremen") -> geopy.Location:
     """Geographische daten (Längengrad, Breitengrad) aus eingegebener Adresse"""
 
@@ -119,7 +120,9 @@ def get_hover_template_from_kwargs(given_kwargs: dict) -> str:
 
     hovertemplate: str = "<b>%{text}</b>"
 
-    if "ref_size" in given_kwargs and "ref_size_unit" in given_kwargs:
+    if all(
+        len(given_kwargs.get(item, "")) > 0 for item in ["ref_size", "ref_size_unit"]
+    ):
         hovertemplate = (
             f"{hovertemplate}<br>"
             f"{given_kwargs.get('ref_size')}: "
@@ -127,7 +130,7 @@ def get_hover_template_from_kwargs(given_kwargs: dict) -> str:
             f" {str(given_kwargs.get('ref_size_unit')).strip()}"
         )
 
-    if "ref_col" in given_kwargs and "ref_col_unit" in given_kwargs:
+    if all(len(given_kwargs.get(item, "")) > 0 for item in ["ref_col", "ref_col_unit"]):
         hovertemplate = (
             f"{hovertemplate}<br>"
             f"{given_kwargs.get('ref_col')}: "
@@ -138,9 +141,7 @@ def get_hover_template_from_kwargs(given_kwargs: dict) -> str:
     return f"{hovertemplate}<extra></extra>"
 
 
-def get_zoom_level_from_locations(
-    locations: list[cld.Location] | pl.DataFrame, **kwargs
-) -> float:
+def get_zoom_level_from_locations(locations: list[cld.Location]) -> float:
     """Get the Zoom level to fit all points
     (Based on: https://stackoverflow.com/questions/63787612/plotly-automatic-zooming-for-mapbox-maps)
     """
@@ -148,19 +149,14 @@ def get_zoom_level_from_locations(
     deg_to_km = 111  # constant to convert decimal degrees to kilometers
     factor = 14  # initial factor to manipulate
 
-    if isinstance(locations, pl.DataFrame):
-        latitudes: list[float] = list(locations[kwargs.get("col_lat") or "Breitengrad"])
-        longitudes: list[float] = list(locations[kwargs.get("col_lon") or "Längengrad"])
-
-    elif all(
+    if not all(
         [isinstance(locations, list)]
         + [isinstance(location, cld.Location) for location in locations]
     ):
-        latitudes = [loc.latitude for loc in locations]
-        longitudes = [loc.longitude for loc in locations]
-
-    else:
         raise ValueError
+
+    latitudes: list[float] = [loc.latitude for loc in locations]
+    longitudes: list[float] = [loc.longitude for loc in locations]
 
     max_lat: float = max(latitudes)
     min_lat: float = min(latitudes)
@@ -171,18 +167,51 @@ def get_zoom_level_from_locations(
     return factor - np.log(max_bound)
 
 
-def main_map_scatter(
-    locations: list[cld.Location] | pl.DataFrame, **kwargs
-) -> go.Figure:
+@gf.func_timer
+def create_list_of_locations_from_df(df: pl.DataFrame) -> list[cld.Location]:
+    """From a DataFrame with the correct columns, create a list of locations"""
+
+    col_nam: str = "Name"
+    col_lat: str = "Breitengrad"
+    col_lon: str = "Längengrad"
+    col_adr: str = "Adresse"
+    col_siz: str = "Punktgröße"
+    col_col: str = "Punktfarbe"
+
+    if all(col in df.columns for col in [col_lat, col_lon]):
+        locations: list[cld.Location] = [
+            cld.Location(
+                name=row[col_nam],
+                latitude=row[col_lat],
+                longitude=row[col_lon],
+                attr_size=row[col_siz] if col_siz in df.columns else None,
+                attr_colour=row[col_col] if col_col in df.columns else None,
+            )
+            for row in df.iter_rows(named=True)
+        ]
+
+    elif "Adresse" in df.columns:
+        locations = [
+            cld.Location(
+                name=row[col_nam],
+                latitude=geo_locate(row[col_adr]).latitude,
+                longitude=geo_locate(row[col_adr]).longitude,
+                attr_size=row[col_siz] if col_siz in df.columns else None,
+                attr_colour=row[col_col] if col_col in df.columns else None,
+            )
+            for row in df.iter_rows(named=True)
+        ]
+
+    else:
+        raise cle.WrongColumnNamesError(None)
+
+    return locations
+
+
+def main_map_scatter(locations: list[cld.Location], **kwargs) -> go.Figure:
     """Karte
 
     kwargs:
-        - col_name (str): Spaltenüberschrift für Bezeichnung (Name) des Datenpunkts
-        - col_lat (str): Spaltenüberschrift für Breitengrad
-        - col_lon (str): Spaltenüberschrift für Längengrad
-        - col_size (str): Spaltenüberschrift für Punktgröße
-        - col_col (str): Spaltenüberschrift für Punktfarbe
-
         - ref_size (str): Bezugsgröße für Punktgröße (z.B. "Leistung")
         - ref_size_unit (str): Einheit der Bezugsgröße für Punktgröße (z.B. "kWp")
         - ref_col (str): Bezugsgröße für Punktfarbe (z.B. "spezifische Leistung")
@@ -191,46 +220,27 @@ def main_map_scatter(
         - title (str): Titel des Karte
         - height (int): Größe der Karte in px
 
-    DataFrame and Figure from Example File:
-        df=exi.general_excel_import(file="example_map/Punkte_Längengrad_Breitengrad.xlsx")
-        fig = main_map_scatter(
-            locations=df,
-            ref_size="Leistung",
-            ref_size_unit="kWp",
-            ref_col="spezifisch",
-            ref_col_unit="kWh/kWp",
-            title=(
-                "PV-Potenzial Fischereihafen"
-                '<i><span style="font-size: 12px;">'
-                " (Punktgröße referenziert Leistungspotenzial)</span></i>"
-            )
-        )
-
-    Show Fig in VSCode (interactive window):
-        fig.show(renderer="notebook_connected")
+    selection of possible colour scales for markers:
+        Blackbody, Bluered, Blues, Cividis, Earth, Electric, Greens, Greys, Hot,
+        Jet, Picnic, Portland, Rainbow, RdBu, Reds, Viridis, YlGnBu, YlOrRd
 
     """
 
     standard_size: float = 4
+    max_size: float = 40
+    marker_col_scale: str = "Portland"
 
-    if isinstance(locations, pl.DataFrame):
-        latitudes: list[float] = list(locations[kwargs.get("col_lat") or "Breitengrad"])
-        longitudes: list[float] = list(locations[kwargs.get("col_lon") or "Längengrad"])
-        names: list[str] = list(locations[kwargs.get("col_name") or "Name"])
-        sizes: list[float] = list(locations[kwargs.get("col_size") or "Punktgröße"])
-        colours: list[float] = list(locations[kwargs.get("col_col") or "Punktfarbe"])
-    elif all(
+    if not all(
         [isinstance(locations, list)]
         + [isinstance(location, cld.Location) for location in locations]
     ):
-        latitudes = [loc.latitude for loc in locations]
-        longitudes = [loc.longitude for loc in locations]
-        names = [loc.name or "" for loc in locations]
-        sizes = [loc.attr_size or standard_size for loc in locations]
-        colours = [loc.attr_colour or standard_size for loc in locations]
-    else:
         raise ValueError
 
+    latitudes: list[float] = [loc.latitude for loc in locations]
+    longitudes: list[float] = [loc.longitude for loc in locations]
+    names: list[str] = [loc.name or "" for loc in locations]
+    sizes: list[float | int] = [loc.attr_size or standard_size for loc in locations]
+    colours: list[float | int] = [loc.attr_colour or standard_size for loc in locations]
     fig: go.Figure = go.Figure(
         data=go.Scattermapbox(
             lat=latitudes,
@@ -238,13 +248,13 @@ def main_map_scatter(
             text=names,
             mode="markers",
             marker={
+                "allowoverlap": True,
                 "size": sizes,
+                "sizemode": "area",
                 "sizemin": standard_size,
-                "sizeref": max(sizes) / 50,
+                "sizeref": 2.0 * max(sizes) / (max_size**2),
                 "color": colours,
-                "colorscale": "Portland",  # Blackbody,Bluered,Blues,Cividis,Earth,
-                #   Electric,Greens,Greys,Hot,Jet,Picnic,Portland,
-                #   Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd
+                "colorscale": marker_col_scale,
                 "colorbar": {
                     "title": (
                         f"{str(kwargs.get('ref_col')).replace(' ', '<br>')}<br> ----- "

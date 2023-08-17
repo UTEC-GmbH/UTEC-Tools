@@ -60,11 +60,11 @@ def export_to_html(fig: go.Figure) -> None:
 
     st.markdown("---")
 
-    ani_height = 30
     if sf.s_get("butt_html_map"):
         mp.html_exp(fig)
         f_pn = "export\\Kartografische_Datenauswertung.html"
         cols: list = st.columns(3)
+        ani_height = 30
         with cols[0]:
             gf.show_lottie_animation(
                 "animations/coin_i.json", height=ani_height, speed=0.75

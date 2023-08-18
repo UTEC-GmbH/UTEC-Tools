@@ -2,7 +2,7 @@
 
 import datetime as dt
 from glob import glob
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -19,6 +19,19 @@ from modules import streamlit_functions as sf
 
 if TYPE_CHECKING:
     import polars as pl
+
+
+def sidebar_reset() -> None:
+    """Reset-Knöpfle für die Sidebar"""
+    with st.sidebar:
+        st.markdown("###")
+        st.button(
+            label="✨  Auswertung neu starten  ✨",
+            key="but_complete_reset",
+            use_container_width=True,
+            help="Auswertung zurücksetzen um andere Datei hochladen zu können.",
+        )
+        st.markdown("---")
 
 
 def sidebar_file_upload() -> Any:

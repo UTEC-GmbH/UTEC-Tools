@@ -3,6 +3,7 @@
 
 
 from io import BytesIO
+from typing import Any
 
 import plotly.graph_objects as go
 import polars as pl
@@ -25,17 +26,25 @@ gf.log_new_run()
 set_stuff.page_header_setup(page=cont.ST_PAGES.maps.short)
 
 
-def plot_map(uploaded_file: BytesIO | str) -> go.Figure:
+def plot_map() -> go.Figure:
     """Plot map"""
     graph_height: int = 750
 
-    sf.s_add_once("map_df", ex_i.general_excel_import(file=uploaded_file))
-    df: pl.DataFrame = sf.s_get("map_df", ex_i.general_excel_import(file=uploaded_file))
+    phil: Any = sf.s_get("f_up")
+    if isinstance(phil, str):
+        logger.info(f"File to analyse: '{phil}'")
+    if isinstance(phil, BytesIO):
+        logger.info("File uploaded and available as bytes")
 
-    locations: list[cld.Location] = sf.s_get(
-        "map_locations"
-    ) or mp.create_list_of_locations_from_df(df)
-    sf.s_add_once("map_locations", locations)
+    st_map_df: Any = sf.s_get("map_df")
+    if isinstance(st_map_df, pl.DataFrame):
+        logger.info("DataFrame of locations available in SessionState")
+        df = st_map_df
+    elif isinstance(phil, BytesIO | str):
+        logger.info("DataFrame will be created from uploaded file.")
+        df: pl.DataFrame = df_from_file(phil)
+    else:
+        raise TypeError
 
     tit: str | None = sf.s_get("ti_title")
     if sf.s_get("ti_title_add") and sf.s_get("ti_title"):
@@ -44,16 +53,21 @@ def plot_map(uploaded_file: BytesIO | str) -> go.Figure:
             '<i><span style="font-size: 12px;"> '
             f"({sf.s_get('ti_title_add')})</span></i>"
         )
+
+    st_locs: Any = sf.s_get("map_locations")
+    if isinstance(st_locs, list) and all(
+        isinstance(loc, cld.Location) for loc in st_locs
+    ):
+        locations: list[cld.Location] = st_locs
+    else:
+        locations = mp.create_list_of_locations_from_df(df)
+        sf.s_set("map_locations", locations)
+
     # markers: list[fk.kml.Placemark] = mp.get_all_placemarkers_from_kmz_or_kml()
-    # locations: list[cld.Location] = mp.list_or_df_of_locations_from_markers(markers)
     fig_map: go.Figure = mp.main_map_scatter(
         locations,
         title=tit,
         height=graph_height,
-        ref_size=sf.s_get("ti_ref_size"),
-        ref_size_unit=sf.s_get("ti_ref_size_unit"),
-        ref_col=sf.s_get("ti_ref_col"),
-        ref_col_unit=sf.s_get("ti_ref_col_unit"),
     )
     st.plotly_chart(
         fig_map,
@@ -94,34 +108,42 @@ def export_to_html(fig_to_convert: go.Figure) -> None:
         st.button(label="html-Export", key="butt_html_map")
 
 
+def df_from_file(uploaded_file: BytesIO | str) -> pl.DataFrame:
+    """Import Excel-File as Polars DataFrame"""
+
+    st_entry: Any = sf.s_get("map_df")
+
+    df: pl.DataFrame = (
+        st_entry
+        if isinstance(st_entry, pl.DataFrame)
+        else ex_i.general_excel_import(uploaded_file)
+    )
+    sf.s_add_once("map_df", df)
+
+    return df
+
+
 if uauth.authentication(sf.s_get("page")):
     if sf.s_get("but_complete_reset"):
         sf.s_reset_app()
 
     if sf.s_get("but_example_direct"):
-        st.session_state["f_up"] = f"example_map/{sf.s_get('sb_example_file')}.xlsx"
+        sf.s_set("f_up", f"example_map/{sf.s_get('sb_example_file')}.xlsx")
 
-    if sf.s_get("f_up") is None:
-        logger.warning("No file provided yet.")
-
+    if all(sf.s_get(key) is None for key in ["f_up", "map_df"]):
         menu_m.sidebar_file_upload()
         menu_m.sidebar_text()
         st.warning("Bitte Datei hochladen oder Beispiel auswählen")
 
         st.markdown("###")
         st.markdown("---")
-    else:
-        logger.info(f"File to analyse: '{sf.s_get('f_up')}'")
-        menu_m.sidebar_text()
-        with st.sidebar:
-            st.markdown("###")
-            st.button(
-                label="✨  Auswertung neu starten  ✨",
-                key="but_complete_reset",
-                use_container_width=True,
-                help="Auswertung zurücksetzen um andere Datei hochladen zu können.",
-            )
-            st.write("---")
 
-        fig: go.Figure = plot_map(sf.s_get("f_up"))
+        logger.warning("No file provided yet.")
+    else:
+        menu_m.sidebar_reset()
+        menu_m.sidebar_text()
+        menu_m.sidebar_slider_size()
+        menu_m.sidebar_slider_colour()
+
+        fig: go.Figure = plot_map()
         export_to_html(fig)

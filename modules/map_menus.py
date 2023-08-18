@@ -9,6 +9,19 @@ import streamlit as st
 from modules import streamlit_functions as sf
 
 
+def sidebar_reset() -> None:
+    """Reset-Knöpfle für die Sidebar"""
+    with st.sidebar:
+        st.markdown("###")
+        st.button(
+            label="✨  Auswertung neu starten  ✨",
+            key="but_complete_reset",
+            use_container_width=True,
+            help="Auswertung zurücksetzen um andere Datei hochladen zu können.",
+        )
+        st.markdown("---")
+
+
 def sidebar_file_upload() -> Any:
     """Hochgeladene Excel-Datei"""
 
@@ -119,3 +132,43 @@ def sidebar_text() -> None:
                 ),
                 key="ti_ref_col_unit",
             )
+
+
+def sidebar_slider_size() -> None:
+    """Slider für Punktgröße"""
+    with st.sidebar:
+        st.markdown("###")
+        st.slider(
+            label="Punktgröße",
+            min_value=1,
+            max_value=100,
+            value=50,
+            help=(
+                """
+                Falls die Punktegrößen mit eingegebenen Werten berechnet werden, 
+                bleiben die Größenverhältnisse so weit wie möglich bestehen.
+                (Bei sehr kleinen Werten funktioniert das nicht immer.)
+                """
+            ),
+            key="sl_marker_size",
+        )
+
+
+def sidebar_slider_colour() -> None:
+    """Slider für Punktgröße"""
+    with st.sidebar:
+        st.markdown("###")
+        st.slider(
+            label="Punktfarbe",
+            min_value=1,
+            max_value=100,
+            value=50,
+            help=(
+                """
+                Falls die Punktfarbe mit Werte bestimmt wird 
+                und sich auf eine Farbskala bezieht, 
+                hat diese Einstellung keine Auswirkung auf die Grafik.
+                """
+            ),
+            key="sl_marker_colour",
+        )

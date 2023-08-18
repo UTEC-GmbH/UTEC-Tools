@@ -15,7 +15,6 @@ from loguru import logger
 
 from modules import classes_data as cld
 from modules import classes_errors as cle
-from modules import excel_import as exi
 from modules import fig_formatting as fig_format
 from modules import general_functions as gf
 from modules import streamlit_functions as sf
@@ -103,6 +102,8 @@ def list_or_df_of_locations_from_markers(
 def geo_locate(address: str = "Bremen") -> geopy.Location:
     """Geographische daten (Längengrad, Breitengrad) aus eingegebener Adresse"""
 
+    logger.info(f"Getting coordinates of '{address}'")
+
     user_agent_secret: str | None = os.environ.get("GEO_USER_AGENT") or "lasinludwig"
     if user_agent_secret is None:
         raise cle.NotFoundError(entry="GEO_USER_AGENT", where="Secrets")
@@ -115,28 +116,29 @@ def geo_locate(address: str = "Bremen") -> geopy.Location:
     return location
 
 
-def get_hover_template_from_kwargs(given_kwargs: dict) -> str:
+def get_hover_template_from_text_input() -> str:
     """Get a hover template from given kwargs"""
+
+    ref_size: str = sf.s_get("ti_ref_size") or ""
+    ref_size_unit: str = sf.s_get("ti_ref_size_unit") or ""
+    ref_col: str = sf.s_get("ti_ref_col") or ""
+    ref_col_unit: str = sf.s_get("ti_ref_col_unit") or ""
 
     hovertemplate: str = "<b>%{text}</b>"
 
-    if all(
-        len(given_kwargs.get(item, "")) > 0 for item in ["ref_size", "ref_size_unit"]
-    ):
-        hovertemplate = (
-            f"{hovertemplate}<br>"
-            f"{given_kwargs.get('ref_size')}: "
-            "%{marker.size:,.1f}"
-            f" {str(given_kwargs.get('ref_size_unit')).strip()}"
-        )
+    if ref_size != "":
+        hovertemplate += f"<br>{ref_size}: "
+        hovertemplate += "%{marker.size:,.1f}"
 
-    if all(len(given_kwargs.get(item, "")) > 0 for item in ["ref_col", "ref_col_unit"]):
-        hovertemplate = (
-            f"{hovertemplate}<br>"
-            f"{given_kwargs.get('ref_col')}: "
-            "%{marker.color:,.1f}"
-            f" {str(given_kwargs.get('ref_col_unit')).strip()}"
-        )
+    if ref_size_unit != "":
+        hovertemplate += f" {ref_size_unit.strip()}"
+
+    if ref_col != "":
+        hovertemplate += f"<br>{ref_col}: "
+        hovertemplate += "%{marker.color:,.1f}"
+
+    if ref_col_unit != "":
+        hovertemplate += f" {ref_col_unit.strip()}"
 
     return f"{hovertemplate}<extra></extra>"
 
@@ -191,16 +193,18 @@ def create_list_of_locations_from_df(df: pl.DataFrame) -> list[cld.Location]:
         ]
 
     elif "Adresse" in df.columns:
-        locations = [
-            cld.Location(
-                name=row[col_nam],
-                latitude=geo_locate(row[col_adr]).latitude,
-                longitude=geo_locate(row[col_adr]).longitude,
-                attr_size=row[col_siz] if col_siz in df.columns else None,
-                attr_colour=row[col_col] if col_col in df.columns else None,
-            )
-            for row in df.iter_rows(named=True)
-        ]
+        locations = []
+        for row in df.iter_rows(named=True):
+            geopy_loc: geopy.Location = geo_locate(row[col_adr])
+            locations += [
+                cld.Location(
+                    name=row[col_nam],
+                    latitude=geopy_loc.latitude,
+                    longitude=geopy_loc.longitude,
+                    attr_size=row[col_siz] if col_siz in df.columns else None,
+                    attr_colour=row[col_col] if col_col in df.columns else None,
+                )
+            ]
 
     else:
         raise cle.WrongColumnNamesError(None)
@@ -208,27 +212,70 @@ def create_list_of_locations_from_df(df: pl.DataFrame) -> list[cld.Location]:
     return locations
 
 
-def main_map_scatter(locations: list[cld.Location], **kwargs) -> go.Figure:
-    """Karte
-
-    kwargs:
-        - ref_size (str): Bezugsgröße für Punktgröße (z.B. "Leistung")
-        - ref_size_unit (str): Einheit der Bezugsgröße für Punktgröße (z.B. "kWp")
-        - ref_col (str): Bezugsgröße für Punktfarbe (z.B. "spezifische Leistung")
-        - ref_col_unit (str): Einheit der Bezugsgröße für Punktfarbe (z.B. "kWh/kWp")
-
-        - title (str): Titel des Karte
-        - height (int): Größe der Karte in px
+def marker_layout(locations: list[cld.Location]) -> dict:
+    """Punkteigenschaften
 
     selection of possible colour scales for markers:
         Blackbody, Bluered, Blues, Cividis, Earth, Electric, Greens, Greys, Hot,
         Jet, Picnic, Portland, Rainbow, RdBu, Reds, Viridis, YlGnBu, YlOrRd
+    """
+    # sourcery skip: move-assign
+    size_slider: float = sf.s_get("sl_marker_size") or 5
+    min_size: float = 4
+    max_size: float = 1 * size_slider
+    standard_size: float = 4
+    sizes: list[float | int] = [loc.attr_size or standard_size for loc in locations]
+    size_ref: float = 2.0 * max(sizes) / (max_size**2)
+
+    colours: list[float | int] = [loc.attr_colour or standard_size for loc in locations]
+    ref_col: str = sf.s_get("ti_ref_col") or ""
+    ref_col_unit: str = sf.s_get("ti_ref_col_unit") or ""
+
+    all_same_colour: bool = len(set(colours)) == 1
+
+    if all_same_colour:
+        colours = [sf.s_get("sl_marker_colour") or standard_size for _ in colours]
+        col_scale: str | None = None
+        col_bar: dict | None = None
+        col_min: float | None = 1
+        col_max: float | None = 100
+    else:
+        col_scale = "Portland"
+        col_bar = {
+            "title": (
+                f"{ref_col.replace(' ', '<br>')}<br> ----- " if ref_col != "" else None
+            ),
+            "bgcolor": "rgba(255,255,255,0.5)",
+            "ticksuffix": (f" {ref_col_unit.strip()}" if ref_col_unit != "" else None),
+            "x": 0,
+        }
+        col_min = None
+        col_max = None
+
+    return {
+        "allowoverlap": True,
+        "size": sizes,
+        "sizemode": "area",
+        "sizemin": min_size,
+        "sizeref": size_ref,
+        "color": colours,
+        "cmin": col_min,
+        "cmax": col_max,
+        "colorscale": col_scale,
+        "colorbar": col_bar,
+        "opacity": 0.8,
+        "reversescale": False,
+    }
+
+
+def main_map_scatter(locations: list[cld.Location], **kwargs) -> go.Figure:
+    """Karte
+
+    kwargs:
+        - title (str): Titel des Karte
+        - height (int): Größe der Karte in px
 
     """
-
-    standard_size: float = 4
-    max_size: float = 40
-    marker_col_scale: str = "Portland"
 
     if not all(
         [isinstance(locations, list)]
@@ -239,42 +286,15 @@ def main_map_scatter(locations: list[cld.Location], **kwargs) -> go.Figure:
     latitudes: list[float] = [loc.latitude for loc in locations]
     longitudes: list[float] = [loc.longitude for loc in locations]
     names: list[str] = [loc.name or "" for loc in locations]
-    sizes: list[float | int] = [loc.attr_size or standard_size for loc in locations]
-    colours: list[float | int] = [loc.attr_colour or standard_size for loc in locations]
+
     fig: go.Figure = go.Figure(
         data=go.Scattermapbox(
             lat=latitudes,
             lon=longitudes,
             text=names,
             mode="markers",
-            marker={
-                "allowoverlap": True,
-                "size": sizes,
-                "sizemode": "area",
-                "sizemin": standard_size,
-                "sizeref": 2.0 * max(sizes) / (max_size**2),
-                "color": colours,
-                "colorscale": marker_col_scale,
-                "colorbar": {
-                    "title": (
-                        f"{str(kwargs.get('ref_col')).replace(' ', '<br>')}<br> ----- "
-                        if kwargs.get("ref_col")
-                        else None
-                    ),
-                    "bgcolor": "rgba(255,255,255,0.5)",
-                    "ticksuffix": (
-                        f" {str(kwargs.get('ref_col_unit')).strip()}"
-                        if kwargs.get("ref_col_unit")
-                        else None
-                    ),
-                    "x": 0,
-                },
-                "opacity": 0.8,
-                "reversescale": False,
-                # "cmax": 400,
-                # "cmin": 0,
-            },
-            hovertemplate=get_hover_template_from_kwargs(kwargs),
+            marker=marker_layout(locations),
+            hovertemplate=get_hover_template_from_text_input(),
             hoverlabel_align="right",
         )
     )

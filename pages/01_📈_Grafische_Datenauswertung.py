@@ -200,15 +200,7 @@ if uauth.authentication(sf.s_get("page")):
         st.markdown("---")
     else:
         logger.info(f"File to analyse: '{sf.s_get('f_up')}'")
-        with st.sidebar:
-            st.markdown("###")
-            st.button(
-                label="✨  Auswertung neu starten  ✨",
-                key="but_complete_reset",
-                use_container_width=True,
-                help="Auswertung zurücksetzen um andere Datei hochladen zu können.",
-            )
-            st.write("---")
+        menu_g.sidebar_reset()
 
         mdf: cld.MetaAndDfs = gather_and_manipulate_data()
         figs: clf.Figs = make_graphs(mdf)

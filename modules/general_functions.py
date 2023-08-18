@@ -136,6 +136,33 @@ def load_lottie_file(path: str) -> dict:
         return json.load(file)
 
 
+def show_lottie_animation(path: str, height: int, **kwargs) -> None:
+    """Show a Lottie animation in a Streamlit app
+
+    kwargs:
+        speed: int = 1,
+        reverse: bool = False,
+        loop: bool | int = True,
+        quality: Literal['low', 'medium', 'high'] = "medium",
+        height: int | None = None,
+        width: int | None = None,
+    """
+
+    with open(path) as file:
+        js = json.load(file)
+
+    stlot.st_lottie(
+        js,
+        height=height,
+        speed=kwargs.get("speed") or 1,
+        key=kwargs.get("key"),
+        reverse=kwargs.get("reverse") or False,
+        loop=kwargs.get("loop") or True,
+        quality=kwargs.get("quality") or "medium",
+        width=kwargs.get("width") or None,
+    )
+
+
 def sort_list_by_occurance(list_of_stuff: list[Any]) -> list[Any]:
     """Given a list of stuff, which can have multiple same elements,
     this function returns a list sorted by the number of occurances

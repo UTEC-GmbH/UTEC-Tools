@@ -214,6 +214,7 @@ ST_PAGES: clc.StPages = clc.StPages(
     graph=clc.StPageProps("graph", "Grafische Datenauswertung", "Daten"),
     meteo=clc.StPageProps("meteo", "Meteorologische Daten", "Wetterdaten"),
     chat=clc.StPageProps("chat", "ChatGPT"),
+    maps=clc.StPageProps("maps", "Kartografische Datenauswertung"),
 )
 
 # Umkreis für Meteostat-Stationen in Kilometern

@@ -1,10 +1,12 @@
 black
 deta
+fastkml
 geopy
 ipykernel
 langchain
 loguru
 mypy
+nbformat
 numpy
 openai
 openpyxl

@@ -17,6 +17,61 @@ TEST_FILE = "example_files/Stromlastgang - mehrere Jahre.xlsx"
 
 
 @gf.func_timer
+def general_excel_import(
+    file: BytesIO | str,
+    worksheet: str = "Tabelle1",
+    **kwargs,
+) -> pl.DataFrame:
+    """Import an Excel file
+
+    Example:
+    file= "example_map/Punkte_Längengrad_Breitengrad.xlsx"
+
+    xlsx_options:
+        sheetid - sheet no to convert (0 for all sheets)
+        sheetname - sheet name to convert
+        dateformat - override date/time format
+        timeformat - override time format
+        floatformat - override float format
+        quoting - if and how to quote
+        delimiter - csv columns delimiter symbol
+        sheetdelimiter - sheets delimiter used when processing all sheets
+        skip_empty_lines - skip empty lines
+        skip_trailing_columns - skip trailing columns
+        hyperlinks - include hyperlinks
+        include_sheet_pattern - only include sheets named matching given pattern
+        exclude_sheet_pattern - exclude sheets named matching given pattern
+        exclude_hidden_sheets - exclude hidden sheets
+        skip_hidden_rows - skip hidden rows
+
+    csv_option:
+        see "read_csv" function of polars
+    """
+
+    xlsx_options: dict[str, Any] = {
+        "skip_empty_lines": kwargs.get("skip_empty_lines") or True,
+        "skip_trailing_columns": kwargs.get("skip_trailing_columns") or True,
+        "no_line_breaks": kwargs.get("no_line_breaks") or True,
+        "merge_cells": kwargs.get("merge_cells") or True,
+        "dateformat": kwargs.get("dateformat") or "%d.%m.%Y %T",
+    }
+
+    csv_options: dict[str, bool] = {
+        "has_header": kwargs.get("has_header") or True,
+        "try_parse_dates": kwargs.get("try_parse_dates") or False,
+    }
+
+    df: pl.DataFrame = pl.read_excel(
+        source=file,
+        sheet_name=worksheet,
+        xlsx2csv_options=xlsx_options,
+        read_csv_options=csv_options,
+    )  # type: ignore
+
+    return remove_empty(df)
+
+
+@gf.func_timer
 def import_prefab_excel(file: BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
     """Import and download Excel files.
 

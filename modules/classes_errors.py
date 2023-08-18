@@ -9,6 +9,17 @@ class NotFoundError(Exception):
         super().__init__(f"Error: requested object '{entry}' not found in '{where}'.")
 
 
+class WrongColumnNamesError(Exception):
+    """Error Message if a DataFrame doesn't have the expected columns"""
+
+    def __init__(self, column_name: str | None) -> None:
+        """Initiate"""
+        if column_name:
+            super().__init__(f"Error: column '{column_name}' not found in DataFrame.")
+        else:
+            super().__init__("Error: wrong columns in DataFrame.")
+
+
 class NoDWDParameterError(Exception):
     """Error Message if a given meteorological parameter
     is not a valid DWD parameter name.

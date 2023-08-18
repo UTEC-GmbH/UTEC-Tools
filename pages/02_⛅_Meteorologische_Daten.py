@@ -7,20 +7,20 @@ from modules import fig_formatting as fig_format
 from modules import fig_plotly_plots as ploplo
 from modules import graph_menus as menu_g
 from modules import meteorolog as meteo
+from modules import setup_stuff as set_stuff
+from modules import streamlit_functions as sf
 from modules import user_authentication as uauth
-from modules.setup_stuff import page_header_setup
 
 # setup
-PAGE = st.session_state["page"] = "meteo"
-page_header_setup(PAGE)
+set_stuff.page_header_setup(page=cont.ST_PAGES.meteo.short)
 
 
-if uauth.authentication(PAGE):
+if uauth.authentication(sf.s_get("page")):
     st.warning("temporär außer Betrieb")
 """
     # Auswahl Ort
     with st.sidebar:
-        menu_g.meteo_sidebar(PAGE)
+        menu_g.meteo_sidebar(sf.s_get("page"))
         st.markdown("###")
         st.markdown("###")
 
@@ -92,7 +92,7 @@ if uauth.authentication(PAGE):
                 menu_g.meteo_params_main()
 
             with tab_down:
-                menu_g.downloads(PAGE)
+                menu_g.downloads(sf.s_get("page"))
 
     else:
         col1, col2 = st.columns([4, 3], gap="medium")

@@ -172,3 +172,33 @@ def sidebar_slider_colour() -> None:
             ),
             key="sl_marker_colour",
         )
+
+
+def sidebar_colour_scale() -> None:
+    """Selector for Colour Scale"""
+    with st.sidebar:
+        st.selectbox(
+            label="Farbskala",
+            options=[
+                "Blackbody",
+                "Bluered",
+                "Blues",
+                "Cividis",
+                "Earth",
+                "Electric",
+                "Greens",
+                "Greys",
+                "Hot",
+                "Jet",
+                "Picnic",
+                "Portland",
+                "Rainbow",
+                "RdBu",
+                "Reds",
+                "Viridis",
+                "YlGnBu",
+                "YlOrRd",
+            ],
+            index=11,
+            key="sb_col_scale",
+        )

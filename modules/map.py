@@ -100,45 +100,70 @@ def list_or_df_of_locations_from_markers(
 
 @gf.func_timer
 def geo_locate(address: str = "Bremen") -> geopy.Location:
-    """Geographische daten (Längengrad, Breitengrad) aus eingegebener Adresse"""
+    """Retrieve the geographical coordinates (longitude and latitude)
+    of a given address using the Nominatim geocoding service.
+
+    Args:
+        - address (str): The address for which the coordinates are to be retrieved.
+
+    Returns:
+        - geopy.Location: The location object containing
+            the latitude and longitude of the provided address.
+    """
 
     logger.info(f"Getting coordinates of '{address}'")
 
-    user_agent_secret: str | None = os.environ.get("GEO_USER_AGENT") or "lasinludwig"
+    user_agent_secret: str | None = os.environ.get("GEO_USER_AGENT")
     if user_agent_secret is None:
         raise cle.NotFoundError(entry="GEO_USER_AGENT", where="Secrets")
 
     geolocator: Nominatim = Nominatim(user_agent=user_agent_secret)
-    location: geopy.Location = geolocator.geocode(address)  # type: ignore
 
-    sf.s_set("geo_location", location)
-
-    return location
+    return geolocator.geocode(address)  # type: ignore
 
 
-def get_hover_template_from_text_input() -> str:
-    """Get a hover template from given kwargs"""
+def build_hover_template() -> str:
+    """Generate a hover template from the text input fields in the sidebar
+
+    This function retrieves the values of several input fields from the sidebar and
+    uses them to build a hover template string.
+    The hover template defines the content and formatting of the hover tooltip
+    that appears when hovering over data points on the plot.
+
+    Returns:
+        - str: The hover template string.
+    """
 
     ref_size: str = sf.s_get("ti_ref_size") or ""
     ref_size_unit: str = sf.s_get("ti_ref_size_unit") or ""
     ref_col: str = sf.s_get("ti_ref_col") or ""
     ref_col_unit: str = sf.s_get("ti_ref_col_unit") or ""
 
-    hovertemplate: str = "<b>%{text}</b>"
+    hover_parts: list[str] = ["<b>%{text}</b>"]
 
     if ref_size != "":
-        hovertemplate += f"<br>{ref_size}: "
-        hovertemplate += "%{marker.size:,.1f}"
-
+        hover_parts.append(f"<br>{ref_size.strip()}")
+        if not sf.s_get("all_same_size"):
+            hover_parts.extend((": ", "%{marker.size:,.1f}"))
     if ref_size_unit != "":
-        hovertemplate += f" {ref_size_unit.strip()}"
+        if not ref_size:
+            hover_parts.append("<br>")
+            if not sf.s_get("all_same_size"):
+                hover_parts.append("%{marker.size:,.1f}")
+        hover_parts.append(f" {ref_size_unit.strip()}")
 
     if ref_col != "":
-        hovertemplate += f"<br>{ref_col}: "
-        hovertemplate += "%{marker.color:,.1f}"
-
+        hover_parts.append(f"<br>{ref_col.strip()}")
+        if not sf.s_get("all_same_colour"):
+            hover_parts.extend((": ", "%{marker.color:,.1f}"))
     if ref_col_unit != "":
-        hovertemplate += f" {ref_col_unit.strip()}"
+        if not ref_col:
+            hover_parts.append("<br>")
+            if not sf.s_get("all_same_colour"):
+                hover_parts.append("%{marker.color:,.1f}")
+        hover_parts.append(f" {ref_col_unit.strip()}")
+
+    hovertemplate: str = "".join(hover_parts)
 
     return f"{hovertemplate}<extra></extra>"
 
@@ -213,16 +238,18 @@ def create_list_of_locations_from_df(df: pl.DataFrame) -> list[cld.Location]:
 
 
 def marker_layout(locations: list[cld.Location]) -> dict:
-    """Punkteigenschaften
+    """Generate marker properties for a plot.
 
-    selection of possible colour scales for markers:
-        Blackbody, Bluered, Blues, Cividis, Earth, Electric, Greens, Greys, Hot,
-        Jet, Picnic, Portland, Rainbow, RdBu, Reds, Viridis, YlGnBu, YlOrRd
+    Args:
+        - locations (list[cld.Location]): A list of Location objects.
+
+    Returns:
+        - dict: A dictionary containing the properties for the markers,
+            including size, color, opacity, and other settings.
     """
     # sourcery skip: move-assign
-    size_slider: float = sf.s_get("sl_marker_size") or 5
     min_size: float = 4
-    max_size: float = 1 * size_slider
+    max_size: float = sf.s_get("sl_marker_size") or 5
     standard_size: float = 4
     sizes: list[float | int] = [loc.attr_size or standard_size for loc in locations]
     size_ref: float = 2.0 * max(sizes) / (max_size**2)
@@ -231,7 +258,11 @@ def marker_layout(locations: list[cld.Location]) -> dict:
     ref_col: str = sf.s_get("ti_ref_col") or ""
     ref_col_unit: str = sf.s_get("ti_ref_col_unit") or ""
 
+    all_same_size: bool = len(set(sizes)) == 1
+    sf.s_set("all_same_size", all_same_size)
+
     all_same_colour: bool = len(set(colours)) == 1
+    sf.s_set("all_same_colour", all_same_colour)
 
     if all_same_colour:
         colours = [sf.s_get("sl_marker_colour") or standard_size for _ in colours]
@@ -240,7 +271,7 @@ def marker_layout(locations: list[cld.Location]) -> dict:
         col_min: float | None = 1
         col_max: float | None = 100
     else:
-        col_scale = "Portland"
+        col_scale = sf.s_get("sb_col_scale") or "Portland"
         col_bar = {
             "title": (
                 f"{ref_col.replace(' ', '<br>')}<br> ----- " if ref_col != "" else None
@@ -294,7 +325,7 @@ def main_map_scatter(locations: list[cld.Location], **kwargs) -> go.Figure:
             text=names,
             mode="markers",
             marker=marker_layout(locations),
-            hovertemplate=get_hover_template_from_text_input(),
+            hovertemplate=build_hover_template(),
             hoverlabel_align="right",
         )
     )

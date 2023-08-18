@@ -144,6 +144,7 @@ if uauth.authentication(sf.s_get("page")):
         menu_m.sidebar_text()
         menu_m.sidebar_slider_size()
         menu_m.sidebar_slider_colour()
+        menu_m.sidebar_colour_scale()
 
         fig: go.Figure = plot_map()
         export_to_html(fig)

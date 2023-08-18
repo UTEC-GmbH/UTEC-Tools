@@ -17,7 +17,7 @@ set_stuff.page_header_setup(page=cont.ST_PAGES.meteo.short)
 
 if uauth.authentication(sf.s_get("page")):
     st.warning("temporär außer Betrieb")
-
+"""
     # Auswahl Ort
     with st.sidebar:
         menu_g.meteo_sidebar(sf.s_get("page"))
@@ -107,13 +107,12 @@ if uauth.authentication(sf.s_get("page")):
             st.markdown("###")
             st.markdown("###")
             st.markdown(
-                """
-                Folgende Daten werden standardmäßig bereitgestellt:  
-                _(Auswahl kann zukünftig unten geändert werden)_
-                """
+                "Folgende Daten werden standardmäßig bereitgestellt:"  
+                "_(Auswahl kann zukünftig unten geändert werden)_"
             )
             for param in meteo.METEO_DEFAULT_PARAMETER:
                 st.markdown(f"- {param}")
 
         st.markdown("###")
         menu_g.meteo_params_main()
+"""

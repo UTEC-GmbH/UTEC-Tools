@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Literal
 import numpy as np
 import polars as pl
 from loguru import logger
+from scipy import interpolate
 
 from modules import classes_data as cld
 from modules import classes_errors as cle
@@ -24,92 +25,94 @@ COL_IND: str = cont.SPECIAL_COLS.index
 COL_ORG: str = cont.SPECIAL_COLS.original_index
 
 
-def get_time_col_to_test_am_pm(file_path: str | None) -> pl.DataFrame:
+def get_df_to_test_am_pm(file_path: str | None = None) -> pl.DataFrame:
     """Get a df to test the am-pm-function"""
 
     file_path = file_path or "tests/sample_data/Utbremer_Ring_189_2017.xlsx"
-    xlsx_options: dict[str, bool] = {
+    xlsx_options: dict[str, Any] = {
         "skip_empty_lines": True,
         "skip_trailing_columns": True,
+        # "dateformat": "%d.%m.%Y %T",
     }
     csv_options: dict[str, bool] = {"has_header": True, "try_parse_dates": False}
-
-    return pl.read_excel(
+    df: pl.DataFrame = pl.read_excel(
         source=file_path,
         xlsx2csv_options=xlsx_options,
         read_csv_options=csv_options,
-    ) # type: ignore
+    )  # type: ignore
+
+    return df.with_columns(
+        pl.col("Zeitstempel").str.strptime(pl.Datetime, "%d.%m.%Y %T")
+    )
 
 
-# FIX_AM_PM FUNKTIONIERT NOCH NICHT
 def fix_am_pm(df: pl.DataFrame, time_column: str = "Zeitstempel") -> pl.DataFrame:
     """Zeitreihen ohne Unterscheidung zwischen vormittags und nachmittags
 
     (Beispieldatei: "tests/sample_data/Utbremer_Ring_189_2017.xlsx")
 
+    col: Zeitspalte wird so geändert, dass es zwei mal täglich 00:00 bis 11:59 gibt
+    offset: Zeitverschiebung um 12h am Nachmittag (0h am Vormittag)
+
     Args:
-        - df (DataFrame): DataFrame to edit
-        - time_column (str, optional): Column with time data. Defaults to "Zeitstempel".
+        - df (DataFrame): DataFrame, der bearbeitet werden soll
+        - time_column (str, optional): Zeitspalte. Default: "Zeitstempel".
 
     Returns:
-        - DataFrame: edited DataFrame
+        - DataFrame: DataFrame mit korrigierter Zeitspalte
     """
 
-    col: pl.Series = df.get_column(time_column)
+    col: pl.DataFrame = df.select(
+        pl.when(pl.col(time_column).dt.hour() == 12)
+        .then(pl.col(time_column).dt.offset_by("-12h"))
+        .otherwise(pl.col(time_column))
+    )
 
-    # Stunden haben negative Differenz und Tag bleibt gleich
-    if any(col.dt.hour().diff() < 0) and any(col.dt.day().diff() == 0):
-        conditions: list = [
-            (col.dt.day().diff() > 0),  # neuer Tag
-            (col.dt.month().diff() != 0),  # neuer Monat
-            (col.dt.year().diff() != 0),  # neues Jahr
-            (
-                (col.dt.hour().diff() < 0)  # Stunden haben negative Differenz
-                & (col.dt.day().diff() == 0)  # Tag bleibt gleich
-            ),
-        ]
-
-        choices: list[Any] = [
-            pl.duration(hours=0),
-            pl.duration(hours=0),
-            pl.duration(hours=0),
-            pl.duration(hours=12),
-        ]
-
-        offset: pl.Series = pl.Series(
-            name="offset",
-            values=np.select(conditions, choices, default=pl.lit(None)),
-        )
-
-        offset[0] = pl.duration(hours=0)
-        offset.fill_null(strategy="forward")
-
-        df[time_column] += offset
-
-        time_diff: pl.Series = df.get_column(time_column)
-
-        new_day: pl.Series = time_diff.dt.day().diff() > 0
-        midday: pl.Series = (time_diff.dt.hour() < 0) & (time_diff.dt.day() == 0)
-
-        df = df.with_columns(
-            [
+    offset: pl.Series = (
+        col.select(
+            pl.when(pl.col(time_column).dt.day().diff().fill_null(1) > 0)
+            .then(pl.duration(hours=0))
+            .otherwise(
                 pl.when(
-                    (time_diff.dt.day().diff() > 0)
-                    | (time_diff.dt.month().diff() != 0)
-                    | (time_diff.dt.year().diff() != 0)
+                    (pl.col(time_column).dt.hour().diff() < 0)
+                    & (pl.col(time_column).dt.day().diff() == 0)
                 )
-                .then(pl.duration(hours=0))
-                .otherwise(
-                    pl.when((time_diff.dt.hour() < 0) & (time_diff.dt.day() == 0))
-                    .then(pl.duration(hours=12))
-                    .otherwise(pl.when(time_diff.dt.hour()))
-                )
-                .alias("change")
-                .fill_null(strategy="forward")
-            ]
+                .then(pl.duration(hours=12))
+                .otherwise(pl.lit(None))
+            )
         )
+        .fill_null(strategy="forward")
+        .to_series()
+    )
 
-    return df
+    return df.with_columns((col.to_series() + offset).alias(time_column))
+
+
+def interpolate_where_no_diff(
+    df: pl.DataFrame, columns_to_inspect: list[str] | None = None
+) -> pl.DataFrame:
+    """Create gaps where the values don't change and interpolate using Akima"""
+
+    if COL_IND not in df.columns:
+        raise cle.NotFoundError(entry=COL_IND, where="data frame columns")
+
+    cols: list[str] = columns_to_inspect or df.columns
+
+    df = df.with_columns(
+        pl.when(pl.col(col).diff() == 0).then(None).otherwise(pl.col(col)).keep_name()
+        for col in cols
+    )
+
+    no_nulls: pl.DataFrame = df.drop_nulls()
+    index: pl.Series = no_nulls[COL_IND]
+    return df.with_columns(
+        pl.Series(
+            col,
+            interpolate.Akima1DInterpolator(x=index, y=no_nulls[col])(df[COL_IND]),
+        )
+        for col in cols
+        if COL_IND not in col and any(df[col].is_null())
+    )
 
 
 @gf.func_timer
@@ -181,7 +184,22 @@ def add_temperature_data(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 def split_multi_years(
     mdf: cld.MetaAndDfs, frame_to_split: Literal["df", "df_h", "mon"]
 ) -> cld.MetaAndDfs:
-    """Split into multiple years"""
+    """Split the specified data frame within a MetaAndDfs object
+    into multiple data frames based on the years present in the meta data.
+
+    Args:
+        - mdf (cld.MetaAndDfs): MetaAndDfs object containing the data frame to split.
+        - frame_to_split (Literal["df", "df_h", "mon"]): Name of data frame to split.
+            Must be one of "df", "df_h", or "mon".
+
+    Returns:
+        - cld.MetaAndDfs: The updated MetaAndDfs object with the split data frames.
+
+    Raises:
+        - ValueError: If frame_to_split parameter is not one of the specified options.
+        - cle.NotFoundError: If the list of years is not present in the meta data.
+    """
+
     if frame_to_split not in ["df", "df_h", "mon"]:
         raise ValueError
 
@@ -196,13 +214,6 @@ def split_multi_years(
         col_rename: dict[str, str] = multi_year_column_rename(df, year)
         for old_name, new_name in col_rename.items():
             if new_name not in mdf.meta.lines:
-                # old_line: cld.MetaLine = mdf.meta.lines[old_name]
-                # new_line: cld.MetaLine = cld.MetaLine("tmp", "tmp", "tmp", "tmp")
-                # for attr in old_line.as_dic():
-                #     setattr(new_line, attr, getattr(old_line, attr))
-                # new_line.tit = new_name
-                # new_line.name_orgidx = f"{new_name}{cont.SUFFIXES.col_original_index}"
-                # mdf.meta.lines[new_name] = new_line
                 mdf.meta.lines[new_name] = mdf.meta.copy_line(old_name, new_name)
 
         df_multi[year] = (
@@ -215,14 +226,6 @@ def split_multi_years(
             .rename(col_rename)
         )
 
-        # logger debug
-        if any(df_multi[year][col].null_count() > 0 for col in df_multi[year].columns):
-            for col in df_multi[year].columns:
-                if df_multi[year][col].null_count() > 0:
-                    logger.debug(f"Null value found in column '{col}'")
-        else:
-            logger.debug("No null values found")
-
     if frame_to_split == "df":
         mdf.df_multi = df_multi
     elif frame_to_split == "df_h":
@@ -234,7 +237,15 @@ def split_multi_years(
 
 
 def multi_year_column_rename(df: pl.DataFrame, year: int) -> dict[str, str]:
-    """Rename columns for multi year data"""
+    """Renames columns in a DataFrame for multi-year data.
+
+    Args:
+        - df: The DataFrame to rename columns for.
+        - year: The year to append to the column names.
+
+    Returns:
+        - A dictionary mapping the original column names to the renamed column names.
+    """
     col_rename: dict[str, str] = {}
     for col in [col for col in df.columns if gf.check_if_not_exclude(col)]:
         new_col_name: str = f"{col} {year}"
@@ -346,8 +357,19 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 
 
 @gf.func_timer
-def mon(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
-    """Monatswerte"""
+def calculate_monthly_values(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
+    """Calculate monthly values from the input dataframe.
+
+    Args:
+        - mdf (cld.MetaAndDfs): The input MetaAndDfs object containing the dataframe.
+
+    Returns:
+        - cld.MetaAndDfs: Modified MetaAndDfs object with the monthly values dataframe.
+
+    Raises:
+        - ValueError: If the input dataframe is None.
+
+    """
 
     mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h(mdf)
     if mdf.df_h is None:
@@ -381,7 +403,7 @@ def mon(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         mdf = split_multi_years(mdf, "mon")
 
     if mdf.mon is not None:
-        logger.success("DataFrame mit Monatswerten erstellt.")
+        logger.success("DataFrame with monthly values created.")
         logger.log(slog.LVLS.data_frame.name, mdf.mon.head())
         logger.info(gf.string_new_line_per_item(mdf.mon.columns, "Columns in mdf.mon:"))
 

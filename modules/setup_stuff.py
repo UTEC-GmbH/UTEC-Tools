@@ -132,13 +132,13 @@ def page_header_setup(page: str) -> None:
 
         # Version info (latest changes and python version)
         with columns[1]:
+            # f'{sf.s_get("GitCommit_major")}<br>'
+            # f'({sf.s_get("GitCommit_minor")})'
             st.write(
                 '<span style="line-height: 110%; font-size: 12px; '
                 'float:right; text-align:right"><i>'
                 "letzte Änderungen: "
                 f'{sf.s_get("GitCommit_date"):%d.%m.%Y %H:%M}<br><br>'
-                f'{sf.s_get("GitCommit_major")}<br>'
-                f'({sf.s_get("GitCommit_minor")})'
                 "</span></i>",
                 unsafe_allow_html=True,
             )

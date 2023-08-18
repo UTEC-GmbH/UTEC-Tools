@@ -127,7 +127,7 @@ class StPages:
     login: StPageProps
     graph: StPageProps
     meteo: StPageProps
-    chat: StPageProps
+    # chat: StPageProps
     maps: StPageProps
 
     def get_all_short(self) -> list[str]:

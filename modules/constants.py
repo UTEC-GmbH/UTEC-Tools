@@ -157,14 +157,14 @@ TIME_MIN: clc.TimeMin = clc.TimeMin(
     quarter_hour=15,
 )
 
-DWD_RESOLUTION_OPTIONS: list[str] = [
-    "minute_1",
-    "minute_5",
-    "minute_10",
-    "hourly",
-    "daily",
-    "monthly",
-]
+DWD_RESOLUTION_OPTIONS: dict[str, str] = {
+    "1 Minute": "minute_1",
+    "5 Minuten": "minute_5",
+    "10 Minuten": "minute_10",
+    "Stunden": "hourly",
+    "Tage": "daily",
+    "Monate": "monthly",
+}
 
 DWD_TRANSLATION: dict[str, str] = {"temperature_air_mean_200": "Außentemperatur"}
 

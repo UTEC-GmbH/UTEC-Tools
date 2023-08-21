@@ -5,7 +5,7 @@ import streamlit as st
 from modules import constants as cont
 from modules import fig_formatting as fig_format
 from modules import fig_plotly_plots as ploplo
-from modules import graph_menus as menu_g
+from modules import meteo_menus as menu_m
 from modules import meteorolog as meteo
 from modules import setup_stuff as set_stuff
 from modules import streamlit_functions as sf
@@ -16,26 +16,23 @@ set_stuff.page_header_setup(page=cont.ST_PAGES.meteo.short)
 
 
 if uauth.authentication(sf.s_get("page")):
-    st.warning("temporär außer Betrieb")
-"""
+    
     # Auswahl Ort
     with st.sidebar:
-        menu_g.meteo_sidebar(sf.s_get("page"))
-        st.markdown("###")
-        st.markdown("###")
+        menu_m.sidebar_reset()
+        menu_m.sidebar_address_dates()
 
-    # st.write(gf.st_get("but_meteo_main"))
+    # st.write(sf.s_get("but_meteo_main"))
 
     if any(
-        gf.st_get(key)
+        sf.s_get(key)
         for key in (
             "but_meteo_sidebar",
-            "but_meteo_main",
             "excel_download",
             "cancel_excel_download",
         )
     ):
-        if gf.st_get("but_meteo_sidebar"):
+        if sf.s_get("but_meteo_sidebar"):
             for entry in (
                 "dic_geo",
                 "meteo_fig",
@@ -48,28 +45,20 @@ if uauth.authentication(sf.s_get("page")):
                 "df_used_stations_show",
                 "lis_sel_params",
             ):
-                dics.del_session_state_entry(entry)
+                sf.s_delete(entry)
 
-        # if gf.st_get("but_meteo_main"):
-        #     for entry in (
-        #         "meteo_fig",
-        #         "meteo_data",
-        #         "df_used_stations",
-        #         "df_used_stations_show",
-        #         "lis_sel_params",
-        #     ):
-        #         dics.del_session_state_entry(entry)
+       
 
         with st.spinner("Momentle bitte - Daten werden vorbereitet..."):
             meteo.del_meteo()
             gv.df_used_stations = meteo.df_used_show_edit()
             gv.df_data = (
-                gf.st_get("meteo_data")
+                sf.s_get("meteo_data")
                 if "meteo_data" in st.session_state
                 else meteo.meteo_data()
             )
             gv.fig = (
-                gf.st_get("meteo_fig")
+                sf.s_get("meteo_fig")
                 if "meteo_fig" in st.session_state
                 else ploplo.map_weatherstations()
             )
@@ -89,10 +78,10 @@ if uauth.authentication(sf.s_get("page")):
                     config=fuan.plotly_config(height=450, title_edit=False),
                 )
                 st.markdown("###")
-                menu_g.meteo_params_main()
+                menu_m.meteo_params_main()
 
             with tab_down:
-                menu_g.downloads(sf.s_get("page"))
+                menu_m.downloads(sf.s_get("page"))
 
     else:
         col1, col2 = st.columns([4, 3], gap="medium")
@@ -114,5 +103,5 @@ if uauth.authentication(sf.s_get("page")):
                 st.markdown(f"- {param}")
 
         st.markdown("###")
-        menu_g.meteo_params_main()
+        menu_m.meteo_params_main()
 """

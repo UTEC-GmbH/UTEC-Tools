@@ -11,6 +11,7 @@ from loguru import logger
 from wetterdienst import Settings
 from wetterdienst.provider.dwd.observation import DwdObservationRequest
 
+from modules import classes_constants as clc
 from modules import classes_data as cld
 from modules import classes_errors as cle
 from modules import constants as cont
@@ -60,18 +61,9 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
         start_time = dt(2017, 1, 1, 0, 0)
         end_time = dt(2019, 12, 31, 23, 59)
 
-    elif page == "meteo":
-        st_first_year: Any | None = sf.s_get("meteo_start_year")
-        st_second_year: Any | None = sf.s_get("meteo_end_year")
-        first_year: int = st_first_year if isinstance(st_first_year, int) else 1981
-        second_year: int = st_second_year if isinstance(st_second_year, int) else 1981
-        start_year: int = min(first_year, second_year)
-        end_year: int = max(first_year, second_year)
-
-        start_time = dt(start_year, 1, 1, 0, 0)
-        end_time = dt(end_year, 12, 31, 23, 59)
-        if end_time.year == dt.now().year:
-            end_time = dt.now()
+    elif page == cont.ST_PAGES.meteo.short:
+        start_time = dt.combine(sf.s_get("di_start"), sf.s_get("ti_start"))
+        end_time = dt.combine(sf.s_get("di_end"), sf.s_get("ti_end"))
 
     elif mdf is not None:
         index: pl.Series = mdf.df.get_column(cont.SPECIAL_COLS.index)
@@ -87,7 +79,7 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
 def geo_locate(address: str = "Bremen") -> geopy.Location:
     """Geographische daten (Längengrad, Breitengrad) aus eingegebener Adresse"""
 
-    user_agent_secret: str | None = os.environ.get("GEO_USER_AGENT") or "lasinludwig"
+    user_agent_secret: str | None = os.environ.get("GEO_USER_AGENT")
     if user_agent_secret is None:
         raise cle.NotFoundError(entry="GEO_USER_AGENT", where="Secrets")
 
@@ -112,23 +104,47 @@ def check_parameter_availability(parameter: str, requested_resolution: str) -> s
 
     available_resolutions: list[str] = ALL_PARAMETERS[parameter].available_resolutions
 
+    # translate german resolution
+    if requested_resolution in cont.DWD_RESOLUTION_OPTIONS:
+        requested_resolution = cont.DWD_RESOLUTION_OPTIONS[requested_resolution]
+
     # check if the parameter has data for the requested resolution
     if requested_resolution in available_resolutions:
         return requested_resolution
 
-    index_requested: int = cont.DWD_RESOLUTION_OPTIONS.index(requested_resolution)
+    index_requested: int = list(cont.DWD_RESOLUTION_OPTIONS.values()).index(
+        requested_resolution
+    )
     index_available: list[int] = [
-        cont.DWD_RESOLUTION_OPTIONS.index(res) for res in available_resolutions
+        list(cont.DWD_RESOLUTION_OPTIONS.values()).index(res)
+        for res in available_resolutions
     ]
 
     # check if there is a higher resolution available
     for rank in reversed(range(index_requested - 1)):
         closest: int = index_requested - rank
         if closest in index_available:
-            return cont.DWD_RESOLUTION_OPTIONS[closest]
+            return list(cont.DWD_RESOLUTION_OPTIONS.values())[closest]
 
     # if no higher resolution is available, return the highest available
     return available_resolutions[0]
+
+
+def parameter_and_closest_station() -> clc.MeteoCodes:
+    """Fill in the closest station"""
+
+    met_codes: clc.MeteoCodes = cont.METEO_CODES
+    for code in met_codes.list_all_params():
+        param: clc.MeteoParameter = getattr(met_codes, code)
+        stations: pl.DataFrame = meteo_stations(
+            address=sf.s_get("ti_adr") or "Bremen",
+            parameter=param.original_name,
+            resolution=sf.s_get("sb_resolution") or "hourly",
+        )
+        param.closest_station_id = stations[0, "station_id"]
+        param.distance_closest = stations[0, "distance"]
+
+    return met_codes
 
 
 @gf.func_timer
@@ -244,11 +260,11 @@ def match_resolution(df_resolution: int) -> str:
         - str: resolution as string for the 'resolution' arg in DwdObservationRequest
     """
     res_options: dict[int, str] = {
-        5: cont.DWD_RESOLUTION_OPTIONS[0],
-        10: cont.DWD_RESOLUTION_OPTIONS[1],
-        60: cont.DWD_RESOLUTION_OPTIONS[2],
-        60 * 24: cont.DWD_RESOLUTION_OPTIONS[3],
-        60 * 24 * 28: cont.DWD_RESOLUTION_OPTIONS[4],
+        5: list(cont.DWD_RESOLUTION_OPTIONS.values())[0],
+        10: list(cont.DWD_RESOLUTION_OPTIONS.values())[1],
+        60: list(cont.DWD_RESOLUTION_OPTIONS.values())[2],
+        60 * 24: list(cont.DWD_RESOLUTION_OPTIONS.values())[3],
+        60 * 24 * 28: list(cont.DWD_RESOLUTION_OPTIONS.values())[4],
     }
 
     return next(
@@ -257,7 +273,7 @@ def match_resolution(df_resolution: int) -> str:
             for threshold, resolution in res_options.items()
             if df_resolution < threshold
         ),
-        cont.DWD_RESOLUTION_OPTIONS[5],
+        list(cont.DWD_RESOLUTION_OPTIONS.values())[5],
     )
 
 

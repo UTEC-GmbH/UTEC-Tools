@@ -1,6 +1,6 @@
 """Classes and such"""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime as dt
 from typing import Literal
 
@@ -53,11 +53,17 @@ class DWDParameter:
     available_resolutions: list[str]
     unit: str
     name_de: str | None = None
-    location_lat: float | None = None
-    location_lon: float | None = None
     closest_station_id: str | None = None
+    closest_station_name: str | None = None
+    closest_station_distance: float | None = None
     resolution: str | None = None
-    data_frame: pl.DataFrame | None = None
+    num_format: str = field(init=False)
+    pandas_styler: str = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Fill in fields"""
+        self.num_format = f'#,##0.0" {self.unit}"'
+        self.pandas_styler = "{:,.1f} " + self.unit
 
 
 @dataclass

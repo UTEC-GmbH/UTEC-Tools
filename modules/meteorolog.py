@@ -2,7 +2,6 @@
 
 import os
 from datetime import datetime as dt
-from typing import Any
 
 import geopy
 import polars as pl
@@ -26,29 +25,33 @@ WETTERDIENST_SETTINGS = Settings(
 )
 
 
-def get_all_parameters() -> dict[str, cld.DWDParameter]:
+def get_all_parameters() -> list[cld.DWDParameter]:
     """Dictionary with all availabel DWD-parameters (key = parameter name).
     (including parameters that a specific station might not have data for)
     """
 
     discover: dict = DwdObservationRequest.discover()
-    all_parameters: dict[str, cld.DWDParameter] = {}
+    all_parameters: list[cld.DWDParameter] = []
     for res, params in discover.items():
         for param in params:
-            if not all_parameters.get(param):
-                all_parameters[param] = cld.DWDParameter(
-                    name=param,
-                    available_resolutions=[res],
-                    unit=f" {discover[res][param].get('origin')}",
-                    name_de=cont.DWD_TRANSLATION.get(param),
-                )
+            if param not in [par.name for par in all_parameters]:
+                all_parameters += [
+                    cld.DWDParameter(
+                        name=param,
+                        available_resolutions=[res],
+                        unit=f" {params[param].get('origin')}",
+                        name_de=cont.DWD_TRANSLATION.get(param),
+                    )
+                ]
             else:
-                all_parameters[param].available_resolutions.append(res)
+                for par in all_parameters:
+                    if par.name == param:
+                        par.available_resolutions.append(res)
 
     return all_parameters
 
 
-ALL_PARAMETERS: dict[str, cld.DWDParameter] = get_all_parameters()
+ALL_PARAMETERS: list[cld.DWDParameter] = get_all_parameters()
 
 
 def start_end_time(**kwargs) -> cld.TimeSpan:
@@ -87,6 +90,8 @@ def geo_locate(address: str = "Bremen") -> geopy.Location:
     location: geopy.Location = geolocator.geocode(address)  # type: ignore
 
     sf.s_set("geo_location", location)
+
+    logger.info(f"Koordinaten für '{address}' gefunden.")
 
     return location
 
@@ -130,26 +135,31 @@ def check_parameter_availability(parameter: str, requested_resolution: str) -> s
     return available_resolutions[0]
 
 
-def parameter_and_closest_station() -> clc.MeteoCodes:
+def parameter_and_closest_station() -> list[cld.DWDParameter]:
     """Fill in the closest station"""
 
-    met_codes: clc.MeteoCodes = cont.METEO_CODES
-    for code in met_codes.list_all_params():
-        param: clc.MeteoParameter = getattr(met_codes, code)
-        stations: pl.DataFrame = meteo_stations(
-            address=sf.s_get("ti_adr") or "Bremen",
-            parameter=param.original_name,
-            resolution=sf.s_get("sb_resolution") or "hourly",
-        )
-        param.closest_station_id = stations[0, "station_id"]
-        param.distance_closest = stations[0, "distance"]
+    address: str = sf.s_get("ti_adr") or "Bremen"
+    location: geopy.Location = geo_locate(address)
+    resolution: str = sf.s_get("sb_resolution") or "hourly"
+    for param in ALL_PARAMETERS:
+        if resolution in param.available_resolutions:
+            logger.debug(f"Suche Stationen für Parameter '{param.name}'.")
+            stations: pl.DataFrame = meteo_stations(
+                address=location,
+                parameter=param.name,
+                resolution=sf.s_get("sb_resolution") or "hourly",
+            )
 
-    return met_codes
+            param.closest_station_id = stations[0, "station_id"]
+            param.closest_station_name = stations[0, "name"]
+            param.closest_station_distance = stations[0, "distance"]
+
+    return ALL_PARAMETERS
 
 
 @gf.func_timer
 def meteo_stations(
-    address: str = "Bremen",
+    address: str | geopy.Location = "Bremen",
     parameter: str = "temperature_air_mean_200",
     resolution: str = "hourly",
 ) -> pl.DataFrame:
@@ -182,7 +192,10 @@ def meteo_stations(
     """
 
     time_span: cld.TimeSpan = start_end_time(page=sf.s_get("page"))
-    location: geopy.Location = geo_locate(address)
+    if isinstance(address, str):
+        location: geopy.Location = geo_locate(address)
+    else:
+        location: geopy.Location = address
 
     stations: pl.DataFrame = (
         DwdObservationRequest(

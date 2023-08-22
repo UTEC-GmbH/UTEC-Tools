@@ -56,7 +56,10 @@ class DWDParameter:
     closest_station_id: str | None = None
     closest_station_name: str | None = None
     closest_station_distance: float | None = None
+    location_lat: float | None = None
+    location_lon: float | None = None
     resolution: str | None = None
+    data_frame: pl.DataFrame | None = None
     num_format: str = field(init=False)
     pandas_styler: str = field(init=False)
 

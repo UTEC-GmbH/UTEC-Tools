@@ -1,4 +1,5 @@
-"""Seite Meteorologische Daten"""  # noqa: N999
+# sourcery skip: avoid-global-variables
+"""Seite Meteorologische Daten"""
 
 import streamlit as st
 
@@ -10,20 +11,33 @@ from modules import meteorolog as meteo
 from modules import setup_stuff as set_stuff
 from modules import streamlit_functions as sf
 from modules import user_authentication as uauth
+from modules import general_functions as gf
 
 # setup
+gf.log_new_run()
 set_stuff.page_header_setup(page=cont.ST_PAGES.meteo.short)
 
 
 if uauth.authentication(sf.s_get("page")):
-    
     # Auswahl Ort
     with st.sidebar:
-        menu_m.sidebar_reset()
+        # menu_m.sidebar_reset()
         menu_m.sidebar_address_dates()
 
-    # st.write(sf.s_get("but_meteo_main"))
+    cols: list = st.columns([40, 60])
+    with cols[0]:
+        menu_m.parameter_selection()
 
+        st.write(meteo.closest_station_per_parameter())
+    with cols[1]:
+        st.plotly_chart(
+            ploplo.map_dwd_all(height=750),
+            use_container_width=True,
+            theme=cont.ST_PLOTLY_THEME,
+            config=fig_format.plotly_config(height=750, title_edit=False),
+        )
+
+"""
     if any(
         sf.s_get(key)
         for key in (

@@ -114,7 +114,6 @@ def general_setup() -> None:
     logger.log(slog.LVLS.once_per_session.name, "Initial Setup Complete")
 
 
-@gf.func_timer
 def page_header_setup(page: str) -> None:
     """Seitenkopf mit Logo, Titel (je nach Seite) und letzten Änderungen"""
 

@@ -6,6 +6,8 @@ import polars as pl
 import streamlit as st
 
 from modules import constants as cont
+from modules import meteorolog as met
+from modules import streamlit_functions as sf
 
 
 def sidebar_reset() -> None:
@@ -24,7 +26,9 @@ def sidebar_reset() -> None:
 def sidebar_address_dates() -> None:
     """Adresse und Daten"""
 
-    with st.sidebar, st.form("meteo"):
+    sf.s_set(key="address_last_run", value=sf.s_get("ta_adr"))
+
+    with st.sidebar:
         st.text_area(
             label="Adresse",
             value="Cuxhavener Str. 10  \n20217 Bremen",
@@ -39,39 +43,90 @@ def sidebar_address_dates() -> None:
             key="ta_adr",
         )
 
-        cols: list = st.columns([2, 1])
+        if sf.s_get(key="address_last_run") != sf.s_get("ta_adr"):
+            sf.s_delete(key="geo_location")
+
+        cols: list = st.columns([60, 40])
         with cols[0]:
             st.date_input(
                 label="Startdatum",
                 format="DD.MM.YYYY",
+                value=dt.date(dt.datetime.now().year - 1, 1, 1),
                 key="di_start",
             )
         with cols[1]:
             st.time_input(label="Zeit", value=dt.time(0, 0), key="ti_start")
 
-        cols: list = st.columns([2, 1])
+        cols: list = st.columns([60, 40])
         with cols[0]:
             st.date_input(
                 label="Enddatum",
                 format="DD.MM.YYYY",
+                value=dt.date(dt.datetime.now().year - 1, 12, 31),
                 key="di_end",
             )
         with cols[1]:
             st.time_input(label="Zeit", value=dt.time(23, 59), key="ti_end")
 
-        st.selectbox(
-            label="Datenauflösung",
-            options=cont.DWD_RESOLUTION_OPTIONS.keys(),
-            index=3,
-            key="sb_resolution",
-        )
-
-        st.markdown("###")
-        st.session_state["but_meteo_sidebar"] = st.form_submit_button("Knöpfle")
-        st.markdown("###")
-
 
 def parameter_selection() -> None:
     """DWD-Parameter data editor"""
 
-    st.data_editor(data=cont.METEO_CODES.__dict__, key="de_parameter")
+    st.selectbox(
+        label="Gewünschte Datenauflösung",
+        options=cont.DWD_RESOLUTION_OPTIONS.keys(),
+        index=3,
+        help=(
+            """
+            In der Tabelle wird die Auflösung angezeigt,  \n
+            die der gewünschten Auflösung an nähesten liegt,  \n
+            falls es keine Daten in der gewünschten Auflösung gibt.
+            """
+        ),
+        key="sb_resolution",
+    )
+
+    res: str = sf.s_get("sb_resolution") or "Stundenwerte"
+
+    param_data: list[dict] = [
+        {
+            "Parameter": par.name,
+            # "Einheit": par.unit,
+            "Auflösung": next(
+                res_de
+                for res_de, res_en in cont.DWD_RESOLUTION_OPTIONS.items()
+                if met.check_parameter_availability(par.name, res) in res_en
+            ),
+            "Auswahl": par.name in cont.DWD_DEFAULT_PARAMS,
+        }
+        for par in met.ALL_PARAMETERS.values()
+    ]
+
+    edited: list[dict] = st.data_editor(
+        data=sorted(
+            sorted(param_data, key=lambda s: s["Parameter"]),
+            key=lambda sort: sort["Auswahl"],
+            reverse=True,
+        ),
+        use_container_width=True,
+        key="de_parameter",
+    )
+    selected: list[str] = [par["Parameter"] for par in edited if par["Auswahl"]]
+    sf.s_set("selected_params", selected)
+
+    closest: dict = met.closest_station_per_parameter()
+    st.dataframe(
+        data=[
+            {
+                "Parameter": param,
+                "Wetterstation": dic["name"],
+                "Entfernung": dic["distance"],
+            }
+            for param, dic in closest.items()
+        ],
+        use_container_width=True,
+    )
+
+
+def closest_stations() -> None:
+    """Map of closest Weather Stations"""

@@ -158,13 +158,22 @@ TIME_MIN: clc.TimeMin = clc.TimeMin(
 )
 
 DWD_RESOLUTION_OPTIONS: dict[str, str] = {
-    "1 Minute": "minute_1",
-    "5 Minuten": "minute_5",
-    "10 Minuten": "minute_10",
-    "Stunden": "hourly",
-    "Tage": "daily",
-    "Monate": "monthly",
+    "Minutenwerte": "minute_1",
+    "5-Minutenwerte": "minute_5",
+    "10-Minutenwerte": "minute_10",
+    "Stundenwerte": "hourly",
+    "6-Stundenwerte": "6_hour",
+    "mehrmals täglich": "subdaily",
+    "Tageswerte": "daily",
+    "Monateswerte": "monthly",
+    "Jahreswerte": "annual",
 }
+
+DWD_DEFAULT_PARAMS: list[str] = [
+    "temperature_air_mean_200",
+    "sunshine_duration",
+    "radiation_global",
+]
 
 DWD_TRANSLATION: dict[str, str] = {"temperature_air_mean_200": "Außentemperatur"}
 

@@ -150,7 +150,7 @@ def upsample_hourly_to_15min(df: pl.DataFrame, units: dict[str, str]) -> pl.Data
             ),
         )
         for col in cols
-        if COL_IND not in col
+        if COL_IND not in col and cont.SPECIAL_COLS.original_index not in col
     )
 
 

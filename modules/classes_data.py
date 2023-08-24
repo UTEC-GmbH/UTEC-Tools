@@ -136,6 +136,10 @@ class MetaData:
         """Customize the representation to give a dictionary"""
         return f"[{gf.string_new_line_per_item(self.as_dic())}]"
 
+    def all_units_as_dict(self) -> dict:
+        """Dictionary (key=name, value=unit)"""
+        return {line.name: line.unit for line in self.lines.values()}
+
     def copy_line(self, line_to_copy: str, new_line_name: str) -> MetaLine:
         """Create a MetaLine-object with the same attrs under a new name"""
 

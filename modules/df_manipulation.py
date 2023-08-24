@@ -115,6 +115,45 @@ def interpolate_where_no_diff(
     )
 
 
+def upsample_hourly_to_15min(df: pl.DataFrame, units: dict[str, str]) -> pl.DataFrame:
+    """Stundenwerte in 15-Minuten-Werte umwandeln
+
+    units: dict[str, str] = {
+        "Strombedarf": " kWh",
+        "BHKW Strom": " kWh",
+        "Strombezug (1-1:1.29.0)": " kWh",
+        "Stromeinsp. (1-1:2.29.0)": " kWh",
+        "Wärmebedarf": " kWh",
+        "Kessel": " kWh",
+        "BHKW Wärme": " kWh",
+        "Temperatur": " °C",
+    }
+    """
+
+    cols: list[str] = df.columns
+    if COL_IND not in cols:
+        raise cle.NotFoundError(entry=COL_IND, where="data frame columns")
+
+    df_up: pl.DataFrame = df.upsample(COL_IND, every="15m").with_columns(
+        pl.when(units.get(col) in [None, *cont.GRP_MEAN])
+        .then(pl.col(col))
+        .otherwise(pl.col(col) / 4)
+        .keep_name()
+        for col in cols
+    )
+
+    return df_up.with_columns(
+        pl.Series(
+            col,
+            interpolate.Akima1DInterpolator(x=df[COL_IND], y=df_up.drop_nulls()[col])(
+                df_up[COL_IND]
+            ),
+        )
+        for col in cols
+        if COL_IND not in col
+    )
+
+
 @gf.func_timer
 def interpolate_missing_data(df: pl.DataFrame, method: str = "akima") -> pl.DataFrame:
     """Findet stellen an denen sich von einer Zeile zur nächsten

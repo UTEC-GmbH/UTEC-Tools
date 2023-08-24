@@ -41,7 +41,7 @@ def s_delete(key: str) -> None:
 
     if s_in(key):
         del st.session_state[key]
-        logger.warning(f"st.session_state Eintrag {key} gelöscht")
+        logger.warning(f"st.session_state Eintrag '{key}' gelöscht")
 
 
 def s_reset_app() -> None:

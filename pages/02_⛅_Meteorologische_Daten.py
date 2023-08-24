@@ -20,9 +20,9 @@ set_stuff.page_header_setup(page=cont.ST_PAGES.meteo.short)
 
 if uauth.authentication(sf.s_get("page")):
     # Auswahl Ort
-    with st.sidebar:
-        # menu_m.sidebar_reset()
-        menu_m.sidebar_address_dates()
+    menu_m.sidebar_address_dates()
+    if sf.s_get("but_addr_dates"):
+        sf.s_delete(key="geo_location")
 
     cols: list = st.columns([40, 60])
     with cols[0]:

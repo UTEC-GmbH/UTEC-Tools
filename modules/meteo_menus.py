@@ -26,9 +26,9 @@ def sidebar_reset() -> None:
 def sidebar_address_dates() -> None:
     """Adresse und Daten"""
 
-    sf.s_set(key="address_last_run", value=sf.s_get("ta_adr"))
+    # sf.s_set(key="address_last_run", value=sf.s_get("ta_adr"))
 
-    with st.sidebar:
+    with st.sidebar, st.form("Standort und Daten"):
         st.text_area(
             label="Adresse",
             value="Cuxhavener Str. 10  \n20217 Bremen",
@@ -41,10 +41,11 @@ def sidebar_address_dates() -> None:
                 """
             ),
             key="ta_adr",
+            # on_change=sf.s_set(key="address_last_run", value=sf.s_get("ta_adr")),
         )
 
-        if sf.s_get(key="address_last_run") != sf.s_get("ta_adr"):
-            sf.s_delete(key="geo_location")
+        # if sf.s_get(key="address_last_run") != sf.s_get("ta_adr"):
+        #     sf.s_delete(key="geo_location")
 
         cols: list = st.columns([60, 40])
         with cols[0]:
@@ -67,6 +68,11 @@ def sidebar_address_dates() -> None:
             )
         with cols[1]:
             st.time_input(label="Zeit", value=dt.time(23, 59), key="ti_end")
+
+        st.markdown("###")
+        st.session_state["but_addr_dates"] = st.form_submit_button(
+            "Knöpfle", use_container_width=True
+        )
 
 
 def parameter_selection() -> None:
@@ -124,6 +130,11 @@ def parameter_selection() -> None:
             }
             for param, dic in closest.items()
         ],
+        column_config={
+            "Entfernung": st.column_config.NumberColumn(
+                format="%.2f km", width="small"
+            ),
+        },
         use_container_width=True,
     )
 

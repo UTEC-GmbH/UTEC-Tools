@@ -76,7 +76,7 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
 
 
 @gf.func_timer
-def geo_locate(address: str = "Bremen") -> geopy.Location:
+def geo_locate(address: str) -> geopy.Location:
     """Geographische daten (Längengrad, Breitengrad) aus eingegebener Adresse"""
 
     user_agent_secret: str | None = os.environ.get("GEO_USER_AGENT")
@@ -164,7 +164,8 @@ def meteo_stations(
             'state',
             'distance'
     """
-
+    if sf.s_get("ta_adr") is not None:
+        address = str(sf.s_get("ta_adr"))
     time_span: cld.TimeSpan = start_end_time(page=sf.s_get("page"))
     location: geopy.Location = sf.s_get("geo_location") or geo_locate(address)
     closest_resolution: str = check_parameter_availability(parameter, resolution)

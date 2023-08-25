@@ -117,10 +117,13 @@ def parameter_selection() -> None:
         use_container_width=True,
         key="de_parameter",
     )
+
     selected: list[str] = [par["Parameter"] for par in edited if par["Auswahl"]]
     sf.s_set("selected_params", selected)
 
     closest: dict = met.closest_station_per_parameter()
+    sf.s_set("closest_stations", closest)
+
     st.dataframe(
         data=[
             {

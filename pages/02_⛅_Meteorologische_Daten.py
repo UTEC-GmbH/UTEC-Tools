@@ -3,15 +3,16 @@
 
 import streamlit as st
 
+from modules import classes_data as cld
 from modules import constants as cont
 from modules import fig_formatting as fig_format
 from modules import fig_plotly_plots as ploplo
+from modules import general_functions as gf
 from modules import meteo_menus as menu_m
 from modules import meteorolog as meteo
 from modules import setup_stuff as set_stuff
 from modules import streamlit_functions as sf
 from modules import user_authentication as uauth
-from modules import general_functions as gf
 
 # setup
 gf.log_new_run()
@@ -28,14 +29,34 @@ if uauth.authentication(sf.s_get("page")):
     with cols[0]:
         menu_m.parameter_selection()
 
-        st.write(meteo.closest_station_per_parameter())
+        # st.write(meteo.closest_station_per_parameter())
     with cols[1]:
+        plot_height = 650
         st.plotly_chart(
-            ploplo.map_dwd_all(height=750),
+            ploplo.map_dwd_all(height=plot_height),
             use_container_width=True,
             theme=cont.ST_PLOTLY_THEME,
-            config=fig_format.plotly_config(height=750, title_edit=False),
+            config=fig_format.plotly_config(height=plot_height, title_edit=False),
         )
+
+    st.markdown("###")
+    st.button(
+        label="Daten zusammenstellen",
+        help=(
+            """
+            Daten für die gewählten Parameter zusammenstellen
+            (im nächsten Schritt können sie heruntergeladen werden)    
+            """
+        ),
+        key="but_collect_data",
+        use_container_width=True,
+    )
+
+    if sf.s_get("but_collect_data") and sf.s_get("selected_params") is not None:
+        closest: dict = sf.s_get("closest_stations")
+        dat: list[cld.DWDParameter] = meteo.collect_meteo_data()
+        st.write(dat)
+
 
 """
     if any(

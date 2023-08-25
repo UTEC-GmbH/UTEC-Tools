@@ -21,7 +21,13 @@ from modules import streamlit_functions as sf
 # einen Wetterstation muss für den angegebenen Zeitraum
 # mind. diesen Anteil an tatsächlich aufgezeichneten Daten haben
 WETTERDIENST_SETTINGS = Settings(
-    ts_skip_empty=True, ts_skip_threshold=0.90, ts_si_units=False
+    ts_shape="long",
+    ts_si_units=False,
+    ts_skip_empty=True,
+    ts_skip_threshold=0.90,
+    ts_skip_criteria="min",
+    ts_dropna=True,
+    ignore_env=True,
 )
 
 
@@ -187,11 +193,15 @@ def meteo_stations(
 
     if stations.height == 0:
         logger.critical(
-            "Für die Kombination aus \n"
-            f"Parameter '{parameter}',\n"
-            f"Auflösung '{resolution}' und \n"
-            f"Zeit '{time_span.start}' bis '{time_span.end}' \n"
-            "konnten keine Daten gefunden werden."
+            gf.string_new_line_per_item(
+                [
+                    f"Parameter: '{parameter}'",
+                    f"Auflösung: '{resolution}'",
+                    f"Start: '{time_span.start}'",
+                    f"Ende: '{time_span.end}'",
+                ],
+                title="Keine Daten für folgende Kombination verfügbar:",
+            )
         )
         raise ValueError
 
@@ -219,12 +229,12 @@ def collect_meteo_data(
 ) -> list[cld.DWDParameter]:
     """Meteorologische Daten für die ausgewählten Parameter"""
 
-    time_res: str = temporal_resolution or sf.s_get("sb_meteo_resolution") or "hourly"
+    time_res: str = temporal_resolution or sf.s_get("sb_resolution") or "hourly"
     address: str = sf.s_get("ta_adr") or "Bremen"
     location: geopy.Location = sf.s_get("geo_location") or geo_locate(address)
     time_span: cld.TimeSpan = start_end_time()
 
-    parameters: list[str] = sf.s_get("ms_meteo_params") or ["temperature_air_mean_200"]
+    parameters: list[str] = sf.s_get("selected_params") or ["temperature_air_mean_200"]
     params: list[cld.DWDParameter] = [ALL_PARAMETERS[par] for par in parameters]
 
     for par in params:
@@ -234,17 +244,34 @@ def collect_meteo_data(
         par.closest_station_id = str(
             pl.first(meteo_stations(address, par.name, par.resolution)["station_id"])
         )
-        par.data_frame = next(
-            DwdObservationRequest(  # noqa: PD011
-                parameter=par.name,
-                resolution=par.resolution,
-                start_date=time_span.start,
-                end_date=time_span.end,
-                settings=WETTERDIENST_SETTINGS,
+
+        logger.debug(
+            gf.string_new_line_per_item(
+                [
+                    f"par: {par.name}",
+                    f"res: {par.resolution}",
+                    f"lat: {par.location_lat}",
+                    f"lon: {par.location_lon}",
+                    f"station-id: {par.closest_station_id}",
+                    f"start: {time_span.start}",
+                    f"end: {time_span.end}",
+                ],
+                "Collecting data for:",
             )
-            .filter_by_station_id((par.closest_station_id,))
-            .values.query()
-        ).df
+        )
+        request = DwdObservationRequest(
+            parameter=par.name,
+            resolution=par.resolution,
+            start_date=time_span.start,
+            end_date=time_span.end,
+            settings=WETTERDIENST_SETTINGS,
+        )
+
+        par.data_frame = (
+            request.filter_by_station_id(par.closest_station_id)  # noqa: PD011
+            .values.all()
+            .df
+        )
 
     return params
 

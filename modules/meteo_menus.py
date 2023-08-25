@@ -5,7 +5,10 @@ import datetime as dt
 import polars as pl
 import streamlit as st
 
+from modules import classes_data as cld
 from modules import constants as cont
+from modules import excel_download as ex
+from modules import general_functions as gf
 from modules import meteorolog as met
 from modules import streamlit_functions as sf
 
@@ -142,5 +145,67 @@ def parameter_selection() -> None:
     )
 
 
-def closest_stations() -> None:
-    """Map of closest Weather Stations"""
+def download_as_excel() -> None:
+    """Data as Excel-File"""
+
+    cols: list = st.columns([1, 3, 1])
+
+    if sf.s_get("but_collect_data") and sf.s_get("selected_params") is not None:
+        # closest: dict = sf.s_get("closest_stations") or {}
+        page: str = cont.ST_PAGES.meteo.short
+        timespan: cld.TimeSpan = met.start_end_time()
+        xl_file_name: str = (
+            f"Wetterdaten {timespan.start.date()} - {timespan.end.date()}.xlsx"
+        )
+        dat: list[cld.DWDParameter] = met.collect_meteo_data()
+        df_ex: pl.DataFrame = met.df_from_param_list(dat)
+        meta: cld.MetaData = cld.MetaData(
+            lines={
+                par.name: cld.MetaLine(
+                    par.name,
+                    "Datum",
+                    par.name,
+                    par.name,
+                    par.unit,
+                    excel_number_format=par.num_format,
+                )
+                for par in dat
+            }
+        )
+
+        with cols[1]:
+            st.download_button(
+                label="✨ Excel-Datei herunterladen ✨",
+                data=ex.excel_download(df_ex, meta, page),
+                file_name=xl_file_name,
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                key="excel_download",
+                use_container_width=True,
+            )
+            st.button(
+                "abbrechen", key="cancel_excel_download", use_container_width=True
+            )
+
+        ani_height = 30
+        with cols[0]:
+            gf.show_lottie_animation(
+                "animations/coin_i.json", height=ani_height, speed=0.75
+            )
+        with cols[2]:
+            gf.show_lottie_animation(
+                "animations/coin_i.json", height=ani_height, speed=0.75
+            )
+
+    else:
+        with cols[1]:
+            st.button(
+                label="✨ Excel-Datei erzeugen ✨",
+                help=(
+                    """
+                Daten für die gewählten Parameter zusammenstellen
+                (im nächsten Schritt können sie heruntergeladen werden)    
+                """
+                ),
+                key="but_collect_data",
+                use_container_width=True,
+            )

@@ -276,6 +276,78 @@ def collect_meteo_data(
     return params
 
 
+def df_from_param_list(param_list: list[cld.DWDParameter]) -> pl.DataFrame:
+    """DataFrame from list[cld.DWDParameter] as returned from collect_meteo_data"""
+
+    dic: dict[str, pl.DataFrame] = {
+        par.name: par.data_frame.select(
+            pl.col("date").alias("Datum"), pl.col("value").alias(par.name)
+        )
+        for par in param_list
+        if par.data_frame is not None
+    }
+    longest_param: str = next(
+        par.name
+        for par in param_list
+        if dic[par.name].height == max(df.height for df in dic.values())
+    )
+
+    df: pl.DataFrame = dic[longest_param]
+    other_dfs: list[pl.DataFrame] = [
+        value for key, value in dic.items() if key != longest_param
+    ]
+    for df_add in other_dfs:
+        df = df.join(df_add, on="Datum", how="outer")
+
+    return df
+
+
+def experimental() -> None:
+    """Experiments"""
+
+    dic: dict[str, pl.DataFrame] = {
+        "temp": pl.DataFrame(
+            {
+                "Datum": [
+                    dt(2022, 1, 1, 0, 0),
+                    dt(2022, 1, 1, 1, 0),
+                    dt(2022, 1, 1, 2, 0),
+                    dt(2022, 1, 1, 3, 0),
+                    dt(2022, 1, 1, 4, 0),
+                    dt(2022, 1, 1, 5, 0),
+                ],
+                "Temp": [1, 2, 3, 4, 5, 6],
+            }
+        ),
+        "rad": pl.DataFrame(
+            {
+                "Datum": [
+                    dt(2022, 1, 1, 0, 0),
+                    dt(2022, 1, 1, 1, 0),
+                    dt(2022, 1, 1, 3, 0),
+                    dt(2022, 1, 1, 5, 0),
+                ],
+                "Rad": [99, 98, 97, 96],
+            }
+        ),
+        "weird": pl.DataFrame(
+            {
+                "Datum": [
+                    dt(2022, 2, 1, 0, 0),
+                    dt(2022, 2, 1, 1, 0),
+                    dt(2022, 2, 1, 3, 0),
+                    dt(2022, 2, 1, 5, 0),
+                ],
+                "weird": [22, 23, 24, 25],
+            }
+        ),
+    }
+
+    df: pl.DataFrame = pl.DataFrame()
+    for other_df in dic.values():
+        df = df.join(other_df, on="Datum", how="outer")
+
+
 def match_resolution(df_resolution: int) -> str:
     """Matches a temporal resolution of a data frame given as an integer
     to the resolution as string needed for the weather data.

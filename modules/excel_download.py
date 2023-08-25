@@ -34,7 +34,9 @@ def excel_download(
     column_offset: int = 2
     row_offset: int = 4
 
-    with io.BytesIO() as output, xlsxwriter.Workbook(output) as workbook:
+    with io.BytesIO() as output, xlsxwriter.Workbook(
+        output, {"remove_timezone": True}
+    ) as workbook:
         worksheet: Any = workbook.add_worksheet(ws_name)
 
         df.write_excel(
@@ -123,7 +125,7 @@ def format_worksheet(
         col_format: Any = workbook.add_format(spec_format)
 
         for cnt, col in enumerate(cols):
-            if meta.lines[col].excel_number_format == num_format:
+            if col in meta.lines and meta.lines[col].excel_number_format == num_format:
                 worksheet.set_column(
                     cnt + offset["col"] + 1,
                     cnt + offset["col"] + 1,

@@ -249,7 +249,8 @@ def collect_meteo_data(
             gf.string_new_line_per_item(
                 [
                     f"par: {par.name}",
-                    f"res: {par.resolution}",
+                    f"available res: {par.available_resolutions}",
+                    f"selected res: {par.resolution}",
                     f"lat: {par.location_lat}",
                     f"lon: {par.location_lon}",
                     f"station-id: {par.closest_station_id}",
@@ -281,7 +282,8 @@ def df_from_param_list(param_list: list[cld.DWDParameter]) -> pl.DataFrame:
 
     dic: dict[str, pl.DataFrame] = {
         par.name: par.data_frame.select(
-            pl.col("date").alias("Datum"), pl.col("value").alias(par.name)
+            pl.col("date").dt.replace_time_zone(None).alias("Datum"),
+            pl.col("value").alias(par.name),
         )
         for par in param_list
         if par.data_frame is not None

@@ -65,7 +65,7 @@ class DWDParameter:
 
     def __post_init__(self) -> None:
         """Fill in fields"""
-        self.num_format = f'#,##0.0" {self.unit}"'
+        self.num_format = f'#,##0.0" {self.unit.strip()}"'
         self.pandas_styler = "{:,.1f} " + self.unit
 
 

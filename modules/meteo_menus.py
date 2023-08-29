@@ -1,5 +1,6 @@
 """Menus für die Meteorologie-Seite"""
 
+import base64
 import datetime as dt
 
 import polars as pl
@@ -162,11 +163,11 @@ def download_as_excel() -> None:
         meta: cld.MetaData = cld.MetaData(
             lines={
                 par.name: cld.MetaLine(
-                    par.name,
-                    "Datum",
-                    par.name,
-                    par.name,
-                    par.unit,
+                    name=par.name,
+                    name_orgidx="Datum",
+                    orig_tit=par.name,
+                    tit=par.name,
+                    unit=par.unit,
                     excel_number_format=par.num_format,
                 )
                 for par in dat
@@ -182,6 +183,7 @@ def download_as_excel() -> None:
                 key="excel_download",
                 use_container_width=True,
             )
+
             st.button(
                 "abbrechen", key="cancel_excel_download", use_container_width=True
             )

@@ -46,6 +46,19 @@ class Location:
 
 
 @dataclass
+class DWDStation:
+    """Properties of DWD Station"""
+
+    station_id: str = "unbekannt"
+    name: str = "unbekannt"
+    state: str = "unbekannt"
+    height: float = 0
+    latitude: float = 0
+    longitude: float = 0
+    distance: float = 0
+
+
+@dataclass
 class DWDParameter:
     """Properties of DWD Parameter"""
 
@@ -53,13 +66,12 @@ class DWDParameter:
     available_resolutions: list[str]
     unit: str
     name_de: str | None = None
-    closest_station_id: str | None = None
-    closest_station_name: str | None = None
-    closest_station_distance: float | None = None
     location_lat: float | None = None
     location_lon: float | None = None
     resolution: str | None = None
     data_frame: pl.DataFrame | None = None
+    all_stations: pl.DataFrame | None = None
+    closest_station: DWDStation = field(init=False)
     num_format: str = field(init=False)
     pandas_styler: str = field(init=False)
 
@@ -67,6 +79,25 @@ class DWDParameter:
         """Fill in fields"""
         self.num_format = f'#,##0.0" {self.unit.strip()}"'
         self.pandas_styler = "{:,.1f} " + self.unit
+        self.closest_station = DWDStation()
+
+    def station_info_from_station_df_and_id(self, station_id: str) -> None:
+        """Fill in the station information from the station data frame"""
+
+        if self.all_stations is not None:
+            station_df: pl.DataFrame = self.all_stations.filter(
+                pl.col("station_id") == station_id
+            )
+            if station_df.height == 1:
+                self.closest_station = DWDStation(
+                    station_id=station_df[0, "station_id"],
+                    name=station_df[0, "name"],
+                    height=station_df[0, "height"],
+                    latitude=station_df[0, "latitude"],
+                    longitude=station_df[0, "longitude"],
+                    distance=station_df[0, "distance"],
+                    state=station_df[0, "state"],
+                )
 
 
 @dataclass

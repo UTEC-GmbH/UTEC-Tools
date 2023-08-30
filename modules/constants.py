@@ -171,8 +171,7 @@ DWD_RESOLUTION_OPTIONS: dict[str, str] = {
 
 DWD_DEFAULT_PARAMS: list[str] = [
     "temperature_air_mean_200",
-    # "sunshine_duration",
-    # "radiation_global",
+    "radiation_global",
 ]
 
 DWD_TRANSLATION: dict[str, str] = {"temperature_air_mean_200": "Außentemperatur"}

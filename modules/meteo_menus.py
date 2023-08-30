@@ -1,9 +1,8 @@
 """Menus für die Meteorologie-Seite"""
 
-import base64
 import datetime as dt
+from typing import TYPE_CHECKING
 
-import polars as pl
 import streamlit as st
 
 from modules import classes_data as cld
@@ -12,6 +11,9 @@ from modules import excel_download as ex
 from modules import general_functions as gf
 from modules import meteorolog as met
 from modules import streamlit_functions as sf
+
+if TYPE_CHECKING:
+    import polars as pl
 
 
 def sidebar_reset() -> None:
@@ -73,6 +75,20 @@ def sidebar_address_dates() -> None:
         with cols[1]:
             st.time_input(label="Zeit", value=dt.time(23, 59), key="ti_end")
 
+        st.selectbox(
+            label="Gewünschte Datenauflösung",
+            options=cont.DWD_RESOLUTION_OPTIONS.keys(),
+            index=3,
+            help=(
+                """
+                Es liegen nicht immer Daten in der gewünschten Auflösung direkt vor.  \n
+                Falls nötig, werden Daten mit anderer Auflösung interpoliert, bzw.  \n
+                per Mittelwert oder Summe auf die gewünschte Auflösung gebracht.  \n
+                """
+            ),
+            key="sb_resolution",
+        )
+
         st.markdown("###")
         st.session_state["but_addr_dates"] = st.form_submit_button(
             "Knöpfle", use_container_width=True
@@ -82,31 +98,10 @@ def sidebar_address_dates() -> None:
 def parameter_selection() -> None:
     """DWD-Parameter data editor"""
 
-    st.selectbox(
-        label="Gewünschte Datenauflösung",
-        options=cont.DWD_RESOLUTION_OPTIONS.keys(),
-        index=3,
-        help=(
-            """
-            In der Tabelle wird die Auflösung angezeigt,  \n
-            die der gewünschten Auflösung an nähesten liegt,  \n
-            falls es keine Daten in der gewünschten Auflösung gibt.
-            """
-        ),
-        key="sb_resolution",
-    )
-
-    res: str = sf.s_get("sb_resolution") or "Stundenwerte"
-
     param_data: list[dict] = [
         {
             "Parameter": par.name,
-            # "Einheit": par.unit,
-            "Auflösung": next(
-                res_de
-                for res_de, res_en in cont.DWD_RESOLUTION_OPTIONS.items()
-                if met.check_parameter_availability(par.name, res) in res_en
-            ),
+            "Einheit": par.unit,
             "Auswahl": par.name in cont.DWD_DEFAULT_PARAMS,
         }
         for par in met.ALL_PARAMETERS.values()
@@ -125,17 +120,18 @@ def parameter_selection() -> None:
     selected: list[str] = [par["Parameter"] for par in edited if par["Auswahl"]]
     sf.s_set("selected_params", selected)
 
-    closest: dict = met.closest_station_per_parameter()
-    sf.s_set("closest_stations", closest)
+    res: str = sf.s_get("sb_resolution") or "Stundenwerte"
+    params: list[cld.DWDParameter] = met.collect_meteo_data_for_list_of_parameters(res)
 
     st.dataframe(
         data=[
             {
-                "Parameter": param,
-                "Wetterstation": dic["name"],
-                "Entfernung": dic["distance"],
+                "Parameter": param.name,
+                "Auflösung": param.resolution,
+                "Wetterstation": param.closest_station.name,
+                "Entfernung": param.closest_station.distance,
             }
-            for param, dic in closest.items()
+            for param in params
         ],
         column_config={
             "Entfernung": st.column_config.NumberColumn(
@@ -158,7 +154,7 @@ def download_as_excel() -> None:
         xl_file_name: str = (
             f"Wetterdaten {timespan.start.date()} - {timespan.end.date()}.xlsx"
         )
-        dat: list[cld.DWDParameter] = met.collect_meteo_data()
+        dat: list[cld.DWDParameter] = met.collect_meteo_data_for_list_of_parameters()
         df_ex: pl.DataFrame = met.df_from_param_list(dat)
         meta: cld.MetaData = cld.MetaData(
             lines={

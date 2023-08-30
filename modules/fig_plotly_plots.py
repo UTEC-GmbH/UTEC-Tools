@@ -3,11 +3,11 @@
 import os
 from typing import Literal
 
+import geopy
 import numpy as np
 import plotly.graph_objects as go
 import polars as pl
 import streamlit as st
-import geopy
 from loguru import logger
 
 from modules import classes_data as cld
@@ -295,7 +295,7 @@ def map_dwd_all(**kwargs) -> go.Figure:
     )
 
     # alle Stationen
-    all_sta: pl.DataFrame = meteo.meteo_stations(sf.s_get("geo_location") or "Bremen")
+    all_sta: pl.DataFrame = meteo.stations_sorted_by_distance()
     all_lat = list(all_sta["latitude"])
     all_lon = list(all_sta["longitude"])
     all_nam = list(all_sta["name"])
@@ -375,7 +375,7 @@ def map_weatherstations() -> go.Figure:
     """Karte der Wetterstationen (verwendete hervorgehoben)"""
 
     # alle Stationen ohne Duplikate
-    all_sta: pl.DataFrame = meteo.meteo_stations()
+    all_sta: pl.DataFrame = meteo.stations_sorted_by_distance()
 
     # nächstgelegene Station
     clo_sta = all_sta[all_sta.index == all_sta.index[0]].copy()
@@ -452,7 +452,7 @@ def map_weatherstations() -> go.Figure:
         go.Scattermapbox(
             lat=[st.session_state["dic_geo"]["lat"]],
             lon=[st.session_state["dic_geo"]["lon"]],
-            text=[st.session_state["ti_adr"].title()],
+            text=[st.session_state["ta_adr"].title()],
             hovertemplate="<b>%{text}</b><br>→ eingegebener Standort<extra></extra>",
             mode="markers",
             marker={

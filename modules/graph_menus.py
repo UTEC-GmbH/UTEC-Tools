@@ -291,7 +291,7 @@ def meteo_sidebar(page: str) -> None:
             ),
             # placeholder= 'Cuxhavener Str. 10, 20217 Bremen',
             # autocomplete= '',
-            key="ti_adr",
+            key="ta_adr",
             # disabled=True,
         )
 

@@ -69,6 +69,7 @@ class DWDParameter:
     location_lat: float | None = None
     location_lon: float | None = None
     resolution: str | None = None
+    resolution_de: str | None = None
     data_frame: pl.DataFrame | None = None
     all_stations: pl.DataFrame | None = None
     closest_station: DWDStation = field(init=False)

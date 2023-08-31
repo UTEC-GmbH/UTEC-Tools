@@ -295,7 +295,12 @@ def map_dwd_all(**kwargs) -> go.Figure:
     )
 
     # alle Stationen
-    all_sta: pl.DataFrame = meteo.stations_sorted_by_distance()
+    stations: pl.DataFrame | None = sf.s_get("stations_distance")
+    all_sta: pl.DataFrame = (
+        stations
+        if isinstance(stations, pl.DataFrame)
+        else meteo.stations_sorted_by_distance()
+    )
     all_lat = list(all_sta["latitude"])
     all_lon = list(all_sta["longitude"])
     all_nam = list(all_sta["name"])
@@ -375,7 +380,12 @@ def map_weatherstations() -> go.Figure:
     """Karte der Wetterstationen (verwendete hervorgehoben)"""
 
     # alle Stationen ohne Duplikate
-    all_sta: pl.DataFrame = meteo.stations_sorted_by_distance()
+    stations: pl.DataFrame | None = sf.s_get("stations_distance")
+    all_sta: pl.DataFrame = (
+        stations
+        if isinstance(stations, pl.DataFrame)
+        else meteo.stations_sorted_by_distance()
+    )
 
     # nächstgelegene Station
     clo_sta = all_sta[all_sta.index == all_sta.index[0]].copy()

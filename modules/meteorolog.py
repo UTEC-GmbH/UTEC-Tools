@@ -1,6 +1,7 @@
 """Meteorologische Daten"""
 # ruff: noqa: E722, PD011, PERF203
 # pylint: disable=W0702
+# sourcery skip: do-not-use-bare-except
 
 import os
 from datetime import datetime as dt
@@ -102,14 +103,26 @@ def geo_locate(address: str) -> geopy.Location:
 
 
 def fill_parameter_with_data_from_query(
-    parameter: cld.DWDParameter, query: ValuesResult, resolution: str
+    parameter: cld.DWDParameter,
+    query: ValuesResult,
+    resolution: str,
+    location: geopy.Location,
 ) -> cld.DWDParameter:
     """Gather data"""
+
+    parameter.location_lat = location.latitude
+    parameter.location_lon = location.longitude
     parameter.resolution = resolution
+    parameter.resolution_de = next(
+        res_de
+        for res_de, res_en in cont.DWD_RESOLUTION_OPTIONS.items()
+        if resolution == res_en
+    )
     parameter.data_frame = query.df
     parameter.all_stations = query.stations.df
     station_id: str = query.df[0, "station_id"]
     parameter.station_info_from_station_df_and_id(station_id)
+
     return parameter
 
 
@@ -117,7 +130,6 @@ def fill_parameter_with_data_from_query(
 def get_data_for_parameter_from_closest_station(
     parameter: cld.DWDParameter, requested_resolution: str
 ) -> cld.DWDParameter:
-    # sourcery skip: do-not-use-bare-except
     """Check if a parameter name is valid and give out the best data resolution.
 
     If the parameter is available in the requested resolution,
@@ -130,27 +142,51 @@ def get_data_for_parameter_from_closest_station(
 
     # if requested resolution is given in german, translate to english
     if requested_resolution in cont.DWD_RESOLUTION_OPTIONS:
+        logger.info(
+            f"Translating requested_resolution ('{requested_resolution}') "
+            f"to '{cont.DWD_RESOLUTION_OPTIONS[requested_resolution]}'"
+        )
         requested_resolution = cont.DWD_RESOLUTION_OPTIONS[requested_resolution]
 
     # if requested resolution not availabe for parameter, find the best alternative
     if requested_resolution not in parameter.available_resolutions:
+        logger.info(
+            f"Requested resolution '{requested_resolution}' "
+            f"not in available resolutions {parameter.available_resolutions}"
+        )
         sorted_full: list[str] = gf.sort_from_selection_to_front_then_to_back(
             list(cont.DWD_RESOLUTION_OPTIONS.values()), requested_resolution
         )
         requested_resolution = next(
             res for res in sorted_full if res in parameter.available_resolutions
         )
+        logger.info(f"Requested resolution changed to '{requested_resolution}'.")
 
     time_span: cld.TimeSpan = start_end_time(page=sf.s_get("page"))
     address: str = sf.s_get("ta_adr") or "Bremen"
     location: geopy.Location = sf.s_get("geo_location") or geo_locate(address)
 
+    # check if data already in parameter
+    if (
+        parameter.location_lat == location.latitude
+        and parameter.location_lon == location.longitude
+        and parameter.data_frame is not None
+    ):
+        logger.info(f"Data for parameter '{parameter.name}' already collected.")
+        return parameter
+
     # check if the parameter has data for the requested resolution
     try:
         logger.debug(
-            f"\nTrying to find data for \n"
-            f"parameter '{parameter.name}' \n"
-            f"starting in resolution '{requested_resolution}'."
+            gf.string_new_line_per_item(
+                [
+                    "Trying to find data for",
+                    f"parameter '{parameter.name}'",
+                    f"available resolutions: {parameter.available_resolutions}",
+                    f"starting in resolution '{requested_resolution}'.",
+                ],
+                leading_empty_lines=1,
+            )
         )
         query = next(
             DwdObservationRequest(
@@ -165,19 +201,29 @@ def get_data_for_parameter_from_closest_station(
         )
     except:
         logger.debug(
-            f"\nNo values availabe for \n"
-            f"parameter '{parameter.name}' \n"
-            f"in resolution '{requested_resolution}'. \n"
-            "Checking other options..."
+            gf.string_new_line_per_item(
+                [
+                    "No values availabe for",
+                    f"parameter '{parameter.name}'",
+                    f"in resolution '{requested_resolution}'.",
+                    "Checking other options...",
+                ],
+                leading_empty_lines=1,
+            )
         )
         sorted_res: list[str] = gf.sort_from_selection_to_front_then_to_back(
             parameter.available_resolutions, requested_resolution
         )
         for res in sorted_res[1:]:
             logger.debug(
-                f"\nTrying to find data for \n"
-                f"parameter '{parameter.name}' \n"
-                f"in resolution '{res}'."
+                gf.string_new_line_per_item(
+                    [
+                        "Trying to find data for",
+                        f"parameter '{parameter.name}'",
+                        f"in resolution '{res}'.",
+                    ],
+                    leading_empty_lines=1,
+                )
             )
             try:
                 query: ValuesResult = next(
@@ -193,22 +239,30 @@ def get_data_for_parameter_from_closest_station(
                 )
             except:
                 logger.debug(
-                    f"\nNo values availabe for parameter '{parameter.name}' "
-                    f"in resolution '{res}'. \n"
-                    "Checking other options..."
+                    gf.string_new_line_per_item(
+                        [
+                            f"No values availabe for parameter '{parameter.name}'",
+                            f"in resolution '{res}'.",
+                            "Checking other options...",
+                        ],
+                        leading_empty_lines=1,
+                    )
                 )
             else:
                 logger.success(
-                    f"\nData found for Parameter '{parameter.name}' in resolution '{res}'"
+                    f"\nData found for Parameter '{parameter.name}' "
+                    f"in resolution '{res}'\n"
                 )
-                return fill_parameter_with_data_from_query(parameter, query, res)
+                return fill_parameter_with_data_from_query(
+                    parameter, query, res, location
+                )
     else:
         logger.success(
             f"\nData for Parameter '{parameter.name}' "
-            f"found in requested resolution ('{requested_resolution}')"
+            f"available in requested resolution ('{requested_resolution}')\n"
         )
         return fill_parameter_with_data_from_query(
-            parameter, query, requested_resolution
+            parameter, query, requested_resolution, location
         )
     logger.critical(f"No values for parameter '{parameter.name}' could be found!!!")
     raise cle.NoValuesForParameterError(
@@ -250,6 +304,8 @@ def stations_sorted_by_distance(
         logger.critical(f"Keine Daten für Parameter '{param.name}' gefunden!")
         raise ValueError
 
+    sf.s_set("stations_distance", param.all_stations)
+
     return param.all_stations
 
 
@@ -262,14 +318,26 @@ def collect_meteo_data_for_list_of_parameters(
     selected_resolution: str = (
         temporal_resolution or sf.s_get("sb_resolution") or "hourly"
     )
-
     selection: list[str] = sf.s_get("selected_params") or ["temperature_air_mean_200"]
+
+    previously_collected_params: list[cld.DWDParameter] | None = sf.s_get("params_list")
+
+    selected_params: list[cld.DWDParameter] = []
+    for sel in selection:
+        if previously_collected_params is not None and sel in [
+            par.name for par in previously_collected_params
+        ]:
+            selected_params.append(
+                next(par for par in previously_collected_params if par.name == sel)
+            )
+        else:
+            selected_params.append(ALL_PARAMETERS[sel])
+
     params: list[cld.DWDParameter] = [
-        get_data_for_parameter_from_closest_station(
-            ALL_PARAMETERS[par], selected_resolution
-        )
-        for par in selection
+        get_data_for_parameter_from_closest_station(par, selected_resolution)
+        for par in selected_params
     ]
+    sf.s_set("params_list", params)
 
     return params
 

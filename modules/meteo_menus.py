@@ -95,6 +95,7 @@ def sidebar_address_dates() -> None:
         )
 
 
+@gf.func_timer
 def parameter_selection() -> None:
     """DWD-Parameter data editor"""
 
@@ -105,8 +106,10 @@ def parameter_selection() -> None:
             "Auswahl": par.name in cont.DWD_DEFAULT_PARAMS,
         }
         for par in met.ALL_PARAMETERS.values()
+        if par.name not in cont.DWD_SHITTY_PARAMS
     ]
 
+    st.markdown("###")
     edited: list[dict] = st.data_editor(
         data=sorted(
             sorted(param_data, key=lambda s: s["Parameter"]),
@@ -117,8 +120,8 @@ def parameter_selection() -> None:
         key="de_parameter",
     )
 
-        selected: list[str] = [par["Parameter"] for par in edited if par["Auswahl"]]
-        sf.s_set("selected_params", selected)
+    selected: list[str] = [par["Parameter"] for par in edited if par["Auswahl"]]
+    sf.s_set("selected_params", selected)
 
     res: str = sf.s_get("sb_resolution") or "Stundenwerte"
     params: list[cld.DWDParameter] = met.collect_meteo_data_for_list_of_parameters(res)
@@ -127,7 +130,7 @@ def parameter_selection() -> None:
         data=[
             {
                 "Parameter": param.name,
-                "Auflösung": param.resolution,
+                "Auflösung": param.resolution_de,
                 "Wetterstation": param.closest_station.name,
                 "Entfernung": param.closest_station.distance,
             }
@@ -139,6 +142,14 @@ def parameter_selection() -> None:
             ),
         },
         use_container_width=True,
+    )
+
+    st.markdown(
+        "_Falls der DWD keine Daten "
+        "in der gewünschten Auflösung zur Verfügung stellt, "
+        "werden Daten mit einer möglichst höheren Auflösung "
+        "heruntergeladen und umgerechnet. Die Auflösung in der "
+        "Tabelle (s.o.) ist die Auflösung der verwendeten DWD-Werte._"
     )
 
 

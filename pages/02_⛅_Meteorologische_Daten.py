@@ -1,16 +1,13 @@
 # sourcery skip: avoid-global-variables
 """Seite Meteorologische Daten"""
 
-import polars as pl
 import streamlit as st
 
-from modules import classes_data as cld
 from modules import constants as cont
 from modules import fig_formatting as fig_format
 from modules import fig_plotly_plots as ploplo
 from modules import general_functions as gf
 from modules import meteo_menus as menu_m
-from modules import meteorolog as meteo
 from modules import setup_stuff as set_stuff
 from modules import streamlit_functions as sf
 from modules import user_authentication as uauth
@@ -24,7 +21,8 @@ if uauth.authentication(sf.s_get("page")):
     # Auswahl Ort
     menu_m.sidebar_address_dates()
     if sf.s_get("but_addr_dates"):
-        sf.s_delete(key="geo_location")
+        for session_state_entry in ["geo_location", "stations_distance", "params_list"]:
+            sf.s_delete(key=session_state_entry)
 
     cols: list = st.columns([40, 60])
     with cols[0]:

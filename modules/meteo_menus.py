@@ -117,8 +117,8 @@ def parameter_selection() -> None:
         key="de_parameter",
     )
 
-    selected: list[str] = [par["Parameter"] for par in edited if par["Auswahl"]]
-    sf.s_set("selected_params", selected)
+        selected: list[str] = [par["Parameter"] for par in edited if par["Auswahl"]]
+        sf.s_set("selected_params", selected)
 
     res: str = sf.s_get("sb_resolution") or "Stundenwerte"
     params: list[cld.DWDParameter] = met.collect_meteo_data_for_list_of_parameters(res)

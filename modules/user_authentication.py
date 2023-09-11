@@ -73,7 +73,7 @@ class MessageLog:
         )
     )
 
-    access_other = MessageLogLvl2(message=(f"Angemeldet als '{sf.s_get('name')}'."))
+    access_other = MessageLogLvl2("Angemeldung Erfolgreich.")
 
     access_until = MessageLogLvl2(
         message=(

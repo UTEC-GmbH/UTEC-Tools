@@ -1,6 +1,7 @@
 """Bearbeitung der Daten"""
 
 
+import datetime as dt
 from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
@@ -17,8 +18,6 @@ from modules import setup_logger as slog
 from modules import streamlit_functions as sf
 
 if TYPE_CHECKING:
-    import datetime as dt
-
     import pandas as pd
 
 COL_IND: str = cont.SPECIAL_COLS.index
@@ -324,7 +323,77 @@ def multi_year_column_rename(df: pl.DataFrame, year: int) -> dict[str, str]:
 
 
 @gf.func_timer
-def df_h(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
+def change_temporal_resolution(
+    df: pl.DataFrame,
+    units: dict[str, str],
+    requested_resolution: Literal["15m", "1h", "1d", "1mo"],
+) -> pl.DataFrame:
+    """Make a df with the requested temporal resolution"""
+
+    cols: list[str] = df.columns
+    value_cols: list[str] = [
+        col for col in cols if not df.get_column(col).is_temporal()
+    ]
+    time_col: str = next(iter(col for col in cols if df.get_column(col).is_temporal()))
+    time_col_dat: pl.Series = df.get_column(time_col)
+    if not time_col_dat.is_temporal():
+        raise TypeError
+
+    max_date: dt.datetime = time_col_dat.max()
+    min_date: dt.datetime = time_col_dat.min()
+
+    original_resolution: dt.timedelta = dt.timedelta(
+        microseconds=time_col_dat.diff().mean() or 0
+    )
+    if original_resolution == dt.timedelta(0):
+        raise ValueError
+
+    requested_timedelta: dict[str, dt.timedelta] = {
+        "15m": dt.timedelta(minutes=15),
+        "1h": dt.timedelta(hours=1),
+        "1d": dt.timedelta(days=1),
+        "1mo": dt.timedelta(weeks=4),
+    }
+
+    df_res: pl.DataFrame = pl.DataFrame(
+        {time_col: pl.date_range(min_date, max_date, requested_resolution)}
+    )
+    df_join: pl.DataFrame = df_res.join(df, on=time_col, how="outer").sort(by=time_col)
+
+    if original_resolution < requested_timedelta[requested_resolution]:
+        return interpolate_missing_data_akima(
+            df_join.sort(by=time_col)
+            .groupby_dynamic(time_col, every=requested_resolution)
+            .agg(
+                [
+                    pl.col(col).mean()
+                    if f" {units[col].strip()}" in cont.GRP_MEAN
+                    else pl.col(col).sum()
+                    for col in value_cols
+                ]
+            ),
+            time_col,
+        )
+
+    return interpolate_missing_data_akima(
+        df_join.sort(time_col)
+        .upsample(time_col, every=requested_resolution)
+        .with_columns(
+            pl.when(f" {units[col].strip()}" in [None, *cont.GRP_MEAN])
+            .then(pl.col(col))
+            .otherwise(
+                pl.col(col)
+                / (requested_timedelta[requested_resolution] / original_resolution)
+            )
+            .keep_name()
+            for col in value_cols
+        ),
+        time_col,
+    )
+
+
+@gf.func_timer
+def df_h_mdf(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Stundenwerte aus anderer zeitlicher Auflösung"""
 
     cols: list[str] = [
@@ -374,7 +443,7 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     else:
         logger.info("df_h wird für jdl neu erstellt")
 
-    mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h(mdf)
+    mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h_mdf(mdf)
 
     if mdf.df_h is None:
         raise ValueError
@@ -437,7 +506,7 @@ def calculate_monthly_values(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 
     """
 
-    mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h(mdf)
+    mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h_mdf(mdf)
     if mdf.df_h is None:
         raise ValueError
 

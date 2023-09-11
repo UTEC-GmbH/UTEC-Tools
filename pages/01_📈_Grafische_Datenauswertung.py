@@ -104,7 +104,7 @@ def gather_and_manipulate_data() -> cld.MetaAndDfs:
 
     # df mit Stundenwerten erzeugen
     if sf.s_get("cb_h"):
-        mdf_i = df_man.df_h(mdf_i)
+        mdf_i = df_man.df_h_mdf(mdf_i)
 
     # df für Tagesvergleich
     if sf.s_get("but_select_graphs") and sf.s_get("cb_days"):

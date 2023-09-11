@@ -381,7 +381,7 @@ def match_resolution(df_resolution: int) -> str:
         - str: resolution as string for the 'resolution' arg in DwdObservationRequest
     """
     res_options: dict[int, str] = {
-        5: list(cont.DWD_RESOLUTION_OPTIONS.values())[0],
+        5: next(iter(cont.DWD_RESOLUTION_OPTIONS.values())),
         10: list(cont.DWD_RESOLUTION_OPTIONS.values())[1],
         60: list(cont.DWD_RESOLUTION_OPTIONS.values())[2],
         60 * 24: list(cont.DWD_RESOLUTION_OPTIONS.values())[3],

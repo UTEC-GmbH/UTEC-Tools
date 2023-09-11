@@ -383,7 +383,7 @@ def change_temporal_resolution(
             .then(pl.col(col))
             .otherwise(
                 pl.col(col)
-                / (requested_timedelta[requested_resolution] / original_resolution)
+                * (requested_timedelta[requested_resolution] / original_resolution)
             )
             .keep_name()
             for col in value_cols

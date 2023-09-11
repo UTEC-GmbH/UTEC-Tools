@@ -1,5 +1,6 @@
 """Konstanten"""
 
+import datetime as dt
 from pathlib import Path
 from typing import Literal
 
@@ -157,16 +158,131 @@ TIME_MIN: clc.TimeMin = clc.TimeMin(
     quarter_hour=15,
 )
 
-DWD_RESOLUTION_OPTIONS: list[str] = [
-    "minute_1",
-    "minute_5",
-    "minute_10",
-    "hourly",
-    "daily",
-    "monthly",
+TIME_RESOLUTIONS: dict[str, clc.TimeResolution] = {
+    "15m": clc.TimeResolution(
+        de="15-Minutenwerte",
+        dwd="minute_10",
+        polars="15m",
+        delta=dt.timedelta(minutes=15),
+    ),
+    "1h": clc.TimeResolution(
+        de="Stundenwerte", dwd="hourly", polars="1h", delta=dt.timedelta(hours=1)
+    ),
+    "1d": clc.TimeResolution(
+        de="Tageswerte", dwd="daily", polars="1d", delta=dt.timedelta(days=1)
+    ),
+    "1mo": clc.TimeResolution(
+        de="Monatswerte", dwd="monthly", polars="1mo", delta=dt.timedelta(weeks=4)
+    ),
+}
+
+DWD_RESOLUTION_OPTIONS: dict[str, str] = {
+    "Minutenwerte": "minute_1",
+    "5-Minutenwerte": "minute_5",
+    "10-Minutenwerte": "minute_10",
+    "Stundenwerte": "hourly",
+    "6-Stundenwerte": "6_hour",
+    "mehrmals täglich": "subdaily",
+    "Tageswerte": "daily",
+    "Monateswerte": "monthly",
+    "Jahreswerte": "annual",
+}
+
+DWD_DEFAULT_PARAMS: list[str] = [
+    "temperature_air_mean_200",
+    "radiation_global",
 ]
 
-DWD_TRANSLATION: dict[str, str] = {"temperature_air_mean_200": "Außentemperatur"}
+DWD_GOOD_PARAMS: list[str] = [
+    "temperature_air_mean_200",
+    "radiation_global",
+    "cloud_cover_total",
+    "humidity",
+    "humidity_absolute",
+    "precipitation_duration",
+]
+
+# Parameter die sehr lange brauchen oder für die es keine Daten gibt
+# (werden erstmal aus der Parameter-Auswahlliste genommen)
+DWD_SHITTY_PARAMS: list[str] = [
+    "sunshine_duration",
+    "cloud_cover_layer1",
+    "cloud_cover_layer2",
+    "cloud_cover_layer3",
+    "cloud_cover_layer4",
+    "cloud_cover_total_index",
+    "cloud_density",
+    "cloud_height_layer1",
+    "cloud_height_layer2",
+    "cloud_height_layer3",
+    "cloud_height_layer4",
+    "cloud_type_layer1",
+    "cloud_type_layer2",
+    "cloud_type_layer3",
+    "cloud_type_layer4",
+    "count_weather_type_dew",
+    "count_weather_type_fog",
+    "count_weather_type_glaze",
+    "count_weather_type_hail",
+    "count_weather_type_ripe",
+    "count_weather_type_sleet",
+    "count_weather_type_storm_stormier_wind",
+    "count_weather_type_storm_strong_wind",
+    "count_weather_type_thunder",
+    "precipitation_form",
+    "precipitation_height_droplet",
+    "precipitation_height_max",
+    "precipitation_height_rocker",
+    "precipitation_index",
+    "snow_depth_excelled",
+    "sun_zenith_angle",
+    "temperature_air_max_005",
+    "temperature_air_mean_005",
+    "temperature_air_min_005",
+    "temperature_soil_mean_002",
+    "visibility_range_index",
+    "water_equivalent_snow_depth",
+    "water_equivalent_snow_depth_excelled",
+    "wind_force_beaufort",
+    "wind_gust_max_last_3h",
+    "wind_gust_max_last_6h",
+]
+
+DWD_TRANSLATION: dict[str, str] = {
+    "cloud_cover_total": "Wolkendecke",
+    "humidity": "Relative Luftfeuchte",
+    "humidity_absolute": "Absolute Luftfeuchte",
+    "precipitation_duration": "Niederschlagsdauer",
+    "precipitation_height": "Niederschlagshöhe",
+    "pressure_air_sea_level": "Luftdruck auf Meereshöhe",
+    "pressure_air_site": "Luftdruck am Standort",
+    "pressure_vapor": "Dampfdruck",
+    "radiation_global": "Globalstrahlung",
+    "radiation_sky_long_wave": "? Atmosphärische Gegenstrahlung ?",
+    "radiation_sky_short_wave_diffuse": "? Diffuse Stahlung ?",
+    "snow_depth": "Schneehöhe",
+    "snow_depth_new": "? Schneehöhe Neu ?",
+    "temperature_air_max_200": "Lufttemperatur in 2 m Höhe (Max)",
+    "temperature_air_max_200_mean": "Lufttemperatur in 2 m Höhe (Max-Ø)",
+    "temperature_air_mean_200": "Lufttemperatur in 2 m Höhe",
+    "temperature_air_min_200": "Lufttemperatur in 2 m Höhe (Min)",
+    "temperature_air_min_200_mean": "Lufttemperatur in 2 m Höhe (Min-Ø)",
+    "temperature_dew_point_mean_200": "Taupunkttemperatur in 2 m Höhe (Ø)",
+    "temperature_soil_mean_005": "Bodentemperatur in 5 cm Tiefe",
+    "temperature_soil_mean_010": "Bodentemperatur in 10 cm Tiefe",
+    "temperature_soil_mean_020": "Bodentemperatur in 20 cm Tiefe",
+    "temperature_soil_mean_050": "Bodentemperatur in 50 cm Tiefe",
+    "temperature_soil_mean_100": "Bodentemperatur in 1 m Tiefe",
+    "temperature_wet_mean_200": "Bodentemperatur in 2 m Tiefe",
+    "visibility_range": "Sichtweite",
+    "weather": "? Wetter ?",
+    "wind_direction": "Windrichtung",
+    "wind_direction_gust_max": "Windrichtung Maximalböhe",
+    "wind_gust_max": "Maximalböhe",
+    "wind_speed": "Windgeschwindigkeit",
+    "wind_speed_min": "Minimale Windgeschwindigkeit",
+    "wind_speed_rolling_mean_max": "Maximalen Windgeschwindigkeit (gleitendes Mittel)",
+}
 
 FIG_TITLES: clc.FigIDs = clc.FigIDs(
     lastgang="Lastgang",
@@ -213,7 +329,6 @@ ST_PAGES: clc.StPages = clc.StPages(
     login=clc.StPageProps("login", "UTEC Online Tools"),
     graph=clc.StPageProps("graph", "Grafische Datenauswertung", "Daten"),
     meteo=clc.StPageProps("meteo", "Meteorologische Daten", "Wetterdaten"),
-    # chat=clc.StPageProps("chat", "ChatGPT"),
     maps=clc.StPageProps("maps", "Kartografische Datenauswertung"),
 )
 

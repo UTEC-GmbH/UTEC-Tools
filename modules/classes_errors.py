@@ -30,16 +30,15 @@ class NoDWDParameterError(Exception):
         super().__init__(f"'{parameter}' is not a valid DWD-Parameter name!")
 
 
-class NotAvailableInResolutionError(Exception):
-    """Error Message if a given meteorological parameter
-    is not available in the requested temporal resolution.
+class NoValuesForParameterError(Exception):
+    """Error Message if no values for a given meteorological parameter
+    can be found.
     """
 
-    def __init__(
-        self, parameter: str, resolution: str, available_resolutions: list[str]
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
         """Initiate"""
-        super().__init__(
-            f"Parameter '{parameter}' not available in '{resolution}' resolution! \n"
-            f"Available resolutions are: {available_resolutions}"
-        )
+        err_msg: str = "No values found."
+        for key, value in kwargs.items():
+            err_msg += f" \n{key}: '{value}'"
+
+        super().__init__(err_msg)

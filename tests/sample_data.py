@@ -48,9 +48,9 @@ def sample_df(
         f"{path}df_{multi_year}_{index_resolution}.parquet"
     )
 
-    for col in df.columns:
-        if any(neg in col for neg in cont.NEGATIVE_VALUES):
-            df[col] = df[col] * -1
+    # for col in df.columns:
+    #     if any(neg in col for neg in cont.NEGATIVE_VALUES):
+    #         df.with_columns(pl.col(col) * -1)
 
     return df
 

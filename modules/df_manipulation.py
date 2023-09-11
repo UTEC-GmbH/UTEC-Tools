@@ -1,6 +1,7 @@
 """Bearbeitung der Daten"""
 
 
+import datetime as dt
 from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
@@ -17,8 +18,6 @@ from modules import setup_logger as slog
 from modules import streamlit_functions as sf
 
 if TYPE_CHECKING:
-    import datetime as dt
-
     import pandas as pd
 
 COL_IND: str = cont.SPECIAL_COLS.index
@@ -115,8 +114,74 @@ def interpolate_where_no_diff(
     )
 
 
+def upsample_hourly_to_15min(
+    df: pl.DataFrame, units: dict[str, str], index_column: str | None = None
+) -> pl.DataFrame:
+    """Stundenwerte in 15-Minuten-Werte umwandeln"""
+
+    col_index: str = index_column or cont.SPECIAL_COLS.index
+    if col_index not in df.columns:
+        raise cle.NotFoundError(entry=col_index, where="data frame columns")
+    if not df[col_index].is_temporal():
+        raise TypeError
+
+    df_up: pl.DataFrame = (
+        df.sort(col_index)
+        .upsample(COL_IND, every="15m")
+        .with_columns(
+            pl.when(units.get(col) in [None, *cont.GRP_MEAN])
+            .then(pl.col(col))
+            .otherwise(pl.col(col) / 4)
+            .keep_name()
+            for col in df.columns
+        )
+    )
+
+    # return df_up.with_columns(
+    #     pl.Series(
+    #         col,
+    #         interpolate.Akima1DInterpolator(x=df[COL_IND], y=df_up.drop_nulls()[col])(
+    #             df_up[COL_IND]
+    #         ),
+    #     )
+    #     for col in cols
+    #     if COL_IND not in col and cont.SPECIAL_COLS.original_index not in col
+    # )
+    return interpolate_missing_data_akima(df_up, col_index)
+
+
+def interpolate_missing_data_akima(
+    df: pl.DataFrame, index_column: str | None = None
+) -> pl.DataFrame:
+    """Interpolate missing data"""
+
+    col_index: str = index_column or cont.SPECIAL_COLS.index
+    if col_index not in df.columns:
+        raise cle.NotFoundError(entry=col_index, where="data frame columns")
+    if not df[col_index].is_temporal():
+        raise TypeError
+
+    cols: list[str] = [
+        col
+        for col in df.columns
+        if col_index not in col and any(df[col].is_null()) and df[col].is_numeric()
+    ]
+
+    no_nulls: pl.DataFrame = df.drop_nulls()
+    index: pl.Series = no_nulls[col_index]
+    return df.sort(col_index).with_columns(
+        pl.Series(
+            col,
+            interpolate.Akima1DInterpolator(x=index, y=no_nulls[col])(df[col_index]),
+        )
+        for col in cols
+    )
+
+
 @gf.func_timer
-def interpolate_missing_data(df: pl.DataFrame, method: str = "akima") -> pl.DataFrame:
+def interpolate_missing_data_pd(
+    df: pl.DataFrame, method: str = "akima"
+) -> pl.DataFrame:
     """Findet stellen an denen sich von einer Zeile zur nächsten
     die Daten nicht ändern, löscht die Daten und interpoliert die Lücken
 
@@ -258,7 +323,113 @@ def multi_year_column_rename(df: pl.DataFrame, year: int) -> dict[str, str]:
 
 
 @gf.func_timer
-def df_h(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
+def change_temporal_resolution(
+    df: pl.DataFrame,
+    units: dict[str, str],
+    requested_resolution: Literal["15m", "1h", "1d", "1mo"],
+) -> pl.DataFrame:
+    """Make a df with the requested temporal resolution
+
+    Args:
+        - df (pl.DataFrame): A DataFrame containing temporal and non-temporal data.
+        - units (dict[str, str]): A dictionary mapping column names
+            to their respective units.
+        - requested_resolution (Literal["15m", "1h", "1d", "1mo"]): A string
+            representing the requested temporal resolution.
+
+    Returns:
+        - pl.DataFrame: A DataFrame with the requested temporal resolution.
+            The non-temporal data is aggregated based on the requested resolution.
+
+    Raises:
+        - TypeError: If the time column is not temporal.
+        - ValueError: If the original resolution is zero.
+
+    Example Usage:
+        df_15 = pl.DataFrame(
+            {
+                "Datum": pl.date_range(
+                    dt.datetime(2020, 2, 7, 9), dt.datetime(2020, 2, 7, 11), "15m"
+                ),
+                "Vals": [2,4,8,9,6,1,4,2,1,]
+            }
+        )
+        units = {"Vals": "kW"}
+        requested_resolution = "1h"
+        df_h = change_temporal_resolution(df, units, requested_resolution)
+        print(df_h)
+
+    Output:
+        ┌─────────────────────┬──────┐
+        │ Datum               ┆ Vals │
+        │ ---                 ┆ ---  │
+        │ datetime[μs]        ┆ f64  │
+        ╞═════════════════════╪══════╡
+        │ 2020-02-07 09:00:00 ┆ 5.75 │
+        │ 2020-02-07 10:00:00 ┆ 3.25 │
+        │ 2020-02-07 11:00:00 ┆ 1.0  │
+        └─────────────────────┴──────┘
+    """
+
+    cols: list[str] = df.columns
+    value_cols: list[str] = [
+        col for col in cols if not df.get_column(col).is_temporal()
+    ]
+    time_col: str = next(iter(col for col in cols if df.get_column(col).is_temporal()))
+    time_col_dat: pl.Series = df.get_column(time_col)
+    if not time_col_dat.is_temporal():
+        raise TypeError
+
+    max_date: dt.datetime = time_col_dat.max()  # type: ignore
+    min_date: dt.datetime = time_col_dat.min()  # type: ignore
+
+    original_resolution: dt.timedelta = dt.timedelta(
+        microseconds=time_col_dat.diff().mean() or 0
+    )
+    if original_resolution == dt.timedelta(0):
+        raise ValueError
+
+    requested_timedelta: dt.timedelta = cont.TIME_RESOLUTIONS[
+        requested_resolution
+    ].delta
+
+    # Downsample data if the original resolution is higher than the requested
+    if original_resolution < requested_timedelta:
+        return df.groupby_dynamic(time_col, every=requested_resolution).agg(
+            [
+                pl.col(col).mean()
+                if f" {units[col].strip()}" in cont.GRP_MEAN
+                else pl.col(col).sum()
+                for col in value_cols
+            ]
+        )
+
+    # Upsample data if the original resolution is lower than the requested
+    # DataFrame with just the date column in the requested resolution
+    df_res: pl.DataFrame = pl.DataFrame(
+        {time_col: pl.date_range(min_date, max_date, requested_resolution)}
+    )
+
+    # Join the original DataFrame with df_res to get a DataFrame with missing data
+    df_join: pl.DataFrame = (
+        df_res.join(df, on=time_col, how="outer")
+        .sort(by=time_col)
+        .with_columns(
+            pl.when(f" {units[col].strip()}" in [None, *cont.GRP_MEAN])
+            .then(pl.col(col))
+            .otherwise(pl.col(col) * (requested_timedelta / original_resolution))
+            .keep_name()
+            for col in value_cols
+        )
+    )
+
+    # interpolate the missing data using the "Akima"-method
+    # !!! this step may lead to inaccuracies !!!
+    return interpolate_missing_data_akima(df_join, time_col)
+
+
+@gf.func_timer
+def df_h_mdf(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Stundenwerte aus anderer zeitlicher Auflösung"""
 
     cols: list[str] = [
@@ -308,7 +479,7 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     else:
         logger.info("df_h wird für jdl neu erstellt")
 
-    mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h(mdf)
+    mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h_mdf(mdf)
 
     if mdf.df_h is None:
         raise ValueError
@@ -371,7 +542,7 @@ def calculate_monthly_values(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 
     """
 
-    mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h(mdf)
+    mdf = mdf if isinstance(mdf.df_h, pl.DataFrame) else df_h_mdf(mdf)
     if mdf.df_h is None:
         raise ValueError
 

@@ -104,7 +104,8 @@ def sidebar_text() -> None:
                 help=(
                     """
                     Einheit der Eigenschaft, die die Punktgröße bestimmt 
-                    (z.B. 'kWp')"""
+                    (z.B. 'kWp')
+                    """
                 ),
                 key="ti_ref_size_unit",
             )

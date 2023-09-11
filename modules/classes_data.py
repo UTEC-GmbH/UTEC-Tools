@@ -1,6 +1,6 @@
 """Classes and such"""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime as dt
 from typing import Literal
 
@@ -46,6 +46,19 @@ class Location:
 
 
 @dataclass
+class DWDStation:
+    """Properties of DWD Station"""
+
+    station_id: str = "unbekannt"
+    name: str = "unbekannt"
+    state: str = "unbekannt"
+    height: float = 0
+    latitude: float = 0
+    longitude: float = 0
+    distance: float = 0
+
+
+@dataclass
 class DWDParameter:
     """Properties of DWD Parameter"""
 
@@ -55,9 +68,37 @@ class DWDParameter:
     name_de: str | None = None
     location_lat: float | None = None
     location_lon: float | None = None
-    closest_station_id: str | None = None
     resolution: str | None = None
+    resolution_de: str | None = None
     data_frame: pl.DataFrame | None = None
+    all_stations: pl.DataFrame | None = None
+    closest_station: DWDStation = field(init=False)
+    num_format: str = field(init=False)
+    pandas_styler: str = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Fill in fields"""
+        self.num_format = f'#,##0.0" {self.unit.strip()}"'
+        self.pandas_styler = "{:,.1f} " + self.unit
+        self.closest_station = DWDStation()
+
+    def station_info_from_station_df_and_id(self, station_id: str) -> None:
+        """Fill in the station information from the station data frame"""
+
+        if self.all_stations is not None:
+            station_df: pl.DataFrame = self.all_stations.filter(
+                pl.col("station_id") == station_id
+            )
+            if station_df.height == 1:
+                self.closest_station = DWDStation(
+                    station_id=station_df[0, "station_id"],
+                    name=station_df[0, "name"],
+                    height=station_df[0, "height"],
+                    latitude=station_df[0, "latitude"],
+                    longitude=station_df[0, "longitude"],
+                    distance=station_df[0, "distance"],
+                    state=station_df[0, "state"],
+                )
 
 
 @dataclass
@@ -126,6 +167,10 @@ class MetaData:
     def __repr__(self) -> str:
         """Customize the representation to give a dictionary"""
         return f"[{gf.string_new_line_per_item(self.as_dic())}]"
+
+    def all_units_as_dict(self) -> dict:
+        """Dictionary (key=name, value=unit)"""
+        return {line.name: line.unit for line in self.lines.values()}
 
     def copy_line(self, line_to_copy: str, new_line_name: str) -> MetaLine:
         """Create a MetaLine-object with the same attrs under a new name"""

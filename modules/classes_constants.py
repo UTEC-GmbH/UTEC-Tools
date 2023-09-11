@@ -1,5 +1,6 @@
 """Classes and such"""
 
+import datetime as dt
 import re
 from dataclasses import dataclass, field
 from typing import TypedDict
@@ -56,6 +57,16 @@ class TimeMin:
     hour: int
     half_hour: int
     quarter_hour: int
+
+
+@dataclass(frozen=True, kw_only=True)
+class TimeResolution:
+    """Zeitliche Auflösungen"""
+
+    de: str
+    dwd: str
+    polars: str
+    delta: dt.timedelta
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -155,7 +166,7 @@ class MeteoParameter:
 
     def __post_init__(self) -> None:
         """Fill in fields"""
-        self.num_format = f'#,##0.0" {self.unit}"'
+        self.num_format = f'#,##0.0" {self.unit.strip()}"'
         self.pandas_styler = "{:,.1f} " + self.unit
 
 

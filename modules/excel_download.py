@@ -34,99 +34,92 @@ def excel_download(
     column_offset: int = 2
     row_offset: int = 4
 
-    with io.BytesIO() as output, xlsxwriter.Workbook(output) as workbook:
-        worksheet: Any = workbook.add_worksheet(ws_name)
-
+    with io.BytesIO() as output:
         df.write_excel(
-            workbook,
+            output,
             worksheet=ws_name,
             position=(row_offset, column_offset),
             has_header=True,
             hide_gridlines=True,
             autofit=True,
-            dtype_formats={pl.Datetime: "TT.MM.JJJJ hh:mm", pl.Date: "TT.MM.JJJJ"},
-        )
-
-        format_worksheet(
-            workbook,
-            worksheet,
-            df,
-            meta,
-            offset_col=column_offset,
-            offset_row=row_offset,
+            column_formats={
+                name: line.excel_number_format or "#,##0.0"
+                for name, line in meta.lines.items()
+            },
+            dtype_formats={pl.Datetime: "DD.MM.YYYY hh:mm", pl.Date: "DD.MM.YYYY"},
         )
 
         return output.getvalue()
 
 
-def format_worksheet(
-    workbook: Any,
-    worksheet: Any,
-    df: pl.DataFrame,
-    meta: cld.MetaData,
-    **kwargs: Any,
-) -> None:
-    """Edit the formatting of the worksheet in the output excel-file
+# def format_worksheet(
+#     workbook: Any,
+#     worksheet: Any,
+#     df: pl.DataFrame,
+#     meta: cld.MetaData,
+#     **kwargs: Any,
+# ) -> None:
+#     """Edit the formatting of the worksheet in the output excel-file
 
-    Args:
-        - wkb (Any): Workbook
-        - wks (Any): Worksheet
-        - df (pd.DataFrame): main pd.DataFrame
-        - dic_num_formats (dict): dictionary {col: number format}
-    KWArgs:
-        - offset_col (int): Spalte, in der die Daten eingefügt weren
-        - offset_row (int): Reihe, in der die Daten eingefügt weren
-    """
+#     Args:
+#         - wkb (Any): Workbook
+#         - wks (Any): Worksheet
+#         - df (pd.DataFrame): main pd.DataFrame
+#         - dic_num_formats (dict): dictionary {col: number format}
+#     KWArgs:
+#         - offset_col (int): Spalte, in der die Daten eingefügt weren
+#         - offset_row (int): Reihe, in der die Daten eingefügt weren
+#     """
 
-    offset: dict[str, int] = {
-        "col": kwargs.get("offset_col") or 2,
-        "row": kwargs.get("offset_row") or 4,
-    }
+#     offset: dict[str, int] = {
+#         "col": kwargs.get("offset_col") or 2,
+#         "row": kwargs.get("offset_row") or 4,
+#     }
 
-    cols: list[str] = [
-        col
-        for col in df.columns
-        if all(
-            col not in idx
-            for idx in [cont.SPECIAL_COLS.index, cont.SPECIAL_COLS.original_index]
-        )
-    ]
+#     cols: list[str] = [
+#         col
+#         for col in df.columns
+#         if all(
+#             col not in idx
+#             for idx in [cont.SPECIAL_COLS.index, cont.SPECIAL_COLS.original_index]
+#         )
+#     ]
 
-    # Formatierung
-    worksheet.hide_gridlines(2)
-    base_format: dict[str, Any] = {
-        "bold": False,
-        "font_name": "Arial",
-        "font_size": 10,
-        "align": "right",
-        "border": 0,
-    }
+#     # Formatierung
+#     worksheet.hide_gridlines(2)
+#     base_format: dict[str, Any] = {
+#         "bold": False,
+#         "font_name": "Arial",
+#         "font_size": 10,
+#         "align": "right",
+#         "border": 0,
+#     }
 
-    # Formatierung der ersten Spalte
-    spec_format: dict[str, Any] = base_format.copy()
-    spec_format["align"] = "left"
-    cell_format: Any = workbook.add_format(spec_format)
-    worksheet.set_column(offset["col"], offset["col"], 18, cell_format)
+#     # Formatierung der ersten Spalte
+#     spec_format: dict[str, Any] = base_format.copy()
+#     spec_format["align"] = "left"
+#     cell_format: Any = workbook.add_format(spec_format)
+#     worksheet.set_column(offset["col"], offset["col"], 18, cell_format)
 
-    # Formatierung der ersten Zeile
-    spec_format = base_format.copy()
-    spec_format["bottom"] = 1
-    cell_format = workbook.add_format(spec_format)
-    worksheet.write(offset["row"], offset["col"], "Datum", cell_format)
+#     # Formatierung der ersten Zeile
+#     spec_format = base_format.copy()
+#     spec_format["bottom"] = 1
+#     cell_format = workbook.add_format(spec_format)
+#     worksheet.write(offset["row"], offset["col"], "Datum", cell_format)
 
-    for col, header in enumerate(cols):
-        worksheet.write(offset["row"], col + 1 + offset["col"], header, cell_format)
+#     for col, header in enumerate(cols):
+#         worksheet.write(offset["row"], col + 1 + offset["col"], header, cell_format)
 
-    for num_format in [line.excel_number_format for line in meta.lines.values()]:
-        spec_format = base_format.copy()
-        spec_format["num_format"] = num_format
-        col_format: Any = workbook.add_format(spec_format)
+#     for num_format in [line.excel_number_format for line in meta.lines.values()]:
+#         spec_format = base_format.copy()
+#         spec_format["num_format"] = num_format
+#         col_format: Any = workbook.add_format(spec_format)
 
-        for cnt, col in enumerate(cols):
-            if meta.lines[col].excel_number_format == num_format:
-                worksheet.set_column(
-                    cnt + offset["col"] + 1,
-                    cnt + offset["col"] + 1,
-                    len(col) + 1,
-                    col_format,
-                )
+#         for cnt, col in enumerate(cols):
+#             if col in meta.lines and meta.lines[col].excel_number_format == num_format:
+#                 worksheet.set_column(
+#                     cnt + offset["col"] + 1,
+#                     cnt + offset["col"] + 1,
+#                     len(col) + 1,
+#                     col_format,
+#                 )

@@ -3,11 +3,11 @@
 import os
 from typing import Literal
 
+import geopy
 import numpy as np
 import plotly.graph_objects as go
 import polars as pl
 import streamlit as st
-from geopy import distance
 from loguru import logger
 
 from modules import classes_data as cld
@@ -15,6 +15,7 @@ from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import meteorolog as meteo
+from modules import streamlit_functions as sf
 
 
 @gf.func_timer
@@ -285,17 +286,25 @@ def line_plot_day_overlay(
 
 
 @gf.func_timer
-def map_dwd_all() -> go.Figure:
+def map_dwd_all(**kwargs) -> go.Figure:
     """Karte aller Wetterstationen"""
 
     # hov_temp = "%{text}<br>(lat: %{lat:,.2f}° | lon: %{lon:,.2f}°)<extra></extra>"
-    hov_temp: str = "%{text}<br><i>(Wetterstation)</i><extra></extra>"
+    hov_temp: str = (
+        "%{text}<br><i>(Distanz: %{marker.color:,.1f} km)</i><extra></extra>"
+    )
 
     # alle Stationen
-    all_sta: pl.DataFrame = meteo.meteo_stations()
+    stations: pl.DataFrame | None = sf.s_get("stations_distance")
+    all_sta: pl.DataFrame = (
+        stations
+        if isinstance(stations, pl.DataFrame)
+        else meteo.stations_sorted_by_distance()
+    )
     all_lat = list(all_sta["latitude"])
     all_lon = list(all_sta["longitude"])
     all_nam = list(all_sta["name"])
+    all_dis = list(all_sta["distance"])
 
     # alle Stationen
     fig: go.Figure = go.Figure(
@@ -305,9 +314,9 @@ def map_dwd_all() -> go.Figure:
             text=all_nam,
             mode="markers",
             marker={
-                "size": 4,
-                "color": "blue",
-                # "colorscale": "Portland",  # Blackbody,Bluered,Blues,Cividis,Earth,
+                "size": 7,
+                "color": all_dis,
+                "colorscale": "Reds",  # Blackbody,Bluered,Blues,Cividis,Earth,
                 #   Electric,Greens,Greys,Hot,Jet,Picnic,Portland,
                 #   Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd
                 # "colorbar": {
@@ -317,7 +326,7 @@ def map_dwd_all() -> go.Figure:
                 #     "x": 0,
                 # },
                 # "opacity": 0.5,
-                # "reversescale": True,
+                "reversescale": True,
                 # "cmax": 400,
                 # "cmin": 0,
             },
@@ -325,8 +334,31 @@ def map_dwd_all() -> go.Figure:
         )
     )
 
+    # eingegebene Adresse
+    loc: geopy.Location = sf.s_get("geo_location")
+
+    address: str = loc.address
+    address = address.replace(", Deutschland", "").title()
+    hov_temp: str = (
+        f"{address}<br><i>(Standort aus gegebener Addresse)</i><extra></extra>"
+    )
+    fig = fig.add_trace(
+        go.Scattermapbox(
+            lat=[loc.latitude],
+            lon=[loc.longitude],
+            text=address,
+            hovertemplate=hov_temp,
+            mode="markers",
+            marker={
+                "size": 15,
+                "color": "limegreen",
+            },
+        )
+    )
+
     return fig.update_layout(
-        title="Wetterstationen des DWD",
+        # title="Wetterstationen des DWD",
+        height=kwargs.get("height") or 500,
         autosize=True,
         showlegend=False,
         font_family="Arial",
@@ -334,10 +366,10 @@ def map_dwd_all() -> go.Figure:
         margin={"l": 5, "r": 5, "t": 30, "b": 5},
         mapbox={
             "accesstoken": os.getenv("MAPBOX_TOKEN"),
-            "zoom": 4.5,
+            "zoom": 6,
             "center": {
-                "lat": 51.5,
-                "lon": 9.5,
+                "lat": loc.latitude,
+                "lon": loc.longitude,
             },
         },
     )
@@ -348,7 +380,12 @@ def map_weatherstations() -> go.Figure:
     """Karte der Wetterstationen (verwendete hervorgehoben)"""
 
     # alle Stationen ohne Duplikate
-    all_sta = meteo.meteo_stations()
+    stations: pl.DataFrame | None = sf.s_get("stations_distance")
+    all_sta: pl.DataFrame = (
+        stations
+        if isinstance(stations, pl.DataFrame)
+        else meteo.stations_sorted_by_distance()
+    )
 
     # nächstgelegene Station
     clo_sta = all_sta[all_sta.index == all_sta.index[0]].copy()
@@ -379,7 +416,7 @@ def map_weatherstations() -> go.Figure:
     )
     for ind in used_sta.index:
         sta_pos = (used_sta.loc[ind, "latitude"], used_sta.loc[ind, "longitude"])
-        if distance.distance(clo_pos, sta_pos).km < meteo.MIN_DIST_DWD_STAT:
+        if geopy.distance.distance(clo_pos, sta_pos).km < meteo.MIN_DIST_DWD_STAT:
             used_sta = used_sta.drop(ind, axis="index")
 
     if clo_sta.index[0] in all_sta.index:
@@ -425,7 +462,7 @@ def map_weatherstations() -> go.Figure:
         go.Scattermapbox(
             lat=[st.session_state["dic_geo"]["lat"]],
             lon=[st.session_state["dic_geo"]["lon"]],
-            text=[st.session_state["ti_adr"].title()],
+            text=[st.session_state["ta_adr"].title()],
             hovertemplate="<b>%{text}</b><br>→ eingegebener Standort<extra></extra>",
             mode="markers",
             marker={

@@ -53,7 +53,7 @@ def general_excel_import(
         "skip_trailing_columns": kwargs.get("skip_trailing_columns") or True,
         "no_line_breaks": kwargs.get("no_line_breaks") or True,
         "merge_cells": kwargs.get("merge_cells") or True,
-        "dateformat": kwargs.get("dateformat") or "%d.%m.%Y %T",
+        "dateformat": kwargs.get("dateformat") or "%d.%m.%Y %H:%M",
     }
 
     csv_options: dict[str, bool] = {
@@ -67,6 +67,12 @@ def general_excel_import(
         xlsx2csv_options=xlsx_options,
         read_csv_options=csv_options,
     )  # type: ignore
+
+    for col in ["Datum", cont.SPECIAL_COLS.index]:
+        if col in df.columns and df.get_column(col).dtype != pl.Datetime:
+            df = df.with_columns(
+                pl.col(col).str.strptime(pl.Datetime, "%d.%m.%Y %H:%M")
+            )
 
     return remove_empty(df)
 
@@ -258,7 +264,7 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
     )
     df = df.slice(ind_row + 1)
     df = df.select(
-        [pl.col(mark_index).str.strptime(pl.Datetime, "%d.%m.%Y %T")]
+        [pl.col(mark_index).str.strptime(pl.Datetime, "%d.%m.%Y %T", tz_aware=False)]
         + [pl.col(col).cast(pl.Float32) for col in df.columns if col != mark_index]
     )
 

@@ -14,7 +14,7 @@ import streamlit as st
 import streamlit_lottie as stlot
 from loguru import logger
 
-from modules import constants as cont
+from modules import classes_errors as cle, constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
 from modules import streamlit_functions as sf
@@ -309,3 +309,61 @@ def check_if_not_exclude(
         - bool: True if line is not in exclude list
     """
     return all(excl not in line for excl in getattr(cont.EXCLUDE, exclude))
+
+
+def sort_from_selection_to_front_then_to_back(
+    options: list[Any], selection: Any
+) -> list[Any]:
+    """Sort a list of options to put the selected option in front
+    and then adding items towards the start of the list,
+    before adding the remaining items towards the end of the list.
+
+    Args:
+        - options (list): A list of options to be sorted.
+        - selection (any): The selected item that needs to be placed at the front.
+
+    Raises:
+        - NotFoundError: If the selected item is not found in the options list.
+
+    Returns:
+        - list: The sorted list with the selected item at the front.
+
+    Example:
+        Sort a list of possible temporal resolutions so you first
+        go towards a higher resolution, before gowing towards a lower one.
+        This is helpful to check get the best available data, as it's
+        better to change a higher resolution to a lower one, than
+        to upscale a low resolution by interpolation.
+
+        resolution_options: list[str] = [
+            "minute_1",
+            "minute_10",
+            "hourly",
+            "daily",
+            "monthly",
+            "annual",
+        ]
+        selected: str = "hourly"
+
+        sorted_list = sort_list_to_front_then_to_back(resolution_options, selected)
+
+        result: [
+            'hourly',
+            'minute_10',
+            'minute_1',
+            'daily',
+            'monthly',
+            'annual'
+        ]
+    """
+
+    if selection not in options:
+        raise cle.NotFoundError(entry="selected item", where="list")
+
+    index_selection: int = options.index(selection)
+
+    sorted_items: list[Any] = [options[ind] for ind in range(index_selection, -1, -1)]
+    sorted_items.extend(
+        options[ind] for ind in range(index_selection + 1, len(options))
+    )
+    return sorted_items

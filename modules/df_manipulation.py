@@ -328,7 +328,48 @@ def change_temporal_resolution(
     units: dict[str, str],
     requested_resolution: Literal["15m", "1h", "1d", "1mo"],
 ) -> pl.DataFrame:
-    """Make a df with the requested temporal resolution"""
+    """Make a df with the requested temporal resolution
+
+    Args:
+        - df (pl.DataFrame): A DataFrame containing temporal and non-temporal data.
+        - units (dict[str, str]): A dictionary mapping column names
+            to their respective units.
+        - requested_resolution (Literal["15m", "1h", "1d", "1mo"]): A string
+            representing the requested temporal resolution.
+
+    Returns:
+        - pl.DataFrame: A DataFrame with the requested temporal resolution.
+            The non-temporal data is aggregated based on the requested resolution.
+
+    Raises:
+        - TypeError: If the time column is not temporal.
+        - ValueError: If the original resolution is zero.
+
+    Example Usage:
+        df_15 = pl.DataFrame(
+            {
+                "Datum": pl.date_range(
+                    dt.datetime(2020, 2, 7, 9), dt.datetime(2020, 2, 7, 11), "15m"
+                ),
+                "Vals": [2,4,8,9,6,1,4,2,1,]
+            }
+        )
+        units = {"Vals": "kW"}
+        requested_resolution = "1h"
+        df_h = change_temporal_resolution(df, units, requested_resolution)
+        print(df_h)
+
+    Output:
+        ┌─────────────────────┬──────┐
+        │ Datum               ┆ Vals │
+        │ ---                 ┆ ---  │
+        │ datetime[μs]        ┆ f64  │
+        ╞═════════════════════╪══════╡
+        │ 2020-02-07 09:00:00 ┆ 5.75 │
+        │ 2020-02-07 10:00:00 ┆ 3.25 │
+        │ 2020-02-07 11:00:00 ┆ 1.0  │
+        └─────────────────────┴──────┘
+    """
 
     cols: list[str] = df.columns
     value_cols: list[str] = [
@@ -339,8 +380,8 @@ def change_temporal_resolution(
     if not time_col_dat.is_temporal():
         raise TypeError
 
-    max_date: dt.datetime = time_col_dat.max()
-    min_date: dt.datetime = time_col_dat.min()
+    max_date: dt.datetime = time_col_dat.max()  # type: ignore
+    min_date: dt.datetime = time_col_dat.min()  # type: ignore
 
     original_resolution: dt.timedelta = dt.timedelta(
         microseconds=time_col_dat.diff().mean() or 0
@@ -355,29 +396,24 @@ def change_temporal_resolution(
         "1mo": dt.timedelta(weeks=4),
     }
 
-    df_res: pl.DataFrame = pl.DataFrame(
-        {time_col: pl.date_range(min_date, max_date, requested_resolution)}
-    )
-    df_join: pl.DataFrame = df_res.join(df, on=time_col, how="outer").sort(by=time_col)
-
+    # this part works as expected
     if original_resolution < requested_timedelta[requested_resolution]:
-        return interpolate_missing_data_akima(
-            df_join.sort(by=time_col)
-            .groupby_dynamic(time_col, every=requested_resolution)
-            .agg(
-                [
-                    pl.col(col).mean()
-                    if f" {units[col].strip()}" in cont.GRP_MEAN
-                    else pl.col(col).sum()
-                    for col in value_cols
-                ]
-            ),
-            time_col,
+        return df.groupby_dynamic(time_col, every=requested_resolution).agg(
+            [
+                pl.col(col).mean()
+                if f" {units[col].strip()}" in cont.GRP_MEAN
+                else pl.col(col).sum()
+                for col in value_cols
+            ]
         )
 
-    return interpolate_missing_data_akima(
-        df_join.sort(time_col)
-        .upsample(time_col, every=requested_resolution)
+    # this part is still a little dicy
+    df_join: pl.DataFrame = (
+        pl.DataFrame(
+            {time_col: pl.date_range(min_date, max_date, requested_resolution)}
+        )
+        .join(df, on=time_col, how="outer")
+        .sort(by=time_col)
         .with_columns(
             pl.when(f" {units[col].strip()}" in [None, *cont.GRP_MEAN])
             .then(pl.col(col))
@@ -387,9 +423,9 @@ def change_temporal_resolution(
             )
             .keep_name()
             for col in value_cols
-        ),
-        time_col,
+        )
     )
+    return interpolate_missing_data_akima(df_join, time_col)
 
 
 @gf.func_timer

@@ -389,15 +389,12 @@ def change_temporal_resolution(
     if original_resolution == dt.timedelta(0):
         raise ValueError
 
-    requested_timedelta: dict[str, dt.timedelta] = {
-        "15m": dt.timedelta(minutes=15),
-        "1h": dt.timedelta(hours=1),
-        "1d": dt.timedelta(days=1),
-        "1mo": dt.timedelta(weeks=4),
-    }
+    requested_timedelta: dt.timedelta = cont.TIME_RESOLUTIONS[
+        requested_resolution
+    ].delta
 
-    # this part works as expected
-    if original_resolution < requested_timedelta[requested_resolution]:
+    # Downsample data if the original resolution is higher than the requested
+    if original_resolution < requested_timedelta:
         return df.groupby_dynamic(time_col, every=requested_resolution).agg(
             [
                 pl.col(col).mean()
@@ -407,24 +404,27 @@ def change_temporal_resolution(
             ]
         )
 
-    # this part is still a little dicy
+    # Upsample data if the original resolution is lower than the requested
+    # DataFrame with just the date column in the requested resolution
+    df_res: pl.DataFrame = pl.DataFrame(
+        {time_col: pl.date_range(min_date, max_date, requested_resolution)}
+    )
+
+    # Join the original DataFrame with df_res to get a DataFrame with missing data
     df_join: pl.DataFrame = (
-        pl.DataFrame(
-            {time_col: pl.date_range(min_date, max_date, requested_resolution)}
-        )
-        .join(df, on=time_col, how="outer")
+        df_res.join(df, on=time_col, how="outer")
         .sort(by=time_col)
         .with_columns(
             pl.when(f" {units[col].strip()}" in [None, *cont.GRP_MEAN])
             .then(pl.col(col))
-            .otherwise(
-                pl.col(col)
-                * (requested_timedelta[requested_resolution] / original_resolution)
-            )
+            .otherwise(pl.col(col) * (requested_timedelta / original_resolution))
             .keep_name()
             for col in value_cols
         )
     )
+
+    # interpolate the missing data using the "Akima"-method
+    # !!! this step may lead to inaccuracies !!!
     return interpolate_missing_data_akima(df_join, time_col)
 
 

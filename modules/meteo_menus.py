@@ -77,8 +77,8 @@ def sidebar_address_dates() -> None:
 
         st.selectbox(
             label="Gewünschte Datenauflösung",
-            options=cont.DWD_RESOLUTION_OPTIONS.keys(),
-            index=3,
+            options=[res.de for res in cont.TIME_RESOLUTIONS.values()],
+            index=1,
             help=(
                 """
                 Es liegen nicht immer Daten in der gewünschten Auflösung direkt vor.  \n

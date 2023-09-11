@@ -17,6 +17,7 @@ from wetterdienst.provider.dwd.observation import DwdObservationRequest
 from modules import classes_data as cld
 from modules import classes_errors as cle
 from modules import constants as cont
+from modules import df_manipulation as dfm
 from modules import general_functions as gf
 from modules import streamlit_functions as sf
 
@@ -346,10 +347,21 @@ def collect_meteo_data_for_list_of_parameters(
 def df_from_param_list(param_list: list[cld.DWDParameter]) -> pl.DataFrame:
     """DataFrame from list[cld.DWDParameter] as returned from collect_meteo_data"""
 
+    requested_resolution = next(
+        iter(
+            res.polars
+            for res in cont.TIME_RESOLUTIONS.values()
+            if res.de == sf.s_get("sb_resolution")
+        )
+    )
     dic: dict[str, pl.DataFrame] = {
-        par.name: par.data_frame.select(
-            pl.col("date").dt.replace_time_zone(None).alias("Datum"),
-            pl.col("value").alias(par.name),
+        par.name: dfm.change_temporal_resolution(
+            par.data_frame.select(
+                pl.col("date").dt.replace_time_zone(None).alias("Datum"),
+                pl.col("value").alias(par.name),
+            ),
+            {par.name: par.unit},
+            requested_resolution,
         )
         for par in param_list
         if par.data_frame is not None

@@ -1,5 +1,6 @@
 """Classes and such"""
 
+import datetime as dt
 import re
 from dataclasses import dataclass, field
 from typing import TypedDict
@@ -56,6 +57,16 @@ class TimeMin:
     hour: int
     half_hour: int
     quarter_hour: int
+
+
+@dataclass(frozen=True, kw_only=True)
+class TimeResolution:
+    """Zeitliche Auflösungen"""
+
+    de: str
+    dwd: str
+    polars: str
+    delta: dt.timedelta
 
 
 @dataclass(frozen=True, kw_only=True)

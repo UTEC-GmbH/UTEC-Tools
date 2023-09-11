@@ -1,5 +1,6 @@
 """Konstanten"""
 
+import datetime as dt
 from pathlib import Path
 from typing import Literal
 
@@ -156,6 +157,24 @@ TIME_MIN: clc.TimeMin = clc.TimeMin(
     half_hour=30,
     quarter_hour=15,
 )
+
+TIME_RESOLUTIONS: dict[str, clc.TimeResolution] = {
+    "15m": clc.TimeResolution(
+        de="15-Minutenwerte",
+        dwd="minute_10",
+        polars="15m",
+        delta=dt.timedelta(minutes=15),
+    ),
+    "1h": clc.TimeResolution(
+        de="Stundenwerte", dwd="hourly", polars="1h", delta=dt.timedelta(hours=1)
+    ),
+    "1d": clc.TimeResolution(
+        de="Tageswerte", dwd="daily", polars="1d", delta=dt.timedelta(days=1)
+    ),
+    "1mo": clc.TimeResolution(
+        de="Monatswerte", dwd="monthly", polars="1mo", delta=dt.timedelta(weeks=4)
+    ),
+}
 
 DWD_RESOLUTION_OPTIONS: dict[str, str] = {
     "Minutenwerte": "minute_1",

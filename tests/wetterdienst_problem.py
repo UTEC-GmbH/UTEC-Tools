@@ -4,9 +4,11 @@
 # sourcery skip: avoid-global-variables, do-not-use-bare-except, name-type-suffix
 
 
+import time
 from datetime import datetime as dt
 from typing import Any
 
+import polars as pl
 from loguru import logger
 from wetterdienst import Settings
 from wetterdienst.core.timeseries.result import ValuesResult
@@ -42,6 +44,25 @@ request = DwdObservationRequest(
     settings=WETTERDIENST_SETTINGS,
 )
 filtered = request.filter_by_rank(latlon=lat_lon, rank=1)
+
+
+def values_after_time(max_time: float) -> pl.DataFrame | str:
+    """DataFrame - empty if nothing found after defined amount of time"""
+    start_time: float = time.monotonic()
+    station_id_sorted_by_distance: pl.Series = filtered.df.get_column("station_id")
+    for station in station_id_sorted_by_distance:
+        distance: float = pl.first(
+            filtered.df.filter(pl.col("station_id") == station).get_column("distance")
+        )
+        exe_time: float = time.monotonic() - start_time
+        if exe_time > max_time:
+            return f"Nothing found after {max_time} seconds"
+        values: pl.DataFrame = request.filter_by_station_id(station).values.all().df
+        if not values.is_empty():
+            return values
+
+    return f"Nothing found after {exe_time:.0f} seconds"
+
 
 # values = next(filtered.values.query())
 
@@ -79,6 +100,59 @@ for res, params in discover.items():
 parameter: cld.DWDParameter = next(
     par for par in dwd_params if par.name == selected_parameter
 )
+
+
+par_1: str = "temperature_air_mean_200"
+par_2: str = "radiation_global"
+
+res: str = "hourly"
+start: dt = dt(2022, 1, 1, 0, 0)
+end: dt = dt(2022, 12, 31, 23, 59)
+
+latlon_bremen: tuple[float, float] = 53.0980433, 8.7747248
+
+# request for temperature
+request_1: DwdObservationRequest = DwdObservationRequest(
+    parameter=par_1,
+    resolution=res,
+    start_date=start,
+    end_date=end,
+    settings=WETTERDIENST_SETTINGS,
+)
+
+# request for radiation
+request_2: DwdObservationRequest = DwdObservationRequest(
+    parameter=par_2,
+    resolution=res,
+    start_date=start,
+    end_date=end,
+    settings=WETTERDIENST_SETTINGS,
+)
+
+# get a DataFrame with all stations that have data with the given constraints
+# (here: 502 stations for "temperature" and 42 stations for "radiation")
+stations_with_data_1: pl.DataFrame = request_1.filter_by_distance(latlon_bremen, 500).df
+stations_with_data_2: pl.DataFrame = request_2.filter_by_distance(latlon_bremen, 500).df
+
+# get the station-id of the closest station that has data (here: "00691" for both)
+closest_station_id_1: str = stations_with_data_1.row(0, named=True)["station_id"]
+closest_station_id_2: str = stations_with_data_2.row(0, named=True)["station_id"]
+
+
+@gf.func_timer
+def trying_out_stuff(version: int) -> pl.DataFrame:
+    # get the actual weather data from the closest station
+    # -> "temperature" works as expected, "radiation" raises TypeError:
+    # TypeError: argument 'length': 'Expr' object cannot be interpreted as an integer
+
+    if version == 1:
+        request: DwdObservationRequest = request_1
+        closest_station: str = closest_station_id_1
+    else:
+        request: DwdObservationRequest = request_2
+        closest_station: str = closest_station_id_2
+
+    return request.filter_by_station_id(closest_station).values.all().df
 
 
 @gf.func_timer

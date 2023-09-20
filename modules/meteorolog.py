@@ -1,10 +1,11 @@
 """Meteorologische Daten"""
-# ruff: noqa: E722, PD011, PERF203
-# pylint: disable=W0702
+# ruff: noqa: E722, PD011, PERF203, BLE001
+# pylint: disable=W0702,W0718
 # sourcery skip: do-not-use-bare-except
 
+import datetime as dt
 import os
-from datetime import datetime as dt
+import time
 
 import geopy
 import polars as pl
@@ -68,17 +69,28 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
     mdf: cld.MetaAndDfs | None = kwargs.get("mdf") or sf.s_get("mdf")
 
     if page == "test":
-        start_time = dt(2017, 1, 1, 0, 0)
-        end_time = dt(2019, 12, 31, 23, 59)
+        start_time = dt.datetime(2017, 1, 1, 0, 0)
+        end_time = dt.datetime(2019, 12, 31, 23, 59)
 
     elif page == cont.ST_PAGES.meteo.short:
-        start_time = dt.combine(sf.s_get("di_start"), sf.s_get("ti_start"))
-        end_time = dt.combine(sf.s_get("di_end"), sf.s_get("ti_end"))
+        di_start: dt.date | None = sf.s_get("di_start")
+        di_end: dt.date | None = sf.s_get("di_end")
+        ti_start: dt.time | None = sf.s_get("ti_start")
+        ti_end: dt.time | None = sf.s_get("ti_end")
+        if isinstance(di_start, dt.date) and isinstance(ti_start, dt.time):
+            start_time = dt.datetime.combine(di_start, ti_start)
+        else:
+            raise TypeError
+        if isinstance(di_end, dt.date) and isinstance(ti_end, dt.time):
+            end_time = dt.datetime.combine(di_end, ti_end)
+        else:
+            raise TypeError
 
     elif mdf is not None:
-        index: pl.Series = mdf.df.get_column(cont.SPECIAL_COLS.index)
-        start_time: dt = index.min()
-        end_time: dt = index.max()
+        index: pl.Series = mdf.df.get_column(cont.SPECIAL_COLS.index).sort()
+        start_time: dt.datetime = pl.first(index)
+        end_time: dt.datetime = pl.last(index)
+
     else:
         raise ValueError
 
@@ -125,6 +137,51 @@ def fill_parameter_with_data_from_query(
     parameter.station_info_from_station_df_and_id(station_id)
 
     return parameter
+
+
+# @gf.func_timer
+# def get_data_if_available(parameter: cld.DWDParam, resolution: str) -> cld.DWDParameter:
+#     """With a given parameter, station and resolution,
+#     return a DataFrame with the available values.
+#     If there is no data available with the given constraints,
+#     the returned DataFrame is empty.
+#     """
+
+#     location: geopy.Location = sf.s_get("geo_location") or geo_locate(
+#         sf.s_get("ta_adr") or "Bremen"
+#     )
+#     parameter.location = cld.Location(
+#         name=sf.s_get("ta_adr") or "Bremen",
+#         latitude=location.latitude,
+#         longitude=location.longitude,
+#     )
+#     parameter.time_span = start_end_time(page=sf.s_get("page"))
+
+#     request = DwdObservationRequest(
+#         parameter=parameter.name_en,
+#         resolution=resolution,
+#         start_date=parameter.time_span.start,
+#         end_date=parameter.time_span.end,
+#         settings=WETTERDIENST_SETTINGS,
+#     )
+
+#     parameter.all_stations = request.filter_by_distance(
+#         latlon=(location.latitude, location.longitude),
+#         distance=cont.WEATHERSTATIONS_MAX_DISTANCE,
+#     ).df
+
+#     start_time: float = time.monotonic()
+#     max_time: float = cont.DWD_QUERY_TIME_LIMIT
+#     for station_id in parameter.all_stations.get_column("station_id"):
+#         exe_time: float = time.monotonic() - start_time
+#         if exe_time > max_time:
+#             logger.info(f"Nothing found after {max_time} seconds")
+#         values: pl.DataFrame = request.filter_by_station_id(station_id).values.all().df
+#         if not values.is_empty():
+#             parameter.data_frame = values
+#             parameter.closest_station.station_id = station_id
+
+#     return parameter
 
 
 @gf.func_timer
@@ -200,7 +257,7 @@ def get_data_for_parameter_from_closest_station(
             .filter_by_rank((location.latitude, location.longitude), 1)
             .values.query()
         )
-    except:
+    except Exception:
         logger.debug(
             gf.string_new_line_per_item(
                 [
@@ -238,7 +295,7 @@ def get_data_for_parameter_from_closest_station(
                     .filter_by_rank((location.latitude, location.longitude), 1)
                     .values.query()
                 )
-            except:
+            except Exception:
                 logger.debug(
                     gf.string_new_line_per_item(
                         [
@@ -357,7 +414,7 @@ def df_from_param_list(param_list: list[cld.DWDParameter]) -> pl.DataFrame:
     dic: dict[str, pl.DataFrame] = {
         par.name: dfm.change_temporal_resolution(
             par.data_frame.select(
-                pl.col("date").dt.replace_time_zone(None).alias("Datum"),
+                pl.col("date").dt.datetime.replace_time_zone(None).alias("Datum"),
                 pl.col("value").alias(par.name),
             ),
             {par.name: par.unit},
@@ -435,7 +492,7 @@ def meteo_df(
             .select(
                 [
                     pl.col(param.name),
-                    pl.col(cont.SPECIAL_COLS.index).dt.replace_time_zone(None),
+                    pl.col(cont.SPECIAL_COLS.index).dt.datetime.replace_time_zone(None),
                 ]
             )
             .rename({param.name: param.name_de or param.name})

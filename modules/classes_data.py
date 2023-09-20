@@ -1,14 +1,17 @@
 """Classes and such"""
 
+import time
 from dataclasses import dataclass, field
 from datetime import datetime as dt
 from typing import Literal
 
 import polars as pl
+from wetterdienst.provider.dwd.observation import DwdObservationRequest
 
 from modules import classes_constants as clc
 from modules import constants as cont
 from modules import general_functions as gf
+from modules import meteorolog as met
 from modules import streamlit_functions as sf
 
 
@@ -56,6 +59,96 @@ class DWDStation:
     latitude: float = 0
     longitude: float = 0
     distance: float = 0
+
+
+@dataclass
+class DWDResData:
+    """Data for given parameter and location"""
+
+    all_stations: pl.DataFrame
+    closest_station: DWDStation
+    data: pl.DataFrame
+
+
+@dataclass
+class DWDParam:
+    """DWD Parameter"""
+
+    name_en: str
+    available_resolutions: list[str]
+    unit: str
+    name_de: str | None = None
+    location: Location | None = None
+    time_span: TimeSpan | None = None
+
+    res_minute_1: DWDResData | None = None
+    res_minute_5: DWDResData | None = None
+    res_minute_10: DWDResData | None = None
+    res_hourly: DWDResData | None = None
+    res_6_hour: DWDResData | None = None
+    res_subdaily: DWDResData | None = None
+    res_daily: DWDResData | None = None
+    res_monthly: DWDResData | None = None
+    res_annal: DWDResData | None = None
+
+    def fill_resolutions(self) -> None:
+        """Get data for available resolutions"""
+
+        for res in cont.DWD_RESOLUTION_OPTIONS.values():
+            if res in self.available_resolutions:
+                setattr(self, f"res_{res}", self.get_data(res))
+
+    def get_data(self, resolution: str) -> DWDResData:
+        """Get the values for every available resolution
+        from the closest station that has data.
+        """
+        if self.location is None or self.time_span is None:
+            raise ValueError
+
+        request = DwdObservationRequest(
+            parameter=self.name_en,
+            resolution=resolution,
+            start_date=self.time_span.start,
+            end_date=self.time_span.end,
+            settings=met.WETTERDIENST_SETTINGS,
+        )
+
+        all_stations: pl.DataFrame = request.filter_by_distance(
+            latlon=(self.location.latitude, self.location.longitude),
+            distance=cont.WEATHERSTATIONS_MAX_DISTANCE,
+        ).df
+
+        closest_station: DWDStation = DWDStation()
+
+        data_frame: pl.DataFrame = pl.DataFrame()
+        start_time: float = time.monotonic()
+        max_time: float = cont.DWD_QUERY_TIME_LIMIT
+        for station_id in all_stations.get_column("station_id"):
+            exe_time: float = time.monotonic() - start_time
+            while exe_time < max_time:
+                values: pl.DataFrame = (
+                    request.filter_by_station_id(station_id)  # noqa: PD011
+                    .values.all()
+                    .df
+                )
+                if not values.is_empty():
+                    data_frame = values
+                    closest_station_df: pl.DataFrame = all_stations.filter(
+                        pl.col("station_id") == station_id
+                    )
+                    closest_station = DWDStation(
+                        station_id=station_id,
+                        name=pl.first(closest_station_df.get_column("name")),
+                        state=pl.first(closest_station_df.get_column("state")),
+                        height=pl.first(closest_station_df.get_column("height")),
+                        latitude=pl.first(closest_station_df.get_column("latitude")),
+                        longitude=pl.first(closest_station_df.get_column("longitude")),
+                        distance=pl.first(closest_station_df.get_column("distance")),
+                    )
+
+        return DWDResData(
+            all_stations=all_stations, closest_station=closest_station, data=data_frame
+        )
 
 
 @dataclass

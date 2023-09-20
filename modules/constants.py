@@ -176,6 +176,9 @@ TIME_RESOLUTIONS: dict[str, clc.TimeResolution] = {
     ),
 }
 
+
+DWD_QUERY_TIME_LIMIT: float = 30  # seconds
+
 DWD_RESOLUTION_OPTIONS: dict[str, str] = {
     "Minutenwerte": "minute_1",
     "5-Minutenwerte": "minute_5",

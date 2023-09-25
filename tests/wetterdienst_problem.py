@@ -5,7 +5,7 @@
 
 
 import time
-from datetime import datetime as dt
+import datetime as dt
 from typing import Any
 
 import polars as pl
@@ -32,8 +32,8 @@ WETTERDIENST_SETTINGS = Settings(
 # selected_parameter: str = "radiation_global"
 selected_parameter: str = "sunshine_duration"
 selected_resolution: str = "hourly"
-start: dt = dt(2022, 1, 1, 0, 0)
-end: dt = dt(2022, 12, 31, 23, 59)
+start: dt.datetime = dt.datetime(2022, 1, 1, 0, 0)
+end: dt.datetime = dt.datetime(2022, 12, 31, 23, 59)
 lat_lon: tuple[float, float] = 53.0980433, 8.7747248
 
 request = DwdObservationRequest(

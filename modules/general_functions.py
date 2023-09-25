@@ -91,6 +91,7 @@ def string_new_line_per_item(
     list_or_dic: list | dict,
     title: str | None = None,
     leading_empty_lines: int = 0,
+    trailing_empty_lines: int = 0,
 ) -> str:
     """Generate a string that separates each item of the given object with a new line.
     (mainly for logging)
@@ -106,14 +107,20 @@ def string_new_line_per_item(
     """
 
     if isinstance(list_or_dic, list):
-        return "\n" * leading_empty_lines + "\n".join(
-            [f"'{title}'", *list_or_dic] if title else [*list_or_dic]
+        return (
+            "\n" * leading_empty_lines
+            + "\n".join([f"'{title}'", *list_or_dic] if title else [*list_or_dic])
+            + "\n" * trailing_empty_lines
         )
     if isinstance(list_or_dic, dict):
-        return "\n" * leading_empty_lines + "\n".join(
-            [f"'{title}'"] + [f"{key}: '{val}'" for key, val in list_or_dic.items()]
-            if title
-            else [f"{key}: '{val}'" for key, val in list_or_dic.items()]
+        return (
+            "\n" * leading_empty_lines
+            + "\n".join(
+                [f"'{title}'"] + [f"{key}: '{val}'" for key, val in list_or_dic.items()]
+                if title
+                else [f"{key}: '{val}'" for key, val in list_or_dic.items()]
+            )
+            + "\n" * trailing_empty_lines
         )
     return "Error: given objekt not a list or dictionary"
 

@@ -4,6 +4,8 @@ import datetime as dt
 from pathlib import Path
 from typing import Literal
 
+from wetterdienst import Settings
+
 from modules import classes_constants as clc
 
 REPO_NAME: str = "UTEC-Tools"
@@ -177,7 +179,19 @@ TIME_RESOLUTIONS: dict[str, clc.TimeResolution] = {
 }
 
 
-DWD_QUERY_TIME_LIMIT: float = 30  # seconds
+WETTERDIENST_SETTINGS = Settings(
+    ts_shape="long",
+    ts_si_units=False,
+    ts_skip_empty=True,
+    ts_skip_threshold=0.90,
+    ts_skip_criteria="min",
+    ts_dropna=True,
+    ignore_env=True,
+)
+
+DWD_QUERY_TIME_LIMIT: float = 15  # seconds
+DWD_QUERY_DISTANCE_LIMIT: float = 50  # km
+
 
 DWD_RESOLUTION_OPTIONS: dict[str, str] = {
     "Minutenwerte": "minute_1",

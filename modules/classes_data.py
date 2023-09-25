@@ -1,17 +1,17 @@
 """Classes and such"""
 
+import datetime as dt
 import time
 from dataclasses import dataclass, field
-from datetime import datetime as dt
 from typing import Literal
 
 import polars as pl
+from loguru import logger
 from wetterdienst.provider.dwd.observation import DwdObservationRequest
 
 from modules import classes_constants as clc
 from modules import constants as cont
 from modules import general_functions as gf
-from modules import meteorolog as met
 from modules import streamlit_functions as sf
 
 
@@ -19,7 +19,7 @@ from modules import streamlit_functions as sf
 class GitCommit:
     """Github commit message for the page header"""
 
-    date: dt | str
+    date: dt.datetime | str
     major: str
     minor: str
 
@@ -33,8 +33,8 @@ class GitCommit:
 class TimeSpan:
     """Start- und Endzeit"""
 
-    start: dt
-    end: dt
+    start: dt.datetime
+    end: dt.datetime
 
 
 @dataclass
@@ -65,90 +65,231 @@ class DWDStation:
 class DWDResData:
     """Data for given parameter and location"""
 
-    all_stations: pl.DataFrame
-    closest_station: DWDStation
-    data: pl.DataFrame
+    name_en: str
+    name_de: str
+    all_stations: pl.DataFrame | None = None
+    closest_station: DWDStation | None = None
+    data: pl.DataFrame | None = None
+    no_data: str | None = "No Data Available"
+
+
+@dataclass
+class DWDResolutions:
+    """Temporal resolutions"""
+
+    minute_1: DWDResData = field(init=False)
+    minute_5: DWDResData = field(init=False)
+    minute_10: DWDResData = field(init=False)
+    hourly: DWDResData = field(init=False)
+    six_hour: DWDResData = field(init=False)
+    subdaily: DWDResData = field(init=False)
+    daily: DWDResData = field(init=False)
+    monthly: DWDResData = field(init=False)
+    annual: DWDResData = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Fill in fields"""
+        self.minute_1 = DWDResData("minute_1", "Minutenwerte")
+        self.minute_5 = DWDResData("minute_5", "5-Minutenwerte")
+        self.minute_10 = DWDResData("minute_10", "10-Minutenwerte")
+        self.hourly = DWDResData("hourly", "Stundenwerte")
+        self.six_hour = DWDResData("6_hour", "6-Stundenwerte")
+        self.subdaily = DWDResData("subdaily", "mehrmals täglich")
+        self.daily = DWDResData("daily", "Tageswerte")
+        self.monthly = DWDResData("monthly", "Monateswerte")
+        self.annual = DWDResData("annual", "Jahreswerte")
+
+    def list_all_res_names_en(self) -> list[str]:
+        """List of all resolution names"""
+        return [getattr(self, key).name_en for key in self.__dataclass_fields__]
+
+    def res_with_data(self) -> list[DWDResData]:
+        """Get all resolutions that have data"""
+        return [
+            getattr(self, res)
+            for res in self.__dataclass_fields__
+            if getattr(self, res).no_data is None
+        ]
+
+    def res_without_data(self) -> list[DWDResData]:
+        """Get all resolutions that don't have data"""
+        return [
+            getattr(self, res)
+            for res in self.__dataclass_fields__
+            if isinstance(getattr(self, res).no_data, str)
+        ]
 
 
 @dataclass
 class DWDParam:
-    """DWD Parameter"""
+    """DWD Parameter
+
+    Test:
+        loc = Location("Bremen", 53.0758196, 8.8071646)
+        tim = TimeSpan(dt.datetime(2017, 1, 1, 0, 0), dt.datetime(2019, 12, 31, 23, 59))
+        par = DWDParam("temperature_air_mean_200", loc, tim)  # "humidity"
+        par.fill_resolutions()
+    """
 
     name_en: str
-    available_resolutions: list[str]
-    unit: str
-    name_de: str | None = None
     location: Location | None = None
     time_span: TimeSpan | None = None
 
-    res_minute_1: DWDResData | None = None
-    res_minute_5: DWDResData | None = None
-    res_minute_10: DWDResData | None = None
-    res_hourly: DWDResData | None = None
-    res_6_hour: DWDResData | None = None
-    res_subdaily: DWDResData | None = None
-    res_daily: DWDResData | None = None
-    res_monthly: DWDResData | None = None
-    res_annal: DWDResData | None = None
+    unit: str = field(init=False)
+    name_de: str = field(init=False)
+    available_resolutions: set[str] = field(init=False)
+
+    resolutions: DWDResolutions = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Fill in fields"""
+        self.resolutions = DWDResolutions()
+
+        discover: dict[
+            str, dict[str, dict[str, str]]
+        ] = DwdObservationRequest.discover()
+
+        self.available_resolutions = {
+            res for res, dic in discover.items() if self.name_en in dic
+        }
+        self.unit: str = " " + next(
+            dic[self.name_en]["origin"]
+            for dic in discover.values()
+            if self.name_en in dic
+        )
+        self.name_de = cont.DWD_TRANSLATION.get(self.name_en, "unbekannt")
 
     def fill_resolutions(self) -> None:
         """Get data for available resolutions"""
 
-        for res in cont.DWD_RESOLUTION_OPTIONS.values():
+        for res in self.resolutions.list_all_res_names_en():
             if res in self.available_resolutions:
-                setattr(self, f"res_{res}", self.get_data(res))
+                att_dic: dict = self.get_data(res)
+                for key, value in att_dic.items():
+                    setattr(getattr(self.resolutions, res), key, value)
 
-    def get_data(self, resolution: str) -> DWDResData:
+    def get_data(self, resolution: str) -> dict:
         """Get the values for every available resolution
         from the closest station that has data.
         """
         if self.location is None or self.time_span is None:
             raise ValueError
 
+        logger.info(
+            gf.string_new_line_per_item(
+                [
+                    "Searching data for",
+                    f"Parameter: '{self.name_en}'",
+                    f"Resolution: '{resolution}'",
+                ],
+                leading_empty_lines=2,
+                trailing_empty_lines=2,
+            )
+        )
         request = DwdObservationRequest(
             parameter=self.name_en,
             resolution=resolution,
             start_date=self.time_span.start,
             end_date=self.time_span.end,
-            settings=met.WETTERDIENST_SETTINGS,
+            settings=cont.WETTERDIENST_SETTINGS,
         )
 
         all_stations: pl.DataFrame = request.filter_by_distance(
             latlon=(self.location.latitude, self.location.longitude),
             distance=cont.WEATHERSTATIONS_MAX_DISTANCE,
         ).df
-
         closest_station: DWDStation = DWDStation()
-
         data_frame: pl.DataFrame = pl.DataFrame()
-        start_time: float = time.monotonic()
-        max_time: float = cont.DWD_QUERY_TIME_LIMIT
-        for station_id in all_stations.get_column("station_id"):
-            exe_time: float = time.monotonic() - start_time
-            while exe_time < max_time:
-                values: pl.DataFrame = (
-                    request.filter_by_station_id(station_id)  # noqa: PD011
-                    .values.all()
-                    .df
-                )
-                if not values.is_empty():
-                    data_frame = values
-                    closest_station_df: pl.DataFrame = all_stations.filter(
-                        pl.col("station_id") == station_id
-                    )
-                    closest_station = DWDStation(
-                        station_id=station_id,
-                        name=pl.first(closest_station_df.get_column("name")),
-                        state=pl.first(closest_station_df.get_column("state")),
-                        height=pl.first(closest_station_df.get_column("height")),
-                        latitude=pl.first(closest_station_df.get_column("latitude")),
-                        longitude=pl.first(closest_station_df.get_column("longitude")),
-                        distance=pl.first(closest_station_df.get_column("distance")),
-                    )
+        no_data: str | None = None
 
-        return DWDResData(
-            all_stations=all_stations, closest_station=closest_station, data=data_frame
+        start_time: float = time.monotonic()
+
+        for station_id in all_stations.get_column("station_id"):
+            no_data = self.check_time_distance(station_id, all_stations, start_time)
+            if no_data:
+                break
+
+            values = (
+                request.filter_by_station_id(station_id).values.all().df  # noqa: PD011
+            )
+
+            if not values.is_empty():
+                data_frame = values
+                closest_station_df: pl.DataFrame = all_stations.filter(
+                    pl.col("station_id") == station_id
+                )
+
+                for key in DWDStation.__dataclass_fields__:
+                    value: str | float = (
+                        station_id
+                        if key == "station_id"
+                        else pl.first(closest_station_df.get_column(key))
+                    )
+                    setattr(closest_station, key, value)
+
+                logger.success(
+                    gf.string_new_line_per_item(
+                        [
+                            f"'{resolution}'-data for '{self.name_en}' found!",
+                            f"Station ID: '{closest_station.station_id}'",
+                            f"Station: '{closest_station.name}'",
+                            f"Distance: '{closest_station.distance}' km",
+                        ],
+                        leading_empty_lines=1,
+                        trailing_empty_lines=2,
+                    )
+                )
+                break
+
+        return {
+            "all_stations": all_stations,
+            "closest_station": closest_station,
+            "data": data_frame,
+            "no_data": no_data,
+        }
+
+    def check_time_distance(
+        self, station_id: str, all_stations: pl.DataFrame, start_time: float
+    ) -> str | None:
+        """Check if a station has data"""
+        logger.info(f"checking station id '{station_id}'")
+        no_data: str | None = None
+        distance: float = pl.first(
+            all_stations.filter(pl.col("station_id") == station_id).get_column(
+                "distance"
+            )
         )
+        if distance > cont.DWD_QUERY_DISTANCE_LIMIT:
+            no_data = (
+                "In einem Umkreis von "
+                f"{cont.DWD_QUERY_DISTANCE_LIMIT} km "
+                "konnten keine Daten gefunden werden."
+            )
+            logger.critical(
+                gf.string_new_line_per_item(
+                    [
+                        "Distance limit reached.",
+                        f"No data found within {cont.DWD_QUERY_DISTANCE_LIMIT} km.",
+                    ],
+                    leading_empty_lines=1,
+                )
+            )
+
+        exe_time: float = time.monotonic() - start_time
+        if exe_time > cont.DWD_QUERY_TIME_LIMIT:
+            no_data = "Es konnten in angemessener Zeit keine Daten gefunden werden."
+
+            logger.critical(
+                gf.string_new_line_per_item(
+                    [
+                        "Time limit reached.",
+                        f"No data found within {cont.DWD_QUERY_TIME_LIMIT} s.",
+                    ],
+                    leading_empty_lines=1,
+                )
+            )
+
+        return no_data
 
 
 @dataclass

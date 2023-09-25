@@ -1,6 +1,6 @@
 """login page"""
 
-from datetime import date, datetime
+import datetime as dt
 from typing import Any
 
 import streamlit as st
@@ -97,13 +97,13 @@ def access_granted() -> None:
 
     if access_lvl_user in ("god", "full"):
         sf.s_set("access_pages", cont.ST_PAGES.get_all_short())
-        sf.s_set("access_until", date.max)
+        sf.s_set("access_until", dt.date.max)
     else:
         sf.s_set("access_pages", access_lvl_user)
         sf.s_set(
             "access_until",
             (
-                datetime.strptime(all_users[user_key]["access_until"], "%Y-%m-%d")
+                dt.datetime.strptime(all_users[user_key]["access_until"], "%Y-%m-%d")
                 .astimezone()
                 .date()
             ),
@@ -116,7 +116,7 @@ def access_granted() -> None:
         if uauth.MessageLog.access_other is not None:
             st.markdown(uauth.MessageLog.access_other.message)
 
-        if st.session_state["access_until"] < date.max:
+        if st.session_state["access_until"] < dt.date.max:
             st.markdown(uauth.MessageLog.access_until.message)
         else:
             st.markdown(uauth.MessageLog.access_level.message)

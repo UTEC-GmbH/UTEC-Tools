@@ -5,13 +5,12 @@
 
 import datetime as dt
 import os
-import time
 
 import geopy
 import polars as pl
+import toml
 from geopy.geocoders import Nominatim
 from loguru import logger
-from wetterdienst import Settings
 from wetterdienst.core.timeseries.result import ValuesResult
 from wetterdienst.provider.dwd.observation import DwdObservationRequest
 
@@ -22,19 +21,6 @@ from modules import df_manipulation as dfm
 from modules import general_functions as gf
 from modules import streamlit_functions as sf
 
-# Grenze für Daten-Validität
-# einen Wetterstation muss für den angegebenen Zeitraum
-# mind. diesen Anteil an tatsächlich aufgezeichneten Daten haben
-WETTERDIENST_SETTINGS = Settings(
-    ts_shape="long",
-    ts_si_units=False,
-    ts_skip_empty=True,
-    ts_skip_threshold=0.90,
-    ts_skip_criteria="min",
-    ts_dropna=True,
-    ignore_env=True,
-)
-
 
 @gf.func_timer
 def get_all_parameters() -> dict[str, cld.DWDParameter]:
@@ -43,6 +29,22 @@ def get_all_parameters() -> dict[str, cld.DWDParameter]:
     """
 
     discover: dict = DwdObservationRequest.discover()
+    all_par_dic: dict = {
+        par_name: {
+            "available_resolutions": {
+                res for res, par_dic in discover.items() if par_name in par_dic
+            },
+            "unit": " "
+            + next(
+                dic[par_name]["origin"] for dic in discover.values() if par_name in dic
+            ),
+        }
+        for par_name in {
+            par
+            for sublist in [list(dic.keys()) for dic in discover.values()]
+            for par in sublist
+        }
+    }
     all_parameters: dict[str, cld.DWDParameter] = {}
     for res, params in discover.items():
         for param in params:
@@ -101,7 +103,9 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
 def geo_locate(address: str) -> geopy.Location:
     """Geographische daten (Längengrad, Breitengrad) aus eingegebener Adresse"""
 
-    user_agent_secret: str | None = os.environ.get("GEO_USER_AGENT")
+    user_agent_secret: str | None = os.environ.get(
+        "GEO_USER_AGENT", toml.load(".streamlit/secrets.toml").get("GEO_USER_AGENT")
+    )
     if user_agent_secret is None:
         raise cle.NotFoundError(entry="GEO_USER_AGENT", where="Secrets")
 
@@ -252,7 +256,7 @@ def get_data_for_parameter_from_closest_station(
                 resolution=requested_resolution,
                 start_date=time_span.start,
                 end_date=time_span.end,
-                settings=WETTERDIENST_SETTINGS,
+                settings=cont.WETTERDIENST_SETTINGS,
             )
             .filter_by_rank((location.latitude, location.longitude), 1)
             .values.query()
@@ -290,7 +294,7 @@ def get_data_for_parameter_from_closest_station(
                         resolution=res,
                         start_date=time_span.start,
                         end_date=time_span.end,
-                        settings=WETTERDIENST_SETTINGS,
+                        settings=cont.WETTERDIENST_SETTINGS,
                     )
                     .filter_by_rank((location.latitude, location.longitude), 1)
                     .values.query()

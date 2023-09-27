@@ -1,8 +1,9 @@
 """Rumprobieren"""
 
-# ruff: noqa: E722, PD011, PERF203
-# pylint: disable=W0702,W0621
-# sourcery skip: avoid-global-variables, do-not-use-bare-except, name-type-suffix
+# ruff: noqa: E722, PD011, PERF203, T201, BLE001
+# pylint: disable=W0702,W0621,W0718
+# sourcery skip: avoid-global-variables, do-not-use-bare-except,
+# sourcery skip: name-type-suffix, flag-print
 
 
 import datetime as dt
@@ -23,7 +24,6 @@ WETTERDIENST_SETTINGS = Settings(
 start: dt.datetime = dt.datetime(2022, 1, 1, 0, 0)
 end: dt.datetime = dt.datetime(2022, 12, 31, 23, 59)
 lat_lon: tuple[float, float] = 53.0980433, 8.7747248
-selected_resolution: str = "hourly"
 
 problematic_parameters: list[str] = [
     "cloud_cover_total_index",
@@ -41,19 +41,27 @@ problematic_parameters: list[str] = [
 
 
 for selected_parameter in problematic_parameters:
-    print(f"trying parameter '{selected_parameter}'...")
+    print(f"\nParameter: '{selected_parameter}'...")
+    availabel_resolutions: set[str] = {
+        res
+        for res, par_dic in DwdObservationRequest.discover().items()
+        if selected_parameter in par_dic
+    }
 
-    request = DwdObservationRequest(
-        parameter=selected_parameter,
-        resolution=selected_resolution,
-        start_date=start,
-        end_date=end,
-        settings=WETTERDIENST_SETTINGS,
-    )
+    for res in availabel_resolutions:
+        try:
+            request = DwdObservationRequest(
+                parameter=selected_parameter,
+                resolution=res,
+                start_date=start,
+                end_date=end,
+                settings=WETTERDIENST_SETTINGS,
+            )
+            filtered = request.filter_by_rank(latlon=lat_lon, rank=1)
+            values = next(filtered.values.query())
+            print(f"Resolution: '{res}': 👍 No Error 👍")
 
-    try:
-        filtered = request.filter_by_rank(latlon=lat_lon, rank=1)
-        values = next(filtered.values.query())
-        print(f"'{selected_parameter}' works.\n")
-    except:
-        print(f"'!!! {selected_parameter}' throws error !!!\n")
+        except Exception as error:
+            print(f"Resolution: '{res}': 🐞   ERROR  🐞")
+            print(f"Error Message: '{error}'")
+

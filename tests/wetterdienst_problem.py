@@ -35,18 +35,16 @@ problematic_parameters: list[str] = [
     "wind_force_beaufort",
     "wind_gust_max_last_3h",
     "wind_gust_max_last_6h",
-    "wind_speed_min",
-    "wind_speed_rolling_mean_max",
 ]
 
 
 for selected_parameter in problematic_parameters:
-    print(f"\nParameter: '{selected_parameter}'...")
     availabel_resolutions: set[str] = {
         res
         for res, par_dic in DwdObservationRequest.discover().items()
         if selected_parameter in par_dic
     }
+    print(f"\n'{selected_parameter}' | '{availabel_resolutions}'...")
 
     for res in availabel_resolutions:
         try:
@@ -62,6 +60,4 @@ for selected_parameter in problematic_parameters:
             print(f"Resolution: '{res}': 👍 No Error 👍")
 
         except Exception as error:
-            print(f"Resolution: '{res}': 🐞   ERROR  🐞")
-            print(f"Error Message: '{error}'")
-
+            print(f"Resolution: '{res}': 🐞 ERROR: '{error}' 🐞")

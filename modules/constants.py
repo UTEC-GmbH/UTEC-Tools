@@ -222,12 +222,12 @@ DWD_PROBLEMATIC_PARAMS: list[str] = [
     "visibility_range_index",
     "water_equivalent_snow_depth",
     "water_equivalent_snow_depth_excelled",
-    "wind_direction_gust_max",
+    # "wind_direction_gust_max",
     "wind_force_beaufort",
     "wind_gust_max_last_3h",
     "wind_gust_max_last_6h",
-    "wind_speed_min",
-    "wind_speed_rolling_mean_max",
+    # "wind_speed_min",
+    # "wind_speed_rolling_mean_max",
 ]
 DWD_GOOD_PARAMS: set[str] = set(DWD_ALL_PAR_DIC) - set(DWD_PROBLEMATIC_PARAMS)
 

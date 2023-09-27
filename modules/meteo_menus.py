@@ -106,7 +106,7 @@ def parameter_selection() -> None:
             "Auswahl": par.name in cont.DWD_DEFAULT_PARAMS,
         }
         for par in met.ALL_PARAMETERS.values()
-        if par.name not in cont.DWD_SHITTY_PARAMS
+        if par.name not in cont.DWD_PROBLEMATIC_PARAMS
     ]
 
     st.markdown("###")

@@ -28,32 +28,33 @@ def get_all_parameters() -> dict[str, cld.DWDParameter]:
     (including parameters that a specific station might not have data for)
     """
 
-    discover: dict = DwdObservationRequest.discover()
     all_par_dic: dict = {
         par_name: {
             "available_resolutions": {
-                res for res, par_dic in discover.items() if par_name in par_dic
+                res for res, par_dic in cont.DWD_DISCOVER.items() if par_name in par_dic
             },
             "unit": " "
             + next(
-                dic[par_name]["origin"] for dic in discover.values() if par_name in dic
+                dic[par_name]["origin"]
+                for dic in cont.DWD_DISCOVER.values()
+                if par_name in dic
             ),
         }
         for par_name in {
             par
-            for sublist in [list(dic.keys()) for dic in discover.values()]
+            for sublist in [list(dic.keys()) for dic in cont.DWD_DISCOVER.values()]
             for par in sublist
         }
     }
     all_parameters: dict[str, cld.DWDParameter] = {}
-    for res, params in discover.items():
+    for res, params in cont.DWD_DISCOVER.items():
         for param in params:
             if not all_parameters.get(param):
                 all_parameters[param] = cld.DWDParameter(
                     name=param,
                     available_resolutions=[res],
-                    unit=f" {discover[res][param].get('origin')}",
-                    name_de=cont.DWD_TRANSLATION.get(param),
+                    unit=f" {cont.DWD_DISCOVER[res][param].get('origin')}",
+                    name_de=cont.DWD_PARAM_TRANSLATION.get(param),
                 )
             else:
                 all_parameters[param].available_resolutions.append(res)

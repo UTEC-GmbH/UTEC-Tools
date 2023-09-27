@@ -127,8 +127,18 @@ class DWDParam:
     Test:
         loc = Location("Bremen", 53.0758196, 8.8071646)
         tim = TimeSpan(dt.datetime(2017, 1, 1, 0, 0), dt.datetime(2019, 12, 31, 23, 59))
-        par = DWDParam("temperature_air_mean_200", loc, tim)  # "humidity"
-        par.fill_resolutions()
+        par = DWDParam("temperature_air_mean_200", loc, tim)
+        par.fill_all_resolutions()
+
+    pars for Polysun weather data (hourly resolution):
+        par = DWDParam("radiation_global", loc, tim)
+        par = DWDParam("radiation_sky_short_wave_diffuse", loc, tim)
+        par = DWDParam("radiation_sky_long_wave", loc, tim)
+        par = DWDParam("temperature_air_mean_200", loc, tim)
+        par = DWDParam("wind_speed", loc, tim)
+        par = DWDParam("humidity", loc, tim)
+
+        par.fill_specific_resolution("hourly")
     """
 
     name_en: str
@@ -145,21 +155,17 @@ class DWDParam:
         """Fill in fields"""
         self.resolutions = DWDResolutions()
 
-        discover: dict[
-            str, dict[str, dict[str, str]]
-        ] = DwdObservationRequest.discover()
-
         self.available_resolutions = {
-            res for res, dic in discover.items() if self.name_en in dic
+            res for res, dic in cont.DWD_DISCOVER.items() if self.name_en in dic
         }
         self.unit: str = " " + next(
             dic[self.name_en]["origin"]
-            for dic in discover.values()
+            for dic in cont.DWD_DISCOVER.values()
             if self.name_en in dic
         )
-        self.name_de = cont.DWD_TRANSLATION.get(self.name_en, "unbekannt")
+        self.name_de = cont.DWD_PARAM_TRANSLATION.get(self.name_en, "unbekannt")
 
-    def fill_resolutions(self) -> None:
+    def fill_all_resolutions(self) -> None:
         """Get data for available resolutions"""
 
         for res in self.resolutions.list_all_res_names_en():
@@ -167,6 +173,16 @@ class DWDParam:
                 att_dic: dict = self.get_data(res)
                 for key, value in att_dic.items():
                     setattr(getattr(self.resolutions, res), key, value)
+
+    def fill_specific_resolution(self, resolution: str) -> None:
+        """Get data for a chosen resolution"""
+        res: str = cont.DWD_RESOLUTION_OPTIONS.get(resolution) or resolution
+        if res not in self.available_resolutions:
+            return
+
+        att_dic: dict = self.get_data(res)
+        for key, value in att_dic.items():
+            setattr(getattr(self.resolutions, res), key, value)
 
     def get_data(self, resolution: str) -> dict:
         """Get the values for every available resolution
@@ -259,6 +275,7 @@ class DWDParam:
                 "distance"
             )
         )
+
         if distance > cont.DWD_QUERY_DISTANCE_LIMIT:
             no_data = (
                 "In einem Umkreis von "

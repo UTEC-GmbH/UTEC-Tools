@@ -360,31 +360,35 @@ def collect_meteo_data_for_list_of_parameters(
     temporal_resolution: str | None = None,
 ) -> list[cld.DWDParam]:
     """Meteorologische Daten für die ausgewählten Parameter"""
+    time_span: cld.TimeSpan = start_end_time(page=sf.s_get("page"))
+    address: str = sf.s_get("ta_adr") or "Bremen"
+    location: geopy.Location = sf.s_get("geo_location") or geo_locate(address)
 
     selected_resolution: str = (
         temporal_resolution or sf.s_get("sb_resolution") or "hourly"
     )
     selection: list[str] = sf.s_get("selected_params") or cont.DWD_DEFAULT_PARAMS
 
-    previously_collected_params: list[cld.DWDParam] | None = sf.s_get("params_list")
+    previously_collected_params: list[cld.DWDParam] = sf.s_get("params_list") or []
 
     selected_params: list[cld.DWDParam] = []
     for sel in selection:
+        prev_par: cld.DWDParam | None = next(
+            iter(par for par in previously_collected_params if par.name_en == sel),
+            None,
+        )
         if (
-            previously_collected_params is not None
-            and getattr(
-                next(
-                    par for par in previously_collected_params if par.name_en == sel
-                ).resolutions,
-                selected_resolution,
-            ).no_data
-            is None
+            prev_par is not None
+            and all(getattr(prev_par, str(att)) == att for att in [location, time_span])
+            # and prev_par.location == location
+            # and prev_par.time_span == time_span
+            and prev_par.requested_res_name_en == selected_resolution
+            and prev_par.closest_available_res is not None
+            and not prev_par.closest_available_res.data.is_empty()
         ):
-            selected_params.append(
-                next(par for par in previously_collected_params if par.name_en == sel)
-            )
+            selected_params.append(prev_par)
         else:
-            selected_params.append(ALL_PARAMETERS[sel])
+            selected_params.append(cld.DWDParam(sel, location, time_span))
 
     for par in selected_params:
         par.requested_res_name_en = selected_resolution

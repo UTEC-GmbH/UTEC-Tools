@@ -15,7 +15,7 @@ TIME_SPAN = cld.TimeSpan(
     dt.datetime(2017, 1, 1, 0, 0), dt.datetime(2019, 12, 31, 23, 59)
 )
 
-PARS_TO_TEST: set[str] = cont.DWD_GOOD_PARAMS
+PARS_TO_TEST: set[str] = cont.DWD_GOOD_PARAMS  # set(DWD_ALL_PAR_DIC)
 
 PARS_TO_TEST_CLOUD: set[str] = {par for par in PARS_TO_TEST if "cloud" in par}
 PARS_TO_TEST_COUNT: set[str] = {par for par in PARS_TO_TEST if "count" in par}

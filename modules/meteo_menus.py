@@ -101,12 +101,11 @@ def parameter_selection() -> None:
 
     param_data: list[dict] = [
         {
-            "Parameter": par.name,
+            "Parameter": par.name_en,
             "Einheit": par.unit,
-            "Auswahl": par.name in cont.DWD_DEFAULT_PARAMS,
+            "Auswahl": par.name_en in cont.DWD_DEFAULT_PARAMS,
         }
         for par in met.ALL_PARAMETERS.values()
-        if par.name not in cont.DWD_PROBLEMATIC_PARAMS
     ]
 
     st.markdown("###")
@@ -124,17 +123,18 @@ def parameter_selection() -> None:
     sf.s_set("selected_params", selected)
 
     res: str = sf.s_get("sb_resolution") or "Stundenwerte"
-    params: list[cld.DWDParameter] = met.collect_meteo_data_for_list_of_parameters(res)
+    params: list[cld.DWDParam] = met.collect_meteo_data_for_list_of_parameters(res)
 
     st.dataframe(
         data=[
             {
-                "Parameter": param.name,
-                "Auflösung": param.resolution_de,
-                "Wetterstation": param.closest_station.name,
-                "Entfernung": param.closest_station.distance,
+                "Parameter": param.name_de,
+                "Auflösung": param.closest_available_res.name_de,
+                "Wetterstation": param.closest_available_res.closest_station.name,
+                "Entfernung": param.closest_available_res.closest_station.distance,
             }
             for param in params
+            if param.closest_available_res is not None
         ],
         column_config={
             "Entfernung": st.column_config.NumberColumn(

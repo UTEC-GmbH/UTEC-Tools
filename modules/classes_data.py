@@ -68,9 +68,14 @@ class DWDResData:
     name_en: str
     name_de: str
     all_stations: pl.DataFrame | None = None
-    closest_station: DWDStation | None = None
-    data: pl.DataFrame | None = None
+    closest_station: DWDStation = field(init=False)
+    data: pl.DataFrame = field(init=False)
     no_data: str | None = "No Data Available"
+
+    def __post_init__(self) -> None:
+        """Fill in fields"""
+        self.closest_station = DWDStation()
+        self.data = pl.DataFrame()
 
 
 @dataclass
@@ -151,6 +156,9 @@ class DWDParam:
 
     resolutions: DWDResolutions = field(init=False)
 
+    requested_res_name_en: str | None = None
+    closest_available_res: DWDResData | None = None
+
     def __post_init__(self) -> None:
         """Fill in fields"""
         self.resolutions = DWDResolutions()
@@ -163,7 +171,7 @@ class DWDParam:
             for dic in cont.DWD_DISCOVER.values()
             if self.name_en in dic
         )
-        self.name_de = cont.DWD_PARAM_TRANSLATION.get(self.name_en, "unbekannt")
+        self.name_de = cont.DWD_PARAM_TRANSLATION.get(self.name_en, self.name_en)
 
     def fill_all_resolutions(self) -> None:
         """Get data for available resolutions"""

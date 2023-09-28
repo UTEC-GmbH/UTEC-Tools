@@ -21,48 +21,31 @@ from modules import df_manipulation as dfm
 from modules import general_functions as gf
 from modules import streamlit_functions as sf
 
+# @gf.func_timer
+# def get_all_parameters() -> dict[str, cld.DWDParam]:
+#     """Dictionary with all availabel DWD-parameters (key = parameter name).
+#     (including parameters that a specific station might not have data for)
+#     """
 
-@gf.func_timer
-def get_all_parameters() -> dict[str, cld.DWDParameter]:
-    """Dictionary with all availabel DWD-parameters (key = parameter name).
-    (including parameters that a specific station might not have data for)
-    """
+# all_parameters: dict[str, cld.DWDParameter] = {}
+# for res, params in cont.DWD_DISCOVER.items():
+#     for param in params:
+#         if not all_parameters.get(param):
+#             all_parameters[param] = cld.DWDParameter(
+#                 name=param,
+#                 available_resolutions=[res],
+#                 unit=f" {cont.DWD_DISCOVER[res][param].get('origin')}",
+#                 name_de=cont.DWD_PARAM_TRANSLATION.get(param),
+#             )
+#         else:
+#             all_parameters[param].available_resolutions.append(res)
 
-    all_par_dic: dict = {
-        par_name: {
-            "available_resolutions": {
-                res for res, par_dic in cont.DWD_DISCOVER.items() if par_name in par_dic
-            },
-            "unit": " "
-            + next(
-                dic[par_name]["origin"]
-                for dic in cont.DWD_DISCOVER.values()
-                if par_name in dic
-            ),
-        }
-        for par_name in {
-            par
-            for sublist in [list(dic.keys()) for dic in cont.DWD_DISCOVER.values()]
-            for par in sublist
-        }
-    }
-    all_parameters: dict[str, cld.DWDParameter] = {}
-    for res, params in cont.DWD_DISCOVER.items():
-        for param in params:
-            if not all_parameters.get(param):
-                all_parameters[param] = cld.DWDParameter(
-                    name=param,
-                    available_resolutions=[res],
-                    unit=f" {cont.DWD_DISCOVER[res][param].get('origin')}",
-                    name_de=cont.DWD_PARAM_TRANSLATION.get(param),
-                )
-            else:
-                all_parameters[param].available_resolutions.append(res)
-
-    return all_parameters
+#     return all_parameters
 
 
-ALL_PARAMETERS: dict[str, cld.DWDParameter] = get_all_parameters()
+ALL_PARAMETERS: dict[str, cld.DWDParam] = {
+    par_name: cld.DWDParam(par_name) for par_name in cont.DWD_GOOD_PARAMS
+}
 
 
 def start_end_time(**kwargs) -> cld.TimeSpan:
@@ -375,63 +358,75 @@ def stations_sorted_by_distance(
 @gf.func_timer
 def collect_meteo_data_for_list_of_parameters(
     temporal_resolution: str | None = None,
-) -> list[cld.DWDParameter]:
+) -> list[cld.DWDParam]:
     """Meteorologische Daten für die ausgewählten Parameter"""
 
     selected_resolution: str = (
         temporal_resolution or sf.s_get("sb_resolution") or "hourly"
     )
-    selection: list[str] = sf.s_get("selected_params") or ["temperature_air_mean_200"]
+    selection: list[str] = sf.s_get("selected_params") or cont.DWD_DEFAULT_PARAMS
 
-    previously_collected_params: list[cld.DWDParameter] | None = sf.s_get("params_list")
+    previously_collected_params: list[cld.DWDParam] | None = sf.s_get("params_list")
 
-    selected_params: list[cld.DWDParameter] = []
+    selected_params: list[cld.DWDParam] = []
     for sel in selection:
-        if previously_collected_params is not None and sel in [
-            par.name for par in previously_collected_params
-        ]:
+        if (
+            previously_collected_params is not None
+            and getattr(
+                next(
+                    par for par in previously_collected_params if par.name_en == sel
+                ).resolutions,
+                selected_resolution,
+            ).no_data
+            is None
+        ):
             selected_params.append(
-                next(par for par in previously_collected_params if par.name == sel)
+                next(par for par in previously_collected_params if par.name_en == sel)
             )
         else:
             selected_params.append(ALL_PARAMETERS[sel])
 
-    params: list[cld.DWDParameter] = [
-        get_data_for_parameter_from_closest_station(par, selected_resolution)
-        for par in selected_params
-    ]
-    sf.s_set("params_list", params)
+    for par in selected_params:
+        par.requested_res_name_en = selected_resolution
+        if selected_resolution in par.available_resolutions:
+            par.fill_specific_resolution(selected_resolution)
+            par.closest_available_res = getattr(par.resolutions, selected_resolution)
+        else:
+            closest_res: str = next(
+                res
+                for res in gf.sort_from_selection_to_front_then_to_back(
+                    list(cont.DWD_RESOLUTION_OPTIONS.values()), selected_resolution
+                )
+                if res in par.available_resolutions
+            )
+            par.fill_specific_resolution(closest_res)
+            par.closest_available_res = getattr(par.resolutions, closest_res)
 
-    return params
+    sf.s_set("params_list", selected_params)
+
+    return selected_params
 
 
 @gf.func_timer
-def df_from_param_list(param_list: list[cld.DWDParameter]) -> pl.DataFrame:
+def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
     """DataFrame from list[cld.DWDParameter] as returned from collect_meteo_data"""
 
-    requested_resolution = next(
-        iter(
-            res.polars
-            for res in cont.TIME_RESOLUTIONS.values()
-            if res.de == sf.s_get("sb_resolution")
-        )
-    )
     dic: dict[str, pl.DataFrame] = {
-        par.name: dfm.change_temporal_resolution(
-            par.data_frame.select(
+        par.name_de: dfm.change_temporal_resolution(
+            par.closest_available_res.data.select(
                 pl.col("date").dt.datetime.replace_time_zone(None).alias("Datum"),
-                pl.col("value").alias(par.name),
+                pl.col("value").alias(par.name_de),
             ),
-            {par.name: par.unit},
-            requested_resolution,
+            {par.name_de: par.unit},
+            par.requested_res_name_en,
         )
         for par in param_list
-        if par.data_frame is not None
+        if par.closest_available_res is not None
     }
     longest_param: str = next(
-        par.name
+        par.name_de
         for par in param_list
-        if dic[par.name].height == max(df.height for df in dic.values())
+        if dic[par.name_de].height == max(df.height for df in dic.values())
     )
 
     df: pl.DataFrame = dic[longest_param]

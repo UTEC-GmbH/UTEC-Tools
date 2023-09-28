@@ -295,12 +295,10 @@ def map_dwd_all(**kwargs) -> go.Figure:
     )
 
     # alle Stationen
-    stations: pl.DataFrame | None = sf.s_get("stations_distance")
-    all_sta: pl.DataFrame = (
-        stations
-        if isinstance(stations, pl.DataFrame)
-        else meteo.stations_sorted_by_distance()
-    )
+    all_sta: pl.DataFrame | None = sf.s_get("stations_distance")
+    if all_sta is None:
+        raise ValueError
+
     all_lat = list(all_sta["latitude"])
     all_lon = list(all_sta["longitude"])
     all_nam = list(all_sta["name"])

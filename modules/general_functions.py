@@ -6,8 +6,9 @@ import json
 import locale
 import time
 from collections import Counter
-from collections.abc import Callable
-from typing import Any, Literal
+
+# from collections.abc import Callable
+from typing import Any, Literal, Callable, TypeVar, cast
 
 import numpy as np
 import streamlit as st
@@ -19,6 +20,8 @@ from modules import general_functions as gf
 from modules import setup_logger as slog
 from modules import streamlit_functions as sf
 
+TCallable = TypeVar("TCallable", bound=Callable)
+
 
 def log_new_run() -> None:
     """Log new run"""
@@ -28,7 +31,7 @@ def log_new_run() -> None:
     logger.log(slog.LVLS.new_run.name, f"NEW RUN ( # {sf.s_get('number of runs')} )")
 
 
-def lottie_spinner(func: Callable) -> Callable:
+def lottie_spinner(func: TCallable) -> TCallable:
     """Decorator fancy animated spinners while a function runs.
 
     Returns:
@@ -42,10 +45,10 @@ def lottie_spinner(func: Callable) -> Callable:
             result: Any = func(*args, **kwargs)
         return result
 
-    return wrapper
+    return cast(TCallable, wrapper)
 
 
-def func_timer(func: Callable) -> Callable:
+def func_timer(func: TCallable) -> TCallable:
     """Decorator for measuring the execution time of a function.
 
     The execution time is writen in the streamlit session state
@@ -84,7 +87,7 @@ def func_timer(func: Callable) -> Callable:
 
         return result
 
-    return wrapper
+    return cast(TCallable, wrapper)
 
 
 def string_new_line_per_item(

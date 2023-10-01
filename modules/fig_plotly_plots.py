@@ -333,10 +333,11 @@ def map_dwd_all(**kwargs) -> go.Figure:
     )
 
     # eingegebene Adresse
-    loc: geopy.Location = sf.s_get("geo_location")
+    loc = sf.s_get("geo_location")
+    if not isinstance(loc, cld.Location):
+        raise cle.NotFoundError(entry="location", where="Session State")
 
-    address: str = loc.address
-    address = address.replace(", Deutschland", "").title()
+    address: str = f"{loc.street}, {loc.city}"
     hov_temp: str = (
         f"{address}<br><i>(Standort aus gegebener Addresse)</i><extra></extra>"
     )

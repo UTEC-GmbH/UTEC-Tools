@@ -1,18 +1,25 @@
 """Classes and such"""
 
 import datetime as dt
+import os
 import time
 from dataclasses import dataclass, field
-from typing import Literal
+from typing import TYPE_CHECKING, Literal, Self
 
 import polars as pl
+import toml
+from geopy.geocoders import Nominatim
 from loguru import logger
 from wetterdienst.provider.dwd.observation import DwdObservationRequest
 
 from modules import classes_constants as clc
+from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
 from modules import streamlit_functions as sf
+
+if TYPE_CHECKING:
+    import geopy
 
 
 @dataclass
@@ -41,11 +48,92 @@ class TimeSpan:
 class Location:
     """Location data"""
 
-    name: str | None
-    latitude: float
-    longitude: float
+    address: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
+    altitude: float | None = None
     attr_size: float | None = None
     attr_colour: float | None = None
+    name: str | None = None
+    address_geopy: str | None = None
+    street: str | None = None
+    house_number: int | None = None
+    post_code: int | None = None
+    city: str | None = None
+    suburb: str | None = None
+    country: str | None = None
+
+    def fill_using_geopy(self) -> Self:
+        """Get data for given address or coordinates"""
+
+        if all(
+            [
+                isinstance(self.address, str),
+                isinstance(self.latitude, float),
+                isinstance(self.longitude, float),
+            ]
+        ):
+            logger.critical("Too much information - Address and Coordinates given!")
+            raise ValueError
+
+        if isinstance(self.address, str):
+            self.get_data(self.address)
+            logger.info("Location data collected from given address.")
+
+        elif isinstance(self.latitude, float) and isinstance(self.longitude, float):
+            self.get_data((self.latitude, self.longitude))
+            logger.info("Location data collected from given coordinates")
+
+        return self
+
+    def get_data(self, location: tuple[float, float] | str) -> None:
+        """Get the data using geopy"""
+        user_agent_secret: str | None = os.environ.get(
+            "GEO_USER_AGENT", toml.load(".streamlit/secrets.toml").get("GEO_USER_AGENT")
+        )
+
+        if user_agent_secret is None:
+            raise cle.NotFoundError(entry="GEO_USER_AGENT", where="Secrets")
+
+        geolocator: Nominatim = Nominatim(user_agent=user_agent_secret)
+
+        if isinstance(location, str):
+            query = geolocator.geocode(location, exactly_one=True).point  # type: ignore
+        elif isinstance(location, tuple):
+            query = location
+        else:
+            raise TypeError
+
+        geopy_loc: geopy.Location = geolocator.reverse(
+            query=query,
+            exactly_one=True,
+            addressdetails=True,
+        )  # type: ignore
+        addr: dict = geopy_loc.raw["address"]
+
+        self.latitude = geopy_loc.latitude
+        self.longitude = geopy_loc.longitude
+        self.address_geopy = geopy_loc.address
+        self.street = addr.get("road", "unbekannt")
+        self.city = addr.get("city")
+        self.suburb = addr.get("suburb")
+        self.country = addr.get("country")
+
+        geopy_hn = addr.get("house_number")
+        if isinstance(geopy_hn, int):
+            self.house_number = geopy_hn
+        elif isinstance(geopy_hn, str) and geopy_hn.isnumeric():
+            self.house_number = int(geopy_hn)
+        else:
+            self.house_number = None
+
+        geopy_pc = addr.get("postcode")
+        if isinstance(geopy_pc, int):
+            self.post_code = geopy_pc
+        elif isinstance(geopy_pc, str) and geopy_pc.isnumeric():
+            self.post_code = int(geopy_pc)
+        else:
+            self.post_code = None
 
 
 @dataclass
@@ -159,6 +247,9 @@ class DWDParam:
     requested_res_name_en: str | None = None
     closest_available_res: DWDResData | None = None
 
+    num_format: str = field(init=False)
+    pandas_styler: str = field(init=False)
+
     def __post_init__(self) -> None:
         """Fill in fields"""
         self.resolutions = DWDResolutions()
@@ -172,6 +263,9 @@ class DWDParam:
             if self.name_en in dic
         )
         self.name_de = cont.DWD_PARAM_TRANSLATION.get(self.name_en, self.name_en)
+
+        self.num_format = f'#,##0.0" {self.unit.strip()}"'
+        self.pandas_styler = "{:,.1f} " + self.unit
 
     def fill_all_resolutions(self) -> None:
         """Get data for available resolutions"""

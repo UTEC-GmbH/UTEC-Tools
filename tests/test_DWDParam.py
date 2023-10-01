@@ -10,7 +10,7 @@ import pytest
 from modules import classes_data as cld
 from modules import constants as cont
 
-LOCATION = cld.Location("Bremen", 53.0758196, 8.8071646)
+LOCATION = cld.Location("Bremen").fill_using_geopy()
 TIME_SPAN = cld.TimeSpan(
     dt.datetime(2017, 1, 1, 0, 0), dt.datetime(2019, 12, 31, 23, 59)
 )

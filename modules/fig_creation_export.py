@@ -6,7 +6,6 @@ from typing import Any
 
 import plotly.graph_objects as go
 import streamlit as st
-from geopy import Location
 from loguru import logger
 
 from modules import classes_data as cld
@@ -228,12 +227,11 @@ def cr_meteo_sidebar() -> go.Figure:
     fig: go.Figure = ploplo.map_dwd_all()
 
     # eingegebene Adresse
-    loc: Location | None = sf.s_get("geo_location")
-    if not isinstance(loc, Location):
+    loc = sf.s_get("geo_location")
+    if not isinstance(loc, cld.Location):
         raise cle.NotFoundError(entry="location", where="Session State")
 
-    address: str = loc.address
-    address = address.replace(", Deutschland", "").title()
+    address: str = f"{loc.street}, {loc.city}"
     hov_temp: str = (
         f"{address}<br><i>(Standort aus gegebener Addresse)</i><extra></extra>"
     )

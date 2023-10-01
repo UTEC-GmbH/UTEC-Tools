@@ -4,15 +4,9 @@
 # sourcery skip: do-not-use-bare-except
 
 import datetime as dt
-import os
 
-import geopy
 import polars as pl
-import toml
-from geopy.geocoders import Nominatim
 from loguru import logger
-from wetterdienst.core.timeseries.result import ValuesResult
-from wetterdienst.provider.dwd.observation import DwdObservationRequest
 
 from modules import classes_data as cld
 from modules import classes_errors as cle
@@ -20,28 +14,6 @@ from modules import constants as cont
 from modules import df_manipulation as dfm
 from modules import general_functions as gf
 from modules import streamlit_functions as sf
-
-# @gf.func_timer
-# def get_all_parameters() -> dict[str, cld.DWDParam]:
-#     """Dictionary with all availabel DWD-parameters (key = parameter name).
-#     (including parameters that a specific station might not have data for)
-#     """
-
-# all_parameters: dict[str, cld.DWDParameter] = {}
-# for res, params in cont.DWD_DISCOVER.items():
-#     for param in params:
-#         if not all_parameters.get(param):
-#             all_parameters[param] = cld.DWDParameter(
-#                 name=param,
-#                 available_resolutions=[res],
-#                 unit=f" {cont.DWD_DISCOVER[res][param].get('origin')}",
-#                 name_de=cont.DWD_PARAM_TRANSLATION.get(param),
-#             )
-#         else:
-#             all_parameters[param].available_resolutions.append(res)
-
-#     return all_parameters
-
 
 ALL_PARAMETERS: dict[str, cld.DWDParam] = {
     par_name: cld.DWDParam(par_name) for par_name in cont.DWD_GOOD_PARAMS
@@ -83,276 +55,47 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
     return cld.TimeSpan(start=start_time, end=end_time)
 
 
-@gf.func_timer
-def geo_locate(address: str) -> geopy.Location:
-    """Geographische daten (Längengrad, Breitengrad) aus eingegebener Adresse"""
-
-    user_agent_secret: str | None = os.environ.get(
-        "GEO_USER_AGENT", toml.load(".streamlit/secrets.toml").get("GEO_USER_AGENT")
-    )
-    if user_agent_secret is None:
-        raise cle.NotFoundError(entry="GEO_USER_AGENT", where="Secrets")
-
-    geolocator: Nominatim = Nominatim(user_agent=user_agent_secret)
-    location: geopy.Location = geolocator.geocode(address)  # type: ignore
-
-    sf.s_set("geo_location", location)
-
-    logger.info(f"Koordinaten für '{address}' gefunden.")
-
-    return location
-
-
-# def fill_parameter_with_data_from_query(
-#     parameter: cld.DWDParameter,
-#     query: ValuesResult,
-#     resolution: str,
-#     location: geopy.Location,
-# ) -> cld.DWDParameter:
-#     """Gather data"""
-
-#     parameter.location_lat = location.latitude
-#     parameter.location_lon = location.longitude
-#     parameter.resolution = resolution
-#     parameter.resolution_de = next(
-#         res_de
-#         for res_de, res_en in cont.DWD_RESOLUTION_OPTIONS.items()
-#         if resolution == res_en
-#     )
-#     parameter.data_frame = query.df
-#     parameter.all_stations = query.stations.df
-#     station_id: str = query.df[0, "station_id"]
-#     parameter.station_info_from_station_df_and_id(station_id)
-
-#     return parameter
-
-
 # @gf.func_timer
-# def get_data_if_available(parameter: cld.DWDParam, resolution: str) -> cld.DWDParameter:
-#     """With a given parameter, station and resolution,
-#     return a DataFrame with the available values.
-#     If there is no data available with the given constraints,
-#     the returned DataFrame is empty.
-#     """
+# def geo_locate(address: str) -> cld.Location:
+#     """Geographische daten (Längengrad, Breitengrad) aus eingegebener Adresse"""
 
-#     location: geopy.Location = sf.s_get("geo_location") or geo_locate(
-#         sf.s_get("ta_adr") or "Bremen"
+#     user_agent_secret: str | None = os.environ.get(
+#         "GEO_USER_AGENT", toml.load(".streamlit/secrets.toml").get("GEO_USER_AGENT")
 #     )
-#     parameter.location = cld.Location(
-#         name=sf.s_get("ta_adr") or "Bremen",
-#         latitude=location.latitude,
-#         longitude=location.longitude,
+#     if user_agent_secret is None:
+#         raise cle.NotFoundError(entry="GEO_USER_AGENT", where="Secrets")
+
+#     geolocator: Nominatim = Nominatim(user_agent=user_agent_secret)
+#     geopy_loc: geopy.Location = geolocator.reverse(
+#         geolocator.geocode(address, exactly_one=True, addressdetails=True).point,
+#         exactly_one=True,
+#         addressdetails=True,
 #     )
-#     parameter.time_span = start_end_time(page=sf.s_get("page"))
+#     addr: dict = geopy_loc.raw["address"]
 
-#     request = DwdObservationRequest(
-#         parameter=parameter.name_en,
-#         resolution=resolution,
-#         start_date=parameter.time_span.start,
-#         end_date=parameter.time_span.end,
-#         settings=WETTERDIENST_SETTINGS,
-#     )
-
-#     parameter.all_stations = request.filter_by_distance(
-#         latlon=(location.latitude, location.longitude),
-#         distance=cont.WEATHERSTATIONS_MAX_DISTANCE,
-#     ).df
-
-#     start_time: float = time.monotonic()
-#     max_time: float = cont.DWD_QUERY_TIME_LIMIT
-#     for station_id in parameter.all_stations.get_column("station_id"):
-#         exe_time: float = time.monotonic() - start_time
-#         if exe_time > max_time:
-#             logger.info(f"Nothing found after {max_time} seconds")
-#         values: pl.DataFrame = request.filter_by_station_id(station_id).values.all().df
-#         if not values.is_empty():
-#             parameter.data_frame = values
-#             parameter.closest_station.station_id = station_id
-
-#     return parameter
-
-
-# @gf.func_timer
-# def get_data_for_parameter_from_closest_station(
-#     parameter: cld.DWDParameter, requested_resolution: str
-# ) -> cld.DWDParameter:
-#     """Check if a parameter name is valid and give out the best data resolution.
-
-#     If the parameter is available in the requested resolution,
-#     it returns the requested resolution as string, if not, returns the best available.
-#     """
-
-#     if parameter.name not in ALL_PARAMETERS:
-#         logger.critical(f"Parameter '{parameter.name}' is not a valid DWD-Parameter!")
-#         raise cle.NoDWDParameterError(parameter.name)
-
-#     # if requested resolution is given in german, translate to english
-#     if requested_resolution in cont.DWD_RESOLUTION_OPTIONS:
-#         logger.info(
-#             f"Translating requested_resolution ('{requested_resolution}') "
-#             f"to '{cont.DWD_RESOLUTION_OPTIONS[requested_resolution]}'"
-#         )
-#         requested_resolution = cont.DWD_RESOLUTION_OPTIONS[requested_resolution]
-
-#     # if requested resolution not availabe for parameter, find the best alternative
-#     if requested_resolution not in parameter.available_resolutions:
-#         logger.info(
-#             f"Requested resolution '{requested_resolution}' "
-#             f"not in available resolutions {parameter.available_resolutions}"
-#         )
-#         sorted_full: list[str] = gf.sort_from_selection_to_front_then_to_back(
-#             list(cont.DWD_RESOLUTION_OPTIONS.values()), requested_resolution
-#         )
-#         requested_resolution = next(
-#             res for res in sorted_full if res in parameter.available_resolutions
-#         )
-#         logger.info(f"Requested resolution changed to '{requested_resolution}'.")
-
-#     time_span: cld.TimeSpan = start_end_time(page=sf.s_get("page"))
-#     address: str = sf.s_get("ta_adr") or "Bremen"
-#     location: geopy.Location = sf.s_get("geo_location") or geo_locate(address)
-
-#     # check if data already in parameter
-#     if (
-#         parameter.location_lat == location.latitude
-#         and parameter.location_lon == location.longitude
-#         and parameter.data_frame is not None
-#     ):
-#         logger.info(f"Data for parameter '{parameter.name}' already collected.")
-#         return parameter
-
-#     # check if the parameter has data for the requested resolution
-#     try:
-#         logger.debug(
-#             gf.string_new_line_per_item(
-#                 [
-#                     "Trying to find data for",
-#                     f"parameter '{parameter.name}'",
-#                     f"available resolutions: {parameter.available_resolutions}",
-#                     f"starting in resolution '{requested_resolution}'.",
-#                 ],
-#                 leading_empty_lines=1,
-#             )
-#         )
-#         query = next(
-#             DwdObservationRequest(
-#                 parameter=parameter.name,
-#                 resolution=requested_resolution,
-#                 start_date=time_span.start,
-#                 end_date=time_span.end,
-#                 settings=cont.WETTERDIENST_SETTINGS,
-#             )
-#             .filter_by_rank((location.latitude, location.longitude), 1)
-#             .values.query()
-#         )
-#     except Exception:
-#         logger.debug(
-#             gf.string_new_line_per_item(
-#                 [
-#                     "No values availabe for",
-#                     f"parameter '{parameter.name}'",
-#                     f"in resolution '{requested_resolution}'.",
-#                     "Checking other options...",
-#                 ],
-#                 leading_empty_lines=1,
-#             )
-#         )
-#         sorted_res: list[str] = gf.sort_from_selection_to_front_then_to_back(
-#             parameter.available_resolutions, requested_resolution
-#         )
-#         for res in sorted_res[1:]:
-#             logger.debug(
-#                 gf.string_new_line_per_item(
-#                     [
-#                         "Trying to find data for",
-#                         f"parameter '{parameter.name}'",
-#                         f"in resolution '{res}'.",
-#                     ],
-#                     leading_empty_lines=1,
-#                 )
-#             )
-#             try:
-#                 query: ValuesResult = next(
-#                     DwdObservationRequest(
-#                         parameter=parameter.name,
-#                         resolution=res,
-#                         start_date=time_span.start,
-#                         end_date=time_span.end,
-#                         settings=cont.WETTERDIENST_SETTINGS,
-#                     )
-#                     .filter_by_rank((location.latitude, location.longitude), 1)
-#                     .values.query()
-#                 )
-#             except Exception:
-#                 logger.debug(
-#                     gf.string_new_line_per_item(
-#                         [
-#                             f"No values availabe for parameter '{parameter.name}'",
-#                             f"in resolution '{res}'.",
-#                             "Checking other options...",
-#                         ],
-#                         leading_empty_lines=1,
-#                     )
-#                 )
-#             else:
-#                 logger.success(
-#                     f"\nData found for Parameter '{parameter.name}' "
-#                     f"in resolution '{res}'\n"
-#                 )
-#                 return fill_parameter_with_data_from_query(
-#                     parameter, query, res, location
-#                 )
-#     else:
-#         logger.success(
-#             f"\nData for Parameter '{parameter.name}' "
-#             f"available in requested resolution ('{requested_resolution}')\n"
-#         )
-#         return fill_parameter_with_data_from_query(
-#             parameter, query, requested_resolution, location
-#         )
-#     logger.critical(f"No values for parameter '{parameter.name}' could be found!!!")
-#     raise cle.NoValuesForParameterError(
-#         parameter=parameter,
-#         tested=parameter.available_resolutions,
-#         start=time_span.start,
-#         end=time_span.end,
+#     loc: cld.Location = cld.Location(
+#         latitude=geopy_loc.latitude,
+#         longitude=geopy_loc.longitude,
+#         altitude=None,
+#         attr_size=None,
+#         attr_colour=None,
+#         name=addr.get("city", "unbekannt"),
+#         address=geopy_loc.address,
+#         street=addr.get("road", "unbekannt"),
+#         house_number=int(addr.get("house_number")),
+#         post_code=int(addr.get("postcode"))
+#         if addr.get("postcode") is not None
+#         else None,
+#         city=addr.get("city", "unbekannt"),
+#         suburb=addr.get("suburb", "unbekannt"),
+#         country=addr.get("country", "unbekannt"),
 #     )
 
+# sf.s_set("geo_location", loc)
 
-# @gf.func_timer
-# def stations_sorted_by_distance(
-#     parameter: cld.DWDParameter | None = None,
-#     resolution: str = "hourly",
-# ) -> pl.DataFrame:
-#     """Alle verfügbaren Wetterstationen
-#     in x Kilometer entfernung zur gegebenen Addresse
-#     mit Daten für den gewählten Parameter
-#     in gewünschter zeitlicher Auflösung und Zeitperiode
+# logger.info(f"Koordinaten für '{address}' gefunden.")
 
-#     (die Entfernung ist in der Konstante 'cont.WEATHERSTATIONS_MAX_DISTANCE' definiert)
-#     """
-
-#     param: cld.DWDParameter = parameter or cld.DWDParameter(
-#         name="temperature_air_mean_200",
-#         available_resolutions=[
-#             "minute_10",
-#             "hourly",
-#             "subdaily",
-#             "daily",
-#             "monthly",
-#             "annual",
-#         ],
-#         unit=" °C",
-#     )
-#     param = get_data_for_parameter_from_closest_station(param, resolution)
-
-#     if param.all_stations is None:
-#         logger.critical(f"Keine Daten für Parameter '{param.name}' gefunden!")
-#         raise ValueError
-
-#     sf.s_set("stations_distance", param.all_stations)
-
-#     return param.all_stations
+# return loc
 
 
 @gf.func_timer
@@ -362,7 +105,10 @@ def collect_meteo_data_for_list_of_parameters(
     """Meteorologische Daten für die ausgewählten Parameter"""
     time_span: cld.TimeSpan = start_end_time(page=sf.s_get("page"))
     address: str = sf.s_get("ta_adr") or "Bremen"
-    location: geopy.Location = sf.s_get("geo_location") or geo_locate(address)
+    location: cld.Location = (
+        sf.s_get("geo_location") or cld.Location(address).fill_using_geopy()
+    )
+    sf.s_set("geo_location", location)
 
     selected_res: str = temporal_resolution or sf.s_get("sb_resolution") or "hourly"
     selected_res_en: str = cont.DWD_RESOLUTION_OPTIONS.get(selected_res, selected_res)
@@ -380,10 +126,14 @@ def collect_meteo_data_for_list_of_parameters(
         if (
             prev_par is not None
             and prev_par.closest_available_res is not None
-            and prev_par.location == location
-            and prev_par.time_span == time_span
-            and prev_par.requested_res_name_en == selected_res_en
-            and not prev_par.closest_available_res.data.is_empty()
+            and all(
+                [
+                    prev_par.location == location,
+                    prev_par.time_span == time_span,
+                    prev_par.requested_res_name_en == selected_res_en,
+                    prev_par.closest_available_res.data.is_empty() is False,
+                ]
+            )
         ):
             logger.info(f"Parameter '{prev_par.name_en}' available from previous run.")
             selected_params.append(prev_par)
@@ -457,11 +207,15 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
     dic: dict[str, pl.DataFrame] = {
         par.name_de: dfm.change_temporal_resolution(
             par.closest_available_res.data.select(
-                pl.col("date").dt.datetime.replace_time_zone(None).alias("Datum"),
+                pl.col("date").dt.replace_time_zone(None).alias("Datum"),
                 pl.col("value").alias(par.name_de),
             ),
             {par.name_de: par.unit},
-            par.requested_res_name_en,
+            next(
+                res
+                for res in cont.TIME_RESOLUTIONS
+                if cont.TIME_RESOLUTIONS[res].dwd == par.requested_res_name_en
+            ),
         )
         for par in param_list
         if par.closest_available_res is not None

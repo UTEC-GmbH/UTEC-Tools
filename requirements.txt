@@ -1,7 +1,7 @@
 black==23.7.0
 deta==1.2.0
 fastkml==0.12
-geopy==2.3.0
+geopy==2.4.0
 ipykernel==6.25.1
 langchain==0.0.265
 loguru==0.7.0

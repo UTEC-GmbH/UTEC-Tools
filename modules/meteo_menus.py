@@ -169,11 +169,11 @@ def download_as_excel() -> None:
         df_ex: pl.DataFrame = met.df_from_param_list(dat)
         meta: cld.MetaData = cld.MetaData(
             lines={
-                par.name: cld.MetaLine(
-                    name=par.name,
+                par.name_de: cld.MetaLine(
+                    name=par.name_de,
                     name_orgidx="Datum",
-                    orig_tit=par.name,
-                    tit=par.name,
+                    orig_tit=par.name_de,
+                    tit=par.name_de,
                     unit=par.unit,
                     excel_number_format=par.num_format,
                 )

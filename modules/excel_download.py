@@ -39,13 +39,15 @@ def excel_download(
             output,
             worksheet=ws_name,
             position=(row_offset, column_offset),
-            has_header=True,
             hide_gridlines=True,
             autofit=True,
+            has_header=True,
+            # header_format={"halign": "right"},
             column_formats={
                 name: line.excel_number_format or "#,##0.0"
                 for name, line in meta.lines.items()
             },
+            column_widths={"Datum": 120},
             dtype_formats={pl.Datetime: "DD.MM.YYYY hh:mm", pl.Date: "DD.MM.YYYY"},
         )
 

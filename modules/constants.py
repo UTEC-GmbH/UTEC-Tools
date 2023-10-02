@@ -236,13 +236,13 @@ DWD_DEFAULT_PARAMS: list[str] = [
     "radiation_global",
 ]
 
-DWD_PARAMS_POLYSUN: set[str] = {
-    "radiation_global",
-    "radiation_sky_short_wave_diffuse",
-    "radiation_sky_long_wave",
-    "temperature_air_mean_200",
-    "wind_speed",
-    "humidity",
+DWD_PARAMS_POLYSUN: dict[str, str] = {
+    "radiation_global": "Gh [W/m²]",
+    "radiation_sky_short_wave_diffuse": "Dh [W/m²]",
+    "radiation_sky_long_wave": "Lh [W/m²]",
+    "temperature_air_mean_200": "Tamb [°C]",
+    "wind_speed": "Vwndh [m/s]",
+    "humidity": "Hrel [%]",
 }
 
 

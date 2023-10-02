@@ -212,10 +212,10 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
             ),
             {par.name_de: par.unit},
             next(
-                res
-                for res in cont.TIME_RESOLUTIONS
-                if cont.TIME_RESOLUTIONS[res].dwd == par.requested_res_name_en
-            ),
+                res_lit
+                for res_lit, res_cl in cont.TIME_RESOLUTIONS.items()
+                if res_cl.dwd == par.requested_res_name_en
+            ),  # type: ignore
         )
         for par in param_list
         if par.closest_available_res is not None
@@ -232,6 +232,15 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
     ]
     for df_add in other_dfs:
         df = df.join(df_add, on="Datum", how="outer")
+
+    if sf.s_get("tog_polysun"):
+        df = df.rename(
+            {
+                name_de: name_en
+                for name_en, name_de in cont.DWD_PARAM_TRANSLATION.items()
+                if name_de in df.columns
+            }
+        )
 
     return df
 
@@ -267,7 +276,7 @@ def match_resolution(df_resolution: int) -> str:
 @gf.func_timer
 def meteo_df(
     mdf: cld.MetaAndDfs | None = None,
-) -> list[cld.DWDParameter]:
+) -> list[cld.DWDParam]:
     """Get a DataFrame with date- and value-columns for each parameter"""
 
     mdf_intern: cld.MetaAndDfs | None = sf.s_get("mdf") or mdf
@@ -279,20 +288,24 @@ def meteo_df(
         if mdf_intern.meta.td_mnts and sf.s_get("page") != "meteo"
         else "hourly"
     )
-    params: list[cld.DWDParameter] = collect_meteo_data_for_list_of_parameters(time_res)
+    params: list[cld.DWDParam] = collect_meteo_data_for_list_of_parameters(time_res)
     for param in params:
-        if param.data_frame is None:
+        if (
+            param.closest_available_res is None
+            or param.closest_available_res.data is None
+        ):
             raise ValueError
-        param.data_frame = (
-            param.data_frame.select(["value", "date"])
-            .rename({"value": param.name, "date": cont.SPECIAL_COLS.index})
+
+        param.closest_available_res.data = (
+            param.closest_available_res.data.select(["value", "date"])
+            .rename({"value": param.name_de, "date": cont.SPECIAL_COLS.index})
             .select(
                 [
-                    pl.col(param.name),
+                    pl.col(param.name_de),
                     pl.col(cont.SPECIAL_COLS.index).dt.datetime.replace_time_zone(None),
                 ]
             )
-            .rename({param.name: param.name_de or param.name})
+            .rename({param.name_de: param.name_de or param.name_de})
         )
     return params
 

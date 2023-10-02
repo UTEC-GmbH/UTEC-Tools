@@ -5,7 +5,7 @@ geopy==2.4.0
 ipykernel==6.25.2
 loguru==0.7.2
 mypy==1.5.1
-nbformat
+# nbformat
 numpy==1.26.0
 openpyxl==3.1.2
 pandas
@@ -14,7 +14,7 @@ plotly==5.17.0
 polars
 PyGithub==2.1.1
 pytest==7.4.2
-python-dotenv==1.0.0
+# python-dotenv==1.0.0
 scipy==1.11.3
 sentry-sdk==1.31.0
 streamlit-authenticator==0.2.3

@@ -1,10 +1,8 @@
 """Download the generated DataFrame as an Excel-File"""
 
 import io
-from typing import Any
 
 import polars as pl
-import xlsxwriter
 
 from modules import classes_constants as clc
 from modules import classes_data as cld

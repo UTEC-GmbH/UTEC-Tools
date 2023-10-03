@@ -29,8 +29,6 @@ def sidebar_reset() -> None:
 def sidebar_address_dates() -> None:
     """Adresse und Daten"""
 
-    # sf.s_set(key="address_last_run", value=sf.s_get("ta_adr"))
-
     with st.sidebar, st.form("Standort und Daten"):
         st.text_area(
             label="Adresse",
@@ -44,11 +42,7 @@ def sidebar_address_dates() -> None:
                 """
             ),
             key="ta_adr",
-            # on_change=sf.s_set(key="address_last_run", value=sf.s_get("ta_adr")),
         )
-
-        # if sf.s_get(key="address_last_run") != sf.s_get("ta_adr"):
-        #     sf.s_delete(key="geo_location")
 
         cols: list = st.columns([60, 40])
         with cols[0]:
@@ -145,6 +139,7 @@ def parameter_selection() -> None:
 
     res: str = sf.s_get("sb_resolution") or "Stundenwerte"
     params: list[cld.DWDParam] = met.collect_meteo_data_for_list_of_parameters(res)
+    sf.s_set("dwd_params", params)
 
     st.dataframe(
         data=[
@@ -174,10 +169,12 @@ def parameter_selection() -> None:
     )
 
 
-def download_as_excel() -> None:
+def download_weatherdata() -> None:
     """Data as Excel-File"""
 
-    dat: list[cld.DWDParam] = met.collect_meteo_data_for_list_of_parameters()
+    dat: list[cld.DWDParam] = (
+        sf.s_get("dwd_params") or met.collect_meteo_data_for_list_of_parameters()
+    )
     file_name_city: str = f" {dat[0].location.city}" if dat[0].location else ""
     file_name_time: str = (
         f" {dat[0].time_span.start.date()} - {dat[0].time_span.end.date()}"
@@ -226,7 +223,9 @@ def download_polysun(df_ex: pl.DataFrame, cols: list, file_suffix: str) -> None:
     """Wenn 'Datei erzeugen'-Knopf gedrückt wurde"""
 
     df_ex = df_ex.with_columns(
-        pl.Series(range(0, df_ex.height * 3600, 3600)).alias("Time [s]")
+        pl.Series(
+            range(0, df_ex.height * cont.TIME_SEC.hour, cont.TIME_SEC.hour)
+        ).alias("Time [s]")
     ).select(
         [
             pl.col("Time [s]"),

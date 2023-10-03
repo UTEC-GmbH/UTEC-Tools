@@ -232,50 +232,23 @@ def select_graphs(mdf: cld.MetaAndDfs) -> None:
         st.session_state["but_select_graphs"] = st.form_submit_button("Knöpfle")
 
 
-def meteo_sidebar(page: str) -> None:
+def meteo_sidebar() -> None:
     """sidebar-Menu zur Außentemperatur"""
     with st.sidebar, st.expander("Außentemperatur", expanded=False), st.form(
         "Außentemperatur"
     ):
-        if page in ("graph"):
-            st.checkbox(
-                label="anzeigen",
-                value=False,
-                key="cb_temp",
-                help=(
-                    """
-                    Außentemperaturen  werden 
-                    für den unten eingegebenen Ort heruntergeladen 
-                    und in den Grafiken eingefügt.
-                    """
-                ),
-                # disabled=True,
-            )
-
-        if page in ("meteo"):
-            st.number_input(
-                label="von (Jahr)",
-                format="%i",
-                value=2020,
-                help=(
-                    """
-                    Falls nur ein Jahr ausgegeben werden soll, 
-                    in beide Felder das gleiche Jahr eingeben.
-                    """
-                ),
-                key="meteo_start_year",
-                # disabled=True,
-            )
-
-            st.number_input(
-                label="bis (Jahr)",
-                format="%i",
-                value=2020,
-                key="meteo_end_year",
-                # disabled=True,
-            )
-
-            st.markdown("###")
+        st.checkbox(
+            label="anzeigen",
+            value=False,
+            key="cb_temp",
+            help=(
+                """
+                Außentemperaturen  werden 
+                für den unten eingegebenen Ort heruntergeladen 
+                und in den Grafiken eingefügt.
+                """
+            ),
+        )
 
         st.text_area(
             label="Adresse",
@@ -289,10 +262,7 @@ def meteo_sidebar(page: str) -> None:
                 ob die richtige Adresse gefunden wurde.)_
                 """
             ),
-            # placeholder= 'Cuxhavener Str. 10, 20217 Bremen',
-            # autocomplete= '',
             key="ta_adr",
-            # disabled=True,
         )
 
         if sf.s_get("cb_temp"):

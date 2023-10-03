@@ -28,7 +28,7 @@ if uauth.authentication(sf.s_get("page")):
     with cols[0]:
         menu_m.parameter_selection()
         st.markdown("###")
-        menu_m.download_as_excel()
+        menu_m.download_weatherdata()
 
     with cols[1]:
         plot_height = 750

@@ -51,6 +51,16 @@ class TimeMSec:
 
 
 @dataclass(frozen=True, kw_only=True)
+class TimeSec:
+    """Zeiten in Sekunden"""
+
+    day: int
+    hour: int
+    half_hour: int
+    quarter_hour: int
+
+
+@dataclass(frozen=True, kw_only=True)
 class TimeMin:
     """Zeiten in Minuten"""
 

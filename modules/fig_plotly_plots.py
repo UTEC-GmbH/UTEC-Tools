@@ -3,18 +3,16 @@
 import os
 from typing import Literal
 
-import geopy
 import numpy as np
 import plotly.graph_objects as go
 import polars as pl
-import streamlit as st
 from loguru import logger
 
 from modules import classes_data as cld
 from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
-from modules import meteorolog as meteo
+from modules import meteorolog as met
 from modules import streamlit_functions as sf
 
 
@@ -166,7 +164,7 @@ def line_plot_y_overlay(
         logger.debug(gf.string_new_line_per_item(mdf.meta.lines[line].as_dic()))
 
     for line in lines:
-        year: int = [year for year in mdf.meta.years if str(year) in line][0]
+        year: int = next(year for year in mdf.meta.years if str(year) in line)
         line_data: pl.Series = dic_df[year].get_column(line)
         line_meta: cld.MetaLine = mdf.meta.lines[line]
         manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
@@ -374,168 +372,6 @@ def map_dwd_all(**kwargs) -> go.Figure:
     )
 
 
-@gf.func_timer
-def map_weatherstations() -> go.Figure:
-    """Karte der Wetterstationen (verwendete hervorgehoben)"""
-
-    # alle Stationen ohne Duplikate
-    stations: pl.DataFrame | None = sf.s_get("stations_distance")
-    all_sta: pl.DataFrame = (
-        stations
-        if isinstance(stations, pl.DataFrame)
-        else meteo.stations_sorted_by_distance()
-    )
-
-    # nächstgelegene Station
-    clo_sta = all_sta[all_sta.index == all_sta.index[0]].copy()
-
-    # verwendete Stationen
-    used_sta = (
-        st.session_state["df_used_stations_show"]
-        if "df_used_stations_show" in st.session_state
-        else meteo.used_stations_show()
-    )
-
-    # verwendete und nächstgelegene Stationen löschen
-    for ind in used_sta.index:
-        lat = used_sta.loc[ind, "latitude"]
-        lon = used_sta.loc[ind, "longitude"]
-        met_sta = meteo.same_station_in_meteostat(lat, lon)
-
-        if met_sta is not None:
-            ind = all_sta[all_sta["station_id"] == met_sta].index[0]
-            all_sta = all_sta.drop(ind, axis="index")
-    if clo_sta.index[0] in used_sta.index:
-        used_sta = used_sta.drop(clo_sta.index[0], axis="index")
-
-    # delete station if closer than max_dist_wetter
-    clo_pos = (
-        clo_sta.loc[clo_sta.index[0], "latitude"],
-        clo_sta.loc[clo_sta.index[0], "longitude"],
-    )
-    for ind in used_sta.index:
-        sta_pos = (used_sta.loc[ind, "latitude"], used_sta.loc[ind, "longitude"])
-        if geopy.distance.distance(clo_pos, sta_pos).km < meteo.MIN_DIST_DWD_STAT:
-            used_sta = used_sta.drop(ind, axis="index")
-
-    if clo_sta.index[0] in all_sta.index:
-        all_sta = all_sta.drop(clo_sta.index[0], axis="index")
-
-    # alle Stationen
-    fig = go.Figure(
-        data=go.Scattermapbox(
-            lat=list(all_sta["latitude"]),
-            lon=list(all_sta["longitude"]),
-            text=list(all_sta["name"]),
-            customdata=list(all_sta["distance"]),
-            mode="markers",
-            marker={
-                "size": list(all_sta["distance"])[::-1],
-                "sizeref": float(meteo.WEATHERSTATIONS_MAX_DISTANCE / 7),
-                "sizemin": 2,
-                "allowoverlap": True,
-                "color": list(all_sta["distance"]),
-                "colorscale": "Blues",  # Blackbody,Bluered,Blues,Cividis,Earth,
-                # Electric,Greens,Greys,Hot,Jet,Picnic,
-                # Portland,Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd
-                "colorbar": {
-                    "title": "Entfernung<br> ----- ",
-                    "bgcolor": "rgba(255,255,255,0.5)",
-                    "ticksuffix": " km",
-                    "x": 0,
-                },
-                "opacity": 0.5,
-                "reversescale": True,
-                "cmax": meteo.WEATHERSTATIONS_MAX_DISTANCE,
-                "cmin": 0,
-            },
-            hovertemplate=(
-                "<b>%{text}</b> <i>(Entfernung: "
-                "%{customdata:,.1f} km)</i><extra></extra>"
-            ),
-        )
-    )
-
-    # eingegebene Adresse
-    fig.add_trace(
-        go.Scattermapbox(
-            lat=[st.session_state["dic_geo"]["lat"]],
-            lon=[st.session_state["dic_geo"]["lon"]],
-            text=[st.session_state["ta_adr"].title()],
-            hovertemplate="<b>%{text}</b><br>→ eingegebener Standort<extra></extra>",
-            mode="markers",
-            marker={
-                "size": 12,
-                "color": "limegreen",
-            },
-        )
-    )
-
-    # closest station
-    fig.add_trace(
-        go.Scattermapbox(
-            lat=[clo_sta.loc[clo_sta.index[0], "latitude"]],
-            lon=[clo_sta.loc[clo_sta.index[0], "longitude"]],
-            customdata=[clo_sta.loc[clo_sta.index[0], "distance"]],
-            text=[f"{clo_sta.loc[clo_sta.index[0], 'name']}"],
-            hovertemplate=(
-                "<b>%{text}</b> <i>(Entfernung: %{customdata:,.1f} km)"
-                "</i><br>→ nächstgelgene Wetterstation<extra></extra>"
-            ),
-            mode="markers",
-            marker={
-                "size": 12,
-                "color": "crimson",
-            },
-        )
-    )
-
-    # Wetterstationen für Zusatzparameter
-    if used_sta.shape[0] > 0:
-        for ind in used_sta.index:
-            fig.add_trace(
-                go.Scattermapbox(
-                    lat=[used_sta.loc[ind, "latitude"]],
-                    lon=[used_sta.loc[ind, "longitude"]],
-                    customdata=[
-                        (
-                            f'<i>(Entfernung: {used_sta.loc[ind, "distance"]:,.1f} km)'
-                            f"</i><br>→ nächstgelgene Wetterstation für Parameter<br>"
-                            f'{", ".join(used_sta.loc[ind, "params"])}'
-                        )
-                    ],
-                    text=[used_sta.loc[ind, "name"]],
-                    hovertemplate="<b>%{text}</b> %{customdata}<extra></extra>",
-                    mode="markers",
-                    marker={
-                        "size": 12,
-                        "color": "gold",
-                    },
-                )
-            )
-
-    fig = fig.update_layout(
-        # title=f"Wetterstationen im Radius von {meteo.weatherstations_max_distance} km um den Standort",
-        autosize=False,
-        height=800,
-        showlegend=False,
-        font_family="Arial",
-        separators=",.",
-        margin={"l": 5, "r": 5, "t": 30, "b": 5},
-        mapbox={
-            "accesstoken": os.getenv("MAPBOX_TOKEN"),
-            "zoom": 6,
-            "center": {
-                "lat": st.session_state["dic_geo"]["lat"],
-                "lon": st.session_state["dic_geo"]["lon"],
-            },
-        },
-    )
-    st.session_state["meteo_fig"] = fig
-    return fig
-
-
-# @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
 def timings(dic: dict) -> go.Figure:
     """Grafik mit Ausführungszeiten für debug"""
     fig_tim = go.Figure(

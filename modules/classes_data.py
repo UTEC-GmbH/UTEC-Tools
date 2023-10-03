@@ -267,7 +267,7 @@ class DWDParam:
         self.num_format = f'#,##0.0" {self.unit.strip()}"'
         self.pandas_styler = "{:,.1f} " + self.unit
 
-    def fill_all_resolutions(self) -> None:
+    def fill_all_resolutions(self) -> Self:
         """Get data for available resolutions"""
 
         for res in self.resolutions.list_all_res_names_en():
@@ -276,15 +276,19 @@ class DWDParam:
                 for key, value in att_dic.items():
                     setattr(getattr(self.resolutions, res), key, value)
 
-    def fill_specific_resolution(self, resolution: str) -> None:
+        return self
+
+    def fill_specific_resolution(self, resolution: str) -> Self:
         """Get data for a chosen resolution"""
         res: str = cont.DWD_RESOLUTION_OPTIONS.get(resolution) or resolution
         if res not in self.available_resolutions:
-            return
+            return self
 
         att_dic: dict = self.get_data(res)
         for key, value in att_dic.items():
             setattr(getattr(self.resolutions, res), key, value)
+
+        return self
 
     def get_data(self, resolution: str) -> dict:
         """Get the values for every available resolution
@@ -316,6 +320,7 @@ class DWDParam:
             latlon=(self.location.latitude, self.location.longitude),
             distance=cont.WEATHERSTATIONS_MAX_DISTANCE,
         ).df
+
         closest_station: DWDStation = DWDStation()
         data_frame: pl.DataFrame = pl.DataFrame()
         no_data: str | None = None

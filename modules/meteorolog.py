@@ -55,49 +55,6 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
     return cld.TimeSpan(start=start_time, end=end_time)
 
 
-# @gf.func_timer
-# def geo_locate(address: str) -> cld.Location:
-#     """Geographische daten (Längengrad, Breitengrad) aus eingegebener Adresse"""
-
-#     user_agent_secret: str | None = os.environ.get(
-#         "GEO_USER_AGENT", toml.load(".streamlit/secrets.toml").get("GEO_USER_AGENT")
-#     )
-#     if user_agent_secret is None:
-#         raise cle.NotFoundError(entry="GEO_USER_AGENT", where="Secrets")
-
-#     geolocator: Nominatim = Nominatim(user_agent=user_agent_secret)
-#     geopy_loc: geopy.Location = geolocator.reverse(
-#         geolocator.geocode(address, exactly_one=True, addressdetails=True).point,
-#         exactly_one=True,
-#         addressdetails=True,
-#     )
-#     addr: dict = geopy_loc.raw["address"]
-
-#     loc: cld.Location = cld.Location(
-#         latitude=geopy_loc.latitude,
-#         longitude=geopy_loc.longitude,
-#         altitude=None,
-#         attr_size=None,
-#         attr_colour=None,
-#         name=addr.get("city", "unbekannt"),
-#         address=geopy_loc.address,
-#         street=addr.get("road", "unbekannt"),
-#         house_number=int(addr.get("house_number")),
-#         post_code=int(addr.get("postcode"))
-#         if addr.get("postcode") is not None
-#         else None,
-#         city=addr.get("city", "unbekannt"),
-#         suburb=addr.get("suburb", "unbekannt"),
-#         country=addr.get("country", "unbekannt"),
-#     )
-
-# sf.s_set("geo_location", loc)
-
-# logger.info(f"Koordinaten für '{address}' gefunden.")
-
-# return loc
-
-
 @gf.func_timer
 def collect_meteo_data_for_list_of_parameters(
     temporal_resolution: str | None = None,
@@ -105,16 +62,32 @@ def collect_meteo_data_for_list_of_parameters(
     """Meteorologische Daten für die ausgewählten Parameter"""
     time_span: cld.TimeSpan = start_end_time(page=sf.s_get("page"))
     address: str = sf.s_get("ta_adr") or "Bremen"
-    location: cld.Location = (
-        sf.s_get("geo_location") or cld.Location(address).fill_using_geopy()
-    )
+    loc: cld.Location | None = sf.s_get("geo_location")
+    if isinstance(loc, cld.Location) and loc.address == address:
+        location: cld.Location = loc
+    else:
+        location: cld.Location = cld.Location(address).fill_using_geopy()
     sf.s_set("geo_location", location)
 
     selected_res: str = temporal_resolution or sf.s_get("sb_resolution") or "hourly"
     selected_res_en: str = cont.DWD_RESOLUTION_OPTIONS.get(selected_res, selected_res)
-    logger.debug(f"selected resolution: '{selected_res_en}'")
 
     selection: list[str] = sf.s_get("selected_params") or cont.DWD_DEFAULT_PARAMS
+
+    logger.debug(
+        gf.string_new_line_per_item(
+            [
+                f"Parameters: '{selection}'",
+                f"Time: '{time_span.start} - {time_span.end}'",
+                f"Resolution: '{selected_res_en}'",
+                f"Location (City): '{location.city}'",
+            ],
+            "Collecting Weatherdata for:",
+            leading_empty_lines=1,
+            trailing_empty_lines=1,
+        )
+    )
+
     previously_collected_params: list[cld.DWDParam] = sf.s_get("params_list") or []
     selected_params: list[cld.DWDParam] = []
 
@@ -181,21 +154,25 @@ def all_available_stations(param_list: list[cld.DWDParam]) -> pl.DataFrame:
     """Combine the 'all_stations' attr of all Parameters in the given list"""
 
     first: cld.DWDParam = param_list[0]
-    others: list[cld.DWDParam] = param_list[1:]
+
     if (
         first.closest_available_res is None
         or first.closest_available_res.all_stations is None
     ):
         raise ValueError
-    df: pl.DataFrame = first.closest_available_res.all_stations
-    for par in others:
-        if (
-            par.closest_available_res is None
-            or par.closest_available_res.all_stations is None
-        ):
-            raise ValueError
 
-        df = df.vstack(par.closest_available_res.all_stations)
+    df: pl.DataFrame = first.closest_available_res.all_stations
+
+    if len(param_list) > 1:
+        others: list[cld.DWDParam] = param_list[1:]
+        for par in others:
+            if (
+                par.closest_available_res is None
+                or par.closest_available_res.all_stations is None
+            ):
+                raise ValueError
+
+            df = df.vstack(par.closest_available_res.all_stations)
 
     return df.unique(subset="station_id", keep="any").sort("distance")
 
@@ -274,18 +251,18 @@ def match_resolution(df_resolution: int) -> str:
 
 
 @gf.func_timer
-def meteo_df(
+def meteo_df_for_temp_in_graph(
     mdf: cld.MetaAndDfs | None = None,
 ) -> list[cld.DWDParam]:
     """Get a DataFrame with date- and value-columns for each parameter"""
 
-    mdf_intern: cld.MetaAndDfs | None = sf.s_get("mdf") or mdf
+    mdf_intern: cld.MetaAndDfs | None = mdf or sf.s_get("mdf")
     if mdf_intern is None:
         raise cle.NotFoundError(entry="mdf", where="Session State")
 
     time_res: str = (
         match_resolution(mdf_intern.meta.td_mnts)
-        if mdf_intern.meta.td_mnts and sf.s_get("page") != "meteo"
+        if mdf_intern.meta.td_mnts
         else "hourly"
     )
     params: list[cld.DWDParam] = collect_meteo_data_for_list_of_parameters(time_res)
@@ -302,46 +279,9 @@ def meteo_df(
             .select(
                 [
                     pl.col(param.name_de),
-                    pl.col(cont.SPECIAL_COLS.index).dt.datetime.replace_time_zone(None),
+                    pl.col(cont.SPECIAL_COLS.index).dt.replace_time_zone(None),
                 ]
             )
             .rename({param.name_de: param.name_de or param.name_de})
         )
     return params
-
-
-# ---------------------------------------------------------------------------
-
-
-# @gf.func_timer
-# def del_meteo() -> None:
-#     """vorhandene meteorologische Daten löschen"""
-#     # Spalten in dfs löschen
-#     for key in st.session_state:
-#         if isinstance(st.session_state[key], pd.DataFrame):
-#             for col in st.session_state[key].columns:
-#                 for meteo in [
-#                     str(DIC_METEOSTAT_CODES[code]["tit"])
-#                     for code in DIC_METEOSTAT_CODES
-#                 ]:
-#                     if meteo in col:
-#                         st.session_state[key].drop(columns=[str(col)], inplace=True)
-
-#     # Metadaten löschen
-#     if gf.st_get("metadata"):
-#         if "Temperatur" in st.session_state["metadata"].keys():
-#             del st.session_state["metadata"]["Temperatur"]
-#         if (
-#             " °C"
-#             not in [
-#                 st.session_state["metadata"][key].get("unit")
-#                 for key in st.session_state["metadata"].keys()
-#             ]
-#             and " °C" in st.session_state["metadata"]["units"]["set"]
-#         ):
-#             st.session_state["metadata"]["units"]["set"].remove(" °C")
-
-#     # Linien löschen
-#     for key in st.session_state:
-#         if isinstance(st.session_state[key], go.Figure):
-#             gf.st_delete(key)

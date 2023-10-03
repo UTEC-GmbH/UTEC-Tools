@@ -74,15 +74,20 @@ def mdf_from_excel_or_st() -> cld.MetaAndDfs:
 
 
 @gf.lottie_spinner
+@gf.func_timer
 def gather_and_manipulate_data() -> cld.MetaAndDfs:
     """Import Excel file and do stuff with the data"""
 
     mdf_i: cld.MetaAndDfs = mdf_from_excel_or_st()
 
+    if sf.s_get("cb_temp") and mdf_i.df:
+        logger.info("Temperaturdaten werden geladen...")
+        mdf_i = df_man.add_temperature_data(mdf_i)
+
     # sidebar menus
     menu_g.base_settings(mdf_i)
     menu_g.select_graphs(mdf_i)
-    menu_g.meteo_sidebar(cont.ST_PAGES.graph.short)
+    menu_g.meteo_sidebar()
 
     if any([sf.s_get("but_base_settings"), sf.s_get("but_meteo_sidebar")]):
         if cont.SPECIAL_COLS.temp in mdf_i.df.columns:
@@ -94,9 +99,6 @@ def gather_and_manipulate_data() -> cld.MetaAndDfs:
             '["df_h", "jdl", "mon", "df_multi", "df_h_multi", "mon_multi"]\n'
             "aus mdf entfernt."
         )
-
-    if sf.s_get("but_meteo_sidebar") and sf.s_get("cb_temp"):
-        mdf_i = df_man.add_temperature_data(mdf_i)
 
     # split the base data frame into years if necessary
     if mdf_i.meta.multi_years and mdf_i.df_multi is None:

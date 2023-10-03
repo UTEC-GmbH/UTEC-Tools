@@ -156,6 +156,13 @@ TIME_MS: clc.TimeMSec = clc.TimeMSec(
     month=30 * 24 * 60 * 60 * 1000,  # 2.592.000.000
 )
 
+TIME_SEC: clc.TimeSec = clc.TimeSec(
+    day=60 * 60 * 24,
+    hour=60 * 60,
+    half_hour=30 * 60,
+    quarter_hour=15 * 60,
+)
+
 TIME_MIN: clc.TimeMin = clc.TimeMin(
     hour=60,
     half_hour=30,

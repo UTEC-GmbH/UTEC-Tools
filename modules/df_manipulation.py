@@ -203,8 +203,8 @@ def interpolate_missing_data_pd(
 @gf.func_timer
 def add_temperature_data(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Add air temperature for given address to the base data frame"""
-
-    parameters: list[cld.DWDParam] = met.meteo_df(mdf)
+    sf.s_set("selected_params", "temperature_air_mean_200")
+    parameters: list[cld.DWDParam] = met.meteo_df_for_temp_in_graph(mdf)
 
     for param in parameters:
         if param.closest_available_res is None:

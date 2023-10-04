@@ -16,24 +16,9 @@ from modules import classes_constants as clc
 from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
-from modules import streamlit_functions as sf
 
 if TYPE_CHECKING:
     import geopy
-
-
-@dataclass
-class GitCommit:
-    """Github commit message for the page header"""
-
-    date: dt.datetime | str
-    major: str
-    minor: str
-
-    def write_all_to_session_state(self) -> None:
-        """Put all collected Commit information into st_session_state"""
-        for attr in self.__dataclass_fields__:
-            sf.s_set(f"GitCommit_{attr}", getattr(self, attr))
 
 
 @dataclass
@@ -46,7 +31,34 @@ class TimeSpan:
 
 @dataclass
 class Location:
-    """Location data"""
+    """Location data
+
+    Attributes:
+        address (str | None): The address of the location.
+        latitude (float | None): The latitude coordinate of the location.
+        longitude (float | None): The longitude coordinate of the location.
+        altitude (float | None): The altitude of the location.
+        attr_size (float | None): Additional attribute for size.
+        attr_colour (float | None): Additional attribute for color.
+        name (str | None): The name of the location.
+        address_geopy (str | None): The address obtained from geopy.
+        street (str | None): The street name of the location.
+        house_number (int | None): The house number of the location.
+        post_code (int | None): The postal code of the location.
+        city (str | None): The city of the location.
+        suburb (str | None): The suburb of the location.
+        country (str | None): The country of the location.
+
+    Methods:
+        fill_using_geopy() -> Self:
+            Retrieves location data based on the provided address or coordinates.
+        from_address(address: str | None) -> Self:
+            Retrieves location data based on the given address.
+        from_coordinates(latitude: float | None, longitude: float | None) -> Self:
+            Retrieves location data based on the given latitude and longitude.
+        get_data(location: tuple[float, float] | str) -> None:
+            Fetches the location data using the geopy library.
+    """
 
     address: str | None = None
     latitude: float | None = None

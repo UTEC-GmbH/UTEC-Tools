@@ -246,8 +246,8 @@ DWD_DEFAULT_PARAMS: list[str] = [
 DWD_PARAMS_POLYSUN: dict[str, str] = {
     "radiation_global": "Gh [W/m²]",
     "radiation_sky_short_wave_diffuse": "Dh [W/m²]",
-    "radiation_sky_long_wave": "Lh [W/m²]",
     "temperature_air_mean_200": "Tamb [°C]",
+    "radiation_sky_long_wave": "Lh [W/m²]",
     "wind_speed": "Vwndh [m/s]",
     "humidity": "Hrel [%]",
 }

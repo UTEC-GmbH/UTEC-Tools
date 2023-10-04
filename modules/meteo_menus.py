@@ -111,7 +111,7 @@ def parameter_selection() -> None:
 
     param_data: list[dict] = [
         {
-            "Parameter": par.name_en,
+            "Parameter": par.name_de,
             "Einheit": par.unit,
             "Auswahl": par.name_en
             in (
@@ -134,7 +134,19 @@ def parameter_selection() -> None:
         key="de_parameter",
     )
 
-    selected: list[str] = [par["Parameter"] for par in edited if par["Auswahl"]]
+    selected: list[str] = [
+        next(
+            (
+                name_en
+                for name_en, name_de in cont.DWD_PARAM_TRANSLATION.items()
+                if name_de == par["Parameter"]
+            ),
+            None,
+        )
+        or par["Parameter"]
+        for par in edited
+        if par["Auswahl"]
+    ]
     sf.s_set("selected_params", selected)
 
     res: str = sf.s_get("sb_resolution") or "Stundenwerte"

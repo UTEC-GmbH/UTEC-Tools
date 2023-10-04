@@ -80,7 +80,7 @@ def gather_and_manipulate_data() -> cld.MetaAndDfs:
 
     mdf_i: cld.MetaAndDfs = mdf_from_excel_or_st()
 
-    if sf.s_get("cb_temp") and mdf_i.df:
+    if sf.s_get("cb_temp"):
         logger.info("Temperaturdaten werden geladen...")
         mdf_i = df_man.add_temperature_data(mdf_i)
 

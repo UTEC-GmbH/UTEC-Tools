@@ -89,7 +89,7 @@ class TestDWDParamAirTemp:
             return
 
         assert par.name_en == "temperature_air_mean_200"
-        assert par.name_de == "Lufttemperatur in 2 m Höhe"
+        assert par.name_de == "Lufttemperatur"
         assert par.location == self.location
         assert par.time_span == self.time_span
         assert par.unit == " °C"

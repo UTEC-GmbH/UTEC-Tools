@@ -4,6 +4,7 @@
 # sourcery skip: do-not-use-bare-except
 
 import datetime as dt
+from typing import Any
 
 import polars as pl
 from loguru import logger
@@ -61,12 +62,12 @@ def collect_meteo_data_for_list_of_parameters(
 ) -> list[cld.DWDParam]:
     """Meteorologische Daten für die ausgewählten Parameter"""
     time_span: cld.TimeSpan = start_end_time(page=sf.s_get("page"))
+
     address: str = sf.s_get("ta_adr") or "Bremen"
-    loc: cld.Location | None = sf.s_get("geo_location")
-    if isinstance(loc, cld.Location) and loc.address == address:
-        location: cld.Location = loc
-    else:
-        location: cld.Location = cld.Location(address).fill_using_geopy()
+    location: Any | None = sf.s_get("geo_location")
+    if not isinstance(location, cld.Location) or location.address != sf.s_get("ta_adr"):
+        logger.info("Standortdaten werden aus gegebener Adresse bestimmt.")
+        location = cld.Location(address).fill_using_geopy()
     sf.s_set("geo_location", location)
 
     selected_res: str = temporal_resolution or sf.s_get("sb_resolution") or "hourly"
@@ -262,7 +263,7 @@ def meteo_df_for_temp_in_graph(
 
     time_res: str = (
         match_resolution(mdf_intern.meta.td_mnts)
-        if mdf_intern.meta.td_mnts
+        if mdf_intern.meta.td_mnts and not sf.s_get("cb_h")
         else "hourly"
     )
     params: list[cld.DWDParam] = collect_meteo_data_for_list_of_parameters(time_res)

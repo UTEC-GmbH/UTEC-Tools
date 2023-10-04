@@ -86,6 +86,36 @@ class Location:
 
         return self
 
+    def from_address(self, address: str | None) -> Self:
+        """Get location data (like coordinates, etc.) from a given address.
+        The address can either be given as attribute of this function
+        or taken from self.address.
+        """
+        if isinstance(address, str):
+            self.address = address
+        if not isinstance(self.address, str):
+            raise TypeError
+        self.get_data(self.address)
+
+        return self
+
+    def from_coordinates(self, latitude: float | None, longitude: float | None) -> Self:
+        """Get location data (like coordinates, etc.) from a given address.
+        The address can either be given as attribute of this function
+        or taken from self.address.
+        """
+        if isinstance(latitude, float) and isinstance(longitude, float):
+            self.latitude = latitude
+            self.longitude = longitude
+
+        if not isinstance(self.latitude, float) or not isinstance(
+            self.longitude, float
+        ):
+            raise TypeError
+        self.get_data((self.latitude, self.longitude))
+
+        return self
+
     def get_data(self, location: tuple[float, float] | str) -> None:
         """Get the data using geopy"""
         user_agent_secret: str | None = os.environ.get(
@@ -512,6 +542,7 @@ class MetaData:
     multi_years: bool | None = None
     td_mnts: int | None = None
     td_interval: str | None = None
+    location: Location | None = None
 
     def as_dic(self) -> dict:
         """Dictionary representation"""

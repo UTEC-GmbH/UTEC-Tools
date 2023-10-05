@@ -52,12 +52,18 @@ class Location:
     Methods:
         fill_using_geopy() -> Self:
             Retrieves location data based on the provided address or coordinates.
+            loc = Location("Bremen").fill_using_geopy()
+
         from_address(address: str | None) -> Self:
             Retrieves location data based on the given address.
+            loc = Location().from_address("Bremen")
+
         from_coordinates(latitude: float | None, longitude: float | None) -> Self:
             Retrieves location data based on the given latitude and longitude.
+            loc = Location().from_coordinates(53.0758196, 8.8071646)
+
         get_data(location: tuple[float, float] | str) -> None:
-            Fetches the location data using the geopy library.
+            Fetches the location data using the geopy library. (used internally)
     """
 
     address: str | None = None
@@ -76,7 +82,14 @@ class Location:
     country: str | None = None
 
     def fill_using_geopy(self) -> Self:
-        """Get data for given address or coordinates"""
+        """Retrieves location data based on the provided address or coordinates.
+
+        Returns:
+            Location
+        Example:
+            loc = Location("Bremen").fill_using_geopy()
+            loc = Location(latitude: 53.075819, longitude: 8.807164).fill_using_geopy()
+        """
 
         if all(
             [
@@ -99,9 +112,15 @@ class Location:
         return self
 
     def from_address(self, address: str | None) -> Self:
-        """Get location data (like coordinates, etc.) from a given address.
+        """Retrieves location data from a given address.
         The address can either be given as attribute of this function
         or taken from self.address.
+
+        Returns:
+            Location
+        Example:
+            loc = Location().from_address("Bremen")
+            loc = Location("Bremen").from_address()
         """
         if isinstance(address, str):
             self.address = address
@@ -112,9 +131,15 @@ class Location:
         return self
 
     def from_coordinates(self, latitude: float | None, longitude: float | None) -> Self:
-        """Get location data (like coordinates, etc.) from a given address.
-        The address can either be given as attribute of this function
-        or taken from self.address.
+        """Get location data from given coordinates.
+        The coordinates can either be given as attribute of this function
+        or taken from self.latitude and self.longitude respectively.
+
+        Returns:
+            Location
+        Example:
+            loc = Location().from_coordinates(53.075819, 8.807164)
+            loc = Location(latitude: 53.075819, longitude: 8.807164).from_coordinates()
         """
         if isinstance(latitude, float) and isinstance(longitude, float):
             self.latitude = latitude
@@ -129,7 +154,8 @@ class Location:
         return self
 
     def get_data(self, location: tuple[float, float] | str) -> None:
-        """Get the data using geopy"""
+        """Fetches the location data using the geopy library. (used internally)"""
+
         user_agent_secret: str | None = os.environ.get(
             "GEO_USER_AGENT", toml.load(".streamlit/secrets.toml").get("GEO_USER_AGENT")
         )

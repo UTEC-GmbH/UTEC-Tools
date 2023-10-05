@@ -1,48 +1,207 @@
 """Classes and such"""
 
+import datetime as dt
+import os
+import time
 from dataclasses import dataclass, field
-from datetime import datetime as dt
-from typing import Literal
+from typing import TYPE_CHECKING, Literal, Self
 
 import polars as pl
+import toml
+from geopy.geocoders import Nominatim
+from loguru import logger
+from wetterdienst.provider.dwd.observation import DwdObservationRequest
 
 from modules import classes_constants as clc
+from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
-from modules import streamlit_functions as sf
 
-
-@dataclass
-class GitCommit:
-    """Github commit message for the page header"""
-
-    date: dt | str
-    major: str
-    minor: str
-
-    def write_all_to_session_state(self) -> None:
-        """Put all collected Commit information into st_session_state"""
-        for attr in self.__dataclass_fields__:
-            sf.s_set(f"GitCommit_{attr}", getattr(self, attr))
+if TYPE_CHECKING:
+    import geopy
 
 
 @dataclass
 class TimeSpan:
     """Start- und Endzeit"""
 
-    start: dt
-    end: dt
+    start: dt.datetime
+    end: dt.datetime
 
 
 @dataclass
 class Location:
-    """Location data"""
+    """Location data
 
-    name: str | None
-    latitude: float
-    longitude: float
+    Attributes:
+        address (str | None): The address of the location.
+        latitude (float | None): The latitude coordinate of the location.
+        longitude (float | None): The longitude coordinate of the location.
+        altitude (float | None): The altitude of the location.
+        attr_size (float | None): Additional attribute for size.
+        attr_colour (float | None): Additional attribute for color.
+        name (str | None): The name of the location.
+        address_geopy (str | None): The address obtained from geopy.
+        street (str | None): The street name of the location.
+        house_number (int | None): The house number of the location.
+        post_code (int | None): The postal code of the location.
+        city (str | None): The city of the location.
+        suburb (str | None): The suburb of the location.
+        country (str | None): The country of the location.
+
+    Methods:
+        fill_using_geopy() -> Self:
+            Retrieves location data based on the provided address or coordinates.
+            loc = Location("Bremen").fill_using_geopy()
+
+        from_address(address: str | None) -> Self:
+            Retrieves location data based on the given address.
+            loc = Location().from_address("Bremen")
+
+        from_coordinates(latitude: float | None, longitude: float | None) -> Self:
+            Retrieves location data based on the given latitude and longitude.
+            loc = Location().from_coordinates(53.0758196, 8.8071646)
+
+        get_data(location: tuple[float, float] | str) -> None:
+            Fetches the location data using the geopy library. (used internally)
+    """
+
+    address: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
+    altitude: float | None = None
     attr_size: float | None = None
     attr_colour: float | None = None
+    name: str | None = None
+    address_geopy: str | None = None
+    street: str | None = None
+    house_number: int | None = None
+    post_code: int | None = None
+    city: str | None = None
+    suburb: str | None = None
+    country: str | None = None
+
+    def fill_using_geopy(self) -> Self:
+        """Retrieves location data based on the provided address or coordinates.
+
+        Returns:
+            Location
+        Example:
+            loc = Location("Bremen").fill_using_geopy()
+            loc = Location(latitude: 53.075819, longitude: 8.807164).fill_using_geopy()
+        """
+
+        if all(
+            [
+                isinstance(self.address, str),
+                isinstance(self.latitude, float),
+                isinstance(self.longitude, float),
+            ]
+        ):
+            logger.critical("Too much information - Address and Coordinates given!")
+            raise ValueError
+
+        if isinstance(self.address, str):
+            self.get_data(self.address)
+            logger.info("Location data collected from given address.")
+
+        elif isinstance(self.latitude, float) and isinstance(self.longitude, float):
+            self.get_data((self.latitude, self.longitude))
+            logger.info("Location data collected from given coordinates")
+
+        return self
+
+    def from_address(self, address: str | None) -> Self:
+        """Retrieves location data from a given address.
+        The address can either be given as attribute of this function
+        or taken from self.address.
+
+        Returns:
+            Location
+        Example:
+            loc = Location().from_address("Bremen")
+            loc = Location("Bremen").from_address()
+        """
+        if isinstance(address, str):
+            self.address = address
+        if not isinstance(self.address, str):
+            raise TypeError
+        self.get_data(self.address)
+
+        return self
+
+    def from_coordinates(self, latitude: float | None, longitude: float | None) -> Self:
+        """Get location data from given coordinates.
+        The coordinates can either be given as attribute of this function
+        or taken from self.latitude and self.longitude respectively.
+
+        Returns:
+            Location
+        Example:
+            loc = Location().from_coordinates(53.075819, 8.807164)
+            loc = Location(latitude: 53.075819, longitude: 8.807164).from_coordinates()
+        """
+        if isinstance(latitude, float) and isinstance(longitude, float):
+            self.latitude = latitude
+            self.longitude = longitude
+
+        if not isinstance(self.latitude, float) or not isinstance(
+            self.longitude, float
+        ):
+            raise TypeError
+        self.get_data((self.latitude, self.longitude))
+
+        return self
+
+    def get_data(self, location: tuple[float, float] | str) -> None:
+        """Fetches the location data using the geopy library. (used internally)"""
+
+        user_agent_secret: str | None = os.environ.get(
+            "GEO_USER_AGENT", toml.load(".streamlit/secrets.toml").get("GEO_USER_AGENT")
+        )
+
+        if user_agent_secret is None:
+            raise cle.NotFoundError(entry="GEO_USER_AGENT", where="Secrets")
+
+        geolocator: Nominatim = Nominatim(user_agent=user_agent_secret)
+
+        if isinstance(location, str):
+            query = geolocator.geocode(location, exactly_one=True).point  # type: ignore
+        elif isinstance(location, tuple):
+            query = location
+        else:
+            raise TypeError
+
+        geopy_loc: geopy.Location = geolocator.reverse(
+            query=query,
+            exactly_one=True,
+            addressdetails=True,
+        )  # type: ignore
+        addr: dict = geopy_loc.raw["address"]
+
+        self.latitude = geopy_loc.latitude
+        self.longitude = geopy_loc.longitude
+        self.address_geopy = geopy_loc.address
+        self.street = addr.get("road", "unbekannt")
+        self.city = addr.get("city")
+        self.suburb = addr.get("suburb")
+        self.country = addr.get("country")
+
+        geopy_hn = addr.get("house_number")
+        if isinstance(geopy_hn, int):
+            self.house_number = geopy_hn
+        elif isinstance(geopy_hn, str) and geopy_hn.isnumeric():
+            self.house_number = int(geopy_hn)
+        else:
+            self.house_number = None
+
+        geopy_pc = addr.get("postcode")
+        if isinstance(geopy_pc, int):
+            self.post_code = geopy_pc
+        elif isinstance(geopy_pc, str) and geopy_pc.isnumeric():
+            self.post_code = int(geopy_pc)
+        else:
+            self.post_code = None
 
 
 @dataclass
@@ -56,6 +215,273 @@ class DWDStation:
     latitude: float = 0
     longitude: float = 0
     distance: float = 0
+
+
+@dataclass
+class DWDResData:
+    """Data for given parameter and location"""
+
+    name_en: str
+    name_de: str
+    all_stations: pl.DataFrame | None = None
+    closest_station: DWDStation = field(init=False)
+    data: pl.DataFrame = field(init=False)
+    no_data: str | None = "No Data Available"
+
+    def __post_init__(self) -> None:
+        """Fill in fields"""
+        self.closest_station = DWDStation()
+        self.data = pl.DataFrame()
+
+
+@dataclass
+class DWDResolutions:
+    """Temporal resolutions"""
+
+    minute_1: DWDResData = field(init=False)
+    minute_5: DWDResData = field(init=False)
+    minute_10: DWDResData = field(init=False)
+    hourly: DWDResData = field(init=False)
+    six_hour: DWDResData = field(init=False)
+    subdaily: DWDResData = field(init=False)
+    daily: DWDResData = field(init=False)
+    monthly: DWDResData = field(init=False)
+    annual: DWDResData = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Fill in fields"""
+        self.minute_1 = DWDResData("minute_1", "Minutenwerte")
+        self.minute_5 = DWDResData("minute_5", "5-Minutenwerte")
+        self.minute_10 = DWDResData("minute_10", "10-Minutenwerte")
+        self.hourly = DWDResData("hourly", "Stundenwerte")
+        self.six_hour = DWDResData("6_hour", "6-Stundenwerte")
+        self.subdaily = DWDResData("subdaily", "mehrmals täglich")
+        self.daily = DWDResData("daily", "Tageswerte")
+        self.monthly = DWDResData("monthly", "Monateswerte")
+        self.annual = DWDResData("annual", "Jahreswerte")
+
+    def list_all_res_names_en(self) -> list[str]:
+        """List of all resolution names"""
+        return [getattr(self, key).name_en for key in self.__dataclass_fields__]
+
+    def res_with_data(self) -> list[DWDResData]:
+        """Get all resolutions that have data"""
+        return [
+            getattr(self, res)
+            for res in self.__dataclass_fields__
+            if getattr(self, res).no_data is None
+        ]
+
+    def res_without_data(self) -> list[DWDResData]:
+        """Get all resolutions that don't have data"""
+        return [
+            getattr(self, res)
+            for res in self.__dataclass_fields__
+            if isinstance(getattr(self, res).no_data, str)
+        ]
+
+
+@dataclass
+class DWDParam:
+    """DWD Parameter
+
+    Test:
+        loc = Location("Bremen", 53.0758196, 8.8071646)
+        tim = TimeSpan(dt.datetime(2017, 1, 1, 0, 0), dt.datetime(2019, 12, 31, 23, 59))
+        par = DWDParam("temperature_air_mean_200", loc, tim)
+        par.fill_all_resolutions()
+
+    pars for Polysun weather data (hourly resolution):
+        par = DWDParam("radiation_global", loc, tim)
+        par = DWDParam("radiation_sky_short_wave_diffuse", loc, tim)
+        par = DWDParam("radiation_sky_long_wave", loc, tim)
+        par = DWDParam("temperature_air_mean_200", loc, tim)
+        par = DWDParam("wind_speed", loc, tim)
+        par = DWDParam("humidity", loc, tim)
+
+        par.fill_specific_resolution("hourly")
+    """
+
+    name_en: str
+    location: Location | None = None
+    time_span: TimeSpan | None = None
+
+    unit: str = field(init=False)
+    name_de: str = field(init=False)
+    available_resolutions: set[str] = field(init=False)
+
+    resolutions: DWDResolutions = field(init=False)
+
+    requested_res_name_en: str | None = None
+    closest_available_res: DWDResData | None = None
+
+    num_format: str = field(init=False)
+    pandas_styler: str = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Fill in fields"""
+        self.resolutions = DWDResolutions()
+
+        self.available_resolutions = {
+            res for res, dic in cont.DWD_DISCOVER.items() if self.name_en in dic
+        }
+        self.unit: str = " " + next(
+            dic[self.name_en]["origin"]
+            for dic in cont.DWD_DISCOVER.values()
+            if self.name_en in dic
+        )
+        self.name_de = cont.DWD_PARAM_TRANSLATION.get(self.name_en, self.name_en)
+
+        self.num_format = f'#,##0.0" {self.unit.strip()}"'
+        self.pandas_styler = "{:,.1f} " + self.unit
+
+    def fill_all_resolutions(self) -> Self:
+        """Get data for available resolutions"""
+
+        for res in self.resolutions.list_all_res_names_en():
+            if res in self.available_resolutions:
+                att_dic: dict = self.get_data(res)
+                for key, value in att_dic.items():
+                    setattr(getattr(self.resolutions, res), key, value)
+
+        return self
+
+    def fill_specific_resolution(self, resolution: str) -> Self:
+        """Get data for a chosen resolution"""
+        res: str = cont.DWD_RESOLUTION_OPTIONS.get(resolution) or resolution
+        if res not in self.available_resolutions:
+            return self
+
+        att_dic: dict = self.get_data(res)
+        for key, value in att_dic.items():
+            setattr(getattr(self.resolutions, res), key, value)
+
+        return self
+
+    def get_data(self, resolution: str) -> dict:
+        """Get the values for every available resolution
+        from the closest station that has data.
+        """
+        if self.location is None or self.time_span is None:
+            raise ValueError
+
+        logger.info(
+            gf.string_new_line_per_item(
+                [
+                    "Searching data for",
+                    f"Parameter: '{self.name_en}'",
+                    f"Resolution: '{resolution}'",
+                ],
+                leading_empty_lines=2,
+                trailing_empty_lines=2,
+            )
+        )
+        request = DwdObservationRequest(
+            parameter=self.name_en,
+            resolution=resolution,
+            start_date=self.time_span.start,
+            end_date=self.time_span.end,
+            settings=cont.WETTERDIENST_SETTINGS,
+        )
+
+        all_stations: pl.DataFrame = request.filter_by_distance(
+            latlon=(self.location.latitude, self.location.longitude),
+            distance=cont.WEATHERSTATIONS_MAX_DISTANCE,
+        ).df
+
+        closest_station: DWDStation = DWDStation()
+        data_frame: pl.DataFrame = pl.DataFrame()
+        no_data: str | None = None
+
+        start_time: float = time.monotonic()
+
+        for station_id in all_stations.get_column("station_id"):
+            no_data = self.check_time_distance(station_id, all_stations, start_time)
+            if no_data:
+                break
+
+            values = (
+                request.filter_by_station_id(station_id).values.all().df  # noqa: PD011
+            )
+
+            if not values.is_empty():
+                data_frame = values
+                closest_station_df: pl.DataFrame = all_stations.filter(
+                    pl.col("station_id") == station_id
+                )
+
+                for key in DWDStation.__dataclass_fields__:
+                    value: str | float = (
+                        station_id
+                        if key == "station_id"
+                        else pl.first(closest_station_df.get_column(key))
+                    )
+                    setattr(closest_station, key, value)
+
+                logger.success(
+                    gf.string_new_line_per_item(
+                        [
+                            f"'{resolution}'-data for '{self.name_en}' found!",
+                            f"Station ID: '{closest_station.station_id}'",
+                            f"Station: '{closest_station.name}'",
+                            f"Distance: '{closest_station.distance}' km",
+                        ],
+                        leading_empty_lines=1,
+                        trailing_empty_lines=2,
+                    )
+                )
+                break
+
+        return {
+            "all_stations": all_stations,
+            "closest_station": closest_station,
+            "data": data_frame,
+            "no_data": no_data,
+        }
+
+    def check_time_distance(
+        self, station_id: str, all_stations: pl.DataFrame, start_time: float
+    ) -> str | None:
+        """Check if a station has data"""
+        logger.info(f"checking station id '{station_id}'")
+        no_data: str | None = None
+        distance: float = pl.first(
+            all_stations.filter(pl.col("station_id") == station_id).get_column(
+                "distance"
+            )
+        )
+
+        if distance > cont.DWD_QUERY_DISTANCE_LIMIT:
+            no_data = (
+                "In einem Umkreis von "
+                f"{cont.DWD_QUERY_DISTANCE_LIMIT} km "
+                "konnten keine Daten gefunden werden."
+            )
+            logger.critical(
+                gf.string_new_line_per_item(
+                    [
+                        "Distance limit reached.",
+                        f"No data found within {cont.DWD_QUERY_DISTANCE_LIMIT} km.",
+                    ],
+                    leading_empty_lines=1,
+                )
+            )
+
+        exe_time: float = time.monotonic() - start_time
+        if exe_time > cont.DWD_QUERY_TIME_LIMIT:
+            no_data = "Es konnten in angemessener Zeit keine Daten gefunden werden."
+
+            logger.critical(
+                gf.string_new_line_per_item(
+                    [
+                        "Time limit reached.",
+                        f"No data found within {cont.DWD_QUERY_TIME_LIMIT} s.",
+                    ],
+                    leading_empty_lines=1,
+                )
+            )
+
+        return no_data
 
 
 @dataclass
@@ -154,6 +580,7 @@ class MetaData:
     multi_years: bool | None = None
     td_mnts: int | None = None
     td_interval: str | None = None
+    location: Location | None = None
 
     def as_dic(self) -> dict:
         """Dictionary representation"""

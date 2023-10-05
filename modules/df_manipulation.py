@@ -195,7 +195,7 @@ def interpolate_missing_data_pd(
     df_pd: pd.DataFrame = df.to_pandas().set_index(COL_IND)
     df_pd[df_pd.diff() == 0] = np.nan
 
-    df_pd = df_pd.interpolate(method=method) or df_pd
+    df_pd = df_pd.interpolate(method=method) or df_pd  # type: ignore
     df_pl: pl.DataFrame = pl.from_pandas(df_pd)
     return df_pl
 
@@ -204,10 +204,14 @@ def interpolate_missing_data_pd(
 def add_temperature_data(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Add air temperature for given address to the base data frame"""
 
-    parameters: list[cld.DWDParameter] = met.meteo_df(mdf)
+    sf.s_set("selected_params", ["temperature_air_mean_200"])
+    parameters: list[cld.DWDParam] = met.meteo_df_for_temp_in_graph(mdf)
 
-    for parameter in parameters:
-        df_parameter: pl.DataFrame | None = parameter.data_frame
+    for param in parameters:
+        if param.closest_available_res is None:
+            raise ValueError
+
+        df_parameter: pl.DataFrame | None = param.closest_available_res.data
         if df_parameter is None:
             continue
         mdf.df = (
@@ -221,14 +225,14 @@ def add_temperature_data(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             .fill_null(strategy="forward")
             .fill_null(strategy="backward")
         )
-        par_nam: str = parameter.name_de or parameter.name
+        par_nam: str = param.name_de
         mdf.meta.lines[par_nam] = cld.MetaLine(
             name=par_nam,
             name_orgidx=f"{par_nam}{cont.SUFFIXES.col_original_index}",
             orig_tit=par_nam,
             tit=par_nam,
-            unit=parameter.unit,
-            unit_h=parameter.unit.strip("h"),
+            unit=param.unit,
+            unit_h=param.unit.strip("h"),
         )
     logger.info(
         gf.string_new_line_per_item(
@@ -237,10 +241,10 @@ def add_temperature_data(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     )
 
     logger.debug(
-        f"mdf.df['Außentemperatur'].null_count(): "
-        f"{mdf.df['Außentemperatur'].null_count()}"
+        f"mdf.df['Lufttemperatur'].null_count(): "
+        f"{mdf.df['Lufttemperatur'].null_count()}"
     )
-    logger.debug(mdf.df.filter(pl.col("Außentemperatur").is_null()))
+    logger.debug(mdf.df.filter(pl.col("Lufttemperatur").is_null()))
 
     return mdf
 

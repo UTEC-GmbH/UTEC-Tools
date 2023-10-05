@@ -6,7 +6,7 @@
 """
 
 import re
-from datetime import datetime
+import datetime as dt
 from typing import Any
 
 import numpy as np
@@ -171,11 +171,11 @@ def standard_xaxis(
     """
 
     x_max: Any = max(max(p["x"]) for p in data.values())
-    if isinstance(x_max, datetime | np.datetime64):
+    if isinstance(x_max, dt.datetime | np.datetime64):
         x_max = gf.end_of_month(x_max)
 
     x_min: Any = min(min(p["x"]) for p in data.values())
-    if isinstance(x_min, datetime | np.datetime64):
+    if isinstance(x_min, dt.datetime | np.datetime64):
         x_min = gf.start_of_month(x_min)
 
     return fig.update_xaxes(

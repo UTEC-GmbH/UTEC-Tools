@@ -1,8 +1,8 @@
 """Menus für die Meteorologie-Seite"""
 
 import datetime as dt
-from typing import TYPE_CHECKING
 
+import polars as pl
 import streamlit as st
 
 from modules import classes_data as cld
@@ -11,9 +11,6 @@ from modules import excel_download as ex
 from modules import general_functions as gf
 from modules import meteorolog as met
 from modules import streamlit_functions as sf
-
-if TYPE_CHECKING:
-    import polars as pl
 
 
 def sidebar_reset() -> None:
@@ -32,8 +29,6 @@ def sidebar_reset() -> None:
 def sidebar_address_dates() -> None:
     """Adresse und Daten"""
 
-    # sf.s_set(key="address_last_run", value=sf.s_get("ta_adr"))
-
     with st.sidebar, st.form("Standort und Daten"):
         st.text_area(
             label="Adresse",
@@ -47,11 +42,7 @@ def sidebar_address_dates() -> None:
                 """
             ),
             key="ta_adr",
-            # on_change=sf.s_set(key="address_last_run", value=sf.s_get("ta_adr")),
         )
-
-        # if sf.s_get(key="address_last_run") != sf.s_get("ta_adr"):
-        #     sf.s_delete(key="geo_location")
 
         cols: list = st.columns([60, 40])
         with cols[0]:
@@ -89,6 +80,25 @@ def sidebar_address_dates() -> None:
             key="sb_resolution",
         )
 
+        st.toggle(
+            label="Polysun Wetterdaten",
+            value=False,
+            key="tog_polysun",
+            help=(
+                """
+                Wetterdaten, die in Polysun eingelesen werden können.  \n  \n
+                Falls nicht anders angegeben, werden die Daten in stündlicher
+                auflösung erzeugt. Standardmäßig werden folgende Parameter gewählt:  \n
+                - Globalstrahlung [Wh/m2]  \n
+                - Diffuse Strahlung [Wh/m2]  \n
+                - Langwällige Strahlung [Wh/m2]  \n
+                - Lufttemperatur [°C]  \n
+                - Windgeschwindigkeit [m/s]  \n
+                - Relative Luftfeuchte [%]
+                """
+            ),
+        )
+
         st.markdown("###")
         st.session_state["but_addr_dates"] = st.form_submit_button(
             "Knöpfle", use_container_width=True
@@ -101,12 +111,16 @@ def parameter_selection() -> None:
 
     param_data: list[dict] = [
         {
-            "Parameter": par.name,
+            "Parameter": par.name_de,
             "Einheit": par.unit,
-            "Auswahl": par.name in cont.DWD_DEFAULT_PARAMS,
+            "Auswahl": par.name_en
+            in (
+                cont.DWD_PARAMS_POLYSUN
+                if sf.s_get("tog_polysun")
+                else cont.DWD_DEFAULT_PARAMS
+            ),
         }
         for par in met.ALL_PARAMETERS.values()
-        if par.name not in cont.DWD_SHITTY_PARAMS
     ]
 
     st.markdown("###")
@@ -120,21 +134,35 @@ def parameter_selection() -> None:
         key="de_parameter",
     )
 
-    selected: list[str] = [par["Parameter"] for par in edited if par["Auswahl"]]
+    selected: list[str] = [
+        next(
+            (
+                name_en
+                for name_en, name_de in cont.DWD_PARAM_TRANSLATION.items()
+                if name_de == par["Parameter"]
+            ),
+            None,
+        )
+        or par["Parameter"]
+        for par in edited
+        if par["Auswahl"]
+    ]
     sf.s_set("selected_params", selected)
 
     res: str = sf.s_get("sb_resolution") or "Stundenwerte"
-    params: list[cld.DWDParameter] = met.collect_meteo_data_for_list_of_parameters(res)
+    params: list[cld.DWDParam] = met.collect_meteo_data_for_list_of_parameters(res)
+    sf.s_set("dwd_params", params)
 
     st.dataframe(
         data=[
             {
-                "Parameter": param.name,
-                "Auflösung": param.resolution_de,
-                "Wetterstation": param.closest_station.name,
-                "Entfernung": param.closest_station.distance,
+                "Parameter": param.name_de,
+                "Auflösung": param.closest_available_res.name_de,
+                "Wetterstation": param.closest_available_res.closest_station.name,
+                "Entfernung": param.closest_available_res.closest_station.distance,
             }
             for param in params
+            if param.closest_available_res is not None
         ],
         column_config={
             "Entfernung": st.column_config.NumberColumn(
@@ -153,62 +181,45 @@ def parameter_selection() -> None:
     )
 
 
-def download_as_excel() -> None:
+def download_weatherdata() -> None:
     """Data as Excel-File"""
 
+    dat: list[cld.DWDParam] = (
+        sf.s_get("dwd_params") or met.collect_meteo_data_for_list_of_parameters()
+    )
+    file_name_city: str = f" {dat[0].location.city}" if dat[0].location else ""
+    file_name_time: str = (
+        f" {dat[0].time_span.start.date()} - {dat[0].time_span.end.date()}"
+        if dat[0].time_span
+        else ""
+    )
+    file_suffix: str = f"{file_name_city}{file_name_time}"
+    df_ex: pl.DataFrame = met.df_from_param_list(dat)
     cols: list = st.columns([1, 3, 1])
 
     if sf.s_get("but_collect_data") and sf.s_get("selected_params") is not None:
-        # closest: dict = sf.s_get("closest_stations") or {}
-        page: str = cont.ST_PAGES.meteo.short
-        timespan: cld.TimeSpan = met.start_end_time()
-        xl_file_name: str = (
-            f"Wetterdaten {timespan.start.date()} - {timespan.end.date()}.xlsx"
-        )
-        dat: list[cld.DWDParameter] = met.collect_meteo_data_for_list_of_parameters()
-        df_ex: pl.DataFrame = met.df_from_param_list(dat)
-        meta: cld.MetaData = cld.MetaData(
-            lines={
-                par.name: cld.MetaLine(
-                    name=par.name,
-                    name_orgidx="Datum",
-                    orig_tit=par.name,
-                    tit=par.name,
-                    unit=par.unit,
-                    excel_number_format=par.num_format,
-                )
-                for par in dat
-            }
-        )
+        if sf.s_get("tog_polysun"):
+            download_polysun(df_ex, cols, file_suffix)
+        else:
+            download_excel(df_ex, dat, cols, file_suffix)
 
         with cols[1]:
-            st.download_button(
-                label="✨ Excel-Datei herunterladen ✨",
-                data=ex.excel_download(df_ex, meta, page),
-                file_name=xl_file_name,
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                key="excel_download",
-                use_container_width=True,
-            )
-
             st.button(
                 "abbrechen", key="cancel_excel_download", use_container_width=True
             )
 
         ani_height = 30
-        with cols[0]:
-            gf.show_lottie_animation(
-                "animations/coin_i.json", height=ani_height, speed=0.75
-            )
-        with cols[2]:
-            gf.show_lottie_animation(
-                "animations/coin_i.json", height=ani_height, speed=0.75
-            )
-
+        for col in cols[::2]:
+            with col:
+                gf.show_lottie_animation(
+                    "animations/coin_i.json", height=ani_height, speed=0.75
+                )
     else:
         with cols[1]:
             st.button(
-                label="✨ Excel-Datei erzeugen ✨",
+                label="✨ Polysun-CSV-Datei erzeugen ✨"
+                if sf.s_get("tog_polysun")
+                else "✨ Excel-Datei erzeugen ✨",
                 help=(
                     """
                 Daten für die gewählten Parameter zusammenstellen
@@ -218,3 +229,60 @@ def download_as_excel() -> None:
                 key="but_collect_data",
                 use_container_width=True,
             )
+
+
+def download_polysun(df_ex: pl.DataFrame, cols: list, file_suffix: str) -> None:
+    """Wenn 'Datei erzeugen'-Knopf gedrückt wurde"""
+
+    df_ex = df_ex.with_columns(
+        pl.Series(
+            range(0, df_ex.height * cont.TIME_SEC.hour, cont.TIME_SEC.hour)
+        ).alias("Time [s]")
+    ).select(
+        [
+            pl.col("Time [s]"),
+            *[
+                pl.col(name_en).alias(poly)
+                for name_en, poly in cont.DWD_PARAMS_POLYSUN.items()
+            ],
+        ]
+    )
+
+    with cols[1]:
+        st.download_button(
+            label="✨ Datei herunterladen ✨",
+            data=f"# {df_ex.write_csv()}",
+            file_name=f"Polysun Wetterdaten{file_suffix}.csv",
+            mime="text/csv",
+            key="polysun_download",
+            use_container_width=True,
+        )
+
+
+def download_excel(
+    df_ex: pl.DataFrame, dat: list[cld.DWDParam], cols: list, file_suffix: str
+) -> None:
+    """Download Excel-file"""
+    page: str = cont.ST_PAGES.meteo.short
+    meta: cld.MetaData = cld.MetaData(
+        lines={
+            par.name_de: cld.MetaLine(
+                name=par.name_de,
+                name_orgidx="Datum",
+                orig_tit=par.name_de,
+                tit=par.name_de,
+                unit=par.unit,
+                excel_number_format=par.num_format,
+            )
+            for par in dat
+        }
+    )
+    with cols[1]:
+        st.download_button(
+            label="✨ Datei herunterladen ✨",
+            data=ex.excel_download(df_ex, meta, page),
+            file_name=f"Wetterdaten{file_suffix}.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            key="excel_download",
+            use_container_width=True,
+        )

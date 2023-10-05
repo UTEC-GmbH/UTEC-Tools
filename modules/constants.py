@@ -1,8 +1,12 @@
 """Konstanten"""
 
+
 import datetime as dt
 from pathlib import Path
 from typing import Literal
+
+from wetterdienst import Settings
+from wetterdienst.provider.dwd.observation import DwdObservationRequest
 
 from modules import classes_constants as clc
 
@@ -152,6 +156,13 @@ TIME_MS: clc.TimeMSec = clc.TimeMSec(
     month=30 * 24 * 60 * 60 * 1000,  # 2.592.000.000
 )
 
+TIME_SEC: clc.TimeSec = clc.TimeSec(
+    day=60 * 60 * 24,
+    hour=60 * 60,
+    half_hour=30 * 60,
+    quarter_hour=15 * 60,
+)
+
 TIME_MIN: clc.TimeMin = clc.TimeMin(
     hour=60,
     half_hour=30,
@@ -176,6 +187,76 @@ TIME_RESOLUTIONS: dict[str, clc.TimeResolution] = {
     ),
 }
 
+
+WETTERDIENST_SETTINGS = Settings(
+    ts_shape="long",
+    ts_si_units=False,
+    ts_skip_empty=True,
+    ts_skip_threshold=0.90,
+    ts_skip_criteria="min",
+    ts_dropna=True,
+    ignore_env=True,
+)
+
+DWD_DISCOVER: dict[str, dict[str, dict[str, str]]] = DwdObservationRequest.discover()
+DWD_ALL_PAR_DIC: dict = dict(
+    sorted(
+        {
+            par_name: {
+                "available_resolutions": {
+                    res for res, par_dic in DWD_DISCOVER.items() if par_name in par_dic
+                },
+                "unit": " "
+                + next(
+                    dic[par_name]["origin"]
+                    for dic in DWD_DISCOVER.values()
+                    if par_name in dic
+                ),
+            }
+            for par_name in {
+                par
+                for sublist in [list(dic.keys()) for dic in DWD_DISCOVER.values()]
+                for par in sublist
+            }
+        }.items()
+    )
+)
+
+# Params that raise errors
+DWD_PROBLEMATIC_PARAMS: list[str] = [
+    "cloud_cover_total_index",
+    "temperature_soil_mean_100",
+    "visibility_range_index",
+    "water_equivalent_snow_depth",
+    "water_equivalent_snow_depth_excelled",
+    # "wind_direction_gust_max",
+    "wind_force_beaufort",
+    "wind_gust_max_last_3h",
+    "wind_gust_max_last_6h",
+    # "wind_speed_min",
+    # "wind_speed_rolling_mean_max",
+]
+DWD_GOOD_PARAMS: set[str] = set(DWD_ALL_PAR_DIC) - set(DWD_PROBLEMATIC_PARAMS)
+
+DWD_DEFAULT_PARAMS: list[str] = [
+    "temperature_air_mean_200",
+    "radiation_global",
+]
+
+DWD_PARAMS_POLYSUN: dict[str, str] = {
+    "radiation_global": "Gh [W/m²]",
+    "radiation_sky_short_wave_diffuse": "Dh [W/m²]",
+    "temperature_air_mean_200": "Tamb [°C]",
+    "radiation_sky_long_wave": "Lh [W/m²]",
+    "wind_speed": "Vwndh [m/s]",
+    "humidity": "Hrel [%]",
+}
+
+
+DWD_QUERY_TIME_LIMIT: float = 15  # seconds
+DWD_QUERY_DISTANCE_LIMIT: float = 150  # km
+
+
 DWD_RESOLUTION_OPTIONS: dict[str, str] = {
     "Minutenwerte": "minute_1",
     "5-Minutenwerte": "minute_5",
@@ -188,67 +269,7 @@ DWD_RESOLUTION_OPTIONS: dict[str, str] = {
     "Jahreswerte": "annual",
 }
 
-DWD_DEFAULT_PARAMS: list[str] = [
-    "temperature_air_mean_200",
-    "radiation_global",
-]
-
-DWD_GOOD_PARAMS: list[str] = [
-    "temperature_air_mean_200",
-    "radiation_global",
-    "cloud_cover_total",
-    "humidity",
-    "humidity_absolute",
-    "precipitation_duration",
-]
-
-# Parameter die sehr lange brauchen oder für die es keine Daten gibt
-# (werden erstmal aus der Parameter-Auswahlliste genommen)
-DWD_SHITTY_PARAMS: list[str] = [
-    "sunshine_duration",
-    "cloud_cover_layer1",
-    "cloud_cover_layer2",
-    "cloud_cover_layer3",
-    "cloud_cover_layer4",
-    "cloud_cover_total_index",
-    "cloud_density",
-    "cloud_height_layer1",
-    "cloud_height_layer2",
-    "cloud_height_layer3",
-    "cloud_height_layer4",
-    "cloud_type_layer1",
-    "cloud_type_layer2",
-    "cloud_type_layer3",
-    "cloud_type_layer4",
-    "count_weather_type_dew",
-    "count_weather_type_fog",
-    "count_weather_type_glaze",
-    "count_weather_type_hail",
-    "count_weather_type_ripe",
-    "count_weather_type_sleet",
-    "count_weather_type_storm_stormier_wind",
-    "count_weather_type_storm_strong_wind",
-    "count_weather_type_thunder",
-    "precipitation_form",
-    "precipitation_height_droplet",
-    "precipitation_height_max",
-    "precipitation_height_rocker",
-    "precipitation_index",
-    "snow_depth_excelled",
-    "sun_zenith_angle",
-    "temperature_air_max_005",
-    "temperature_air_mean_005",
-    "temperature_air_min_005",
-    "temperature_soil_mean_002",
-    "visibility_range_index",
-    "water_equivalent_snow_depth",
-    "water_equivalent_snow_depth_excelled",
-    "wind_force_beaufort",
-    "wind_gust_max_last_3h",
-    "wind_gust_max_last_6h",
-]
-
-DWD_TRANSLATION: dict[str, str] = {
+DWD_PARAM_TRANSLATION: dict[str, str] = {
     "cloud_cover_total": "Wolkendecke",
     "humidity": "Relative Luftfeuchte",
     "humidity_absolute": "Absolute Luftfeuchte",
@@ -258,16 +279,16 @@ DWD_TRANSLATION: dict[str, str] = {
     "pressure_air_site": "Luftdruck am Standort",
     "pressure_vapor": "Dampfdruck",
     "radiation_global": "Globalstrahlung",
-    "radiation_sky_long_wave": "? Atmosphärische Gegenstrahlung ?",
-    "radiation_sky_short_wave_diffuse": "? Diffuse Stahlung ?",
+    "radiation_sky_long_wave": "Atmosphärische Gegenstrahlung",
+    "radiation_sky_short_wave_diffuse": "Diffuse Stahlung",
     "snow_depth": "Schneehöhe",
-    "snow_depth_new": "? Schneehöhe Neu ?",
-    "temperature_air_max_200": "Lufttemperatur in 2 m Höhe (Max)",
-    "temperature_air_max_200_mean": "Lufttemperatur in 2 m Höhe (Max-Ø)",
-    "temperature_air_mean_200": "Lufttemperatur in 2 m Höhe",
-    "temperature_air_min_200": "Lufttemperatur in 2 m Höhe (Min)",
-    "temperature_air_min_200_mean": "Lufttemperatur in 2 m Höhe (Min-Ø)",
-    "temperature_dew_point_mean_200": "Taupunkttemperatur in 2 m Höhe (Ø)",
+    "snow_depth_new": "Schneehöhe Neu",
+    "temperature_air_max_200": "Lufttemperatur (Max)",
+    "temperature_air_max_200_mean": "Lufttemperatur (Max-Ø)",
+    "temperature_air_mean_200": "Lufttemperatur",
+    "temperature_air_min_200": "Lufttemperatur (Min)",
+    "temperature_air_min_200_mean": "Lufttemperatur (Min-Ø)",
+    "temperature_dew_point_mean_200": "Taupunkttemperatur (Ø)",
     "temperature_soil_mean_005": "Bodentemperatur in 5 cm Tiefe",
     "temperature_soil_mean_010": "Bodentemperatur in 10 cm Tiefe",
     "temperature_soil_mean_020": "Bodentemperatur in 20 cm Tiefe",
@@ -275,7 +296,7 @@ DWD_TRANSLATION: dict[str, str] = {
     "temperature_soil_mean_100": "Bodentemperatur in 1 m Tiefe",
     "temperature_wet_mean_200": "Bodentemperatur in 2 m Tiefe",
     "visibility_range": "Sichtweite",
-    "weather": "? Wetter ?",
+    "weather": "Wetter",
     "wind_direction": "Windrichtung",
     "wind_direction_gust_max": "Windrichtung Maximalböhe",
     "wind_gust_max": "Maximalböhe",

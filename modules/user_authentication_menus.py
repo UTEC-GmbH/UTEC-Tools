@@ -1,7 +1,7 @@
 """Streamlit menus for user authentication"""
 
 
-import datetime
+import datetime as dt
 import secrets
 
 import pandas as pd
@@ -51,8 +51,8 @@ def new_user_form() -> None:
         st.date_input(
             label="Benutzung erlaubt bis:",
             key="new_user_until",
-            min_value=datetime.date.today(),
-            value=datetime.date.today() + datetime.timedelta(weeks=3),
+            min_value=dt.date.today(),
+            value=dt.date.today() + dt.timedelta(weeks=3),
         )
         st.text_input(
             label="Name oder Firma",

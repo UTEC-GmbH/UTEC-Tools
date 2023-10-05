@@ -88,10 +88,6 @@ def export_to_html(fig_to_convert: go.Figure) -> None:
         f_pn = "export\\Kartografische_Datenauswertung.html"
         cols: list = st.columns(3)
         ani_height = 30
-        with cols[0]:
-            gf.show_lottie_animation(
-                "animations/coin_i.json", height=ani_height, speed=0.75
-            )
         with cols[1], open(f_pn, "rb") as exfile:
             st.download_button(
                 label="✨ html-Datei herunterladen ✨",
@@ -100,10 +96,12 @@ def export_to_html(fig_to_convert: go.Figure) -> None:
                 mime="application/xhtml+xml",
                 use_container_width=True,
             )
-        with cols[2]:
-            gf.show_lottie_animation(
-                "animations/coin_i.json", height=ani_height, speed=0.75
-            )
+
+        for col in cols[::2]:
+            with col:
+                gf.show_lottie_animation(
+                    "animations/coin_i.json", height=ani_height, speed=0.75
+                )
     else:
         st.button(label="html-Export", key="butt_html_map")
 

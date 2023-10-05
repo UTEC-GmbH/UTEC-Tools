@@ -5,12 +5,10 @@ from pathlib import Path
 from zipfile import ZipFile
 
 import fastkml as fk
-import geopy
 import numpy as np
 import plotly.graph_objects as go
 import polars as pl
 import pygeoif
-from geopy.geocoders import Nominatim
 from loguru import logger
 
 from modules import classes_data as cld
@@ -98,28 +96,28 @@ def list_or_df_of_locations_from_markers(
     ]
 
 
-@gf.func_timer
-def geo_locate(address: str = "Bremen") -> geopy.Location:
-    """Retrieve the geographical coordinates (longitude and latitude)
-    of a given address using the Nominatim geocoding service.
+# @gf.func_timer
+# def geo_locate(address: str = "Bremen") -> geopy.Location:
+#     """Retrieve the geographical coordinates (longitude and latitude)
+#     of a given address using the Nominatim geocoding service.
 
-    Args:
-        - address (str): The address for which the coordinates are to be retrieved.
+#     Args:
+#         - address (str): The address for which the coordinates are to be retrieved.
 
-    Returns:
-        - geopy.Location: The location object containing
-            the latitude and longitude of the provided address.
-    """
+#     Returns:
+#         - geopy.Location: The location object containing
+#             the latitude and longitude of the provided address.
+#     """
 
-    logger.info(f"Getting coordinates of '{address}'")
+#     logger.info(f"Getting coordinates of '{address}'")
 
-    user_agent_secret: str | None = os.environ.get("GEO_USER_AGENT")
-    if user_agent_secret is None:
-        raise cle.NotFoundError(entry="GEO_USER_AGENT", where="Secrets")
+#     user_agent_secret: str | None = os.environ.get("GEO_USER_AGENT")
+#     if user_agent_secret is None:
+#         raise cle.NotFoundError(entry="GEO_USER_AGENT", where="Secrets")
 
-    geolocator: Nominatim = Nominatim(user_agent=user_agent_secret)
+#     geolocator: Nominatim = Nominatim(user_agent=user_agent_secret)
 
-    return geolocator.geocode(address)  # type: ignore
+#     return geolocator.geocode(address)  # type: ignore
 
 
 def build_hover_template() -> str:
@@ -182,8 +180,12 @@ def get_zoom_level_from_locations(locations: list[cld.Location]) -> float:
     ):
         raise ValueError
 
-    latitudes: list[float] = [loc.latitude for loc in locations]
-    longitudes: list[float] = [loc.longitude for loc in locations]
+    latitudes: list[float] = [
+        loc.latitude for loc in locations if isinstance(loc.latitude, float)
+    ]
+    longitudes: list[float] = [
+        loc.longitude for loc in locations if isinstance(loc.longitude, float)
+    ]
 
     max_lat: float = max(latitudes)
     min_lat: float = min(latitudes)
@@ -218,19 +220,15 @@ def create_list_of_locations_from_df(df: pl.DataFrame) -> list[cld.Location]:
         ]
 
     elif "Adresse" in df.columns:
-        locations = []
-        for row in df.iter_rows(named=True):
-            geopy_loc: geopy.Location = geo_locate(row[col_adr])
-            locations += [
-                cld.Location(
-                    name=row[col_nam],
-                    latitude=geopy_loc.latitude,
-                    longitude=geopy_loc.longitude,
-                    attr_size=row[col_siz] if col_siz in df.columns else None,
-                    attr_colour=row[col_col] if col_col in df.columns else None,
-                )
-            ]
-
+        locations = [
+            cld.Location(
+                name=row[col_nam],
+                address=row[col_adr],
+                attr_size=row[col_siz] if col_siz in df.columns else None,
+                attr_colour=row[col_col] if col_col in df.columns else None,
+            ).fill_using_geopy()
+            for row in df.iter_rows(named=True)
+        ]
     else:
         raise cle.WrongColumnNamesError(None)
 
@@ -314,8 +312,12 @@ def main_map_scatter(locations: list[cld.Location], **kwargs) -> go.Figure:
     ):
         raise ValueError
 
-    latitudes: list[float] = [loc.latitude for loc in locations]
-    longitudes: list[float] = [loc.longitude for loc in locations]
+    latitudes: list[float] = [
+        loc.latitude for loc in locations if isinstance(loc.latitude, float)
+    ]
+    longitudes: list[float] = [
+        loc.longitude for loc in locations if isinstance(loc.longitude, float)
+    ]
     names: list[str] = [loc.name or "" for loc in locations]
 
     fig: go.Figure = go.Figure(

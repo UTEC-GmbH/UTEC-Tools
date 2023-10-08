@@ -40,7 +40,7 @@ def excel_download(
             hide_gridlines=True,
             autofit=True,
             has_header=True,
-            # header_format={"halign": "right"},
+            header_format={"halign": "right"},
             column_formats={
                 name: line.excel_number_format or "#,##0.0"
                 for name, line in meta.lines.items()

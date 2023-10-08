@@ -352,8 +352,11 @@ def change_temporal_resolution(
     Example Usage:
         df_15 = pl.DataFrame(
             {
-                "Datum": pl.date_range(
-                    dt.datetime(2020, 2, 7, 9), dt.datetime(2020, 2, 7, 11), "15m"
+                "Datum": pl.datetime_range(
+                    dt.datetime(2020, 2, 7, 9),
+                    dt.datetime(2020, 2, 7, 11),
+                    "15m",
+                    eager=True
                 ),
                 "Vals": [2,4,8,9,6,1,4,2,1,]
             }
@@ -411,7 +414,11 @@ def change_temporal_resolution(
     # Upsample data if the original resolution is lower than the requested
     # DataFrame with just the date column in the requested resolution
     df_res: pl.DataFrame = pl.DataFrame(
-        {time_col: pl.date_range(min_date, max_date, requested_resolution)}
+        {
+            time_col: pl.datetime_range(
+                min_date, max_date, requested_resolution, eager=True
+            )
+        }
     )
 
     # Join the original DataFrame with df_res to get a DataFrame with missing data

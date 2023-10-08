@@ -234,10 +234,21 @@ def download_weatherdata() -> None:
 def download_polysun(df_ex: pl.DataFrame, cols: list, file_suffix: str) -> None:
     """Wenn 'Datei erzeugen'-Knopf gedrückt wurde"""
 
-    df_ex = df_ex.with_columns(
-        pl.Series(
-            range(0, df_ex.height * cont.TIME_SEC.hour, cont.TIME_SEC.hour)
-        ).alias("Time [s]")
+    df_ex = (
+        pl.DataFrame({"Time [s]": range(0, cont.TIME_SEC.year, cont.TIME_SEC.hour)})
+        .join(
+            df_ex.with_columns(
+                (
+                    pl.col("Datum")
+                    - dt.datetime(df_ex.get_column("Datum")[0].year, 1, 1, 0, 0)
+                )
+                .dt.seconds()
+                .alias("Time [s]")
+            ),
+            "Time [s]",
+            "left",
+        )
+        .fill_null(0)
     ).select(
         [
             pl.col("Time [s]"),

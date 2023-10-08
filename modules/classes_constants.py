@@ -54,6 +54,7 @@ class TimeMSec:
 class TimeSec:
     """Zeiten in Sekunden"""
 
+    year: int
     day: int
     hour: int
     half_hour: int

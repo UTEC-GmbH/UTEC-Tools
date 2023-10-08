@@ -414,7 +414,7 @@ class DWDParam:
                     value: str | float = (
                         station_id
                         if key == "station_id"
-                        else pl.first(closest_station_df.get_column(key))
+                        else closest_station_df.get_column(key)[0]
                     )
                     setattr(closest_station, key, value)
 
@@ -445,11 +445,9 @@ class DWDParam:
         """Check if a station has data"""
         logger.info(f"checking station id '{station_id}'")
         no_data: str | None = None
-        distance: float = pl.first(
-            all_stations.filter(pl.col("station_id") == station_id).get_column(
-                "distance"
-            )
-        )
+        distance: float = all_stations.filter(
+            pl.col("station_id") == station_id
+        ).get_column("distance")[0]
 
         if distance > cont.DWD_QUERY_DISTANCE_LIMIT:
             no_data = (

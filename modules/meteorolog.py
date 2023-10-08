@@ -47,8 +47,8 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
 
     elif mdf is not None:
         index: pl.Series = mdf.df.get_column(cont.SPECIAL_COLS.index).sort()
-        start_time: dt.datetime = pl.first(index)
-        end_time: dt.datetime = pl.last(index)
+        start_time: dt.datetime = index[0]
+        end_time: dt.datetime = index[-1]
 
     else:
         raise ValueError
@@ -193,7 +193,7 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
                 res_lit
                 for res_lit, res_cl in cont.TIME_RESOLUTIONS.items()
                 if res_cl.dwd == par.requested_res_name_en
-            ),  # type: ignore
+            ),
         )
         for par in param_list
         if par.closest_available_res is not None

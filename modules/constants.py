@@ -157,6 +157,7 @@ TIME_MS: clc.TimeMSec = clc.TimeMSec(
 )
 
 TIME_SEC: clc.TimeSec = clc.TimeSec(
+    year=60 * 60 * 8760,
     day=60 * 60 * 24,
     hour=60 * 60,
     half_hour=30 * 60,
@@ -169,7 +170,7 @@ TIME_MIN: clc.TimeMin = clc.TimeMin(
     quarter_hour=15,
 )
 
-TIME_RESOLUTIONS: dict[str, clc.TimeResolution] = {
+TIME_RESOLUTIONS: dict[Literal["15m", "1h", "1d", "1mo"], clc.TimeResolution] = {
     "15m": clc.TimeResolution(
         de="15-Minutenwerte",
         dwd="minute_10",

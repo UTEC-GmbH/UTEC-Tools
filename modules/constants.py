@@ -255,7 +255,7 @@ DWD_PARAMS_POLYSUN: dict[str, str] = {
 
 
 DWD_QUERY_TIME_LIMIT: float = 15  # seconds
-DWD_QUERY_DISTANCE_LIMIT: float = 150  # km
+DWD_QUERY_DISTANCE_LIMIT: float = 250  # km
 
 
 DWD_RESOLUTION_OPTIONS: dict[str, str] = {

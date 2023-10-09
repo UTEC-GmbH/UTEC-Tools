@@ -105,6 +105,8 @@ def sidebar_address_dates() -> None:
             "Knöpfle", use_container_width=True
         )
 
+@gf.func_timer
+def sidebar_dwd_query_limits()
 
 @gf.func_timer
 def parameter_selection() -> None:

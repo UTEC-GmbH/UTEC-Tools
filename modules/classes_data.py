@@ -459,7 +459,7 @@ class DWDParam:
                 "In einem Umkreis von "
                 f"{cont.DWD_QUERY_DISTANCE_LIMIT} km um den gegebenen Standort "
                 "konnten keine Daten für den Parameter "
-                f"'{self.name_de}' gefunden werden."
+                f"**{self.name_de}** gefunden werden."
             )
             logger.critical(
                 gf.string_new_line_per_item(
@@ -476,7 +476,7 @@ class DWDParam:
             no_data = (
                 "Es konnten innerhalb eines Zeitlimits von "
                 f"{cont.DWD_QUERY_TIME_LIMIT} Sekunden "
-                f"keine Daten für den Parameter '{self.name_de}' gefunden werden."
+                f"keine Daten für den Parameter **{self.name_de}** gefunden werden."
             )
 
             logger.critical(

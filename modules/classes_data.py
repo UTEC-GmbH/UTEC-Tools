@@ -362,7 +362,12 @@ class DWDParam:
         """Get the values for every available resolution
         from the closest station that has data.
         """
-        if self.location is None or self.time_span is None:
+        if (
+            self.location is None
+            or self.time_span is None
+            or self.location.latitude is None
+            or self.location.longitude is None
+        ):
             raise ValueError
 
         logger.info(
@@ -452,8 +457,9 @@ class DWDParam:
         if distance > cont.DWD_QUERY_DISTANCE_LIMIT:
             no_data = (
                 "In einem Umkreis von "
-                f"{cont.DWD_QUERY_DISTANCE_LIMIT} km "
-                "konnten keine Daten gefunden werden."
+                f"{cont.DWD_QUERY_DISTANCE_LIMIT} km um den gegebenen Standort "
+                "konnten keine Daten für den Parameter "
+                f"'{self.name_de}' gefunden werden."
             )
             logger.critical(
                 gf.string_new_line_per_item(
@@ -467,7 +473,11 @@ class DWDParam:
 
         exe_time: float = time.monotonic() - start_time
         if exe_time > cont.DWD_QUERY_TIME_LIMIT:
-            no_data = "Es konnten in angemessener Zeit keine Daten gefunden werden."
+            no_data = (
+                "Es konnten innerhalb eines Zeitlimits von "
+                f"{cont.DWD_QUERY_TIME_LIMIT} Sekunden "
+                f"keine Daten für den Parameter '{self.name_de}' gefunden werden."
+            )
 
             logger.critical(
                 gf.string_new_line_per_item(

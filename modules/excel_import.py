@@ -174,7 +174,7 @@ def remove_empty(df: pl.DataFrame, **kwargs) -> pl.DataFrame:
 
     # remove rows where all values are 'null'
     if row:
-        df = df.filter(~pl.all(pl.all().is_null()))  # pylint: disable=E1130
+        df = df.filter(~pl.all_horizontal(pl.all().is_null()))
 
     # remove columns where all values are 'null'
     if col:
@@ -187,7 +187,7 @@ def rename_columns(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
     """Rename the columns of the DataFrame"""
 
     # find index marker
-    ind_col: str = [col for col in df.columns if mark_index in df.get_column(col)][0]
+    ind_col: str = next(col for col in df.columns if mark_index in df.get_column(col))
     logger.info(f"Index-marker found in column '{ind_col}'")
 
     # rename columns
@@ -264,7 +264,7 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
     )
     df = df.slice(ind_row + 1)
     df = df.select(
-        [pl.col(mark_index).str.strptime(pl.Datetime, "%d.%m.%Y %T", tz_aware=False)]
+        [pl.col(mark_index).str.strptime(pl.Datetime, "%d.%m.%Y %T")]
         + [pl.col(col).cast(pl.Float32) for col in df.columns if col != mark_index]
     )
 

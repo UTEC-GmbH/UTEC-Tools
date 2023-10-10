@@ -4,6 +4,7 @@ import datetime as dt
 
 import polars as pl
 import streamlit as st
+from loguru import logger
 
 from modules import classes_data as cld
 from modules import constants as cont
@@ -106,6 +107,42 @@ def sidebar_address_dates() -> None:
 
 
 @gf.func_timer
+def sidebar_dwd_query_limits() -> None:
+    """DWD Zeit- und Entfernungsgrenzen"""
+
+    with st.sidebar, st.expander("Sucheinstellungen"), st.form("DWD Query Limits"):
+        st.number_input(
+            label="Entfernung [km]",
+            value=150,
+            help=(
+                """
+                Bei der Suche nach Wetterdaten werden Wetterstationen in einem 
+                Umkreis bis zur hier vorgegebenen Entfernung einbezogen.  
+                """
+            ),
+            format="%i",
+            key="ni_limit_dist",
+        )
+        st.number_input(
+            label="Zeitlimit [s]",
+            value=15,
+            help=(
+                """
+                Die Suche nach Wetterdaten läuft für die hier eingegebene Zeit. 
+                Wird in dieser Zeit keine Wetterstation mit Daten gefunden, 
+                wird angenommen, dass keine Daten vorhanden sind.  
+                """
+            ),
+            format="%i",
+            key="ni_limit_time",
+        )
+
+        st.session_state["but_dwd_query_limits"] = st.form_submit_button(
+            "Knöpfle", use_container_width=True
+        )
+
+
+@gf.func_timer
 def parameter_selection() -> None:
     """DWD-Parameter data editor"""
 
@@ -172,13 +209,103 @@ def parameter_selection() -> None:
         use_container_width=True,
     )
 
-    st.markdown(
-        "_Falls der DWD keine Daten "
-        "in der gewünschten Auflösung zur Verfügung stellt, "
-        "werden Daten mit einer möglichst höheren Auflösung "
-        "heruntergeladen und umgerechnet. Die Auflösung in der "
-        "Tabelle (s.o.) ist die Auflösung der verwendeten DWD-Werte._"
+    st.markdown(explanation_of_results(params))
+
+
+def explanation_of_results(params: list[cld.DWDParam]) -> str:
+    """Comments on the results depending on the collected data"""
+
+    logger.debug(
+        gf.string_new_line_per_item(
+            [f"{par.name_de}: {par.requested_res_name_en}" for par in params],
+            "Requested Resolutions:",
+            1,
+            1,
+        )
     )
+
+    logger.debug(
+        gf.string_new_line_per_item(
+            [
+                f"{par.name_de}: {par.closest_available_res.name_en}"
+                for par in params
+                if par.closest_available_res is not None
+            ],
+            "Closest Resolutions:",
+            1,
+            1,
+        )
+    )
+
+    logger.debug(
+        gf.string_new_line_per_item(
+            [
+                f"{par.name_de}: {par.closest_available_res.no_data}"
+                for par in params
+                if par.closest_available_res is not None
+            ],
+            "No Data:",
+            1,
+            1,
+        )
+    )
+
+    if any(
+        (
+            par.closest_available_res is not None
+            and isinstance(par.closest_available_res.no_data, str)
+        )
+        for par in params
+    ):
+        all_no_data_strings: list[str] = [
+            par.closest_available_res.no_data
+            for par in params
+            if par.closest_available_res is not None
+            and isinstance(par.closest_available_res.no_data, str)
+        ]
+        return "\n\n".join(
+            [
+                "⚡ **Es konnten nicht für alle Parameter Daten gefunden werden!** ⚡",
+                *all_no_data_strings,
+            ]
+        )
+
+    if any(
+        (
+            par.closest_available_res is not None
+            and par.closest_available_res.name_en != par.requested_res_name_en
+        )
+        for par in params
+    ):
+        pars_with_other_res: list[cld.DWDParam] = [
+            par
+            for par in params
+            if par.closest_available_res is not None
+            and par.closest_available_res.name_en != par.requested_res_name_en
+        ]
+        if (
+            len(pars_with_other_res) <= 1
+            and pars_with_other_res[0].closest_available_res is not None
+        ):
+            return (
+                "Die Daten für den Parameter "
+                f"__{pars_with_other_res[0].name_de}__ "
+                "wurden nicht in der gewünschten Auflösung gefunden. "
+                "Sie wurden in der Auflösung "
+                f"__{pars_with_other_res[0].closest_available_res.name_de}__ "
+                "geladen und umgerechnet. Dabei können geringfügige "
+                "Ungenauigkeiten entstanden sein."
+            )
+
+        joined_par_names: str = "\n".join([par.name_de for par in pars_with_other_res])
+        return (
+            f"Die Daten für die Parameter:\n\n {joined_par_names} \n\n"
+            "wurden nicht in der gewünschten Auflösung gefunden. "
+            "Sie wurden in einer anderen Auflösung (siehe Tabelle) "
+            "geladen und umgerechnet. Dabei können geringfügige "
+            "Ungenauigkeiten entstanden sein."
+        )
+    return "_Daten für alle Parameter in gewünschter Auflösung gefunden._"
 
 
 def download_weatherdata() -> None:

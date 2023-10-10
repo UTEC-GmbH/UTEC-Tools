@@ -197,11 +197,13 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
         )
         for par in param_list
         if par.closest_available_res is not None
+        and not par.closest_available_res.no_data
     }
     longest_param: str = next(
         par.name_de
         for par in param_list
-        if dic[par.name_de].height == max(df.height for df in dic.values())
+        if par.name_de in dic
+        and dic[par.name_de].height == max(df.height for df in dic.values())
     )
 
     df: pl.DataFrame = dic[longest_param]

@@ -201,32 +201,24 @@ if uauth.authentication(sf.s_get("page")):
         st.markdown("###")
         st.markdown("---")
     else:
-        logger.info(f"File to analyse: '{sf.s_get('f_up')}'")
         menu_g.sidebar_reset()
 
         mdf: cld.MetaAndDfs = gather_and_manipulate_data()
         figs: clf.Figs = make_graphs(mdf)
 
-        tab_grafik: Any
-        tab_download: Any
-        tab_grafik, tab_download = st.tabs(["Datenauswertung", "Downloads"])
+        with st.spinner("Momentle bitte - Optionen werden erzeugt..."):
+            menu_g.display_options_main()
+            menu_g.display_smooth_main()
 
-        with tab_grafik:
-            # --- Darstellungsoptionen ---
-            with st.spinner("Momentle bitte - Optionen werden erzeugt..."):
-                menu_g.display_options_main()
-                menu_g.display_smooth_main()
+            figs.update_all_figs()
+            figs.write_all_to_st()
 
-                figs.update_all_figs()
-                figs.write_all_to_st()
-
-            with st.spinner("Momentle bitte - Grafiken werden angezeigt..."):
-                fig_create.plot_figs(figs)
+        with st.spinner("Momentle bitte - Grafiken werden angezeigt..."):
+            fig_create.plot_figs(figs)
 
         sf.s_set("figs", figs)
-
-        # --- Downloads ---
-        with tab_download:
-            menu_g.downloads()
+        with st.sidebar:
+            st.markdown("---")
+            menu_g.downloads(mdf)
 
     debug_code_run(position="after")

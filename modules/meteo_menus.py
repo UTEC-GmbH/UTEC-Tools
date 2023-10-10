@@ -401,7 +401,6 @@ def download_excel(
     df_ex: pl.DataFrame, dat: list[cld.DWDParam], cols: list, file_suffix: str
 ) -> None:
     """Download Excel-file"""
-    page: str = cont.ST_PAGES.meteo.short
     meta: cld.MetaData = cld.MetaData(
         lines={
             par.name_de: cld.MetaLine(
@@ -415,10 +414,11 @@ def download_excel(
             for par in dat
         }
     )
+
     with cols[1]:
         st.download_button(
             label="✨ Datei herunterladen ✨",
-            data=ex.excel_download(df_ex, meta, page),
+            data=ex.excel_download({cont.ST_PAGES.meteo.excel_ws_name: df_ex}, meta),
             file_name=f"Wetterdaten{file_suffix}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             key="excel_download",

@@ -16,7 +16,6 @@ from modules import classes_constants as clc
 from modules import classes_errors as cle
 from modules import constants as cont
 from modules import general_functions as gf
-from modules import streamlit_functions as sf
 
 if TYPE_CHECKING:
     import geopy

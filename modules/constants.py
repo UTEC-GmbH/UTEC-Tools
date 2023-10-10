@@ -9,6 +9,7 @@ from wetterdienst import Settings
 from wetterdienst.provider.dwd.observation import DwdObservationRequest
 
 from modules import classes_constants as clc
+from modules import streamlit_functions as sf
 
 REPO_NAME: str = "UTEC-Tools"
 
@@ -254,8 +255,8 @@ DWD_PARAMS_POLYSUN: dict[str, str] = {
 }
 
 
-DWD_QUERY_TIME_LIMIT: float = 15  # seconds
-DWD_QUERY_DISTANCE_LIMIT: float = 250  # km
+DWD_QUERY_TIME_LIMIT: float = sf.s_get("ni_limit_time") or 15  # seconds
+DWD_QUERY_DISTANCE_LIMIT: float = sf.s_get("ni_limit_dist") or 150  # km
 
 
 DWD_RESOLUTION_OPTIONS: dict[str, str] = {

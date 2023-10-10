@@ -20,9 +20,16 @@ set_stuff.page_header_setup(page=cont.ST_PAGES.meteo.short)
 if uauth.authentication(sf.s_get("page")):
     # Auswahl Ort
     menu_m.sidebar_address_dates()
+    menu_m.sidebar_dwd_query_limits()
     if sf.s_get("but_addr_dates"):
         for session_state_entry in ["geo_location", "stations_distance", "params_list"]:
             sf.s_delete(key=session_state_entry)
+
+    if sf.s_get("but_dwd_query_limits"):
+        for session_state_entry in ["stations_distance", "params_list"]:
+            sf.s_delete(key=session_state_entry)
+        cont.DWD_QUERY_TIME_LIMIT = sf.s_get("ni_limit_time") or 15  # seconds
+        cont.DWD_QUERY_DISTANCE_LIMIT = sf.s_get("ni_limit_dist") or 150  # km
 
     cols: list = st.columns([40, 60])
     with cols[0]:

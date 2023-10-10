@@ -105,8 +105,42 @@ def sidebar_address_dates() -> None:
             "Knöpfle", use_container_width=True
         )
 
+
 @gf.func_timer
-def sidebar_dwd_query_limits()
+def sidebar_dwd_query_limits() -> None:
+    """DWD Zeit- und Entfernungsgrenzen"""
+
+    with st.sidebar, st.expander("Sucheinstellungen"), st.form("DWD Query Limits"):
+        st.number_input(
+            label="Entfernung [km]",
+            value=150,
+            help=(
+                """
+                Bei der Suche nach Wetterdaten werden Wetterstationen in einem 
+                Umkreis bis zur hier vorgegebenen Entfernung einbezogen.  
+                """
+            ),
+            format="%i",
+            key="ni_limit_dist",
+        )
+        st.number_input(
+            label="Zeitlimit [s]",
+            value=15,
+            help=(
+                """
+                Die Suche nach Wetterdaten läuft für die hier eingegebene Zeit. 
+                Wird in dieser Zeit keine Wetterstation mit Daten gefunden, 
+                wird angenommen, dass keine Daten vorhanden sind.  
+                """
+            ),
+            format="%i",
+            key="ni_limit_time",
+        )
+
+        st.session_state["but_dwd_query_limits"] = st.form_submit_button(
+            "Knöpfle", use_container_width=True
+        )
+
 
 @gf.func_timer
 def parameter_selection() -> None:

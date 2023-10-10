@@ -227,6 +227,6 @@ if uauth.authentication(sf.s_get("page")):
 
         # --- Downloads ---
         with tab_download:
-            menu_g.downloads()
+            menu_g.downloads(mdf)
 
     debug_code_run(position="after")

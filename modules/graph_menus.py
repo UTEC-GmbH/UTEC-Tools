@@ -695,26 +695,12 @@ def display_smooth_main() -> bool:
     return but_smooth
 
 
-def downloads(page: str = "graph") -> None:
+def downloads(mdf: cld.MetaAndDfs) -> None:
     """Dateidownloads"""
 
-    if "meteo" in page:
-        if st.session_state["meteo_start_year"] == st.session_state["meteo_end_year"]:
-            xl_file_name: str = (
-                f"Wetterdaten {st.session_state['meteo_start_year']}.xlsx"
-            )
-        else:
-            start: int = min(
-                st.session_state["meteo_start_year"], st.session_state["meteo_end_year"]
-            )
-            end: int = max(
-                st.session_state["meteo_start_year"], st.session_state["meteo_end_year"]
-            )
-            xl_file_name = f"Wetterdaten {start}-{end}.xlsx"
-    else:
-        xl_file_name = "Datenausgabe.xlsx"
+    xl_file_name = "Datenausgabe.xlsx"
 
-    if "graph" in page and not any(
+    if not any(
         [
             sf.s_get("but_html"),
             sf.s_get("but_xls"),
@@ -773,27 +759,14 @@ def downloads(page: str = "graph") -> None:
         )
     ):
         with st.spinner("Momentle bitte - Excel-Datei wird erzeugt..."):
-            df_ex: pd.DataFrame = pd.DataFrame()
-            if page in ("graph"):
-                dic_df_ex: dict = {
-                    x.name: {
-                        "df": pd.DataFrame(data=x.y, index=x.x, columns=[x.name]),
-                        "unit": st.session_state["metadata"][x.name].get("unit"),
-                    }
-                    for x in [
-                        d
-                        for d in st.session_state["fig_base"].data
-                        if gf.check_if_not_exclude(d.name)
-                    ]
-                }
+            dic_df_ex: dict = {
+                "Daten": mdf.df,
+                "Stundenwerte": mdf.df_h,
+                "Jahresdauerlinie": mdf.jdl,
+                "Monatswerte": mdf.mon,
+            }
 
-                df_ex = pd.concat([dic_df_ex[df]["df"] for df in dic_df_ex], axis=1)
-                st.session_state["df_ex"] = df_ex
-
-            if page in ("meteo"):
-                df_ex = sf.s_get("meteo_data") or pd.DataFrame()
-
-            dat = ex.excel_download(df_ex, page)
+            dat = ex.excel_download(dic_df_ex, mdf.meta)
 
         cols: list = st.columns(3)
 
@@ -806,8 +779,7 @@ def downloads(page: str = "graph") -> None:
                 key="excel_download",
             )
 
-            if "graph" in page:
-                st.button("abbrechen", key="cancel_excel_download")
+            st.button("abbrechen", key="cancel_excel_download")
 
         with cols[0]:
             st.success("Excel-Datei hier herunterladen → → →")

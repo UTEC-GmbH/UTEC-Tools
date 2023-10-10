@@ -139,7 +139,7 @@ class StPageProps:
 
     short: str
     title: str
-    excel_ws_name: str | None = None
+    excel_ws_name: str = "Tabelle1"
 
 
 @dataclass(frozen=True, kw_only=True)

@@ -16,6 +16,7 @@ TIME_SPAN = cld.TimeSpan(
 )
 
 PARS_TO_TEST: set[str] = cont.DWD_GOOD_PARAMS  # set(DWD_ALL_PAR_DIC)
+BAD_PARS: set[str] = set(cont.DWD_PROBLEMATIC_PARAMS)
 
 PARS_TO_TEST_CLOUD: set[str] = {par for par in PARS_TO_TEST if "cloud" in par}
 PARS_TO_TEST_COUNT: set[str] = {par for par in PARS_TO_TEST if "count" in par}
@@ -49,7 +50,7 @@ PARS_TO_TEST_REST: set[str] = {
 def general_assumptions_param(par: cld.DWDParam, par_name: str) -> None:
     """Test parameter"""
     assert par.name_en == par_name
-    assert par.name_de == cont.DWD_PARAM_TRANSLATION.get(par_name, "unbekannt")
+    assert par.name_de == cont.DWD_PARAM_TRANSLATION.get(par_name, par.name_en)
     assert par.location == LOCATION
     assert par.time_span == TIME_SPAN
     assert par.unit == cont.DWD_ALL_PAR_DIC[par_name]["unit"]
@@ -62,15 +63,15 @@ def general_assumptions_param(par: cld.DWDParam, par_name: str) -> None:
 
 def general_assumptions_res_with_data(res: cld.DWDResData) -> None:
     """Test resolution with data"""
-
+    default_station = cld.DWDStation()
     assert isinstance(res.data, pl.DataFrame)
     assert isinstance(res.all_stations, pl.DataFrame)
     assert isinstance(res.closest_station, cld.DWDStation)
     assert res.no_data is None
     assert res.data.height > 0
-    assert res.closest_station.station_id != "unbekannt"
-    assert res.closest_station.name != "unbekannt"
-    assert res.closest_station.state != "unbekannt"
+    assert res.closest_station.station_id != default_station.station_id
+    assert res.closest_station.name != default_station.name
+    assert res.closest_station.state != default_station.state
     assert res.closest_station.distance < cont.DWD_QUERY_DISTANCE_LIMIT
 
 
@@ -204,6 +205,34 @@ class TestDWDParamHumidity:
             assert res.closest_station.name == "unbekannt"
             assert res.closest_station.state == "unbekannt"
             assert res.closest_station.station_id == "unbekannt"
+
+
+class TestBadPars:
+    """Testing the problematic parameters"""
+
+    @pytest.mark.parametrize("par_name", BAD_PARS)
+    def test_bad(self, par_name: str) -> None:
+        """Tests for parameters in group"""
+        self.run_tests(par_name)
+
+    def run_tests(self, par_name: str) -> None:
+        """Run Test"""
+
+        par = cld.DWDParam(par_name, LOCATION, TIME_SPAN)
+        par.fill_all_resolutions()
+
+        general_assumptions_param(par, par_name)
+
+        for res in (
+            getattr(par.resolutions, res)
+            for res in par.resolutions.__dataclass_fields__
+        ):
+            assert isinstance(res, cld.DWDResData)
+
+            if res in par.resolutions.res_with_data():
+                general_assumptions_res_with_data(res)
+            else:
+                assert isinstance(res.no_data, str)
 
 
 class TestInGroups:

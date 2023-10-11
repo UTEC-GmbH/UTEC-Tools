@@ -4,7 +4,7 @@ import datetime as dt
 from glob import glob
 from typing import TYPE_CHECKING, Any
 
-import pandas as pd
+import pathlib
 import plotly.graph_objects as go
 import streamlit as st
 
@@ -732,12 +732,12 @@ def downloads(mdf: cld.MetaAndDfs) -> None:
         cols: list = st.columns([1, 4, 1])
 
         with cols[1]:
-            f_pn = "export/interaktive_grafische_Auswertung.html"
+            f_pn = pathlib.Path(r"export\interaktive_grafische_Auswertung.html")
             with open(f_pn, "rb") as exfile:
                 st.download_button(
                     label="✨ herunterladen ✨",
                     data=exfile,
-                    file_name=f_pn.rsplit("/", maxsplit=1)[-1],
+                    file_name=f_pn.name,
                     mime="application/xhtml+xml",
                     use_container_width=True,
                 )

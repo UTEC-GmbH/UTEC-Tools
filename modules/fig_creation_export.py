@@ -1,7 +1,7 @@
 """plots erstellen und in session_state schreiben"""
 
 
-from pathlib import Path
+import pathlib
 from typing import Any
 
 import plotly.graph_objects as go
@@ -356,12 +356,15 @@ def plot_figs(figs: clf.Figs) -> None:
 
 
 @gf.func_timer
-def html_exp(f_pn: str = r"export\interaktive_grafische_Auswertung.html") -> None:
+def html_exp(
+    f_pn: pathlib.Path = pathlib.Path(r"export\interaktive_grafische_Auswertung.html"),
+) -> None:
     """html-Export"""
 
-    if Path.exists(Path(f_pn)):
-        logger.debug("Path exists.")
-        Path.unlink(Path(f_pn))
+    if pathlib.Path.exists(f_pn):
+        logger.debug("HTML-file found in export directory.")
+        pathlib.Path.unlink(f_pn)
+        logger.debug("HTML-file deleted.")
 
     with open(f_pn, "w", encoding="utf-8") as fil:
         fil.write("<!DOCTYPE html>")
@@ -409,3 +412,5 @@ def html_exp(f_pn: str = r"export\interaktive_grafische_Auswertung.html") -> Non
             fil.write("<br /><br /><hr><br /><br /><br /></div>")
 
         fil.write("</body></html>")
+
+        logger.debug("HTML-file created.")

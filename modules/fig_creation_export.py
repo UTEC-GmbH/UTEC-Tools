@@ -356,10 +356,11 @@ def plot_figs(figs: clf.Figs) -> None:
 
 
 @gf.func_timer
-def html_exp(f_pn: str = "export\\interaktive_grafische_Auswertung.html") -> None:
+def html_exp(f_pn: str = r"export\interaktive_grafische_Auswertung.html") -> None:
     """html-Export"""
 
     if Path.exists(Path(f_pn)):
+        logger.debug("Path exists.")
         Path.unlink(Path(f_pn))
 
     with open(f_pn, "w", encoding="utf-8") as fil:

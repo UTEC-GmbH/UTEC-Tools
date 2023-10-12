@@ -43,6 +43,7 @@ class Buttons:
     reset: ButtonProps
     download_html: ButtonProps
     download_excel: ButtonProps
+    download_weather: ButtonProps
     download_example: ButtonProps
 
 
@@ -50,7 +51,7 @@ BUTTONS: Buttons = Buttons(
     standard=ButtonProps(label="Knöpfle"),
     abbruch=ButtonProps(label="Abbrechen", key="but_cancel"),
     reset=ButtonProps(
-        label="💫 Auswertung neu starten 💫 💫",
+        label="💫 Auswertung neu starten 💫",
         key="but_complete_reset",
         use_container_width=True,
         help="Auswertung zurücksetzen um andere Datei hochladen zu können.",
@@ -63,10 +64,15 @@ BUTTONS: Buttons = Buttons(
         use_container_width=True,
     ),
     download_excel=ButtonProps(
-        label="💾 Excel-Datei herunterladen  💾",
+        label="💾 Excel-Datei herunterladen 💾",
         key="but_excel_download",
         file_name=f"Datenausgabe_{dt.datetime.now().strftime('%Y-%m-%d-%H-%M')}.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        use_container_width=True,
+    ),
+    download_weather=ButtonProps(
+        label="💾 Wetterdaten herunterladen 💾",
+        key="but_weather_download",
         use_container_width=True,
     ),
     download_example=ButtonProps(

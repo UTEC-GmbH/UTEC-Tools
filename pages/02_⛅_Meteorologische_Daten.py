@@ -16,8 +16,10 @@ from modules import user_authentication as uauth
 gf.log_new_run()
 set_stuff.page_header_setup(page=cont.ST_PAGES.meteo.short)
 
-
 if uauth.authentication(sf.s_get("page")):
+    with st.sidebar:
+        reset_download_container = st.container()
+
     # Auswahl Ort
     menu_m.sidebar_address_dates()
     menu_m.sidebar_dwd_query_limits()
@@ -34,8 +36,6 @@ if uauth.authentication(sf.s_get("page")):
     cols: list = st.columns([40, 60])
     with cols[0]:
         menu_m.parameter_selection()
-        st.markdown("###")
-        menu_m.download_weatherdata()
 
     with cols[1]:
         plot_height = 750
@@ -45,3 +45,8 @@ if uauth.authentication(sf.s_get("page")):
             theme=cont.ST_PLOTLY_THEME,
             config=fig_format.plotly_config(height=plot_height, title_edit=False),
         )
+
+    with reset_download_container:
+        st.markdown("###")
+        menu_m.download_weatherdata()
+        st.markdown("---")

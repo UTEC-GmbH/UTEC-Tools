@@ -8,7 +8,7 @@ from loguru import logger
 
 from modules import classes_data as cld
 from modules import constants as cont
-from modules import excel_download as ex
+from modules import export as ex
 from modules import general_functions as gf
 from modules import meteorolog as met
 from modules import streamlit_functions as sf

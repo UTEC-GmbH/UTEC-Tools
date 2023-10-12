@@ -1,18 +1,17 @@
 """UI - Menus"""
 
 import datetime as dt
-from glob import glob
+import pathlib
 from typing import TYPE_CHECKING, Any
 
-import pathlib
 import plotly.graph_objects as go
 import streamlit as st
 
 from modules import classes_data as cld
 from modules import classes_errors as cle
 from modules import constants as cont
-from modules import excel_download as ex
-from modules import fig_creation_export as fig_cr
+from modules import export as ex
+from modules import fig_creation as fig_cr
 from modules import fig_general_functions as fgf
 from modules import general_functions as gf
 from modules import streamlit_functions as sf
@@ -41,8 +40,7 @@ def sidebar_file_upload() -> Any:
         sb_example: str | None = st.selectbox(
             "Beispieldateien",
             options=[
-                x.replace("/", "\\").split("\\")[-1].replace(".xlsx", "")
-                for x in glob("example_files/*.xlsx")
+                phil.stem for phil in pathlib.Path.cwd().glob("example_files/*.xlsx")
             ],
             help=(
                 """
@@ -727,20 +725,18 @@ def downloads(mdf: cld.MetaAndDfs) -> None:
 
     if sf.s_get("but_html"):
         with st.spinner("Momentle bitte - html-Datei wird erzeugt..."):
-            fig_cr.html_exp()
+            html_data: str = ex.html_graph()
 
         cols: list = st.columns([1, 4, 1])
 
         with cols[1]:
-            f_pn = pathlib.Path(r"export\interaktive_grafische_Auswertung.html")
-            with open(f_pn, "rb") as exfile:
-                st.download_button(
-                    label="✨ herunterladen ✨",
-                    data=exfile,
-                    file_name=f_pn.name,
-                    mime="application/xhtml+xml",
-                    use_container_width=True,
-                )
+            st.download_button(
+                label="✨ herunterladen ✨",
+                data=html_data,
+                file_name="grafische_Auswertung.html",
+                mime="application/xhtml+xml",
+                use_container_width=True,
+            )
             st.button("abbrechen", use_container_width=True)
 
         ani_height = 30
@@ -759,7 +755,7 @@ def downloads(mdf: cld.MetaAndDfs) -> None:
                 "Monatswerte": mdf.mon,
             }
 
-            dat = ex.excel_download(dic_df_ex, mdf.meta)
+            dat: bytes = ex.excel_download(dic_df_ex, mdf.meta)
 
         cols: list = st.columns([1, 4, 1])
 

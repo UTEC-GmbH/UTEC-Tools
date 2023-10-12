@@ -12,7 +12,7 @@ from modules import constants as cont
 from modules import df_manipulation as df_man
 from modules import excel_import as ex_in
 from modules import fig_annotations as fig_anno
-from modules import fig_creation_export as fig_create
+from modules import fig_creation as fig_cr
 from modules import fig_formatting as fig_format
 from modules import general_functions as gf
 from modules import graph_menus as menu_g
@@ -36,7 +36,7 @@ def debug_code_run(position: Literal["before", "after"]) -> None:
     with st.expander(f"Debug {position}", expanded=False):
         exe_time: dict = sf.s_get("dic_exe_time") or {}
         st.plotly_chart(
-            fig_create.ploplo.timings(exe_time),
+            fig_cr.ploplo.timings(exe_time),
             use_container_width=True,
             config=fig_format.plotly_config(),
         )
@@ -143,28 +143,28 @@ def make_graphs(mdf_g: cld.MetaAndDfs) -> clf.Figs:
     if figs_i.base is None:
         with st.spinner('Momentle bitte - Grafik "Lastgang" wird erzeugt...'):
             figs_i.base = clf.FigProp(
-                fig=fig_create.cr_fig_base(mdf_g), st_key=cont.FIG_KEYS.lastgang
+                fig=fig_cr.cr_fig_base(mdf_g), st_key=cont.FIG_KEYS.lastgang
             )
 
     # Jahresdauerlinie
     if sf.s_get("cb_jdl") and (figs_i.jdl is None or sf.s_not_in("fig_jdl")):
         with st.spinner('Momentle bitte - Grafik "Jahresdauerlinie" wird erzeugt...'):
             figs_i.jdl = clf.FigProp(
-                fig=fig_create.cr_fig_jdl(mdf_g), st_key=cont.FIG_KEYS.jdl
+                fig=fig_cr.cr_fig_jdl(mdf_g), st_key=cont.FIG_KEYS.jdl
             )
 
     # Monatswerte
     if sf.s_get("cb_mon") and (figs_i.mon is None or sf.s_not_in("fig_mon")):
         with st.spinner('Momentle bitte - Grafik "Monatswerte" wird erzeugt...'):
             figs_i.mon = clf.FigProp(
-                fig=fig_create.cr_fig_mon(mdf_g), st_key=cont.FIG_KEYS.mon
+                fig=fig_cr.cr_fig_mon(mdf_g), st_key=cont.FIG_KEYS.mon
             )
 
     # Tagesvergleich
     if sf.s_get("cb_days") and (figs_i.days is None or sf.s_get("but_select_graphs")):
         with st.spinner('Momentle bitte - Grafik "Tagesvergleich" wird erzeugt...'):
             figs_i.days = clf.FigProp(
-                fig=fig_create.cr_fig_days(mdf_g), st_key=cont.FIG_KEYS.days
+                fig=fig_cr.cr_fig_days(mdf_g), st_key=cont.FIG_KEYS.days
             )
 
     figs_i.write_all_to_st()
@@ -214,7 +214,7 @@ if uauth.authentication(sf.s_get("page")):
             figs.write_all_to_st()
 
         with st.spinner("Momentle bitte - Grafiken werden angezeigt..."):
-            fig_create.plot_figs(figs)
+            fig_cr.plot_figs(figs)
 
         sf.s_set("figs", figs)
         with st.sidebar:

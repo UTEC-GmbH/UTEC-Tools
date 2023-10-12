@@ -13,6 +13,7 @@ from loguru import logger
 from modules import classes_data as cld
 from modules import constants as cont
 from modules import excel_import as ex_i
+from modules import export as ex
 from modules import fig_formatting as fig_format
 from modules import general_functions as gf
 from modules import map as mp
@@ -145,4 +146,12 @@ if uauth.authentication(sf.s_get("page")):
         menu_m.sidebar_colour_scale()
 
         fig: go.Figure = plot_map()
-        export_to_html(fig)
+
+        with st.sidebar:
+            st.download_button(
+                label="✨ html-Datei herunterladen ✨",
+                data=ex.html_map(fig),
+                file_name="Interaktive_Karte.html",
+                mime="application/xhtml+xml",
+                use_container_width=True,
+            )

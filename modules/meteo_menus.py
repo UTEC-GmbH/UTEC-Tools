@@ -14,19 +14,6 @@ from modules import meteorolog as met
 from modules import streamlit_functions as sf
 
 
-def sidebar_reset() -> None:
-    """Reset-Knöpfle für die Sidebar"""
-    with st.sidebar:
-        st.markdown("###")
-        st.button(
-            label="✨  Auswertung neu starten  ✨",
-            key="but_complete_reset",
-            use_container_width=True,
-            help="Auswertung zurücksetzen um andere Datei hochladen zu können.",
-        )
-        st.markdown("---")
-
-
 def sidebar_address_dates() -> None:
     """Adresse und Daten"""
 

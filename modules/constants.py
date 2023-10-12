@@ -2,7 +2,8 @@
 
 
 import datetime as dt
-from pathlib import Path
+import pathlib
+from dataclasses import dataclass
 from typing import Literal
 
 from wetterdienst import Settings
@@ -14,7 +15,65 @@ from modules import streamlit_functions as sf
 REPO_NAME: str = "UTEC-Tools"
 
 # Current Working Directory
-CWD: str = str(Path.cwd())
+CWD: str = str(pathlib.Path.cwd())
+
+
+@dataclass
+class ButtonProps:
+    """Properties of Buttons"""
+
+    label: str
+    key: str | None = None
+    help: str | None = None  # noqa: A003
+    file_name: str | None = None
+    mime: str | None = None
+    use_container_width: bool | None = None
+
+    def func_args(self) -> dict:
+        """Dictionary without missing data"""
+        return {key: val for key, val in self.__dict__.items() if val is not None}
+
+
+@dataclass
+class Buttons:
+    """Class for st.button()"""
+
+    standard: ButtonProps
+    abbruch: ButtonProps
+    reset: ButtonProps
+    download_html: ButtonProps
+    download_excel: ButtonProps
+    download_example: ButtonProps
+
+
+BUTTONS: Buttons = Buttons(
+    standard=ButtonProps(label="Knöpfle"),
+    abbruch=ButtonProps(label="Abbrechen", key="but_cancel"),
+    reset=ButtonProps(
+        label="💫 Auswertung neu starten 💫 💫",
+        key="but_complete_reset",
+        use_container_width=True,
+        help="Auswertung zurücksetzen um andere Datei hochladen zu können.",
+    ),
+    download_html=ButtonProps(
+        label="💾 html-Datei herunterladen 💾",
+        key="but_html_download",
+        file_name=f"Interaktive_Auswertung_{dt.datetime.now().strftime('%Y-%m-%d-%H-%M')}.html",
+        mime="application/xhtml+xml",
+        use_container_width=True,
+    ),
+    download_excel=ButtonProps(
+        label="💾 Excel-Datei herunterladen  💾",
+        key="but_excel_download",
+        file_name=f"Datenausgabe_{dt.datetime.now().strftime('%Y-%m-%d-%H-%M')}.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        use_container_width=True,
+    ),
+    download_example=ButtonProps(
+        label="Beispieldatei herunterladen",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ),
+)
 
 
 # Aussehen der labels (Überschriften)

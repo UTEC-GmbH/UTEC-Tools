@@ -1,25 +1,13 @@
 """UI - Menus"""
 
 
-from glob import glob
+import pathlib
 from typing import Any
 
 import streamlit as st
 
+from modules import constants as cont
 from modules import streamlit_functions as sf
-
-
-def sidebar_reset() -> None:
-    """Reset-Knöpfle für die Sidebar"""
-    with st.sidebar:
-        st.markdown("###")
-        st.button(
-            label="✨  Auswertung neu starten  ✨",
-            key="but_complete_reset",
-            use_container_width=True,
-            help="Auswertung zurücksetzen um andere Datei hochladen zu können.",
-        )
-        st.markdown("---")
 
 
 def sidebar_file_upload() -> Any:
@@ -29,8 +17,7 @@ def sidebar_file_upload() -> Any:
         sb_example: str | None = st.selectbox(
             "Beispieldateien",
             options=[
-                x.replace("/", "\\").split("\\")[-1].replace(".xlsx", "")
-                for x in glob("example_map/*.xlsx")
+                phil.stem for phil in pathlib.Path.cwd().glob("example_map/*.xlsx")
             ],
             help=(
                 """
@@ -43,10 +30,9 @@ def sidebar_file_upload() -> Any:
 
         with open(f"example_map/{sb_example}.xlsx", "rb") as exfile:
             st.download_button(
-                label="Beispieldatei herunterladen",
+                **cont.BUTTONS.download_example.func_args(),
                 data=exfile,
                 file_name=f"{sb_example}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             )
 
         # benutze ausgewählte Beispieldatei direkt für debugging

@@ -66,12 +66,16 @@ def html_graph() -> str:
     """Return a string to create a html-file"""
 
     if sf.s_get("cb_jdl"):
-        jdl_mon = (
-            "#jdl{width: 45%; float: left; margin-right: 5%; }"
-            "#mon{width: 45%; float: right; margin-left: 5%; }"
+        graph_styles = (
+            "#las{width: 100%; margin-left:auto; margin-right:auto; }"
+            "#jdl{width: 45%; float: left; margin-right: 5%; } "
+            "#mon{width: 45%; float: right; margin-left: 5%; } "
         )
     else:
-        jdl_mon = "#mon{width: 45%; float: left; margin-right: 5%; }"
+        graph_styles = (
+            "#las{width: 100%; margin-left:auto; margin-right:auto; }"
+            "#mon{width: 45%; float: left; margin-right: 5%; } "
+        )
 
     all_figs: str = ""
 
@@ -96,6 +100,7 @@ def html_graph() -> str:
             all_figs = (
                 f"{all_figs}"
                 f"{figure.to_html(full_html=False, config=fig_format.plotly_config())}"
+                "<br /><br /><hr><br /><br /><br /></div>"
             )
 
     return (
@@ -111,11 +116,9 @@ def html_graph() -> str:
         "Interaktive Grafische Datenauswertung"
         "</h1><br /><hr><br /><br />"
         "<style>"
-        "#las{width: 100%; margin-left:auto; margin-right:auto; }"
-        f"{jdl_mon}"
+        f"{graph_styles}"
         "</style>"
         f"{all_figs}"
-        "<br /><br /><hr><br /><br /><br /></div>"
         "</body></html>"
     )
 

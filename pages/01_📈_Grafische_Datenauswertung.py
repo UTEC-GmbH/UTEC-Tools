@@ -201,7 +201,10 @@ if uauth.authentication(sf.s_get("page")):
         st.markdown("###")
         st.markdown("---")
     else:
-        menu_g.sidebar_reset()
+        with st.sidebar:
+            reset_download_container = st.container()
+        with reset_download_container:
+            gf.reset_button()
 
         mdf: cld.MetaAndDfs = gather_and_manipulate_data()
         figs: clf.Figs = make_graphs(mdf)
@@ -217,8 +220,9 @@ if uauth.authentication(sf.s_get("page")):
             fig_cr.plot_figs(figs)
 
         sf.s_set("figs", figs)
-        with st.sidebar:
-            st.markdown("---")
+
+        with reset_download_container:
             menu_g.downloads(mdf)
+            st.markdown("---")
 
     debug_code_run(position="after")

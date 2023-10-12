@@ -2,6 +2,7 @@
 """Show stuff on a map"""
 
 
+import datetime as dt
 from io import BytesIO
 from typing import Any
 
@@ -79,34 +80,6 @@ def plot_map() -> go.Figure:
     return fig_map
 
 
-def export_to_html(fig_to_convert: go.Figure) -> None:
-    """Export to html"""
-
-    st.markdown("---")
-
-    if sf.s_get("butt_html_map"):
-        mp.html_exp(fig_to_convert)
-        f_pn = "export\\Kartografische_Datenauswertung.html"
-        cols: list = st.columns(3)
-        ani_height = 30
-        with cols[1], open(f_pn, "rb") as exfile:
-            st.download_button(
-                label="✨ html-Datei herunterladen ✨",
-                data=exfile,
-                file_name=f_pn.rsplit("/", maxsplit=1)[-1],
-                mime="application/xhtml+xml",
-                use_container_width=True,
-            )
-
-        for col in cols[::2]:
-            with col:
-                gf.show_lottie_animation(
-                    "animations/coin_i.json", height=ani_height, speed=0.75
-                )
-    else:
-        st.button(label="html-Export", key="butt_html_map")
-
-
 def df_from_file(uploaded_file: BytesIO | str) -> pl.DataFrame:
     """Import Excel-File as Polars DataFrame"""
 
@@ -139,7 +112,11 @@ if uauth.authentication(sf.s_get("page")):
 
         logger.warning("No file provided yet.")
     else:
-        menu_m.sidebar_reset()
+        with st.sidebar:
+            reset_download_container = st.container()
+        with reset_download_container:
+            gf.reset_button()
+
         menu_m.sidebar_text()
         menu_m.sidebar_slider_size()
         menu_m.sidebar_slider_colour()
@@ -147,11 +124,8 @@ if uauth.authentication(sf.s_get("page")):
 
         fig: go.Figure = plot_map()
 
-        with st.sidebar:
+        with reset_download_container:
             st.download_button(
-                label="✨ html-Datei herunterladen ✨",
-                data=ex.html_map(fig),
-                file_name="Interaktive_Karte.html",
-                mime="application/xhtml+xml",
-                use_container_width=True,
+                **cont.BUTTONS.download_html.func_args(), data=ex.html_map(fig)
             )
+            st.markdown("---")

@@ -20,19 +20,6 @@ if TYPE_CHECKING:
     import polars as pl
 
 
-def sidebar_reset() -> None:
-    """Reset-Knöpfle für die Sidebar"""
-    with st.sidebar:
-        st.markdown("###")
-        st.button(
-            label="✨  Auswertung neu starten  ✨",
-            key="but_complete_reset",
-            use_container_width=True,
-            help="Auswertung zurücksetzen um andere Datei hochladen zu können.",
-        )
-        st.markdown("---")
-
-
 def sidebar_file_upload() -> Any:
     """Hochgeladene Excel-Datei"""
 
@@ -53,10 +40,9 @@ def sidebar_file_upload() -> Any:
 
         with open(f"example_files/{sb_example}.xlsx", "rb") as exfile:
             st.download_button(
-                label="Beispieldatei herunterladen",
+                **cont.BUTTONS.download_example.func_args(),
                 data=exfile,
                 file_name=f"{sb_example}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             )
 
         # benutze ausgewählte Beispieldatei direkt für debugging
@@ -696,84 +682,17 @@ def display_smooth_main() -> bool:
 def downloads(mdf: cld.MetaAndDfs) -> None:
     """Dateidownloads"""
 
-    if not any(
-        [
-            sf.s_get("but_html"),
-            sf.s_get("but_xls"),
-        ]
-    ):
-        st.markdown("###")
-        # st.subheader("Downloads")
+    st.download_button(**cont.BUTTONS.download_html.func_args(), data=ex.html_graph())
 
-        # html-Datei
-        st.button(
-            label="html-Datei erzeugen",
-            key="but_html",
-            help="""Nach dem Erzeugen der html-Datei 
-            erscheint ein Knöpfle zum herunterladen.""",
-            use_container_width=True,
-        )
+    dic_df_ex: dict[str, pl.DataFrame] = {"Daten": mdf.df}
+    if mdf.df_h is not None:
+        dic_df_ex["Stundenwerte"] = mdf.df_h
+    if mdf.jdl is not None:
+        dic_df_ex["Jahresdauerlinie"] = mdf.jdl
+    if mdf.mon is not None:
+        dic_df_ex["Monatswerte"] = mdf.mon
 
-        # Excel-Datei
-        st.button(
-            "Excel-Datei erzeugen",
-            key="but_xls",
-            help="""Nach dem Erzeugen der Excel-Datei erscheint 
-            ein Knöpfle zum herunterladen.""",
-            use_container_width=True,
-        )
-
-    if sf.s_get("but_html"):
-        with st.spinner("Momentle bitte - html-Datei wird erzeugt..."):
-            html_data: str = ex.html_graph()
-
-        cols: list = st.columns([1, 4, 1])
-
-        with cols[1]:
-            st.download_button(
-                label="✨ herunterladen ✨",
-                data=html_data,
-                file_name="grafische_Auswertung.html",
-                mime="application/xhtml+xml",
-                use_container_width=True,
-            )
-            st.button("abbrechen", use_container_width=True)
-
-        ani_height = 30
-        for col in cols[::2]:
-            with col:
-                gf.show_lottie_animation(
-                    "animations/coin_i.json", height=ani_height, speed=0.75
-                )
-
-    if sf.s_get("but_xls"):
-        with st.spinner("Momentle bitte - Excel-Datei wird erzeugt..."):
-            dic_df_ex: dict = {
-                "Daten": mdf.df,
-                "Stundenwerte": mdf.df_h,
-                "Jahresdauerlinie": mdf.jdl,
-                "Monatswerte": mdf.mon,
-            }
-
-            dat: bytes = ex.excel_download(dic_df_ex, mdf.meta)
-
-        cols: list = st.columns([1, 4, 1])
-
-        with cols[1]:
-            st.download_button(
-                label="✨ herunterladen ✨",
-                data=dat,
-                file_name="Datenausgabe.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                key="excel_download",
-                use_container_width=True,
-            )
-
-            st.button("abbrechen", use_container_width=True)
-
-        ani_height = 30
-        for col in cols[::2]:
-            with col:
-                gf.show_lottie_animation(
-                    "animations/coin_i.json", height=ani_height, speed=0.75
-                )
+    st.download_button(
+        **cont.BUTTONS.download_excel.func_args(),
+        data=ex.excel_download(dic_df_ex, mdf.meta),
+    )

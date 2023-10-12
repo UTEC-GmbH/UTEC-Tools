@@ -418,6 +418,7 @@ ST_PAGES: clc.StPages = clc.StPages(
     graph=clc.StPageProps("graph", "Grafische Datenauswertung", "Daten"),
     meteo=clc.StPageProps("meteo", "Meteorologische Daten", "Wetterdaten"),
     maps=clc.StPageProps("maps", "Kartografische Datenauswertung"),
+    conv=clc.StPageProps("conv", "Umrechnungen"),
 )
 
 # Umkreis für Meteostat-Stationen in Kilometern

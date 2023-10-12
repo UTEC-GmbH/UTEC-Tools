@@ -149,8 +149,8 @@ class StPages:
     login: StPageProps
     graph: StPageProps
     meteo: StPageProps
-    # chat: StPageProps
     maps: StPageProps
+    conv: StPageProps
 
     def get_all_short(self) -> list[str]:
         """Get a list of short page descriptors"""

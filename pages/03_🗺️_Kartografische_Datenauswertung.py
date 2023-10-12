@@ -2,7 +2,6 @@
 """Show stuff on a map"""
 
 
-import datetime as dt
 from io import BytesIO
 from typing import Any
 

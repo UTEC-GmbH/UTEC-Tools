@@ -295,6 +295,10 @@ def map_dwd_all(**kwargs) -> go.Figure:
     # alle Stationen
     all_sta: pl.DataFrame | None = sf.s_get("stations_distance")
     if all_sta is None:
+        met.collect_meteo_data_for_list_of_parameters(cont.DWD_DEFAULT_PARAMS)
+        all_sta = sf.s_get("stations_distance")
+
+    if all_sta is None:
         raise ValueError
 
     all_lat = list(all_sta["latitude"])

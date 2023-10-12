@@ -46,13 +46,6 @@ def general_setup() -> None:
 
     sf.s_add_once("all_user_data", uauth.get_all_user_data())
 
-    exp_dir: Path = Path(f"{Path.cwd()}/export")
-    if Path.exists(exp_dir):
-        logger.info(f"Pfad '{exp_dir}' für die Ausgabe bereits vorhanden")
-    else:
-        Path.mkdir(exp_dir)
-        logger.info(f"Pfad '{exp_dir}' für die Ausgabe erstellt")
-
     st.session_state["initial_setup"] = True
     logger.log(slog.LVLS.once_per_session.name, "Initial Setup Complete")
 

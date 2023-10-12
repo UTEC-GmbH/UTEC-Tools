@@ -8,14 +8,15 @@ import time
 from collections import Counter
 
 # from collections.abc import Callable
-from typing import Any, Literal, Callable, TypeVar, cast
+from typing import Any, Callable, Literal, TypeVar, cast
 
 import numpy as np
 import streamlit as st
 import streamlit_lottie as stlot
 from loguru import logger
 
-from modules import classes_errors as cle, constants as cont
+from modules import classes_errors as cle
+from modules import constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
 from modules import streamlit_functions as sf
@@ -88,6 +89,13 @@ def func_timer(func: TCallable) -> TCallable:
         return result
 
     return cast(TCallable, wrapper)
+
+
+def reset_button() -> None:
+    """Reset-Knöpfle"""
+    st.markdown("###")
+    st.button(**cont.BUTTONS.reset.func_args())
+    st.markdown("###")
 
 
 def string_new_line_per_item(

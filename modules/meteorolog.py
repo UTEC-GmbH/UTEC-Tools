@@ -58,6 +58,7 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
 
 @gf.func_timer
 def collect_meteo_data_for_list_of_parameters(
+    parameter_names: list[str],
     temporal_resolution: str | None = None,
 ) -> list[cld.DWDParam]:
     """Meteorologische Daten für die ausgewählten Parameter"""
@@ -73,12 +74,10 @@ def collect_meteo_data_for_list_of_parameters(
     selected_res: str = temporal_resolution or sf.s_get("sb_resolution") or "hourly"
     selected_res_en: str = cont.DWD_RESOLUTION_OPTIONS.get(selected_res, selected_res)
 
-    selection: list[str] = sf.s_get("selected_params") or cont.DWD_DEFAULT_PARAMS
-
     logger.debug(
         gf.string_new_line_per_item(
             [
-                f"Parameters: '{selection}'",
+                f"Parameters: '{parameter_names}'",
                 f"Time: '{time_span.start} - {time_span.end}'",
                 f"Resolution: '{selected_res_en}'",
                 f"Location (City): '{location.city}'",
@@ -92,7 +91,7 @@ def collect_meteo_data_for_list_of_parameters(
     previously_collected_params: list[cld.DWDParam] = sf.s_get("params_list") or []
     selected_params: list[cld.DWDParam] = []
 
-    for sel in selection:
+    for sel in parameter_names:
         prev_par: cld.DWDParam | None = next(
             iter(par for par in previously_collected_params if par.name_en == sel),
             None,
@@ -268,7 +267,10 @@ def meteo_df_for_temp_in_graph(
         if mdf_intern.meta.td_mnts and not sf.s_get("cb_h")
         else "hourly"
     )
-    params: list[cld.DWDParam] = collect_meteo_data_for_list_of_parameters(time_res)
+    params: list[cld.DWDParam] = collect_meteo_data_for_list_of_parameters(
+        parameter_names=sf.s_get("selected_params") or cont.DWD_DEFAULT_PARAMS,
+        temporal_resolution=time_res,
+    )
     for param in params:
         if (
             param.closest_available_res is None

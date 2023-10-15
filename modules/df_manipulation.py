@@ -1,3 +1,4 @@
+# sourcery skip: no-complex-if-expressions
 """Bearbeitung der Daten"""
 
 
@@ -566,7 +567,10 @@ def calculate_monthly_values(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         .agg(
             [
                 pl.col(col).mean()
-                if mdf.meta.lines[col].unit in cont.GRP_MEAN
+                if (
+                    mdf.meta.lines[col].unit in cont.GRP_MEAN
+                    and "kW" not in mdf.meta.lines[col].unit
+                )
                 else pl.col(col).sum()
                 for col in cols_without_index
             ]

@@ -4,7 +4,7 @@
 import datetime as dt
 import pathlib
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Callable, Literal
 
 from wetterdienst import Settings
 from wetterdienst.provider.dwd.observation import DwdObservationRequest
@@ -25,9 +25,14 @@ class ButtonProps:
     label: str
     key: str | None = None
     help: str | None = None  # noqa: A003
+    on_click: Callable | None = None
+    args: Any | None = None
+    kwargs: Any | None = None
+    type: Literal["primary", "secondary"] | None = None  # noqa: A003
+    disabled: bool | None = None
+    use_container_width: bool | None = None
     file_name: str | None = None
     mime: str | None = None
-    use_container_width: bool | None = None
 
     def func_args(self) -> dict:
         """Dictionary without missing data"""
@@ -187,6 +192,44 @@ GRP_MEAN: list[str] = [
     " %",
 ]
 
+
+@dataclass
+class GroupUnits:
+    """Group as mean instead of sum"""
+
+    mean: list[str]
+    sum_month: list[str]
+
+    def __post_init__(self) -> None:
+        """Fill"""
+        self.mean = [
+            " w",
+            " kw",
+            " mw",
+            " °c",
+            " °C",
+            " m³",
+            " m³/h",
+            " pa/m",
+            " Pa/m",
+            " m/s",
+            " %",
+        ]
+        self.sum_month = [" w", " W", " kw", " kW", " KW", " mw", " mW", " MW"]
+
+    def group_mean(self, unit: str) -> bool:
+        """Check if a unit needs to be grouped as mean"""
+        return unit.strip().lower() in [mean.strip().lower() for mean in self.mean]
+
+    def sum_mon(self, unit: str) -> bool:
+        """Check if a unit needs to be grouped as sum for monthly data"""
+        return unit.strip().lower() in [su.strip().lower() for su in self.sum_month]
+
+
+GRP_MON: dict[str, list[str]] = {
+    "sum": [" w", " W", " kw", " kW", " KW", " mw", " mW", " MW"],
+    "mean": [" °c", " °C", " m³", " m³/h", " pa/m", " Pa/m", " m/s", " %"],
+}
 
 # Transparenz (Deckungsgrad) 0= durchsichtig, 1= undurchsichtig
 ALPHA: dict[str, str] = {

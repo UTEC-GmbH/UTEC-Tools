@@ -4,6 +4,7 @@ import io
 
 import polars as pl
 import xlsxwriter
+from loguru import logger
 from plotly import graph_objects as go
 
 from modules import classes_data as cld
@@ -35,14 +36,17 @@ def excel_download(df: dict[str, pl.DataFrame], meta: cld.MetaData) -> bytes:
 
     with xlsxwriter.Workbook(buffer) as wb:
         for worksh, data in df.items():
-            col_format: dict[str, str] = {
-                name: line.excel_number_format or "#,##0.0"
-                for name, line in meta.lines.items()
-            }
+            col_format: dict[str, str] = excel_number_format(data, meta)
             if worksh in ["Monatswerte"]:
                 for col, form in col_format.items():
-                    if cont.GROUP_MEAN.check(form.split(" ")[-1], "sum_month"):
-                        col_format[col] += "h"
+                    if cont.GROUP_MEAN.check(
+                        form.split(" ")[-1].replace('"', ""), "sum_month"
+                    ):
+                        col_format[col] = f'{col_format[col][:-1]}h"'
+
+                logger.debug(
+                    gf.string_new_line_per_item(col_format, "Formate für Monatswerte")
+                )
 
             wb.add_worksheet(worksh)
             data.write_excel(
@@ -66,6 +70,37 @@ def excel_download(df: dict[str, pl.DataFrame], meta: cld.MetaData) -> bytes:
             )
 
     return buffer.getvalue()
+
+
+def excel_number_format(df: pl.DataFrame, meta: cld.MetaData) -> dict[str, str]:
+    """Define Number Formats for Excel-Export"""
+
+    # cut-off for decimal places
+    decimal_0: int = 1000
+    decimal_1: int = 100
+    decimal_2: int = 10
+
+    quantiles: pl.DataFrame = df.quantile(0.95)
+    excel_formats: dict[str, str] = {}
+
+    for line in df.columns:
+        line_quant: float = quantiles.get_column(line).item()
+        line_unit: str = ""
+        if line in meta.lines and meta.lines.get(line) is not None:
+            line_meta = meta.lines.get(line)
+            if line_meta is not None:
+                line_unit = line_meta.unit or ""
+        excel_formats[line] = "#,##0.0"
+        if abs(line_quant) >= decimal_0 | 0:
+            excel_formats[line] = f'#,##0"{line_unit}"'
+        if abs(line_quant) >= decimal_1:
+            excel_formats[line] = f'#,##0.0"{line_unit}"'
+        if abs(line_quant) >= decimal_2:
+            excel_formats[line] = f'#,##0.00"{line_unit}"'
+        else:
+            excel_formats[line] = f'#,##0.000"{line_unit}"'
+
+    return excel_formats
 
 
 def html_graph() -> str:

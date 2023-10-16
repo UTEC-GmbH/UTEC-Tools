@@ -137,7 +137,25 @@ def import_prefab_excel(file: BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
 
 
 def get_df_from_excel(file: BytesIO | str) -> pl.DataFrame:
-    """Excel Import via csv-conversion"""
+    """Excel Import via csv-conversion
+
+    xlsx2csv options:
+       - sheetid - sheet no to convert (0 for all sheets)
+       - sheetname - sheet name to convert
+       - dateformat - override date/time format
+       - timeformat - override time format
+       - floatformat - override float format
+       - quoting - if and how to quote
+       - delimiter - csv columns delimiter symbol
+       - sheetdelimiter - sheets delimiter used when processing all sheets
+       - skip_empty_lines - skip empty lines
+       - skip_trailing_columns - skip trailing columns
+       - hyperlinks - include hyperlinks
+       - include_sheet_pattern - only include sheets named matching given pattern
+       - exclude_sheet_pattern - exclude sheets named matching given pattern
+       - exclude_hidden_sheets - exclude hidden sheets
+       - skip_hidden_rows - skip hidden rows
+    """
 
     sheet: str = "Daten"
     xlsx_options: dict[str, str | bool] = {
@@ -226,7 +244,13 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cld.MetaDa
             for line, unit in units.items()
         },
     )
-
+    logger.info(
+        gf.string_new_line_per_item(
+            [f"{line}:{unit}" for line, unit in units.items()],
+            "Folgende Einheiten wurden gefunden:",
+            trailing_empty_lines=1,
+        )
+    )
     return meta
 
 

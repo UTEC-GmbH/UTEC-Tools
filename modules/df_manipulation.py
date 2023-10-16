@@ -1,3 +1,4 @@
+# sourcery skip: no-complex-if-expressions
 """Bearbeitung der Daten"""
 
 
@@ -129,7 +130,7 @@ def upsample_hourly_to_15min(
         df.sort(col_index)
         .upsample(COL_IND, every="15m")
         .with_columns(
-            pl.when(units.get(col) in [None, *cont.GRP_MEAN])
+            pl.when(units.get(col) in [None, *cont.GROUP_MEAN.mean_all])
             .then(pl.col(col))
             .otherwise(pl.col(col) / 4)
             .keep_name()
@@ -405,7 +406,7 @@ def change_temporal_resolution(
         return df.groupby_dynamic(time_col, every=requested_resolution).agg(
             [
                 pl.col(col).mean()
-                if f" {units[col].strip()}" in cont.GRP_MEAN
+                if cont.GROUP_MEAN.check(units[col], "mean_all")
                 else pl.col(col).sum()
                 for col in value_cols
             ]
@@ -426,7 +427,7 @@ def change_temporal_resolution(
         df_res.join(df, on=time_col, how="outer")
         .sort(by=time_col)
         .with_columns(
-            pl.when(f" {units[col].strip()}" in [None, *cont.GRP_MEAN])
+            pl.when(None or cont.GROUP_MEAN.check(units[col], "mean_all"))
             .then(pl.col(col))
             .otherwise(pl.col(col) * (requested_timedelta / original_resolution))
             .keep_name()
@@ -566,7 +567,7 @@ def calculate_monthly_values(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         .agg(
             [
                 pl.col(col).mean()
-                if mdf.meta.lines[col].unit in cont.GRP_MEAN
+                if (cont.GROUP_MEAN.check(mdf.meta.lines[col].unit, "mean_always"))
                 else pl.col(col).sum()
                 for col in cols_without_index
             ]

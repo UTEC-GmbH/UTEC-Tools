@@ -551,7 +551,6 @@ class MetaLine:
     tit: str
     unit: str | None = None
     unit_h: str | None = None
-    mon_agg: Literal["sum", "mean", "max", "min"] | None = None
     obis: clc.ObisElectrical | None = None
     excel_number_format: str | None = None
 

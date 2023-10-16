@@ -71,6 +71,12 @@ def line_plot(
         trace_unit: str | None = (
             line_meta.unit if data_frame == "df" else line_meta.unit_h
         )
+        if (
+            data_frame == "mon"
+            and trace_unit is not None
+            and cont.GROUP_MEAN.check(trace_unit, "sum_month")
+        ):
+            trace_unit += "h"
 
         fig = fig.add_trace(
             go.Scatter(
@@ -171,6 +177,12 @@ def line_plot_y_overlay(
         trace_unit: str | None = (
             line_meta.unit if data_frame == "df_multi" else line_meta.unit_h
         )
+        if (
+            data_frame == "mon_multi"
+            and trace_unit is not None
+            and cont.GROUP_MEAN.check(trace_unit, "sum_month")
+        ):
+            trace_unit += "h"
         hovtemp: str = f"{trace_unit} {cusd_format}"
 
         cusd: pl.Series = (

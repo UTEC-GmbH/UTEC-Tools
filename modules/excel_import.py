@@ -208,21 +208,6 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cld.MetaDa
 
     # leerzeichen vor Einheit
     units = {line: f" {unit.strip()}" for line, unit in units.items()}
-    mon_agg_dic: dict[str, Literal["sum", "mean", "max", "min"]] = {}
-    for line, unit in units.items():
-        if f" {unit}" in cont.GRP_MEAN:
-            mon_agg_dic[line] = "mean"
-        if unit in [
-            " w",
-            " W",
-            " kw",
-            " kW",
-            " KW",
-            " mw",
-            " mW",
-            " MW",
-        ]:
-            mon_agg_dic[line] = "sum"
 
     meta: cld.MetaData = cld.MetaData(
         lines={
@@ -237,7 +222,6 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cld.MetaDa
                 tit=line,
                 unit=unit,
                 unit_h=unit.strip("h"),
-                mon_agg="mean" if f" {unit}" in cont.GRP_MEAN else "sum",
             )
             for line, unit in units.items()
         },

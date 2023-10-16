@@ -3,7 +3,7 @@
 
 import datetime as dt
 import pathlib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Callable, Literal
 
 from wetterdienst import Settings
@@ -172,64 +172,43 @@ UNITS_GENERAL: list[str] = [
 ]
 
 
-# Einheiten, bei denen der Mittelwert gebildet werden muss (statt Summe)
-GRP_MEAN: list[str] = [
-    " °c",
-    " °C",
-    " w",
-    " W",
-    " kw",
-    " kW",
-    " KW",
-    " mw",
-    " mW",
-    " MW",
-    " m³",
-    " m³/h",
-    " pa/m",
-    " Pa/m",
-    " m/s",
-    " %",
-]
-
-
 @dataclass
 class GroupUnits:
-    """Group as mean instead of sum"""
+    """Einheiten, die bei der Umrechnung von Zeitreihen
+    mit dem Mittelwert zusammengefasst werden
 
-    mean: list[str]
+    - mean_always: Einheiten, die immer gemittelt werden
+    - sum_month: Enheiten, die bei der Berechnung von Monatswerten
+        aufsummiert, sonst aber auch gemittelt werden.
+    - mean_all: Alle Einheiten, die gemittelt werden
+        (inklusive solcher, die nicht immer gemittelt werden)
+    """
+
+    mean_always: list[str]
     sum_month: list[str]
+    mean_all: list[str] = field(init=False)
 
     def __post_init__(self) -> None:
-        """Fill"""
-        self.mean = [
-            " w",
-            " kw",
-            " mw",
-            " °c",
-            " °C",
-            " m³",
-            " m³/h",
-            " pa/m",
-            " Pa/m",
-            " m/s",
-            " %",
-        ]
-        self.sum_month = [" w", " W", " kw", " kW", " KW", " mw", " mW", " MW"]
+        """Combine to get all"""
+        self.mean_all = [*self.mean_always, *self.sum_month]
 
-    def group_mean(self, unit: str) -> bool:
+    def check(
+        self, unit: str | None, attr: Literal["mean_all", "mean_always", "sum_month"]
+    ) -> bool:
         """Check if a unit needs to be grouped as mean"""
-        return unit.strip().lower() in [mean.strip().lower() for mean in self.mean]
 
-    def sum_mon(self, unit: str) -> bool:
-        """Check if a unit needs to be grouped as sum for monthly data"""
-        return unit.strip().lower() in [su.strip().lower() for su in self.sum_month]
+        if unit is None:
+            return False
+
+        att: list[str] = getattr(self, attr)
+        return unit.strip().lower() in [mean.strip().lower() for mean in att]
 
 
-GRP_MON: dict[str, list[str]] = {
-    "sum": [" w", " W", " kw", " kW", " KW", " mw", " mW", " MW"],
-    "mean": [" °c", " °C", " m³", " m³/h", " pa/m", " Pa/m", " m/s", " %"],
-}
+GROUP_MEAN = GroupUnits(
+    mean_always=["°C", "K", "m³", "m³/h", "pa/m", "Pa/m", "m/s", "%"],
+    sum_month=["W", "kW", "MW"],
+)
+
 
 # Transparenz (Deckungsgrad) 0= durchsichtig, 1= undurchsichtig
 ALPHA: dict[str, str] = {

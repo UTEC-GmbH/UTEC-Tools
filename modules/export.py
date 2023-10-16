@@ -35,6 +35,15 @@ def excel_download(df: dict[str, pl.DataFrame], meta: cld.MetaData) -> bytes:
 
     with xlsxwriter.Workbook(buffer) as wb:
         for worksh, data in df.items():
+            col_format: dict[str, str] = {
+                name: line.excel_number_format or "#,##0.0"
+                for name, line in meta.lines.items()
+            }
+            if worksh in ["Monatswerte"]:
+                for col, form in col_format.items():
+                    if cont.GROUP_MEAN.check(form.split(" ")[-1], "sum_month"):
+                        col_format[col] += "h"
+
             wb.add_worksheet(worksh)
             data.write_excel(
                 workbook=wb,
@@ -44,10 +53,7 @@ def excel_download(df: dict[str, pl.DataFrame], meta: cld.MetaData) -> bytes:
                 autofit=True,
                 has_header=True,
                 header_format={"align": "right", "bottom": 1},
-                column_formats={
-                    name: line.excel_number_format or "#,##0.0"
-                    for name, line in meta.lines.items()
-                },
+                column_formats=col_format,  # type: ignore
                 column_widths={
                     "Datum": 120,
                     cont.SPECIAL_COLS.index: 120,

@@ -74,7 +74,7 @@ def collect_meteo_data_for_list_of_parameters(
     selected_res: str = temporal_resolution or sf.s_get("sb_resolution") or "hourly"
     selected_res_en: str = cont.DWD_RESOLUTION_OPTIONS.get(selected_res, selected_res)
 
-    logger.debug(
+    logger.info(
         gf.string_new_line_per_item(
             [
                 f"Parameters: '{parameter_names}'",
@@ -212,6 +212,7 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
     for df_add in other_dfs:
         df = df.join(df_add, on="Datum", how="outer")
 
+    # Umrechnung von J/cm² in W/m² mit Faktor 2,778
     if sf.s_get("tog_polysun"):
         df = df.rename(
             {
@@ -219,6 +220,13 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
                 for name_en, name_de in cont.DWD_PARAM_TRANSLATION.items()
                 if name_de in df.columns
             }
+        ).with_columns(
+            [
+                pl.col(col) * 2.778
+                for col in [
+                    par.name_en for par in param_list if "J / cm ** 2" in par.unit
+                ]
+            ]
         )
 
     return df

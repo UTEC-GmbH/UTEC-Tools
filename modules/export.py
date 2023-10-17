@@ -76,29 +76,28 @@ def excel_number_format(df: pl.DataFrame, meta: cld.MetaData) -> dict[str, str]:
     """Define Number Formats for Excel-Export"""
 
     # cut-off for decimal places
-    decimal_0: int = 1000
-    decimal_1: int = 100
-    decimal_2: int = 10
+    decimal_0: float = 1000
+    decimal_1: float = 100
+    decimal_2: float = 10
 
     quantiles: pl.DataFrame = df.quantile(0.95)
     excel_formats: dict[str, str] = {}
 
-    for line in df.columns:
+    for line in [col for col in df.columns if gf.check_if_not_exclude(col)]:
         line_quant: float = quantiles.get_column(line).item()
         line_unit: str = ""
         if line in meta.lines and meta.lines.get(line) is not None:
-            line_meta = meta.lines.get(line)
+            line_meta: cld.MetaLine | None = meta.lines.get(line)
             if line_meta is not None:
                 line_unit = line_meta.unit or ""
+
         excel_formats[line] = "#,##0.0"
-        if abs(line_quant) >= decimal_0 | 0:
-            excel_formats[line] = f'#,##0"{line_unit}"'
-        if abs(line_quant) >= decimal_1:
-            excel_formats[line] = f'#,##0.0"{line_unit}"'
         if abs(line_quant) >= decimal_2:
             excel_formats[line] = f'#,##0.00"{line_unit}"'
-        else:
-            excel_formats[line] = f'#,##0.000"{line_unit}"'
+        if abs(line_quant) >= decimal_1:
+            excel_formats[line] = f'#,##0.0"{line_unit}"'
+        if abs(line_quant) >= decimal_0:
+            excel_formats[line] = f'#,##0"{line_unit}"'
 
     return excel_formats
 

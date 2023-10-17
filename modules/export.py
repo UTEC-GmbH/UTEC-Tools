@@ -92,11 +92,11 @@ def excel_number_format(df: pl.DataFrame, meta: cld.MetaData) -> dict[str, str]:
                 line_unit = line_meta.unit or ""
 
         excel_formats[line] = "#,##0.0"
-        if abs(line_quant) >= decimal_2:
+        if line_quant and abs(line_quant) >= decimal_2:
             excel_formats[line] = f'#,##0.00"{line_unit}"'
-        if abs(line_quant) >= decimal_1:
+        if line_quant and abs(line_quant) >= decimal_1:
             excel_formats[line] = f'#,##0.0"{line_unit}"'
-        if abs(line_quant) >= decimal_0:
+        if line_quant and abs(line_quant) >= decimal_0:
             excel_formats[line] = f'#,##0"{line_unit}"'
 
     return excel_formats

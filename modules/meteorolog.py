@@ -224,7 +224,9 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
             [
                 pl.col(col) * 2.778
                 for col in [
-                    par.name_en for par in param_list if "J / cm ** 2" in par.unit
+                    par.name_en
+                    for par in param_list
+                    if ("J / cm ** 2" in par.unit and par.name_en in df.columns)
                 ]
             ]
         )

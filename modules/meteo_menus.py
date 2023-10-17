@@ -326,9 +326,18 @@ def download_weatherdata() -> None:
     ) or met.collect_meteo_data_for_list_of_parameters(
         parameter_names=sf.s_get("selected_params") or cont.DWD_DEFAULT_PARAMS,
     )
-    file_name_city: str = ""
-    if dat[0].location is not None and dat[0].location.city is not None:
-        file_name_city = f" -{dat[0].location.city}-"
+    # if (
+    #     dat[0].location is not None
+    #     and dat[0].location.city is not None
+    #     and dat[0].location.city != ""
+    # ):
+    #     file_name_city = f" -{dat[0].location.city}-"
+    # elif sf.s_get("ta_adr"):
+    if sf.s_get("ta_adr"):
+        file_name_city = f' -{sf.s_get("ta_adr")}-'
+    else:
+        file_name_city: str = ""
+
     file_name_time: str = ""
     if dat[0].time_span is not None:
         file_name_time = (
@@ -367,6 +376,7 @@ def download_polysun(df_ex: pl.DataFrame, file_suffix: str) -> None:
             *[
                 pl.col(name_en).alias(poly)
                 for name_en, poly in cont.DWD_PARAMS_POLYSUN.items()
+                if name_en in df_ex.columns
             ],
         ]
     )

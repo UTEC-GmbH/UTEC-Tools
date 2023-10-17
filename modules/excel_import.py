@@ -269,11 +269,11 @@ def meta_number_format(mdf: cld.MetaAndDfs) -> cld.MetaData:
             line_quant: float = quantiles.get_column(line.name).item()
             unit: str = line.unit or ""
             line.excel_number_format = "#,##0.0"
-            if abs(line_quant) >= decimal_2:
+            if line_quant and abs(line_quant) >= decimal_2:
                 line.excel_number_format = f'#,##0.00"{unit}"'
-            if abs(line_quant) >= decimal_1:
+            if line_quant and abs(line_quant) >= decimal_1:
                 line.excel_number_format = f'#,##0.0"{unit}"'
-            if abs(line_quant) >= decimal_0:
+            if line_quant and abs(line_quant) >= decimal_0:
                 line.excel_number_format = f'#,##0"{unit}"'
 
     return mdf.meta

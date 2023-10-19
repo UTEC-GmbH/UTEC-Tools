@@ -1,10 +1,12 @@
 """Import und Download von Excel-Dateien"""
 
+import datetime as dt
 import re
 from io import BytesIO
 from typing import Any, Literal, NamedTuple
 
 import polars as pl
+import xlsx2csv
 from loguru import logger
 
 from modules import classes_constants as clc
@@ -14,6 +16,13 @@ from modules import general_functions as gf
 from modules import setup_logger as slog
 
 TEST_FILE = "example_files/Stromlastgang - mehrere Jahre.xlsx"
+
+
+def date_serial_number(serial_number: float) -> dt.datetime:
+    """Convert an Excel serial number to a Python datetime object"""
+    # Excel stores dates as "number of days since 1900"
+
+    return dt.datetime(1899, 12, 30) + dt.timedelta(days=serial_number)
 
 
 @gf.func_timer
@@ -163,14 +172,36 @@ def get_df_from_excel(file: BytesIO | str) -> pl.DataFrame:
         "skip_trailing_columns": True,
         "dateformat": "%d.%m.%Y %H:%M",
     }
-    csv_options: dict[str, bool] = {"has_header": False, "try_parse_dates": False}
+    csv_options: dict[str, bool] = {
+        "has_header": False,
+        # "try_parse_dates": False,
+    }
 
-    return pl.read_excel(
-        source=file,
-        sheet_name=sheet,
-        xlsx2csv_options=xlsx_options,
-        read_csv_options=csv_options,
-    )  # type: ignore
+    df: pl.DataFrame = pl.DataFrame()
+    try:
+        df = pl.read_excel(
+            source=file,
+            sheet_name=sheet,
+            read_csv_options=csv_options,
+            xlsx2csv_options=xlsx_options,
+        )
+    except xlsx2csv.XlsxValueError as xlsxvale:
+        logger.debug(xlsxvale)
+        df = pl.read_excel(
+            source=file,
+            sheet_name=sheet,
+            read_csv_options=csv_options,
+            xlsx2csv_options={
+                "ignore_formats": ["date"],
+                **{
+                    key: value
+                    for key, value in xlsx_options.items()
+                    if key != "dateformat"
+                },
+            },
+        )
+
+    return df
 
 
 def remove_empty(df: pl.DataFrame, **kwargs) -> pl.DataFrame:
@@ -286,10 +317,18 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
         df.with_row_count().filter(pl.col(mark_index) == mark_index).row(0)[0]
     )
     df = df.slice(ind_row + 1)
-    df = df.select(
-        [pl.col(mark_index).str.strptime(pl.Datetime, "%d.%m.%Y %H:%M")]
-        + [pl.col(col).cast(pl.Float32) for col in df.columns if col != mark_index]
-    )
+
+    try:
+        df = df.select(
+            [pl.col(mark_index).str.strptime(pl.Datetime, "%d.%m.%Y %H:%M")]
+            + [pl.col(col).cast(pl.Float32) for col in df.columns if col != mark_index]
+        )
+    except pl.ComputeError as plce:
+        logger.debug(plce)
+        df = df.select(
+            [pl.col(mark_index).cast(pl.Float64).map_elements(date_serial_number)]
+            + [pl.col(col).cast(pl.Float32) for col in df.columns if col != mark_index]
+        ).sort(mark_index)
 
     df = clean_up_daylight_savings(df, mark_index).df_clean
 

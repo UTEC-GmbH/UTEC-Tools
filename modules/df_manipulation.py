@@ -505,6 +505,9 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     )
 
     if mdf.meta.multi_years and mdf.meta.years:
+        # df.extend(pl.DataFrame({
+        # col:pl.Series(None,[None]*(8760-df.height)).cast(df[col].dtype)
+        # for col in df.columns}))
         jdl_separate: list[list[pl.Series]] = [
             jdl_first_stage.select(pl.col(col, f"{col} - {COL_ORG}"))
             .filter(pl.col(f"{col} - {COL_ORG}").dt.year() == year)

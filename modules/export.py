@@ -44,9 +44,12 @@ def excel_download(df: dict[str, pl.DataFrame], meta: cld.MetaData) -> bytes:
                     ):
                         col_format[col] = f'{col_format[col][:-1]}h"'
 
-                logger.debug(
-                    gf.string_new_line_per_item(col_format, "Formate für Monatswerte")
+            logger.debug(
+                gf.string_new_line_per_item(
+                    {"columns": data.columns, **dict(col_format)},
+                    "Excel Zahlenformate",
                 )
+            )
 
             wb.add_worksheet(worksh)
             data.write_excel(
@@ -98,6 +101,9 @@ def excel_number_format(df: pl.DataFrame, meta: cld.MetaData) -> dict[str, str]:
             excel_formats[line] = f'#,##0.0"{line_unit}"'
         if line_quant and abs(line_quant) >= decimal_0:
             excel_formats[line] = f'#,##0"{line_unit}"'
+
+    for col in cont.DATE_COLUMNS:
+        excel_formats[col] = "DD.MM.YYYY hh:mm"
 
     return excel_formats
 

@@ -16,7 +16,7 @@ def get_df_from_excel(file: str = f"{EX_FOLDER}\\{EX_FILE}") -> None:
     xlsx_options: dict[str, str | bool] = {
         "skip_empty_lines": True,
         "skip_trailing_columns": True,
-        "dateformat": "%d.%m.%Y %T",
+        "dateformat": "%d.%m.%Y %H:%M",
     }
     csv_options: dict[str, bool] = {"has_header": True, "try_parse_dates": True}
 
@@ -28,7 +28,7 @@ def get_df_from_excel(file: str = f"{EX_FOLDER}\\{EX_FILE}") -> None:
 
     df = (
         df.select(
-            [pl.col(IDX).str.strptime(pl.Datetime, "%d.%m.%Y %T").dt.round("1m")]
+            [pl.col(IDX).str.strptime(pl.Datetime, "%d.%m.%Y %H:%M").dt.round("1m")]
             + [pl.col(col).cast(pl.Float32) for col in df.columns if col != IDX]
         )
         .set_sorted(column=IDX)

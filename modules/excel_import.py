@@ -161,7 +161,7 @@ def get_df_from_excel(file: BytesIO | str) -> pl.DataFrame:
     xlsx_options: dict[str, str | bool] = {
         "skip_empty_lines": True,
         "skip_trailing_columns": True,
-        "dateformat": "%d.%m.%Y %T",
+        "dateformat": "%d.%m.%Y %H:%M",
     }
     csv_options: dict[str, bool] = {"has_header": False, "try_parse_dates": False}
 
@@ -287,7 +287,7 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
     )
     df = df.slice(ind_row + 1)
     df = df.select(
-        [pl.col(mark_index).str.strptime(pl.Datetime, "%d.%m.%Y %T")]
+        [pl.col(mark_index).str.strptime(pl.Datetime, "%d.%m.%Y %H:%M")]
         + [pl.col(col).cast(pl.Float32) for col in df.columns if col != mark_index]
     )
 

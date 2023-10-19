@@ -14,7 +14,7 @@ def import_sample_pl(time_col: str = "Zeitstempel", year: int = 2017) -> pl.Data
     phil: str = f"{cwd}\\tests\\sample_data\\Utbremer_Ring_189_{year}.xlsx"
     df: pl.DataFrame = pl.read_excel(phil)
     df = df.select(
-        [pl.col(time_col).str.strptime(pl.Datetime, "%d.%m.%Y %T")]
+        [pl.col(time_col).str.strptime(pl.Datetime, "%d.%m.%Y %H:%M")]
         + [pl.col(col).cast(pl.Float32) for col in df.columns if col != time_col]
     )
     return df

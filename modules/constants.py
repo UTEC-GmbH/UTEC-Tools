@@ -238,6 +238,8 @@ SPECIAL_COLS: clc.SpecialCols = clc.SpecialCols(
     temp="Außentemperatur",
 )
 
+DATE_COLUMNS: list[str] = [SPECIAL_COLS.index, SPECIAL_COLS.original_index, "Datum"]
+
 TIME_MS: clc.TimeMSec = clc.TimeMSec(
     half_day=12 * 60 * 60 * 1000,  # 43.200.000
     week=7 * 24 * 60 * 60 * 1000,  # 604.800.000
@@ -327,10 +329,7 @@ DWD_PROBLEMATIC_PARAMS: list[str] = [
 ]
 DWD_GOOD_PARAMS: set[str] = set(DWD_ALL_PAR_DIC) - set(DWD_PROBLEMATIC_PARAMS)
 
-DWD_DEFAULT_PARAMS: list[str] = [
-    "temperature_air_mean_200",
-    "radiation_global",
-]
+DWD_DEFAULT_PARAMS: list[str] = ["temperature_air_mean_200"]
 
 DWD_PARAMS_POLYSUN: dict[str, str] = {
     "radiation_global": "Gh [W/m²]",

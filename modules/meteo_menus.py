@@ -18,6 +18,7 @@ from modules import streamlit_functions as sf
 
 def sidebar_address_dates() -> None:
     """Adresse und Daten"""
+    now: dt.datetime = dt.datetime.now()
 
     with st.sidebar, st.form("Standort und Daten"):
         st.text_area(
@@ -39,7 +40,7 @@ def sidebar_address_dates() -> None:
             st.date_input(
                 label="Startdatum",
                 format="DD.MM.YYYY",
-                value=dt.date(dt.datetime.now().year - 1, 1, 1),
+                value=dt.date(now.year, 1, 1),
                 key="di_start",
             )
         with cols[1]:
@@ -50,7 +51,7 @@ def sidebar_address_dates() -> None:
             st.date_input(
                 label="Enddatum",
                 format="DD.MM.YYYY",
-                value=dt.date(dt.datetime.now().year - 1, 12, 31),
+                value=dt.date(now.year, now.month, now.day - 1),
                 key="di_end",
             )
         with cols[1]:

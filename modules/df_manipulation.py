@@ -32,7 +32,7 @@ def get_df_to_test_am_pm(file_path: str | None = None) -> pl.DataFrame:
     xlsx_options: dict[str, Any] = {
         "skip_empty_lines": True,
         "skip_trailing_columns": True,
-        # "dateformat": "%d.%m.%Y %T",
+        # "dateformat": "%d.%m.%Y %H:%M",
     }
     csv_options: dict[str, bool] = {"has_header": True, "try_parse_dates": False}
     df: pl.DataFrame = pl.read_excel(
@@ -42,7 +42,7 @@ def get_df_to_test_am_pm(file_path: str | None = None) -> pl.DataFrame:
     )  # type: ignore
 
     return df.with_columns(
-        pl.col("Zeitstempel").str.strptime(pl.Datetime, "%d.%m.%Y %T")
+        pl.col("Zeitstempel").str.strptime(pl.Datetime, "%d.%m.%Y %H:%M")
     )
 
 

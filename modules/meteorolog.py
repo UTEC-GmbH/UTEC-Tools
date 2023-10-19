@@ -53,6 +53,8 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
     else:
         raise ValueError
 
+    logger.debug(f"TimeSpan: {start_time: %d.%m.%Y %H:%M} - {end_time: %d.%m.%Y %H:%M}")
+
     return cld.TimeSpan(start=start_time, end=end_time)
 
 

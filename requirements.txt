@@ -16,7 +16,7 @@ scipy==1.11.3
 sentry-sdk==1.31.0
 streamlit-authenticator==0.2.3
 streamlit-lottie==0.0.5
-streamlit==1.27.1
-wetterdienst==0.62.0
+streamlit==1.27.2
+wetterdienst==0.64.0
 xlsx2csv==0.8.1
-XlsxWriter==3.1.5
+XlsxWriter==3.1.6

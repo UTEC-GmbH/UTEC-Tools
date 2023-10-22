@@ -214,7 +214,6 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
     for df_add in other_dfs:
         df = df.join(df_add, on="Datum", how="outer")
 
-    # Umrechnung von J/cm² in W/m² mit Faktor 2,778
     if sf.s_get("tog_polysun"):
         df = df.rename(
             {
@@ -222,13 +221,19 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
                 for name_en, name_de in cont.DWD_PARAM_TRANSLATION.items()
                 if name_de in df.columns
             }
-        ).with_columns(
+        )
+
+        # Umrechnung von J/cm² in W/m² mit Faktor 2,778
+        df = df.with_columns(
             [
                 pl.col(col) * 2.778
                 for col in [
                     par.name_en
                     for par in param_list
-                    if ("J / cm ** 2" in par.unit and par.name_en in df.columns)
+                    if (
+                        "j/cm**2" in par.unit.replace(" ", "").lower()
+                        and par.name_en in df.columns
+                    )
                 ]
             ]
         )

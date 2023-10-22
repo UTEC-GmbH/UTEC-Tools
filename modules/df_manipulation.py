@@ -508,6 +508,7 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         # df.extend(pl.DataFrame({
         # col:pl.Series(None,[None]*(8760-df.height)).cast(df[col].dtype)
         # for col in df.columns}))
+
         jdl_separate: list[list[pl.Series]] = [
             jdl_first_stage.select(pl.col(col, f"{col} - {COL_ORG}"))
             .filter(pl.col(f"{col} - {COL_ORG}").dt.year() == year)
@@ -530,9 +531,12 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             for col in cols_without_index
         ]
 
-    mdf.jdl = pl.DataFrame(sum(jdl_separate, [])).with_row_count(
-        cont.SPECIAL_COLS.index
-    )
+    jdl_8760: list[list[pl.Series]] = [
+        [ser.extend_constant(None, 8760 - len(ser)) for ser in li]
+        for li in jdl_separate
+    ]
+
+    mdf.jdl = pl.DataFrame(sum(jdl_8760, [])).with_row_count(cont.SPECIAL_COLS.index)
 
     logger.success("DataFrame für Jahresdauerlinie erstellt.")
     logger.log(slog.LVLS.data_frame.name, mdf.jdl.head())

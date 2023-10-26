@@ -231,7 +231,7 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
                     par.name_en
                     for par in param_list
                     if (
-                        "J/cm**2" in par.unit.replace(" ", "")
+                        "j/cm**2" in par.unit.replace(" ", "").lower()
                         and par.name_en in df.columns
                     )
                 ]

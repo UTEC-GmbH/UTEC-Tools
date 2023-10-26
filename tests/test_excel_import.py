@@ -38,9 +38,9 @@ class TestImportPrefabExcel:
 
     expected: ExpectedResults = ExpectedResults(
         strom_einzel=Asserts(
-            file_path="example_files/Auswertung Stromlastgang - einzelnes Jahr.xlsx",
+            file_path="example_files/Stromlastgang - 15min - 1 Jahr.xlsx",
             df_height=35032,
-            df_width=12,
+            df_width=17,
             df_columns=[
                 "↓ Index ↓",
                 "Strombedarf → Arbeit",
@@ -48,19 +48,24 @@ class TestImportPrefabExcel:
                 "Netzeinspeisung → Arbeit",
                 "PV Eigennutzung → Arbeit",
                 "Bezug (1-1:1.29) → Arbeit",
+                "Temperatur",
+                "Bedarf in kW → Leistung",
+                "PV in kW → Leistung",
                 "orgidx",
                 "Strombedarf → Leistung",
                 "PV Produktion → Leistung",
                 "Netzeinspeisung → Leistung",
                 "PV Eigennutzung → Leistung",
+                "Bedarf in kW → Arbeit",
+                "PV in kW → Arbeit",
                 "Bezug (1-1:1.29) → Leistung",
             ],
             meta_years=[2021],
             meta_temp_res=15,
         ),
         strom_multi=Asserts(
-            file_path="example_files/Stromlastgang - mehrere Jahre.xlsx",
-            df_height=105107,
+            file_path="example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
+            df_height=70071,
             df_width=10,
             df_columns=[
                 "↓ Index ↓",
@@ -74,15 +79,15 @@ class TestImportPrefabExcel:
                 "Bezug (1-1:1.29) → Arbeit",
                 "Lieferung (1-1:2.29) → Arbeit",
             ],
-            meta_years=[2017, 2018, 2019],
+            meta_years=[2017, 2018],
             meta_temp_res=15,
         ),
         heiz_multi=Asserts(
-            file_path="example_files/Wärmelastgang - mehrere Jahre.xlsx",
-            df_height=35036,
+            file_path="example_files/Wärmelastgang - 1h - 3 Jahre.xlsx",
+            df_height=26277,
             df_width=5,
             df_columns=["↓ Index ↓", "Wärmebedarf", "BHKW", "Temperatur", "orgidx"],
-            meta_years=[2016, 2017, 2018, 2019],
+            meta_years=[2016, 2017, 2018],
             meta_temp_res=60,
         ),
     )

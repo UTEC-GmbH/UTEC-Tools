@@ -15,9 +15,11 @@ from modules import constants as cont
 from modules import df_manipulation as dfm
 from modules import general_functions as gf
 from modules import streamlit_functions as sf
+import modules.meteo_classes
 
-ALL_PARAMETERS: dict[str, cld.DWDParam] = {
-    par_name: cld.DWDParam(par_name) for par_name in cont.DWD_GOOD_PARAMS
+ALL_PARAMETERS: dict[str, modules.meteo_classes.DWDParam] = {
+    par_name: modules.meteo_classes.DWDParam(par_name)
+    for par_name in cont.DWD_GOOD_PARAMS
 }
 
 
@@ -62,7 +64,7 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
 def collect_meteo_data_for_list_of_parameters(
     parameter_names: list[str],
     temporal_resolution: str | None = None,
-) -> list[cld.DWDParam]:
+) -> list[modules.meteo_classes.DWDParam]:
     """Meteorologische Daten für die ausgewählten Parameter"""
     time_span: cld.TimeSpan = start_end_time(page=sf.s_get("page"))
 
@@ -90,11 +92,13 @@ def collect_meteo_data_for_list_of_parameters(
         )
     )
 
-    previously_collected_params: list[cld.DWDParam] = sf.s_get("params_list") or []
-    selected_params: list[cld.DWDParam] = []
+    previously_collected_params: list[modules.meteo_classes.DWDParam] = (
+        sf.s_get("params_list") or []
+    )
+    selected_params: list[modules.meteo_classes.DWDParam] = []
 
     for sel in parameter_names:
-        prev_par: cld.DWDParam | None = next(
+        prev_par: modules.meteo_classes.DWDParam | None = next(
             iter(par for par in previously_collected_params if par.name_en == sel),
             None,
         )
@@ -113,7 +117,9 @@ def collect_meteo_data_for_list_of_parameters(
             logger.info(f"Parameter '{prev_par.name_en}' available from previous run.")
             selected_params.append(prev_par)
         else:
-            selected_params.append(cld.DWDParam(sel, location, time_span))
+            selected_params.append(
+                modules.meteo_classes.DWDParam(sel, location, time_span)
+            )
             logger.info(f"Parameter '{sel}' added to list.")
 
     for par in selected_params:
@@ -152,10 +158,12 @@ def collect_meteo_data_for_list_of_parameters(
 
 
 @gf.func_timer
-def all_available_stations(param_list: list[cld.DWDParam]) -> pl.DataFrame:
+def all_available_stations(
+    param_list: list[modules.meteo_classes.DWDParam],
+) -> pl.DataFrame:
     """Combine the 'all_stations' attr of all Parameters in the given list"""
 
-    first: cld.DWDParam = param_list[0]
+    first: modules.meteo_classes.DWDParam = param_list[0]
 
     if (
         first.closest_available_res is None
@@ -166,7 +174,7 @@ def all_available_stations(param_list: list[cld.DWDParam]) -> pl.DataFrame:
     df: pl.DataFrame = first.closest_available_res.all_stations
 
     if len(param_list) > 1:
-        others: list[cld.DWDParam] = param_list[1:]
+        others: list[modules.meteo_classes.DWDParam] = param_list[1:]
         for par in others:
             if (
                 par.closest_available_res is None
@@ -180,7 +188,9 @@ def all_available_stations(param_list: list[cld.DWDParam]) -> pl.DataFrame:
 
 
 @gf.func_timer
-def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
+def df_from_param_list(
+    param_list: list[modules.meteo_classes.DWDParam],
+) -> pl.DataFrame:
     """DataFrame from list[cld.DWDParameter] as returned from collect_meteo_data"""
 
     dic: dict[str, pl.DataFrame] = {
@@ -272,7 +282,7 @@ def match_resolution(df_resolution: int) -> str:
 @gf.func_timer
 def meteo_df_for_temp_in_graph(
     mdf: cld.MetaAndDfs | None = None,
-) -> list[cld.DWDParam]:
+) -> list[modules.meteo_classes.DWDParam]:
     """Get a DataFrame with date- and value-columns for each parameter"""
 
     mdf_intern: cld.MetaAndDfs | None = mdf or sf.s_get("mdf")
@@ -284,7 +294,9 @@ def meteo_df_for_temp_in_graph(
         if mdf_intern.meta.td_mnts and not sf.s_get("cb_h")
         else "hourly"
     )
-    params: list[cld.DWDParam] = collect_meteo_data_for_list_of_parameters(
+    params: list[
+        modules.meteo_classes.DWDParam
+    ] = collect_meteo_data_for_list_of_parameters(
         parameter_names=sf.s_get("selected_params") or cont.DWD_DEFAULT_PARAMS,
         temporal_resolution=time_res,
     )

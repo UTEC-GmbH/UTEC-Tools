@@ -10,6 +10,7 @@ import polars as pl
 from loguru import logger
 from scipy import interpolate
 
+import modules.meteo_classes
 from modules import classes_data as cld
 from modules import classes_errors as cle
 from modules import constants as cont
@@ -206,7 +207,9 @@ def add_temperature_data(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Add air temperature for given address to the base data frame"""
 
     sf.s_set("selected_params", ["temperature_air_mean_200"])
-    parameters: list[cld.DWDParam] = met.meteo_df_for_temp_in_graph(mdf)
+    parameters: list[modules.meteo_classes.DWDParam] = met.meteo_df_for_temp_in_graph(
+        mdf
+    )
 
     for param in parameters:
         if param.closest_available_res is None:
@@ -331,7 +334,7 @@ def multi_year_column_rename(df: pl.DataFrame, year: int) -> dict[str, str]:
 def change_temporal_resolution(
     df: pl.DataFrame,
     units: dict[str, str],
-    requested_resolution: Literal["15m", "1h", "1d", "1mo"],
+    requested_resolution: str,
 ) -> pl.DataFrame:
     """Make a df with the requested temporal resolution
 
@@ -339,8 +342,8 @@ def change_temporal_resolution(
         - df (pl.DataFrame): A DataFrame containing temporal and non-temporal data.
         - units (dict[str, str]): A dictionary mapping column names
             to their respective units.
-        - requested_resolution (Literal["15m", "1h", "1d", "1mo"]): A string
-            representing the requested temporal resolution.
+        - requested_resolution (str): A string representing
+            the requested temporal resolution. (e.g. "15m", "1h", "1mo")
 
     Returns:
         - pl.DataFrame: A DataFrame with the requested temporal resolution.
@@ -403,13 +406,17 @@ def change_temporal_resolution(
 
     # Downsample data if the original resolution is higher than the requested
     if original_resolution < requested_timedelta:
-        return df.groupby_dynamic(time_col, every=requested_resolution).agg(
-            [
-                pl.col(col).mean()
-                if cont.GROUP_MEAN.check(units[col], "mean_all")
-                else pl.col(col).sum()
-                for col in value_cols
-            ]
+        return (
+            df.sort(time_col)
+            .groupby_dynamic(time_col, every=requested_resolution)
+            .agg(
+                [
+                    pl.col(col).mean()
+                    if cont.GROUP_MEAN.check(units.get(col), "mean_all")
+                    else pl.col(col).sum()
+                    for col in value_cols
+                ]
+            )
         )
 
     # Upsample data if the original resolution is lower than the requested

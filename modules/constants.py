@@ -260,7 +260,25 @@ TIME_MIN: clc.TimeMin = clc.TimeMin(
     quarter_hour=15,
 )
 
-TIME_RESOLUTIONS: dict[Literal["15m", "1h", "1d", "1mo"], clc.TimeResolution] = {
+TIME_RESOLUTIONS: dict[str, clc.TimeResolution] = {
+    "1m": clc.TimeResolution(
+        de="Minutenwerte",
+        dwd="minute_1",
+        polars="1m",
+        delta=dt.timedelta(minutes=1),
+    ),
+    "5m": clc.TimeResolution(
+        de="5-Minutenwerte",
+        dwd="minute_5",
+        polars="5m",
+        delta=dt.timedelta(minutes=5),
+    ),
+    "10m": clc.TimeResolution(
+        de="10-Minutenwerte",
+        dwd="minute_10",
+        polars="10m",
+        delta=dt.timedelta(minutes=10),
+    ),
     "15m": clc.TimeResolution(
         de="15-Minutenwerte",
         dwd="minute_10",
@@ -270,14 +288,28 @@ TIME_RESOLUTIONS: dict[Literal["15m", "1h", "1d", "1mo"], clc.TimeResolution] = 
     "1h": clc.TimeResolution(
         de="Stundenwerte", dwd="hourly", polars="1h", delta=dt.timedelta(hours=1)
     ),
+    "6h": clc.TimeResolution(
+        de="6-Stundenwerte", dwd="6_hour", polars="6h", delta=dt.timedelta(hours=6)
+    ),
     "1d": clc.TimeResolution(
         de="Tageswerte", dwd="daily", polars="1d", delta=dt.timedelta(days=1)
     ),
     "1mo": clc.TimeResolution(
         de="Monatswerte", dwd="monthly", polars="1mo", delta=dt.timedelta(weeks=4)
     ),
+    "1a": clc.TimeResolution(
+        de="Jahreswerte", dwd="annual", polars="1a", delta=dt.timedelta(hours=8760)
+    ),
 }
-
+# "Minutenwerte": "minute_1",
+# "5-Minutenwerte": "minute_5",
+# "10-Minutenwerte": "minute_10",
+# "Stundenwerte": "hourly",
+# "6-Stundenwerte": "6_hour",
+# "mehrmals täglich": "subdaily",
+# "Tageswerte": "daily",
+# "Monateswerte": "monthly",
+# "Jahreswerte": "annual",
 
 WETTERDIENST_SETTINGS = Settings(
     ts_shape="long",

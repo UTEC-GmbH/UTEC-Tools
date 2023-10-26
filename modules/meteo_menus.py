@@ -14,6 +14,7 @@ from modules import export as ex
 from modules import general_functions as gf
 from modules import meteorolog as met
 from modules import streamlit_functions as sf
+import modules.meteo_classes
 
 
 def sidebar_address_dates() -> None:
@@ -60,7 +61,7 @@ def sidebar_address_dates() -> None:
         st.selectbox(
             label="Gewünschte Datenauflösung",
             options=[res.de for res in cont.TIME_RESOLUTIONS.values()],
-            index=1,
+            index=list(cont.TIME_RESOLUTIONS.keys()).index("1h"),
             help=(
                 """
                 Es liegen nicht immer Daten in der gewünschten Auflösung direkt vor.  \n
@@ -194,7 +195,9 @@ def parameter_selection() -> None:
         len(selected) == len(cont.DWD_DEFAULT_PARAMS)
         and all(par in selected for par in cont.DWD_DEFAULT_PARAMS)
     ):
-        params: list[cld.DWDParam] = met.collect_meteo_data_for_list_of_parameters(
+        params: list[
+            modules.meteo_classes.DWDParam
+        ] = met.collect_meteo_data_for_list_of_parameters(
             parameter_names=sf.s_get("selected_params") or cont.DWD_DEFAULT_PARAMS,
             temporal_resolution=sf.s_get("sb_resolution") or "Stundenwerte",
         )
@@ -222,7 +225,7 @@ def parameter_selection() -> None:
         explanation_of_results(params)
 
 
-def explanation_of_results(params: list[cld.DWDParam]) -> Any:
+def explanation_of_results(params: list[modules.meteo_classes.DWDParam]) -> Any:
     """Comments on the results depending on the collected data"""
 
     logger.debug(
@@ -289,7 +292,7 @@ def explanation_of_results(params: list[cld.DWDParam]) -> Any:
         )
         for par in params
     ):
-        pars_with_other_res: list[cld.DWDParam] = [
+        pars_with_other_res: list[modules.meteo_classes.DWDParam] = [
             par
             for par in params
             if par.closest_available_res is not None
@@ -323,7 +326,7 @@ def explanation_of_results(params: list[cld.DWDParam]) -> Any:
 def download_weatherdata() -> None:
     """Data as Excel-File"""
 
-    dat: list[cld.DWDParam] = sf.s_get(
+    dat: list[modules.meteo_classes.DWDParam] = sf.s_get(
         "dwd_params"
     ) or met.collect_meteo_data_for_list_of_parameters(
         parameter_names=sf.s_get("selected_params") or cont.DWD_DEFAULT_PARAMS,
@@ -391,7 +394,7 @@ def download_polysun(df_ex: pl.DataFrame, file_suffix: str) -> None:
 
 
 def download_excel(
-    df_ex: pl.DataFrame, dat: list[cld.DWDParam], file_suffix: str
+    df_ex: pl.DataFrame, dat: list[modules.meteo_classes.DWDParam], file_suffix: str
 ) -> None:
     """Download Excel-file"""
     meta: cld.MetaData = cld.MetaData(

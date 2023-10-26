@@ -9,6 +9,7 @@ import pytest
 
 from modules import classes_data as cld
 from modules import constants as cont
+import modules.meteo_classes
 
 LOCATION = cld.Location("Bremen").fill_using_geopy()
 TIME_SPAN = cld.TimeSpan(
@@ -47,7 +48,9 @@ PARS_TO_TEST_REST: set[str] = {
 }
 
 
-def general_assumptions_param(par: cld.DWDParam, par_name: str) -> None:
+def general_assumptions_param(
+    par: modules.meteo_classes.DWDParam, par_name: str
+) -> None:
     """Test parameter"""
     assert par.name_en == par_name
     assert par.name_de == cont.DWD_PARAM_TRANSLATION.get(par_name, par.name_en)
@@ -58,15 +61,15 @@ def general_assumptions_param(par: cld.DWDParam, par_name: str) -> None:
         par.available_resolutions
         == cont.DWD_ALL_PAR_DIC[par_name]["available_resolutions"]
     )
-    assert isinstance(par.resolutions, cld.DWDResolutions)
+    assert isinstance(par.resolutions, modules.meteo_classes.DWDResolutions)
 
 
-def general_assumptions_res_with_data(res: cld.DWDResData) -> None:
+def general_assumptions_res_with_data(res: modules.meteo_classes.DWDResData) -> None:
     """Test resolution with data"""
-    default_station = cld.DWDStation()
+    default_station = modules.DWDStation.DWDStation()
     assert isinstance(res.data, pl.DataFrame)
     assert isinstance(res.all_stations, pl.DataFrame)
-    assert isinstance(res.closest_station, cld.DWDStation)
+    assert isinstance(res.closest_station, modules.DWDStation.DWDStation)
     assert res.no_data is None
     assert res.data.height > 0
     assert res.closest_station.station_id != default_station.station_id
@@ -81,11 +84,13 @@ class TestDWDParamAirTemp:
     location: cld.Location = LOCATION
     time_span: cld.TimeSpan = TIME_SPAN
 
-    par = cld.DWDParam("temperature_air_mean_200", location, time_span)
+    par = modules.meteo_classes.DWDParam(
+        "temperature_air_mean_200", location, time_span
+    )
 
     def test_init_with_valid_parameters(self) -> None:
         """Initialize DWDParam object with valid parameters"""
-        par: cld.DWDParam = self.par
+        par: modules.meteo_classes.DWDParam = self.par
         if par.name_en in cont.DWD_PROBLEMATIC_PARAMS:
             return
 
@@ -102,12 +107,12 @@ class TestDWDParamAirTemp:
             "monthly",
             "subdaily",
         }
-        assert isinstance(par.resolutions, cld.DWDResolutions)
+        assert isinstance(par.resolutions, modules.meteo_classes.DWDResolutions)
 
     def test_get_data_available_resolutions(self) -> None:
         """Get data for available resolutions"""
 
-        par: cld.DWDParam = self.par
+        par: modules.meteo_classes.DWDParam = self.par
         par.fill_all_resolutions()
 
         assert len(par.resolutions.res_with_data()) == 4
@@ -121,7 +126,7 @@ class TestDWDParamAirTemp:
         for res in par.resolutions.res_with_data():
             assert isinstance(res.data, pl.DataFrame)
             assert isinstance(res.all_stations, pl.DataFrame)
-            assert isinstance(res.closest_station, cld.DWDStation)
+            assert isinstance(res.closest_station, modules.DWDStation.DWDStation)
             assert res.no_data is None
             assert res.closest_station.name == "Bremen"
             assert res.closest_station.state == "Bremen"
@@ -136,7 +141,7 @@ class TestDWDParamAirTemp:
         ]:
             assert isinstance(res.no_data, str)
             assert isinstance(res.data, pl.DataFrame)
-            assert isinstance(res.closest_station, cld.DWDStation)
+            assert isinstance(res.closest_station, modules.DWDStation.DWDStation)
             assert res.data.height == 0
             assert res.closest_station.name == "unbekannt"
             assert res.closest_station.state == "unbekannt"
@@ -148,11 +153,11 @@ class TestDWDParamHumidity:
 
     location: cld.Location = LOCATION
     time_span: cld.TimeSpan = TIME_SPAN
-    par = cld.DWDParam("humidity", location, time_span)
+    par = modules.meteo_classes.DWDParam("humidity", location, time_span)
 
     def test_init_with_valid_parameters(self) -> None:
         """Initialize DWDParam object with valid parameters"""
-        par: cld.DWDParam = self.par
+        par: modules.meteo_classes.DWDParam = self.par
         assert par.name_en == "humidity"
         assert par.name_de == "Relative Luftfeuchte"
         assert par.location == self.location
@@ -164,12 +169,12 @@ class TestDWDParamHumidity:
             "minute_10",
             "subdaily",
         }
-        assert isinstance(par.resolutions, cld.DWDResolutions)
+        assert isinstance(par.resolutions, modules.meteo_classes.DWDResolutions)
 
     def test_get_data_available_resolutions(self) -> None:
         """Get data for available resolutions"""
 
-        par: cld.DWDParam = self.par
+        par: modules.meteo_classes.DWDParam = self.par
         if par.name_en in cont.DWD_PROBLEMATIC_PARAMS:
             return
 
@@ -185,7 +190,7 @@ class TestDWDParamHumidity:
         for res in par.resolutions.res_with_data():
             assert isinstance(res.data, pl.DataFrame)
             assert isinstance(res.all_stations, pl.DataFrame)
-            assert isinstance(res.closest_station, cld.DWDStation)
+            assert isinstance(res.closest_station, modules.DWDStation.DWDStation)
             assert res.no_data is None
             assert res.closest_station.name == "Bremen"
             assert res.closest_station.state == "Bremen"
@@ -200,7 +205,7 @@ class TestDWDParamHumidity:
         ]:
             assert isinstance(res.no_data, str)
             assert isinstance(res.data, pl.DataFrame)
-            assert isinstance(res.closest_station, cld.DWDStation)
+            assert isinstance(res.closest_station, modules.DWDStation.DWDStation)
             assert res.data.height == 0
             assert res.closest_station.name == "unbekannt"
             assert res.closest_station.state == "unbekannt"
@@ -218,7 +223,7 @@ class TestBadPars:
     def run_tests(self, par_name: str) -> None:
         """Run Test"""
 
-        par = cld.DWDParam(par_name, LOCATION, TIME_SPAN)
+        par = modules.meteo_classes.DWDParam(par_name, LOCATION, TIME_SPAN)
         par.fill_all_resolutions()
 
         general_assumptions_param(par, par_name)
@@ -227,7 +232,7 @@ class TestBadPars:
             getattr(par.resolutions, res)
             for res in par.resolutions.__dataclass_fields__
         ):
-            assert isinstance(res, cld.DWDResData)
+            assert isinstance(res, modules.meteo_classes.DWDResData)
 
             if res in par.resolutions.res_with_data():
                 general_assumptions_res_with_data(res)
@@ -276,7 +281,7 @@ class TestInGroups:
     def run_tests(self, par_name: str) -> None:
         """Run Test"""
 
-        par = cld.DWDParam(par_name, LOCATION, TIME_SPAN)
+        par = modules.meteo_classes.DWDParam(par_name, LOCATION, TIME_SPAN)
         par.fill_all_resolutions()
 
         general_assumptions_param(par, par_name)
@@ -285,7 +290,7 @@ class TestInGroups:
             getattr(par.resolutions, res)
             for res in par.resolutions.__dataclass_fields__
         ):
-            assert isinstance(res, cld.DWDResData)
+            assert isinstance(res, modules.meteo_classes.DWDResData)
 
             if res in par.resolutions.res_with_data():
                 general_assumptions_res_with_data(res)

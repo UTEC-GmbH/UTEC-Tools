@@ -325,8 +325,14 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
     )
     df = df.slice(ind_row + 1)
 
-    # Convert Excel serial dates to datetime
-    if df.get_column(mark_index).is_utf8():
+    # Convert strings (Excel serial dates or "DD.MM.YYYY hh:mm") to datetime
+    try:
+        df = df.select(
+            [pl.col(mark_index).str.strptime(pl.Datetime, "%d.%m.%Y %H:%M")]
+            + [col.cast(pl.Float32) for col in df.select(pl.exclude(mark_index))]
+        ).sort(mark_index)
+
+    except pl.ComputeError:
         df = (
             df.cast(
                 {mark_index: pl.Float64}
@@ -342,13 +348,8 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
         if df.get_column(mark_index).is_temporal():
             logger.success(
                 "Date column was converted "
-                "from excel serial numbers into datetime values."
+                "from excel serial numbers to datetime values."
             )
-    else:
-        df = df.select(
-            [pl.col(mark_index).str.strptime(pl.Datetime, "%d.%m.%Y %H:%M")]
-            + [col.cast(pl.Float32) for col in df.select(pl.exclude(mark_index))]
-        ).sort(mark_index)
 
     if all(
         [

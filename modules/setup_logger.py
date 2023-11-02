@@ -108,7 +108,7 @@ def log_df(df: pl.DataFrame) -> None:
     """Put the head of the DataFrame in the log"""
     logger.log(
         LVLS.data_frame.name,
-        f"DataFrame head: \n{df.head()} \n\nDataFrame properties: \n{df.describe()}",
+        f"DataFrame: \n{df} \n\n" f"DataFrame properties: \n{df.describe()}",
     )
 
 

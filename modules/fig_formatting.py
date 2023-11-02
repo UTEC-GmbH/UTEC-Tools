@@ -71,12 +71,12 @@ def format_tickstops(fig: go.Figure) -> list[dict[str, Any]]:
         {
             "dtickrange": [
                 cont.TIME_MS.week + 1,
-                cont.TIME_MS.month,
+                cont.TIME_MS.month_30,
             ],
             "value": "%e.\n%b",
         },
         {
-            "dtickrange": [cont.TIME_MS.month + 1, None],
+            "dtickrange": [cont.TIME_MS.month_30 + 1, None],
             "value": "%b",
         },
     ]

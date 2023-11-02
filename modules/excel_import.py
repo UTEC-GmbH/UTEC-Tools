@@ -1,10 +1,12 @@
 """Import und Download von Excel-Dateien"""
 
+import datetime as dt
 import re
 from io import BytesIO
 from typing import Any, Literal, NamedTuple
 
 import polars as pl
+import xlsx2csv
 from loguru import logger
 
 from modules import classes_constants as clc
@@ -13,7 +15,15 @@ from modules import constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
 
-TEST_FILE = "example_files/Stromlastgang - mehrere Jahre.xlsx"
+TEST_FILE = "example_files/Stromlastgang - 15min - 2 Jahre.xlsx"
+
+
+def date_serial_number(serial_number: float) -> dt.datetime:
+    """Convert an Excel serial number to a Python datetime object
+    Excel stores dates as "number of days since 1900"
+    """
+
+    return dt.datetime(1899, 12, 30) + dt.timedelta(days=serial_number)
 
 
 @gf.func_timer
@@ -89,9 +99,11 @@ def import_prefab_excel(file: BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
     - MetaAndDfs: DataFrames and meta data extracted from the Excel file.
 
     Example files for testing:
-    - file = "example_files/Auswertung Stromlastgang - einzelnes Jahr.xlsx"
-    - file = "example_files/Stromlastgang - mehrere Jahre.xlsx"
-    - file = "example_files/Wärmelastgang - mehrere Jahre.xlsx"
+    - file = "example_files/Stromlastgang - 15min - 1 Jahr.xlsx"
+    - file = "example_files/Stromlastgang - 15min - 2 Jahre.xlsx"
+    - file = "example_files/Wärmelastgang - 1h - 3 Jahre.xlsx"
+
+    - file = "tests/problematic_files/Fehler Datum.xlsx"
 
     Example test run:
     mdf = import_prefab_excel()
@@ -158,19 +170,40 @@ def get_df_from_excel(file: BytesIO | str) -> pl.DataFrame:
     """
 
     sheet: str = "Daten"
-    xlsx_options: dict[str, str | bool] = {
+    xlsx_options: dict[str, str | bool | list[str]] = {
         "skip_empty_lines": True,
         "skip_trailing_columns": True,
-        "dateformat": "%d.%m.%Y %H:%M",
     }
     csv_options: dict[str, bool] = {"has_header": False, "try_parse_dates": False}
 
-    return pl.read_excel(
-        source=file,
-        sheet_name=sheet,
-        xlsx2csv_options=xlsx_options,
-        read_csv_options=csv_options,
-    )  # type: ignore
+    try:
+        xl_options: dict[str, str | bool | list[str]] = xlsx_options | {
+            "dateformat": "%d.%m.%Y %H:%M"
+        }
+        df: pl.DataFrame = pl.read_excel(
+            source=file,
+            sheet_name=sheet,
+            xlsx2csv_options=xl_options,
+            read_csv_options=csv_options,
+        )
+    except xlsx2csv.XlsxValueError as xle:
+        logger.error(f"Problem with date format: \n{xle}")
+        xl_options = xlsx_options | {"ignore_formats": ["date"]}
+        df: pl.DataFrame = pl.read_excel(
+            source=file,
+            sheet_name=sheet,
+            xlsx2csv_options=xl_options,
+            read_csv_options=csv_options,
+        )
+        logger.success(
+            "Import successful\n"
+            "Date formats were ignored!\n"
+            "Dates might have been imported as strings of excel serial numbers.\n"
+            "(Excel stores dates as number of days since 1900 "
+            "e.g. '42370' → 01.01.2016 00:00, '42370.041667' → 01.01.2016 00:15)"
+        )
+
+    return df
 
 
 def remove_empty(df: pl.DataFrame, **kwargs) -> pl.DataFrame:
@@ -280,16 +313,51 @@ def meta_number_format(mdf: cld.MetaAndDfs) -> cld.MetaData:
 
 
 def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
-    """Clean up the DataFrame and adjust the data types"""
+    """Clean up the DataFrame and adjust the data types
+
+    First removes everythin above the header row.
+    If the date column is strings, the dates are probably excel serial numbers.
+    (Excel stores dates as number of days since 1900)
+    """
 
     ind_row: int = (
         df.with_row_count().filter(pl.col(mark_index) == mark_index).row(0)[0]
     )
     df = df.slice(ind_row + 1)
-    df = df.select(
-        [pl.col(mark_index).str.strptime(pl.Datetime, "%d.%m.%Y %H:%M")]
-        + [pl.col(col).cast(pl.Float32) for col in df.columns if col != mark_index]
-    )
+
+    # Convert strings (Excel serial dates or "DD.MM.YYYY hh:mm") to datetime
+    try:
+        df = df.select(
+            [pl.col(mark_index).str.strptime(pl.Datetime, "%d.%m.%Y %H:%M")]
+            + [col.cast(pl.Float32) for col in df.select(pl.exclude(mark_index))]
+        ).sort(mark_index)
+
+    except pl.ComputeError:
+        df = (
+            df.cast(
+                {mark_index: pl.Float64}
+                | {col: pl.Float32 for col in df.select(pl.exclude(mark_index)).columns}  # type: ignore
+            )
+            .with_columns(
+                (pl.col(mark_index) * cont.TIME_NS_DAYS).cast(pl.Duration)
+                + pl.datetime(1899, 12, 30)
+            )
+            .sort(mark_index)
+        )
+
+        if df.get_column(mark_index).is_temporal():
+            logger.success(
+                "Date column was converted "
+                "from excel serial numbers to datetime values."
+            )
+
+    if all(
+        [
+            df.get_column(mark_index).is_temporal(),
+            *[col.is_float() for col in df.select(pl.exclude(mark_index))],
+        ]
+    ):
+        logger.success("Data types set → index: datetime, all others: float.")
 
     df = clean_up_daylight_savings(df, mark_index).df_clean
 
@@ -317,11 +385,12 @@ def clean_up_daylight_savings(df: pl.DataFrame, mark_index: str) -> CleanUpDLS:
 
     Args:
         - df (DataFrame): DataFrame to edit
+        - mark_index (str): Date column
 
     Returns:
-        - dict[str, pd.DataFrame]:
-            - "df_clean": edited DataFrame
-            - "df_deleted": deleted data
+        - CleanUpDLS:
+            - df_clean (DataFrame): edited DataFrame
+            - df_deleted (DateFrame): deleted data
     """
 
     # Sommerzeitumstellung: letzter Sonntag im Maerz - von 2h auf 3h
@@ -339,7 +408,6 @@ def clean_up_daylight_savings(df: pl.DataFrame, mark_index: str) -> CleanUpDLS:
     ).get_column(mark_index)
 
     # Winterzeitumstellung: doppelte Stunde -> Duplikate löschen
-
     df_clean: pl.DataFrame = df.filter(~pl.col(mark_index).is_in(summer)).unique(
         subset=mark_index, keep="first", maintain_order=True
     )

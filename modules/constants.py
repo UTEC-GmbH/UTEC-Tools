@@ -240,14 +240,19 @@ SPECIAL_COLS: clc.SpecialCols = clc.SpecialCols(
 
 DATE_COLUMNS: list[str] = [SPECIAL_COLS.index, SPECIAL_COLS.original_index, "Datum"]
 
+
 TIME_MS: clc.TimeMSec = clc.TimeMSec(
     half_day=12 * 60 * 60 * 1000,  # 43.200.000
     week=7 * 24 * 60 * 60 * 1000,  # 604.800.000
-    month=30 * 24 * 60 * 60 * 1000,  # 2.592.000.000
+    month_28=28 * 24 * 60 * 60 * 1000,
+    month_29=29 * 24 * 60 * 60 * 1000,
+    month_30=30 * 24 * 60 * 60 * 1000,  # 2.592.000.000
+    month_31=31 * 24 * 60 * 60 * 1000,
 )
 
 TIME_SEC: clc.TimeSec = clc.TimeSec(
-    year=60 * 60 * 8760,
+    year=60 * 60 * 24 * 365,
+    leap_year=60 * 60 * 24 * 366,
     day=60 * 60 * 24,
     hour=60 * 60,
     half_hour=30 * 60,
@@ -259,6 +264,10 @@ TIME_MIN: clc.TimeMin = clc.TimeMin(
     half_hour=30,
     quarter_hour=15,
 )
+
+TIME_HOURS: clc.TimeH = clc.TimeH(year=24 * 365, leap_year=24 * 366)
+
+TIME_NS_DAYS: int = 1000 * 1000 * TIME_SEC.day
 
 TIME_RESOLUTIONS: dict[Literal["15m", "1h", "1d", "1mo"], clc.TimeResolution] = {
     "15m": clc.TimeResolution(

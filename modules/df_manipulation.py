@@ -296,6 +296,10 @@ def split_multi_years(
             .rename(col_rename)
         )
 
+    for year, df in df_multi.items():
+        logger.success(f"DataFrame for Year {year}:")
+        slog.log_df(df)
+
     if frame_to_split == "df":
         mdf.df_multi = df_multi
     elif frame_to_split == "df_h":
@@ -473,7 +477,7 @@ def df_h_mdf(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 
     if mdf.df_h is not None:
         logger.success("DataFrame mit Stundenwerten erstellt.")
-        logger.log(slog.LVLS.data_frame.name, mdf.df_h.head())
+        slog.log_df(mdf.df_h)
         logger.info(
             gf.string_new_line_per_item(mdf.df_h.columns, "Columns in mdf.df_h:")
         )
@@ -504,20 +508,27 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         [pl.col(COL_IND).alias(f"{col} - {COL_ORG}") for col in cols_without_index]
     )
 
-    if mdf.meta.multi_years and mdf.meta.years:
-        jdl_separate: list[list[pl.Series]] = [
-            jdl_first_stage.select(pl.col(col, f"{col} - {COL_ORG}"))
-            .filter(pl.col(f"{col} - {COL_ORG}").dt.year() == year)
+    if mdf.meta.multi_years and mdf.meta.years and mdf.df_h_multi:
+        jdl_separate_df: list[pl.DataFrame] = [
+            df.select(pl.col(col, COL_ORG))
             .sort(col, descending=True)
-            .rename(
-                {
-                    col: f"{col} {year}",
-                    f"{col} - {COL_ORG}": f"{col} {year} - {COL_ORG}",
-                }
-            )
-            .get_columns()
-            for year in mdf.meta.years
-            for col in cols_without_index
+            .rename({col: col, COL_ORG: f"{col} - {COL_ORG}"})
+            for df in mdf.df_h_multi.values()
+            for col in df.columns
+            if gf.check_if_not_exclude(col)
+        ]
+        for df in jdl_separate_df:
+            if df.height < cont.TIME_HOURS.leap_year:
+                df.extend(
+                    pl.DataFrame(
+                        {
+                            col: [None] * (cont.TIME_HOURS.leap_year - df.height)
+                            for col in df.columns
+                        }
+                    ).cast(dict(df.schema))
+                )
+        jdl_separate: list[list[pl.Series]] = [
+            df.get_columns() for df in jdl_separate_df
         ]
     else:
         jdl_separate = [
@@ -532,7 +543,7 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     )
 
     logger.success("DataFrame für Jahresdauerlinie erstellt.")
-    logger.log(slog.LVLS.data_frame.name, mdf.jdl.head())
+    slog.log_df(mdf.jdl)
     logger.info(gf.string_new_line_per_item(mdf.jdl.columns, "Columns in mdf.jdl:"))
 
     sf.s_set("mdf", mdf)

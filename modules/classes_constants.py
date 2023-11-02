@@ -47,7 +47,10 @@ class TimeMSec:
 
     half_day: int
     week: int
-    month: int
+    month_28: int
+    month_29: int
+    month_30: int
+    month_31: int
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -55,6 +58,7 @@ class TimeSec:
     """Zeiten in Sekunden"""
 
     year: int
+    leap_year: int
     day: int
     hour: int
     half_hour: int
@@ -68,6 +72,14 @@ class TimeMin:
     hour: int
     half_hour: int
     quarter_hour: int
+
+
+@dataclass(frozen=True, kw_only=True)
+class TimeH:
+    """Zeiten in Minuten"""
+
+    year: int
+    leap_year: int
 
 
 @dataclass(frozen=True, kw_only=True)

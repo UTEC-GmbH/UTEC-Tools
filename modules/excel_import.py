@@ -60,7 +60,7 @@ def general_excel_import(
 
     xlsx_options: dict[str, Any] = {
         "skip_empty_lines": kwargs.get("skip_empty_lines") or True,
-        "skip_trailing_columns": kwargs.get("skip_trailing_columns") or True,
+        "skip_trailing_columns": kwargs.get("skip_trailing_columns") or False,
         "no_line_breaks": kwargs.get("no_line_breaks") or True,
         "merge_cells": kwargs.get("merge_cells") or True,
         "dateformat": kwargs.get("dateformat") or "%d.%m.%Y %H:%M",
@@ -76,7 +76,7 @@ def general_excel_import(
         sheet_name=worksheet,
         xlsx2csv_options=xlsx_options,
         read_csv_options=csv_options,
-    )  # type: ignore
+    )
 
     for col in ["Datum", cont.SPECIAL_COLS.index]:
         if col in df.columns and df.get_column(col).dtype != pl.Datetime:
@@ -104,6 +104,7 @@ def import_prefab_excel(file: BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
     - file = "example_files/Wärmelastgang - 1h - 3 Jahre.xlsx"
 
     - file = "tests/problematic_files/Fehler Datum.xlsx"
+    - file = "tests/problematic_files/nur teilweise zusammenfassung.xlsx"
 
     Example test run:
     mdf = import_prefab_excel()
@@ -170,10 +171,7 @@ def get_df_from_excel(file: BytesIO | str) -> pl.DataFrame:
     """
 
     sheet: str = "Daten"
-    xlsx_options: dict[str, str | bool | list[str]] = {
-        "skip_empty_lines": True,
-        "skip_trailing_columns": True,
-    }
+    xlsx_options: dict[str, str | bool | list[str]] = {"skip_empty_lines": True}
     csv_options: dict[str, bool] = {"has_header": False, "try_parse_dates": False}
 
     try:

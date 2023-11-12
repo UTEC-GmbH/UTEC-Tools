@@ -94,7 +94,7 @@ def excel_number_format(df: pl.DataFrame, meta: cld.MetaData) -> dict[str, str]:
             if line_meta is not None:
                 line_unit = line_meta.unit or ""
 
-        excel_formats[line] = "#,##0.0"
+        excel_formats[line] = f'#,##0.0"{line_unit}"'
         if line_quant and abs(line_quant) >= decimal_2:
             excel_formats[line] = f'#,##0.00"{line_unit}"'
         if line_quant and abs(line_quant) >= decimal_1:

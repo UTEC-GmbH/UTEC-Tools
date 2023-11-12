@@ -205,7 +205,7 @@ class GroupUnits:
 
 
 GROUP_MEAN = GroupUnits(
-    mean_always=["°C", "K", "m³", "m³/h", "pa/m", "Pa/m", "m/s", "%"],
+    mean_always=["°C", "K", "m³", "m³/h", "pa/m", "Pa/m", "m/s", "%", "rad", "°"],
     sum_month=["W", "kW", "MW"],
 )
 

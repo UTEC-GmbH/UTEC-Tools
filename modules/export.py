@@ -16,11 +16,12 @@ from modules import streamlit_functions as sf
 
 
 @gf.func_timer
-def excel_download(df: dict[str, pl.DataFrame], meta: cld.MetaData) -> bytes:
+def excel_download(df_dic: dict[str, pl.DataFrame], meta: cld.MetaData) -> bytes:
     """Download data as an Excel file.
 
     Args:
-        - df (DataFrame): The data frame to download.
+        - df_dic (dict[str, pl.DataFrame]): Dictionary of data frames to download.
+            (every data frame gets its own worksheet)
         - meta (MetaData): meta data with number formats
         - page (str, optional): The name of the page to use in the Excel file.
             Defaults to "graph".
@@ -35,7 +36,8 @@ def excel_download(df: dict[str, pl.DataFrame], meta: cld.MetaData) -> bytes:
     buffer = io.BytesIO()
 
     with xlsxwriter.Workbook(buffer) as wb:
-        for worksh, data in df.items():
+        wb.formats[0].set_font_name("Arial")  # type: ignore
+        for worksh, data in df_dic.items():
             col_format: dict[str, str] = excel_number_format(data, meta)
             if worksh in ["Monatswerte"]:
                 for col, form in col_format.items():
@@ -94,7 +96,7 @@ def excel_number_format(df: pl.DataFrame, meta: cld.MetaData) -> dict[str, str]:
             if line_meta is not None:
                 line_unit = line_meta.unit or ""
 
-        excel_formats[line] = f'#,##0.0"{line_unit}"'
+        excel_formats[line] = f'#,##0.000"{line_unit}"'
         if line_quant and abs(line_quant) >= decimal_2:
             excel_formats[line] = f'#,##0.00"{line_unit}"'
         if line_quant and abs(line_quant) >= decimal_1:

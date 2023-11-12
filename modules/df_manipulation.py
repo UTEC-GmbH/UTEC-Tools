@@ -130,7 +130,10 @@ def upsample_hourly_to_15min(
         df.sort(col_index)
         .upsample(COL_IND, every="15m")
         .with_columns(
-            pl.when(units.get(col) in [None, *cont.GROUP_MEAN.mean_all])
+            pl.when(
+                units.get(col, "").strip().lower()
+                in ["", *[unit.strip().lower() for unit in cont.GROUP_MEAN.mean_all]]
+            )
             .then(pl.col(col))
             .otherwise(pl.col(col) / 4)
             .keep_name()

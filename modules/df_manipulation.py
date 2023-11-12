@@ -551,6 +551,13 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 
 
 @gf.func_timer
+def jdl_attach_dls_deleted(mdf: cld.MetaAndDfs, jdl: pl.DataFrame) -> pl.DataFrame:
+    """If there are values that were deleted when cleaning up the
+    daylight-savings-mess, they are reattached to the df that is
+    used to create the jdl."""
+
+
+@gf.func_timer
 def calculate_monthly_values(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Calculate monthly values from the input dataframe.
 

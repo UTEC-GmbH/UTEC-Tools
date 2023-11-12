@@ -1,6 +1,7 @@
 """Import und Download von Excel-Dateien"""
 
 import datetime as dt
+import pathlib
 import re
 from io import BytesIO
 from typing import Any, Literal, NamedTuple
@@ -15,7 +16,7 @@ from modules import constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
 
-TEST_FILE = "example_files/Stromlastgang - 15min - 2 Jahre.xlsx"
+TEST_FILE: str = str(next(pathlib.Path("example_files").rglob("*.xlsx")))
 
 
 def date_serial_number(serial_number: float) -> dt.datetime:
@@ -128,6 +129,7 @@ def import_prefab_excel(file: BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
     df = clean_up_df(df, mark_index)
 
     mdf: cld.MetaAndDfs = cld.MetaAndDfs(meta, df)
+
     # meta data if obis code in column title
     mdf = meta_from_obis(mdf)
 
@@ -326,7 +328,11 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
     # Convert strings (Excel serial dates or "DD.MM.YYYY hh:mm") to datetime
     try:
         df = df.select(
-            [pl.col(mark_index).str.strptime(pl.Datetime, "%d.%m.%Y %H:%M")]
+            [
+                pl.col(mark_index)
+                .str.strptime(pl.Datetime, "%d.%m.%Y %H:%M")
+                .dt.replace_time_zone("Europe/Berlin", ambiguous="earliest")
+            ]
             + [col.cast(pl.Float32) for col in df.select(pl.exclude(mark_index))]
         ).sort(mark_index)
 
@@ -338,7 +344,9 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
             )
             .with_columns(
                 (pl.col(mark_index) * cont.TIME_NS_DAYS).cast(pl.Duration)
-                + pl.datetime(1899, 12, 30)
+                + pl.datetime(1899, 12, 30).dt.replace_time_zone(
+                    "Europe/Berlin", ambiguous="earliest"
+                )
             )
             .sort(mark_index)
         )
@@ -356,8 +364,6 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
         ]
     ):
         logger.success("Data types set → index: datetime, all others: float.")
-
-    df = clean_up_daylight_savings(df, mark_index).df_clean
 
     # copy index in separate column to preserve if index is changed (multi year)
     return df.with_columns(pl.col(mark_index).alias(cont.SPECIAL_COLS.original_index))

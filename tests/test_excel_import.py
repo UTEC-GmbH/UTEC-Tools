@@ -66,13 +66,14 @@ class TestImportPrefabExcel:
         strom_multi=Asserts(
             file_path="example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
             df_height=70071,
-            df_width=10,
+            df_width=11,
             df_columns=[
                 "↓ Index ↓",
                 "Bezug (1-1:1.29) → Leistung",
                 "Lieferung (1-1:2.29) → Leistung",
                 "PV-Anlage → Arbeit",
                 "Bedarf → Arbeit",
+                "Temperatur",
                 "orgidx",
                 "PV-Anlage → Leistung",
                 "Bedarf → Leistung",

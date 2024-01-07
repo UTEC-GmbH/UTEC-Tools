@@ -63,6 +63,9 @@ pip list
 # show information about specific package
 pip show plotly
 
+# list packages that can be updated
+pip list --outdated
+
 
 
 

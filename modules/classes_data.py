@@ -103,7 +103,10 @@ class Location:
 
         if isinstance(self.address, str):
             self.get_data(self.address)
-            logger.info("Location data collected from given address.")
+            if self.latitude and self.longitude:
+                logger.info("Location data collected from given address.")
+            else:
+                logger.critical(f"Could not find location of address \n{self.address}")
 
         elif isinstance(self.latitude, float) and isinstance(self.longitude, float):
             self.get_data((self.latitude, self.longitude))
@@ -166,7 +169,10 @@ class Location:
         geolocator: Nominatim = Nominatim(user_agent=user_agent_secret)
 
         if isinstance(location, str):
-            query = geolocator.geocode(location, exactly_one=True).point  # type: ignore
+            query = geolocator.geocode(location, exactly_one=True)
+            if not query:
+                return
+            query = query.point  # type: ignore
         elif isinstance(location, tuple):
             query = location
         else:

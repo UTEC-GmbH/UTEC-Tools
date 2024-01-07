@@ -64,7 +64,7 @@ LVLS = LogLevels(
     error=LevelProperties("error", icon="😱"),
     success=LevelProperties("success", icon="🥳"),
     warning=LevelProperties("warning", icon="😬"),
-    critical=LevelProperties("critical", icon="☠️"),
+    critical=LevelProperties("critical", icon="💀"),
     start=LevelProperties(
         "start",
         icon="🔥🔥🔥",

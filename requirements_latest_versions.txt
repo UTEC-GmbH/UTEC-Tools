@@ -12,6 +12,7 @@ pandas-stubs
 plotly
 polars
 pytest
+pytest-sugar
 python-dotenv
 scipy
 sentry-sdk

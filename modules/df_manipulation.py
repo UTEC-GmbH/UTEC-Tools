@@ -410,7 +410,7 @@ def change_temporal_resolution(
 
     # Downsample data if the original resolution is higher than the requested
     if original_resolution < requested_timedelta:
-        return df.groupby_dynamic(time_col, every=requested_resolution).agg(
+        return df.group_by_dynamic(time_col, every=requested_resolution).agg(
             [
                 pl.col(col).mean()
                 if cont.GROUP_MEAN.check(units[col], "mean_all")
@@ -465,7 +465,7 @@ def df_h_mdf(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             ]
         )
         .sort(by=COL_IND)
-        .groupby_dynamic(COL_IND, every="1h")
+        .group_by_dynamic(COL_IND, every="1h")
         .agg(
             [
                 pl.col(col.replace(cont.SUFFIXES.col_leistung, "").strip()).mean()
@@ -577,7 +577,7 @@ def calculate_monthly_values(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     ]
 
     mdf.mon = (
-        mdf.df_h.groupby_dynamic(COL_IND, every="1mo")
+        mdf.df_h.group_by_dynamic(COL_IND, every="1mo")
         .agg(
             [
                 pl.col(col).mean()

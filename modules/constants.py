@@ -250,6 +250,20 @@ TIME_MS: clc.TimeMSec = clc.TimeMSec(
     month_31=31 * 24 * 60 * 60 * 1000,
 )
 
+
+@dataclass
+class InSec:
+    """Times in seconds"""
+
+    year: int = 60 * 60 * 24 * 365
+    leap_year: int = 60 * 60 * 24 * 366
+    day: int = 60 * 60 * 24
+    hour: int = 60 * 60
+    half_hour: int = 30 * 60
+    quarter_hour: int = 15 * 60
+    minute: int = 60
+
+
 TIME_SEC: clc.TimeSec = clc.TimeSec(
     year=60 * 60 * 24 * 365,
     leap_year=60 * 60 * 24 * 366,

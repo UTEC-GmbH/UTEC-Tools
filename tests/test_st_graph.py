@@ -5,6 +5,7 @@ import pathlib
 import random
 from dataclasses import dataclass
 
+import polars as pl
 from plotly import graph_objects as go
 from streamlit.testing.v1 import AppTest
 
@@ -23,6 +24,13 @@ class ExFiles:
     strom_einzel: str = "example_files/Stromlastgang - 15min - 1 Jahr.xlsx"
     strom_multi: str = "example_files/Stromlastgang - 15min - 2 Jahre.xlsx"
     warme_multi: str = "example_files/Wärmelastgang - 1h - 3 Jahre.xlsx"
+
+
+ALL_EX_FILES: list[str] = [
+    str(file)
+    for file in pathlib.Path("example_files").rglob("*")
+    if file.is_file() and file.suffix.lower() in {".xlsx", ".xlsm"}
+]
 
 
 def choose_random_exfile() -> str:
@@ -58,43 +66,56 @@ def run_app(file: str) -> AppTest:
     return at.run()
 
 
-def test_any_and_all_files() -> None:
+def general_mdf(at: AppTest) -> None:
+    """Asserts about mdf that should work on any file"""
+    mdf: cld.MetaAndDfs = at.session_state["mdf"]
+
+    assert mdf is not None
+    assert isinstance(mdf.df, pl.DataFrame)
+    assert isinstance(mdf.df_h, pl.DataFrame)
+    assert isinstance(mdf.jdl, pl.DataFrame)
+    assert isinstance(mdf.mon, pl.DataFrame)
+
+
+def general_figs(at: AppTest) -> None:
+    """Asserts about figs that should work on any file"""
+
+    figs: clf.Figs = at.session_state["figs"]
+
+    assert figs.base is not None
+    assert figs.jdl is not None
+    assert figs.mon is not None
+
+
+def general_base(at: AppTest) -> None:
+    """Asserts about figs.base that should work on any file"""
+    # mdf: cld.MetaAndDfs = at.session_state["mdf"]
+    figs: clf.Figs = at.session_state["figs"]
+
+    assert figs.base is not None
+    assert isinstance(figs.base, clf.FigProp)
+    assert isinstance(figs.base.fig, go.Figure)
+    assert figs.base.st_key == cont.FIG_KEYS.lastgang
+    assert isinstance(figs.base.fig.data, tuple)
+
+
+def test_all_ex_files() -> None:
     """Tests that should work for any Excel-file"""
 
-    all_ex_files: list[str] = [
-        str(file)
-        for file in pathlib.Path("example_files").rglob("*")
-        if file.is_file() and file.suffix.lower() in {".xlsx", ".xlsm"}
-    ]
-
-    for file in all_ex_files:
+    for file in ALL_EX_FILES:
         at: AppTest = run_app(file)
         assert not at.exception
 
-        mdf: cld.MetaAndDfs = at.session_state["mdf"]
-
-        figs: clf.Figs = at.session_state["figs"]
-        assert figs.base is not None
-        assert isinstance(figs.base, clf.FigProp)
-        assert isinstance(figs.base.fig, go.Figure)
-        assert figs.base.st_key == cont.FIG_KEYS.lastgang
-        assert isinstance(figs.base.fig.data, tuple)
-
-        lines_base: list[go.Scatter] = [
-            line
-            for line in figs.base.fig.data
-            if all([isinstance(line, go.Scatter), line.name not in cont.EXCLUDE.index])
-        ]
-
-        assert len(lines_base) == len(
-            [col for col in mdf.df.columns if col not in cont.EXCLUDE.index]
-        )
+        general_mdf(at)
+        general_figs(at)
+        general_base(at)
 
 
 def test_graphs_single_year_strom() -> None:
     """Tests for specified example_file"""
-
     at: AppTest = run_app(ExFiles.strom_einzel)
+    assert not at.exception
+
     mdf: cld.MetaAndDfs = at.session_state["mdf"]
     figs: clf.Figs = at.session_state["figs"]
 

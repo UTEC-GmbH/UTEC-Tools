@@ -75,6 +75,9 @@ def general_mdf(at: AppTest) -> None:
     assert isinstance(mdf.df_h, pl.DataFrame)
     assert isinstance(mdf.jdl, pl.DataFrame)
     assert isinstance(mdf.mon, pl.DataFrame)
+    for df in [mdf.df, mdf.df_h, mdf.jdl, mdf.mon]:
+        assert df.schema[cont.EXCEL_MARKERS.index] == pl.Datetime()
+        assert df.height > cont.TIME_HOURS.year
 
 
 def general_figs(at: AppTest) -> None:
@@ -82,9 +85,10 @@ def general_figs(at: AppTest) -> None:
 
     figs: clf.Figs = at.session_state["figs"]
 
-    assert figs.base is not None
-    assert figs.jdl is not None
-    assert figs.mon is not None
+    for fig in [figs.base, figs.jdl, figs.mon]:
+        assert fig is not None
+        assert isinstance(fig, clf.FigProp)
+        assert isinstance(fig.fig, go.Figure)
 
 
 def general_base(at: AppTest) -> None:
@@ -93,8 +97,6 @@ def general_base(at: AppTest) -> None:
     figs: clf.Figs = at.session_state["figs"]
 
     assert figs.base is not None
-    assert isinstance(figs.base, clf.FigProp)
-    assert isinstance(figs.base.fig, go.Figure)
     assert figs.base.st_key == cont.FIG_KEYS.lastgang
     assert isinstance(figs.base.fig.data, tuple)
 

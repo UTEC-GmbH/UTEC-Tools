@@ -12,5 +12,8 @@
     },
     "docify.commentService.programmingLanguage": "python",
     "docify.commentService.docstringFormat": "Google",
-    "docify.commentService.sidePanelReviewMode": true
+    "docify.commentService.sidePanelReviewMode": true,
+    "files.exclude": {
+        "**/.git": false
+    }
 }

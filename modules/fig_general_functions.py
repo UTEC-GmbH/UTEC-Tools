@@ -155,7 +155,7 @@ def del_smooth() -> None:
     lis_dat: list = [
         dat
         for dat in st.session_state["fig_base"].data
-        if cont.SUFFIXES.col_smooth not in dat.name
+        if cont.Suffixes.col_smooth not in dat.name
     ]
     st.session_state["fig_base"].data = tuple(lis_dat)
 

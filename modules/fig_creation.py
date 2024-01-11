@@ -28,9 +28,9 @@ def cr_fig_base(mdf: cld.MetaAndDfs) -> go.Figure:
 
     tit_res: str = ""
     if sf.s_get("cb_h"):
-        tit_res = cont.SUFFIXES.fig_tit_h
+        tit_res = cont.Suffixes.fig_tit_h
     elif mdf.meta.td_mnts == cont.TimeMinutesIn.quarter_hour:
-        tit_res = cont.SUFFIXES.fig_tit_15
+        tit_res = cont.Suffixes.fig_tit_15
 
     tit: str = f"{cont.FIG_TITLES.lastgang}{tit_res}"
 
@@ -93,7 +93,7 @@ def cr_fig_base(mdf: cld.MetaAndDfs) -> go.Figure:
 def cr_fig_jdl(mdf: cld.MetaAndDfs) -> go.Figure:
     """Jahresdauerlinie erstellen"""
 
-    tit: str = f"{cont.FIG_TITLES.jdl}{cont.SUFFIXES.fig_tit_h}"
+    tit: str = f"{cont.FIG_TITLES.jdl}{cont.Suffixes.fig_tit_h}"
 
     # if sf.st_get("cb_multi_year"):
     #     fig: go.Figure = ploplo.line_plot_y_overlay(mdf, "jdl", title=tit)

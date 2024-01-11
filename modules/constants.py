@@ -43,48 +43,37 @@ class ButtonProps:
 class Buttons:
     """Class for st.button()"""
 
-    standard: ButtonProps
-    abbruch: ButtonProps
-    reset: ButtonProps
-    download_html: ButtonProps
-    download_excel: ButtonProps
-    download_weather: ButtonProps
-    download_example: ButtonProps
-
-
-BUTTONS: Buttons = Buttons(
-    standard=ButtonProps(label="Knöpfle"),
-    abbruch=ButtonProps(label="Abbrechen", key="but_cancel"),
-    reset=ButtonProps(
+    standard = ButtonProps(label="Knöpfle")
+    abbruch = ButtonProps(label="Abbrechen", key="but_cancel")
+    reset = ButtonProps(
         label="💫 Auswertung neu starten 💫",
         key="but_complete_reset",
         use_container_width=True,
         help="Auswertung zurücksetzen um andere Datei hochladen zu können.",
-    ),
-    download_html=ButtonProps(
+    )
+    download_html = ButtonProps(
         label="💾 html-Datei herunterladen 💾",
         key="but_html_download",
         file_name=f"Interaktive_Auswertung_{dt.datetime.now().strftime('%Y-%m-%d-%H-%M')}.html",
         mime="application/xhtml+xml",
         use_container_width=True,
-    ),
-    download_excel=ButtonProps(
+    )
+    download_excel = ButtonProps(
         label="💾 Excel-Datei herunterladen 💾",
         key="but_excel_download",
         file_name=f"Datenausgabe_{dt.datetime.now().strftime('%Y-%m-%d-%H-%M')}.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         use_container_width=True,
-    ),
-    download_weather=ButtonProps(
+    )
+    download_weather = ButtonProps(
         label="💾 Wetterdaten herunterladen 💾",
         key="but_weather_download",
         use_container_width=True,
-    ),
-    download_example=ButtonProps(
+    )
+    download_example = ButtonProps(
         label="Beispieldatei herunterladen",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    ),
-)
+    )
 
 
 # Aussehen der labels (Überschriften)
@@ -216,34 +205,44 @@ ALPHA: dict[str, str] = {
     "fill": ", 0.2)",  # fill von Linien etc.
 }
 
-SUFFIXES: clc.Suffixes = clc.Suffixes(
-    col_smooth=" geglättet",
-    col_arbeit=" → Arbeit",
-    col_leistung=" → Leistung",
-    col_original_index=" - orgidx",
-    fig_tit_h='<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>',
-    fig_tit_15='<i><span style="font-size: 12px;"> (15-Minuten-Werte)</span></i>',
-    h_line="hline",
-)
 
-EXCEL_MARKERS: clc.ExcelMarkers = clc.ExcelMarkers(
-    index="↓ Index ↓",
-    units="→ Einheit →",
-)
+@dataclass
+class ExcelMarkers:
+    """Name of Markers for Index and Units in the Excel-File"""
 
-SPECIAL_COLS: clc.SpecialCols = clc.SpecialCols(
-    index=EXCEL_MARKERS.index,
-    original_index=SUFFIXES.col_original_index.replace(" - ", ""),
-    smooth=SUFFIXES.col_smooth,
-    temp="Außentemperatur",
-)
+    index: str = "↓ Index ↓"
+    units: str = "→ Einheit →"
 
-DATE_COLUMNS: list[str] = [SPECIAL_COLS.index, SPECIAL_COLS.original_index, "Datum"]
+
+@dataclass
+class SpecialCols:
+    """Special Column Names"""
+
+    index: str = ExcelMarkers.index
+    original_index: str = "orgidx"
+    smooth: str = "geglättet"
+    temp: str = "Außentemperatur"
+
+
+@dataclass
+class Suffixes:
+    """Suffixes"""
+
+    col_smooth: str = f" {SpecialCols.smooth}"
+    col_arbeit: str = " → Arbeit"
+    col_leistung: str = " → Leistung"
+    col_original_index: str = f" - {SpecialCols.original_index}"
+    fig_tit_h: str = '<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>'
+    fig_tit_15: str = '<i><span style="font-size: 12px;"> (15-Minuten-Werte)</span></i>'
+    h_line: str = "hline"
+
+
+DATE_COLUMNS: list[str] = [SpecialCols.index, SpecialCols.original_index, "Datum"]
 
 
 @dataclass
 class TimeDaysIn:
-    """Days in a ..."""
+    """How many Days in a ..."""
 
     leap_year: int = 366
     year: int = 365
@@ -256,7 +255,7 @@ class TimeDaysIn:
 
 @dataclass
 class TimeHoursIn:
-    """Hours in a ..."""
+    """How many Hours in a ..."""
 
     leap_year: int = 366 * 24
     year: int = 365 * 24
@@ -271,7 +270,7 @@ class TimeHoursIn:
 
 @dataclass
 class TimeMinutesIn:
-    """Minutes in a ..."""
+    """How many Minutes in a ..."""
 
     leap_year: int = 366 * 24 * 60
     year: int = 365 * 24 * 60
@@ -289,7 +288,7 @@ class TimeMinutesIn:
 
 @dataclass
 class TimeSecondsIn:
-    """Seconds in a ..."""
+    """How many Seconds in a ..."""
 
     leap_year: int = 366 * 24 * 60 * 60
     year: int = 365 * 24 * 60 * 60
@@ -308,7 +307,7 @@ class TimeSecondsIn:
 
 @dataclass
 class TimeMillisecondsIn:
-    """Milliseconds in a ..."""
+    """How many Milliseconds in a ..."""
 
     leap_year: int = 366 * 24 * 60 * 60 * 1000
     year: int = 365 * 24 * 60 * 60 * 1000
@@ -328,7 +327,7 @@ class TimeMillisecondsIn:
 
 @dataclass
 class TimeMicrosecondsIn:
-    """Microseconds in a ..."""
+    """How many Microseconds in a ..."""
 
     leap_year: int = 366 * 24 * 60 * 60 * 1000 * 1000
     year: int = 365 * 24 * 60 * 60 * 1000 * 1000
@@ -349,7 +348,7 @@ class TimeMicrosecondsIn:
 
 @dataclass
 class TimeNanosecondsIn:
-    """Nanoseconds in a ..."""
+    """How many Nanoseconds in a ..."""
 
     leap_year: int = 366 * 24 * 60 * 60 * 1000 * 1000 * 1000
     year: int = 365 * 24 * 60 * 60 * 1000 * 1000 * 1000
@@ -517,31 +516,34 @@ FIG_KEYS: clc.FigIDs = clc.FigIDs(
 )
 
 ARBEIT_LEISTUNG: clc.ArbeitLeistung = clc.ArbeitLeistung(
-    arbeit=clc.SuffixUnit(SUFFIXES.col_arbeit, ["GWh", "MWh", "kWh", "Wh"]),
-    leistung=clc.SuffixUnit(SUFFIXES.col_leistung, ["GW", "MW", "kW", "W"]),
-    all_suffixes=[SUFFIXES.col_arbeit, SUFFIXES.col_leistung],
+    arbeit=clc.SuffixUnit(Suffixes.col_arbeit, ["GWh", "MWh", "kWh", "Wh"]),
+    leistung=clc.SuffixUnit(Suffixes.col_leistung, ["GW", "MW", "kW", "W"]),
+    all_suffixes=[Suffixes.col_arbeit, Suffixes.col_leistung],
 )
 
-# Linien, die bei gewissen Operationen übersprungen werden
-EXCLUDE: clc.Exclude = clc.Exclude(
-    base=[
-        SUFFIXES.h_line,
-        SUFFIXES.col_smooth,
-        SPECIAL_COLS.original_index,
-    ],
-    index=[
-        SUFFIXES.h_line,
-        SUFFIXES.col_smooth,
-        SPECIAL_COLS.original_index,
-        EXCEL_MARKERS.index,
-    ],
-    suff_arbeit=[
-        SUFFIXES.h_line,
-        SUFFIXES.col_smooth,
-        SPECIAL_COLS.original_index,
+
+@dataclass
+class Exclude:
+    """Linien, die bei gewissen Operationen übersprungen werden"""
+
+    base: tuple[str, str, str] = (
+        Suffixes.h_line,
+        Suffixes.col_smooth,
+        SpecialCols.original_index,
+    )
+    index: tuple[str, str, str, str] = (
+        Suffixes.h_line,
+        Suffixes.col_smooth,
+        SpecialCols.original_index,
+        ExcelMarkers.index,
+    )
+    suff_arbeit: tuple[str, str, str, str] = (
+        Suffixes.h_line,
+        Suffixes.col_smooth,
+        SpecialCols.original_index,
         ARBEIT_LEISTUNG.arbeit.suffix,
-    ],
-)
+    )
+
 
 ST_PAGES: clc.StPages = clc.StPages(
     login=clc.StPageProps("login", "UTEC Online Tools"),

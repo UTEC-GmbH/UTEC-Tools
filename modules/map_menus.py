@@ -30,7 +30,7 @@ def sidebar_file_upload() -> Any:
 
         with open(f"example_map/{sb_example}.xlsx", "rb") as exfile:
             st.download_button(
-                **cont.BUTTONS.download_example.func_args(),
+                **cont.Buttons.download_example.func_args(),
                 data=exfile,
                 file_name=f"{sb_example}.xlsx",
             )

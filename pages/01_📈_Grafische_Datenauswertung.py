@@ -90,8 +90,8 @@ def gather_and_manipulate_data() -> cld.MetaAndDfs:
     menu_g.meteo_sidebar()
 
     if any([sf.s_get("but_base_settings"), sf.s_get("but_meteo_sidebar")]):
-        if cont.SPECIAL_COLS.temp in mdf_i.df.columns:
-            mdf_i.df = mdf_i.df.drop(cont.SPECIAL_COLS.temp)
+        if cont.SpecialCols.temp in mdf_i.df.columns:
+            mdf_i.df = mdf_i.df.drop(cont.SpecialCols.temp)
         for df in ["df_h", "jdl", "mon", "df_multi", "df_h_multi", "mon_multi"]:
             setattr(mdf_i, df, None)
         logger.info(

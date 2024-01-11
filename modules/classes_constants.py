@@ -9,80 +9,6 @@ from loguru import logger
 
 
 @dataclass(frozen=True, kw_only=True)
-class Suffixes:
-    """Suffixes"""
-
-    col_smooth: str
-    col_arbeit: str
-    col_leistung: str
-    col_original_index: str
-    fig_tit_h: str
-    fig_tit_15: str
-    h_line: str
-
-
-@dataclass(frozen=True, kw_only=True)
-class ExcelMarkers:
-    """Name of Markers for Index and Units in the Excel-File"""
-
-    index: str
-    units: str
-
-
-@dataclass(frozen=True, kw_only=True)
-class SpecialCols:
-    """Special Column Names"""
-
-    index: str
-    original_index: str
-    smooth: str
-    temp: str
-
-
-@dataclass(frozen=True, kw_only=True)
-class TimeMSec:
-    """Übersetzung von Zeitbezeichnung in Millisekunden
-    (z.B. für Tickstops in plotly graphs)
-    """
-
-    half_day: int
-    week: int
-    month_28: int
-    month_29: int
-    month_30: int
-    month_31: int
-
-
-@dataclass(frozen=True, kw_only=True)
-class TimeSec:
-    """Zeiten in Sekunden"""
-
-    year: int
-    leap_year: int
-    day: int
-    hour: int
-    half_hour: int
-    quarter_hour: int
-
-
-@dataclass(frozen=True, kw_only=True)
-class TimeMin:
-    """Zeiten in Minuten"""
-
-    hour: int
-    half_hour: int
-    quarter_hour: int
-
-
-@dataclass(frozen=True, kw_only=True)
-class TimeH:
-    """Zeiten in Minuten"""
-
-    year: int
-    leap_year: int
-
-
-@dataclass(frozen=True, kw_only=True)
 class TimeResolution:
     """Zeitliche Auflösungen"""
 
@@ -136,15 +62,6 @@ class ArbeitLeistung:
         return getattr(self, data_type.lower()).suffix
 
 
-@dataclass(frozen=True, kw_only=True)
-class Exclude:
-    """Column names or suffixes to exclude in order to only get the "normal" data"""
-
-    base: list[str]
-    index: list[str]
-    suff_arbeit: list[str]
-
-
 @dataclass(frozen=True)
 class StPageProps:
     """Streamlit Page Properties"""
@@ -161,7 +78,6 @@ class StPages:
     login: StPageProps
     graph: StPageProps
     meteo: StPageProps
-    # chat: StPageProps
     maps: StPageProps
 
     def get_all_short(self) -> list[str]:

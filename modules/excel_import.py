@@ -78,7 +78,7 @@ def general_excel_import(
         read_csv_options=csv_options,
     )
 
-    for col in ["Datum", cont.SPECIAL_COLS.index]:
+    for col in ["Datum", cont.SpecialCols.index]:
         if col in df.columns and df.get_column(col).dtype != pl.Datetime:
             df = df.with_columns(
                 pl.col(col).str.strptime(pl.Datetime, "%d.%m.%Y %H:%M")
@@ -115,8 +115,8 @@ def import_prefab_excel(file: BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
     mdf = import_prefab_excel(file)
     """
 
-    mark_index: str = cont.EXCEL_MARKERS.index
-    mark_units: str = cont.EXCEL_MARKERS.units
+    mark_index: str = cont.ExcelMarkers.index
+    mark_units: str = cont.ExcelMarkers.units
 
     df: pl.DataFrame = get_df_from_excel(file)
 
@@ -266,8 +266,8 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cld.MetaDa
             line: cld.MetaLine(
                 name=line,
                 name_orgidx=(
-                    f"{line}{cont.SUFFIXES.col_original_index}"
-                    if cont.SUFFIXES.col_original_index not in line
+                    f"{line}{cont.Suffixes.col_original_index}"
+                    if cont.Suffixes.col_original_index not in line
                     else line
                 ),
                 orig_tit=line,
@@ -363,7 +363,7 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
     df = clean_up_daylight_savings(df, mark_index).df_clean
 
     # copy index in separate column to preserve if index is changed (multi year)
-    return df.with_columns(pl.col(mark_index).alias(cont.SPECIAL_COLS.original_index))
+    return df.with_columns(pl.col(mark_index).alias(cont.SpecialCols.original_index))
 
 
 class CleanUpDLS(NamedTuple):
@@ -477,8 +477,8 @@ def meta_from_obis(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             line.obis = clc.ObisElectrical(match[0])
             line.name = line.obis.name
             line.name_orgidx = (
-                f"{line.obis.name}{cont.SUFFIXES.col_original_index}"
-                if cont.SUFFIXES.col_original_index not in line.obis.name
+                f"{line.obis.name}{cont.Suffixes.col_original_index}"
+                if cont.Suffixes.col_original_index not in line.obis.name
                 else line.obis.name
             )
             line.tit = line.obis.name

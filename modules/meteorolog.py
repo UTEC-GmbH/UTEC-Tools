@@ -46,7 +46,7 @@ def start_end_time(**kwargs) -> cld.TimeSpan:
             raise TypeError
 
     elif mdf is not None:
-        index: pl.Series = mdf.df.get_column(cont.SPECIAL_COLS.index).sort()
+        index: pl.Series = mdf.df.get_column(cont.SpecialCols.index).sort()
         start_time: dt.datetime = index[0]
         end_time: dt.datetime = index[-1]
 
@@ -297,11 +297,11 @@ def meteo_df_for_temp_in_graph(
 
         param.closest_available_res.data = (
             param.closest_available_res.data.select(["value", "date"])
-            .rename({"value": param.name_de, "date": cont.SPECIAL_COLS.index})
+            .rename({"value": param.name_de, "date": cont.SpecialCols.index})
             .select(
                 [
                     pl.col(param.name_de),
-                    pl.col(cont.SPECIAL_COLS.index).dt.replace_time_zone(None),
+                    pl.col(cont.SpecialCols.index).dt.replace_time_zone(None),
                 ]
             )
             .rename({param.name_de: param.name_de or param.name_de})

@@ -125,6 +125,6 @@ if uauth.authentication(sf.s_get("page")):
 
         with reset_download_container:
             st.download_button(
-                **cont.BUTTONS.download_html.func_args(), data=ex.html_map(fig)
+                **cont.Buttons.download_html.func_args(), data=ex.html_map(fig)
             )
             st.markdown("---")

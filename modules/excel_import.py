@@ -340,7 +340,7 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
                 | {col: pl.Float32 for col in df.select(pl.exclude(mark_index)).columns}  # type: ignore
             )
             .with_columns(
-                (pl.col(mark_index) * cont.TIME_NS_DAYS).cast(pl.Duration)
+                (pl.col(mark_index) * cont.TimeMicrosecondsIn.day).cast(pl.Duration)
                 + pl.datetime(1899, 12, 30)
             )
             .sort(mark_index)
@@ -440,10 +440,10 @@ def temporal_metadata(mdf: cld.MetaAndDfs, mark_index: str) -> cld.MetaAndDfs:
         mdf.df.select(pl.col(mark_index).diff().dt.minutes().drop_nulls().mean()).item()
     )
 
-    if mdf.meta.td_mnts == cont.TIME_MIN.quarter_hour:
+    if mdf.meta.td_mnts == cont.TimeMinutesIn.quarter_hour:
         mdf.meta.td_interval = "15min"
         logger.info("Index mit zeitlicher Auflösung von 15 Minuten erkannt.")
-    elif mdf.meta.td_mnts == cont.TIME_MIN.hour:
+    elif mdf.meta.td_mnts == cont.TimeMinutesIn.hour:
         mdf.meta.td_interval = "h"
         mdf.df_h = mdf.df
         logger.info("Index mit zeitlicher Auflösung von 1 Stunde erkannt.")

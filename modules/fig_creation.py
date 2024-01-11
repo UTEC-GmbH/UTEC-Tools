@@ -29,7 +29,7 @@ def cr_fig_base(mdf: cld.MetaAndDfs) -> go.Figure:
     tit_res: str = ""
     if sf.s_get("cb_h"):
         tit_res = cont.SUFFIXES.fig_tit_h
-    elif mdf.meta.td_mnts == cont.TIME_MIN.quarter_hour:
+    elif mdf.meta.td_mnts == cont.TimeMinutesIn.quarter_hour:
         tit_res = cont.SUFFIXES.fig_tit_15
 
     tit: str = f"{cont.FIG_TITLES.lastgang}{tit_res}"

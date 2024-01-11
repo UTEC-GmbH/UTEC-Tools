@@ -357,7 +357,9 @@ def download_polysun(df_ex: pl.DataFrame, file_suffix: str) -> None:
     """Wenn 'Datei erzeugen'-Knopf gedrückt wurde"""
 
     df_ex = (
-        pl.DataFrame({"Time [s]": range(0, cont.TIME_SEC.year, cont.TIME_SEC.hour)})
+        pl.DataFrame(
+            {"Time [s]": range(0, cont.TimeSecondsIn.year, cont.TimeSecondsIn.hour)}
+        )
         .join(
             df_ex.with_columns(
                 (

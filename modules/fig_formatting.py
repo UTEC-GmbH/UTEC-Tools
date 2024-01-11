@@ -58,25 +58,25 @@ def format_tickstops(fig: go.Figure) -> list[dict[str, Any]]:
 
     return [
         {
-            "dtickrange": [None, cont.TIME_MS.half_day],
+            "dtickrange": [None, cont.TimeMillisecondsIn.half_day],
             "value": "%H:%M\n%e. %b" if multi_y else "%H:%M\n%a %e. %b",
         },
         {
             "dtickrange": [
-                cont.TIME_MS.half_day + 1,
-                cont.TIME_MS.week,
+                cont.TimeMillisecondsIn.half_day + 1,
+                cont.TimeMillisecondsIn.week,
             ],
             "value": "%e. %b" if multi_y else "%a\n%e. %b",
         },
         {
             "dtickrange": [
-                cont.TIME_MS.week + 1,
-                cont.TIME_MS.month_30,
+                cont.TimeMillisecondsIn.week + 1,
+                cont.TimeMillisecondsIn.month_30,
             ],
             "value": "%e.\n%b",
         },
         {
-            "dtickrange": [cont.TIME_MS.month_30 + 1, None],
+            "dtickrange": [cont.TimeMillisecondsIn.month_30 + 1, None],
             "value": "%b",
         },
     ]

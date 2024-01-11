@@ -521,11 +521,11 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             if gf.check_if_not_exclude(col)
         ]
         for df in jdl_separate_df:
-            if df.height < cont.TIME_HOURS.leap_year:
+            if df.height < cont.TimeHoursIn.leap_year:
                 df.extend(
                     pl.DataFrame(
                         {
-                            col: [None] * (cont.TIME_HOURS.leap_year - df.height)
+                            col: [None] * (cont.TimeHoursIn.leap_year - df.height)
                             for col in df.columns
                         }
                     ).cast(dict(df.schema))

@@ -241,33 +241,133 @@ SPECIAL_COLS: clc.SpecialCols = clc.SpecialCols(
 DATE_COLUMNS: list[str] = [SPECIAL_COLS.index, SPECIAL_COLS.original_index, "Datum"]
 
 
-TIME_MS: clc.TimeMSec = clc.TimeMSec(
-    half_day=12 * 60 * 60 * 1000,  # 43.200.000
-    week=7 * 24 * 60 * 60 * 1000,  # 604.800.000
-    month_28=28 * 24 * 60 * 60 * 1000,
-    month_29=29 * 24 * 60 * 60 * 1000,
-    month_30=30 * 24 * 60 * 60 * 1000,  # 2.592.000.000
-    month_31=31 * 24 * 60 * 60 * 1000,
-)
+@dataclass
+class TimeDaysIn:
+    """Days in a ..."""
 
-TIME_SEC: clc.TimeSec = clc.TimeSec(
-    year=60 * 60 * 24 * 365,
-    leap_year=60 * 60 * 24 * 366,
-    day=60 * 60 * 24,
-    hour=60 * 60,
-    half_hour=30 * 60,
-    quarter_hour=15 * 60,
-)
+    leap_year: int = 366
+    year: int = 365
+    month_31: int = 31
+    month_30: int = 30
+    month_29: int = 29
+    month_28: int = 28
+    week: int = 7
 
-TIME_MIN: clc.TimeMin = clc.TimeMin(
-    hour=60,
-    half_hour=30,
-    quarter_hour=15,
-)
 
-TIME_HOURS: clc.TimeH = clc.TimeH(year=24 * 365, leap_year=24 * 366)
+@dataclass
+class TimeHoursIn:
+    """Hours in a ..."""
 
-TIME_NS_DAYS: int = 1000 * 1000 * TIME_SEC.day
+    leap_year: int = 366 * 24
+    year: int = 365 * 24
+    month_31: int = 31 * 24
+    month_30: int = 30 * 24
+    month_29: int = 29 * 24
+    month_28: int = 28 * 24
+    week: int = 7 * 24
+    day: int = 24
+    half_day: int = 12
+
+
+@dataclass
+class TimeMinutesIn:
+    """Minutes in a ..."""
+
+    leap_year: int = 366 * 24 * 60
+    year: int = 365 * 24 * 60
+    month_31: int = 31 * 24 * 60
+    month_30: int = 30 * 24 * 60
+    month_29: int = 29 * 24 * 60
+    month_28: int = 28 * 24 * 60
+    week: int = 7 * 24 * 60
+    day: int = 24 * 60
+    half_day: int = 12 * 60
+    hour: int = 60
+    half_hour: int = 30
+    quarter_hour: int = 15
+
+
+@dataclass
+class TimeSecondsIn:
+    """Seconds in a ..."""
+
+    leap_year: int = 366 * 24 * 60 * 60
+    year: int = 365 * 24 * 60 * 60
+    month_31: int = 31 * 24 * 60 * 60
+    month_30: int = 30 * 24 * 60 * 60
+    month_29: int = 29 * 24 * 60 * 60
+    month_28: int = 28 * 24 * 60 * 60
+    week: int = 7 * 24 * 60 * 60
+    day: int = 24 * 60 * 60
+    half_day: int = 12 * 60 * 60
+    hour: int = 60 * 60
+    half_hour: int = 30 * 60
+    quarter_hour: int = 15 * 60
+    minute: int = 60
+
+
+@dataclass
+class TimeMillisecondsIn:
+    """Milliseconds in a ..."""
+
+    leap_year: int = 366 * 24 * 60 * 60 * 1000
+    year: int = 365 * 24 * 60 * 60 * 1000
+    month_31: int = 31 * 24 * 60 * 60 * 1000
+    month_30: int = 30 * 24 * 60 * 60 * 1000
+    month_29: int = 29 * 24 * 60 * 60 * 1000
+    month_28: int = 28 * 24 * 60 * 60 * 1000
+    week: int = 7 * 24 * 60 * 60 * 1000
+    day: int = 24 * 60 * 60 * 1000
+    half_day: int = 12 * 60 * 60 * 1000
+    hour: int = 60 * 60 * 1000
+    half_hour: int = 30 * 60 * 1000
+    quarter_hour: int = 15 * 60 * 1000
+    minute: int = 60 * 1000
+    second: int = 1000
+
+
+@dataclass
+class TimeMicrosecondsIn:
+    """Microseconds in a ..."""
+
+    leap_year: int = 366 * 24 * 60 * 60 * 1000 * 1000
+    year: int = 365 * 24 * 60 * 60 * 1000 * 1000
+    month_31: int = 31 * 24 * 60 * 60 * 1000 * 1000
+    month_30: int = 30 * 24 * 60 * 60 * 1000 * 1000
+    month_29: int = 29 * 24 * 60 * 60 * 1000 * 1000
+    month_28: int = 28 * 24 * 60 * 60 * 1000 * 1000
+    week: int = 7 * 24 * 60 * 60 * 1000 * 1000
+    day: int = 24 * 60 * 60 * 1000 * 1000
+    half_day: int = 12 * 60 * 60 * 1000 * 1000
+    hour: int = 60 * 60 * 1000 * 1000
+    half_hour: int = 30 * 60 * 1000 * 1000
+    quarter_hour: int = 15 * 60 * 1000 * 1000
+    minute: int = 60 * 1000 * 1000
+    second: int = 1000 * 1000
+    millisecond: int = 1000
+
+
+@dataclass
+class TimeNanosecondsIn:
+    """Nanoseconds in a ..."""
+
+    leap_year: int = 366 * 24 * 60 * 60 * 1000 * 1000 * 1000
+    year: int = 365 * 24 * 60 * 60 * 1000 * 1000 * 1000
+    month_31: int = 31 * 24 * 60 * 60 * 1000 * 1000 * 1000
+    month_30: int = 30 * 24 * 60 * 60 * 1000 * 1000 * 1000
+    month_29: int = 29 * 24 * 60 * 60 * 1000 * 1000 * 1000
+    month_28: int = 28 * 24 * 60 * 60 * 1000 * 1000 * 1000
+    week: int = 7 * 24 * 60 * 60 * 1000 * 1000 * 1000
+    day: int = 24 * 60 * 60 * 1000 * 1000 * 1000
+    half_day: int = 12 * 60 * 60 * 1000 * 1000 * 1000
+    hour: int = 60 * 60 * 1000 * 1000 * 1000
+    half_hour: int = 30 * 60 * 1000 * 1000 * 1000
+    quarter_hour: int = 15 * 60 * 1000 * 1000 * 1000
+    minute: int = 60 * 1000 * 1000 * 1000
+    second: int = 1000 * 1000 * 1000
+    millisecond: int = 1000 * 1000
+    microsecond: int = 1000
+
 
 TIME_RESOLUTIONS: dict[Literal["15m", "1h", "1d", "1mo"], clc.TimeResolution] = {
     "15m": clc.TimeResolution(

@@ -72,10 +72,10 @@ def base_settings(mdf: cld.MetaAndDfs) -> None:
     if not mdf.meta.td_mnts:
         return
 
-    if mdf.meta.td_mnts == cont.TIME_MIN.hour:
+    if mdf.meta.td_mnts == cont.TimeMinutesIn.hour:
         sf.s_set("cb_h", value=True)
 
-    if mdf.meta.td_mnts < cont.TIME_MIN.hour or mdf.meta.multi_years:
+    if mdf.meta.td_mnts < cont.TimeMinutesIn.hour or mdf.meta.multi_years:
         with st.sidebar, st.form("Grundeinstellungen"):
             cb_hourly_multiyear(mdf)
 
@@ -87,7 +87,7 @@ def cb_hourly_multiyear(mdf: cld.MetaAndDfs) -> None:
     if not mdf.meta.td_mnts:
         return
 
-    if mdf.meta.td_mnts < cont.TIME_MIN.hour:
+    if mdf.meta.td_mnts < cont.TimeMinutesIn.hour:
         st.checkbox(
             label="Umrechnung in Stundenwerte",
             help=(

@@ -24,11 +24,11 @@ class ButtonProps:
 
     label: str
     key: str | None = None
-    help: str | None = None  # noqa: A003
+    help_: str | None = None
     on_click: Callable | None = None
     args: Any | None = None
     kwargs: Any | None = None
-    type: Literal["primary", "secondary"] | None = None  # noqa: A003
+    type_: Literal["primary", "secondary"] | None = None
     disabled: bool | None = None
     use_container_width: bool | None = None
     file_name: str | None = None
@@ -36,7 +36,11 @@ class ButtonProps:
 
     def func_args(self) -> dict:
         """Dictionary without missing data"""
-        return {key: val for key, val in self.__dict__.items() if val is not None}
+        return {
+            key.replace("_", ""): val
+            for key, val in self.__dict__.items()
+            if val is not None
+        }
 
 
 @dataclass
@@ -49,7 +53,7 @@ class Buttons:
         label="💫 Auswertung neu starten 💫",
         key="but_complete_reset",
         use_container_width=True,
-        help="Auswertung zurücksetzen um andere Datei hochladen zu können.",
+        help_="Auswertung zurücksetzen um andere Datei hochladen zu können.",
     )
     download_html = ButtonProps(
         label="💾 html-Datei herunterladen 💾",

@@ -3,9 +3,8 @@
 
 
 import datetime as dt
-from typing import TYPE_CHECKING, Any, Literal
+from typing import Any, Literal
 
-import numpy as np
 import polars as pl
 from loguru import logger
 from scipy import interpolate
@@ -17,9 +16,6 @@ from modules import general_functions as gf
 from modules import meteorolog as met
 from modules import setup_logger as slog
 from modules import streamlit_functions as sf
-
-if TYPE_CHECKING:
-    import pandas as pd
 
 COL_IND: str = cont.SpecialCols.index
 COL_ORG: str = cont.SpecialCols.original_index
@@ -63,7 +59,7 @@ def fix_am_pm(df: pl.DataFrame, time_column: str = "Zeitstempel") -> pl.DataFram
     """
 
     col: pl.DataFrame = df.select(
-        pl.when(pl.col(time_column).dt.hour() == 12)
+        pl.when(pl.col(time_column).dt.hour() == cont.TimeHoursIn.half_day)
         .then(pl.col(time_column).dt.offset_by("-12h"))
         .otherwise(pl.col(time_column))
     )
@@ -180,28 +176,6 @@ def interpolate_missing_data_akima(
         )
         for col in cols
     )
-
-
-@gf.func_timer
-def interpolate_missing_data_pd(
-    df: pl.DataFrame, method: str = "akima"
-) -> pl.DataFrame:
-    """Findet stellen an denen sich von einer Zeile zur nächsten
-    die Daten nicht ändern, löscht die Daten und interpoliert die Lücken
-
-    Args:
-        - df (pd.DataFrame): DataFrame to edit
-        - method (str): method of interpolation. Defaults to "akima".
-
-    Returns:
-        - pd.DataFrame: edited DataFrame
-    """
-    df_pd: pd.DataFrame = df.to_pandas().set_index(COL_IND)
-    df_pd[df_pd.diff() == 0] = np.nan
-
-    df_pd = df_pd.interpolate(method=method) or df_pd  # type: ignore
-    df_pl: pl.DataFrame = pl.from_pandas(df_pd)
-    return df_pl
 
 
 @gf.func_timer

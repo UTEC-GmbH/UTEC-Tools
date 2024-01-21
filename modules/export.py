@@ -4,7 +4,6 @@ import io
 
 import polars as pl
 import xlsxwriter
-from loguru import logger
 from plotly import graph_objects as go
 
 from modules import classes_data as cld
@@ -45,13 +44,6 @@ def excel_download(df_dic: dict[str, pl.DataFrame], meta: cld.MetaData) -> bytes
                         form.split(" ")[-1].replace('"', ""), "sum_month"
                     ):
                         col_format[col] = f'{col_format[col][:-1]}h"'
-
-            logger.debug(
-                gf.string_new_line_per_item(
-                    {"columns": data.columns, **dict(col_format)},
-                    "Excel Zahlenformate",
-                )
-            )
 
             wb.add_worksheet(worksh)
             data.write_excel(

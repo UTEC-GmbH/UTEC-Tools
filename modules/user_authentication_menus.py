@@ -4,7 +4,7 @@
 import datetime as dt
 import secrets
 
-import pandas as pd
+import polars as pl
 import streamlit as st
 
 from modules import constants as cont
@@ -87,11 +87,20 @@ def list_all_accounts() -> None:
     """Liste aller Benutzerkonten"""
     users: dict[str, dict[str, str]] = uauth.get_all_user_data()
 
-    df_users = pd.DataFrame()
-    df_users["Benutzername"] = [user["key"] for user in users.values()]
-    df_users["Name"] = [user["name"] for user in users.values()]
-    df_users["Verfallsdatum"] = [user["access_until"] for user in users.values()]
-    df_users["Zugriffsrechte"] = [str(user["access_lvl"]) for user in users.values()]
+    # df_users = pd.DataFrame()
+    # df_users["Benutzername"] = [user["key"] for user in users.values()]
+    # df_users["Name"] = [user["name"] for user in users.values()]
+    # df_users["Verfallsdatum"] = [user["access_until"] for user in users.values()]
+    # df_users["Zugriffsrechte"] = [str(user["access_lvl"]) for user in users.values()]
+
+    df_users = pl.DataFrame(
+        {
+            "Benutzername": [user["key"] for user in users.values()],
+            "Name": [user["name"] for user in users.values()],
+            "Verfallsdatum": [user["access_until"] for user in users.values()],
+            "Zugriffsrechte": [str(user["access_lvl"]) for user in users.values()],
+        }
+    )
 
     st.dataframe(df_users)
     st.button("ok")

@@ -5,8 +5,8 @@ import datetime as dt
 from typing import Any, Literal, TypeVar
 
 import numpy as np
-import pandas as pd
 import plotly.graph_objects as go
+import polars as pl
 import streamlit as st
 from loguru import logger
 from scipy import signal
@@ -46,8 +46,8 @@ def add_arrow(
     fig: go.Figure,
     fig_data: dict[str, dict[str, Any]],
     fig_layout: dict[str, Any],
-    x_val: dt.datetime | float | int,
-    y_or_line: float | int | str,
+    x_val: dt.datetime | float,
+    y_or_line: float | str,
     **kwargs,
 ) -> go.Figure:
     """Beschriftungspfeil einfügen
@@ -312,20 +312,20 @@ def hline_fill(fig: go.Figure, value: float, ms_hor: list) -> go.Figure:
 
     # hline-Füllungen, die es schon gibt
     for key in dic_fill:
-        if "hline " + key in [tr.name for tr in fig.data]:
-            trace = [tr for tr in fig.data if tr.name == "hline " + key][0]
+        if f"hline {key}" in [tr.name for tr in fig.data]:
+            trace = next(tr for tr in fig.data if tr.name == f"hline {key}")
             trace.y = dic_fill[trace.name.replace("hline ", "")]
             trace.showlegend = False
             trace.visible = True
 
         else:
-            trace = [tr for tr in fig.data if tr.name == key][0]
+            trace = next(tr for tr in fig.data if tr.name == key)
             fig.add_trace(
                 go.Scatter(
                     x=trace.x,
                     y=dic_fill[trace.name],
                     legendgroup=trace.legendgroup,
-                    name="hline " + trace.name,
+                    name=f"hline {trace.name}",
                     fill="tozeroy",
                     fillcolor="rgba(" + cont.FARBEN["schwarz"] + cont.ALPHA["fill"],
                     mode="none",
@@ -372,7 +372,7 @@ def calculate_smooth_values(trace: dict[str, Any]) -> np.ndarray:
     logger.info(f"Geglättete y-Werte für '{trace['name']}' werden neu berechnet.")
 
     return signal.savgol_filter(
-        x=pd.Series(trace["y"]).interpolate("akima"),
+        x=pl.Series(trace["y"]),
         mode="mirror",
         window_length=int(sf.s_get("gl_win") or sf.s_get("smooth_start_val")),
         polyorder=int(sf.s_get("gl_deg") or 3),
@@ -439,35 +439,3 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
     fgf.debug_check_for_missing_meta_data(fig)
 
     return fig
-
-
-# Ausreißer entfernen
-# @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
-@gf.func_timer
-def remove_outl(fig: go.Figure, cut_off: float) -> go.Figure:
-    """Ausreißerbereinigung"""
-    for trace in fig.data:
-        trace["y"] = pd.Series(
-            np.where(trace["y"] > cut_off, np.nan, trace["y"])
-        ).interpolate("akima")
-
-    for annot in fig.layout.annotations:
-        if annot["y"] > cut_off:
-            y_old = annot["y"]
-            annot["y"] = cut_off
-            annot["text"] = annot["text"].replace(str(y_old), str(cut_off))
-
-    return fig
-
-
-# Ausreißerbereinigung
-@gf.func_timer
-def clean_outliers() -> None:
-    """Ausreißerbereinigung"""
-
-    if st.session_state["ni_outl"] < st.session_state["abs_max"]:
-        for fig in st.session_state["lis_figs"]:
-            if fig != "fig_mon":
-                st.session_state[fig] = remove_outl(
-                    st.session_state[fig], st.session_state["ni_outl"]
-                )

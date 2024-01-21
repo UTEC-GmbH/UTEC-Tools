@@ -438,7 +438,7 @@ def clean_up_daylight_savings(df: pl.DataFrame, mark_index: str) -> CleanUpDLS:
 def temporal_metadata(mdf: cld.MetaAndDfs, mark_index: str) -> cld.MetaAndDfs:
     """Get information about the time index."""
 
-    if not mdf.df.get_column(mark_index).is_temporal():
+    if not mdf.df.get_column(mark_index).dtype.is_temporal():
         logger.error("Kein Zeitindex gefunden!!!")
         return mdf
 

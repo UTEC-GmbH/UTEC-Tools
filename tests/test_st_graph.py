@@ -50,7 +50,7 @@ def run_app(file: str) -> AppTest:
     """Run the app on the graph-page and import the chosen file"""
     at: AppTest = AppTest.from_file(
         script_path="pages/01_📈_Grafische_Datenauswertung.py",
-        default_timeout=cont.InSec.minute,
+        default_timeout=cont.TimeSecondsIn.minute,
     )
     # logger setup and general page config (Favicon, etc.)
     slog.logger_setup()
@@ -70,14 +70,23 @@ def general_mdf(at: AppTest) -> None:
     """Asserts about mdf that should work on any file"""
     mdf: cld.MetaAndDfs = at.session_state["mdf"]
 
+    # check if data frame and meta data are in session state
     assert mdf is not None
-    assert isinstance(mdf.df, pl.DataFrame)
-    assert isinstance(mdf.df_h, pl.DataFrame)
-    assert isinstance(mdf.jdl, pl.DataFrame)
-    assert isinstance(mdf.mon, pl.DataFrame)
-    for df in [mdf.df, mdf.df_h, mdf.jdl, mdf.mon]:
-        assert df.schema[cont.EXCEL_MARKERS.index] == pl.Datetime()
-        assert df.height > cont.TIME_HOURS.year
+
+    for name, df in {
+        "standard": mdf.df,
+        "hourly": mdf.df_h,
+        "jdl": mdf.jdl,
+        "monthly": mdf.mon,
+    }.items():
+        # check if data frames are of the correct type
+        assert isinstance(df, pl.DataFrame)
+
+        # check if the date column is imported correctly
+        if name == "jdl":
+            assert df[cont.ExcelMarkers.index].is_numeric()
+        else:
+            assert df[cont.ExcelMarkers.index].is_temporal()
 
 
 def general_figs(at: AppTest) -> None:

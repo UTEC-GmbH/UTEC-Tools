@@ -37,9 +37,7 @@ class ButtonProps:
     def func_args(self) -> dict:
         """Dictionary without missing data"""
         return {
-            key.replace("_", ""): val
-            for key, val in self.__dict__.items()
-            if val is not None
+            key.strip("_"): val for key, val in self.__dict__.items() if val is not None
         }
 
 

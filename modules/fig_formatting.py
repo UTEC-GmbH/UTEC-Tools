@@ -5,8 +5,8 @@
 - plotly configuration
 """
 
-import re
 import datetime as dt
+import re
 from typing import Any
 
 import numpy as np
@@ -58,25 +58,25 @@ def format_tickstops(fig: go.Figure) -> list[dict[str, Any]]:
 
     return [
         {
-            "dtickrange": [None, cont.TIME_MS.half_day],
+            "dtickrange": [None, cont.TimeMillisecondsIn.half_day],
             "value": "%H:%M\n%e. %b" if multi_y else "%H:%M\n%a %e. %b",
         },
         {
             "dtickrange": [
-                cont.TIME_MS.half_day + 1,
-                cont.TIME_MS.week,
+                cont.TimeMillisecondsIn.half_day + 1,
+                cont.TimeMillisecondsIn.week,
             ],
             "value": "%e. %b" if multi_y else "%a\n%e. %b",
         },
         {
             "dtickrange": [
-                cont.TIME_MS.week + 1,
-                cont.TIME_MS.month_30,
+                cont.TimeMillisecondsIn.week + 1,
+                cont.TimeMillisecondsIn.month_30,
             ],
             "value": "%e.\n%b",
         },
         {
-            "dtickrange": [cont.TIME_MS.month_30 + 1, None],
+            "dtickrange": [cont.TimeMillisecondsIn.month_30 + 1, None],
             "value": "%b",
         },
     ]
@@ -301,9 +301,9 @@ def show_traces(fig: go.Figure) -> go.Figure:
     for name, trace_data in data.items():
         if f"cp_{name}" not in st.session_state:
             new_name: str = (
-                f"{name}{cont.SUFFIXES.col_arbeit}"
+                f"{name}{cont.Suffixes.col_arbeit}"
                 if fig_type in ["mon"]
-                else f"{name}{cont.SUFFIXES.col_leistung}"
+                else f"{name}{cont.Suffixes.col_leistung}"
             )
         else:
             new_name = name
@@ -375,7 +375,7 @@ def format_traces(
             line_colour: str = st.session_state[f"cp_{trace_name}"]
             line_transp: str = (
                 cont.TRANSPARENCY_OPTIONS[0]
-                if cont.SUFFIXES.col_smooth in trace_name
+                if cont.Suffixes.col_smooth in trace_name
                 else st.session_state[
                     f"sb_fill_{trace['legendgroup'] if switch else trace_name}"
                 ]
@@ -496,8 +496,8 @@ def show_annos(fig: go.Figure, visible_traces: list[dict]) -> go.Figure:
                 [
                     fig_type == "jdl",
                     not visible,
-                    cont.SUFFIXES.col_leistung not in an_name_cust,
-                    sf.s_get(f"cb_anno_{an_name_cust}{cont.SUFFIXES.col_leistung}"),
+                    cont.Suffixes.col_leistung not in an_name_cust,
+                    sf.s_get(f"cb_anno_{an_name_cust}{cont.Suffixes.col_leistung}"),
                 ]
             ):
                 visible = True

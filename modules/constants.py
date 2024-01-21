@@ -24,11 +24,11 @@ class ButtonProps:
 
     label: str
     key: str | None = None
-    help: str | None = None  # noqa: A003
+    help_: str | None = None
     on_click: Callable | None = None
     args: Any | None = None
     kwargs: Any | None = None
-    type: Literal["primary", "secondary"] | None = None  # noqa: A003
+    type_: Literal["primary", "secondary"] | None = None
     disabled: bool | None = None
     use_container_width: bool | None = None
     file_name: str | None = None
@@ -36,55 +36,48 @@ class ButtonProps:
 
     def func_args(self) -> dict:
         """Dictionary without missing data"""
-        return {key: val for key, val in self.__dict__.items() if val is not None}
+        return {
+            key.replace("_", ""): val
+            for key, val in self.__dict__.items()
+            if val is not None
+        }
 
 
 @dataclass
 class Buttons:
     """Class for st.button()"""
 
-    standard: ButtonProps
-    abbruch: ButtonProps
-    reset: ButtonProps
-    download_html: ButtonProps
-    download_excel: ButtonProps
-    download_weather: ButtonProps
-    download_example: ButtonProps
-
-
-BUTTONS: Buttons = Buttons(
-    standard=ButtonProps(label="Knöpfle"),
-    abbruch=ButtonProps(label="Abbrechen", key="but_cancel"),
-    reset=ButtonProps(
+    standard = ButtonProps(label="Knöpfle")
+    abbruch = ButtonProps(label="Abbrechen", key="but_cancel")
+    reset = ButtonProps(
         label="💫 Auswertung neu starten 💫",
         key="but_complete_reset",
         use_container_width=True,
-        help="Auswertung zurücksetzen um andere Datei hochladen zu können.",
-    ),
-    download_html=ButtonProps(
+        help_="Auswertung zurücksetzen um andere Datei hochladen zu können.",
+    )
+    download_html = ButtonProps(
         label="💾 html-Datei herunterladen 💾",
         key="but_html_download",
         file_name=f"Interaktive_Auswertung_{dt.datetime.now().strftime('%Y-%m-%d-%H-%M')}.html",
         mime="application/xhtml+xml",
         use_container_width=True,
-    ),
-    download_excel=ButtonProps(
+    )
+    download_excel = ButtonProps(
         label="💾 Excel-Datei herunterladen 💾",
         key="but_excel_download",
         file_name=f"Datenausgabe_{dt.datetime.now().strftime('%Y-%m-%d-%H-%M')}.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         use_container_width=True,
-    ),
-    download_weather=ButtonProps(
+    )
+    download_weather = ButtonProps(
         label="💾 Wetterdaten herunterladen 💾",
         key="but_weather_download",
         use_container_width=True,
-    ),
-    download_example=ButtonProps(
+    )
+    download_example = ButtonProps(
         label="Beispieldatei herunterladen",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    ),
-)
+    )
 
 
 # Aussehen der labels (Überschriften)
@@ -216,58 +209,168 @@ ALPHA: dict[str, str] = {
     "fill": ", 0.2)",  # fill von Linien etc.
 }
 
-SUFFIXES: clc.Suffixes = clc.Suffixes(
-    col_smooth=" geglättet",
-    col_arbeit=" → Arbeit",
-    col_leistung=" → Leistung",
-    col_original_index=" - orgidx",
-    fig_tit_h='<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>',
-    fig_tit_15='<i><span style="font-size: 12px;"> (15-Minuten-Werte)</span></i>',
-    h_line="hline",
-)
 
-EXCEL_MARKERS: clc.ExcelMarkers = clc.ExcelMarkers(
-    index="↓ Index ↓",
-    units="→ Einheit →",
-)
+@dataclass
+class ExcelMarkers:
+    """Name of Markers for Index and Units in the Excel-File"""
 
-SPECIAL_COLS: clc.SpecialCols = clc.SpecialCols(
-    index=EXCEL_MARKERS.index,
-    original_index=SUFFIXES.col_original_index.replace(" - ", ""),
-    smooth=SUFFIXES.col_smooth,
-    temp="Außentemperatur",
-)
-
-DATE_COLUMNS: list[str] = [SPECIAL_COLS.index, SPECIAL_COLS.original_index, "Datum"]
+    index: str = "↓ Index ↓"
+    units: str = "→ Einheit →"
 
 
-TIME_MS: clc.TimeMSec = clc.TimeMSec(
-    half_day=12 * 60 * 60 * 1000,  # 43.200.000
-    week=7 * 24 * 60 * 60 * 1000,  # 604.800.000
-    month_28=28 * 24 * 60 * 60 * 1000,
-    month_29=29 * 24 * 60 * 60 * 1000,
-    month_30=30 * 24 * 60 * 60 * 1000,  # 2.592.000.000
-    month_31=31 * 24 * 60 * 60 * 1000,
-)
+@dataclass
+class SpecialCols:
+    """Special Column Names"""
 
-TIME_SEC: clc.TimeSec = clc.TimeSec(
-    year=60 * 60 * 24 * 365,
-    leap_year=60 * 60 * 24 * 366,
-    day=60 * 60 * 24,
-    hour=60 * 60,
-    half_hour=30 * 60,
-    quarter_hour=15 * 60,
-)
+    index: str = ExcelMarkers.index
+    original_index: str = "orgidx"
+    smooth: str = "geglättet"
+    temp: str = "Außentemperatur"
 
-TIME_MIN: clc.TimeMin = clc.TimeMin(
-    hour=60,
-    half_hour=30,
-    quarter_hour=15,
-)
 
-TIME_HOURS: clc.TimeH = clc.TimeH(year=24 * 365, leap_year=24 * 366)
+@dataclass
+class Suffixes:
+    """Suffixes"""
 
-TIME_NS_DAYS: int = 1000 * 1000 * TIME_SEC.day
+    col_smooth: str = f" {SpecialCols.smooth}"
+    col_arbeit: str = " → Arbeit"
+    col_leistung: str = " → Leistung"
+    col_original_index: str = f" - {SpecialCols.original_index}"
+    fig_tit_h: str = '<i><span style="font-size: 12px;"> (Stundenwerte)</span></i>'
+    fig_tit_15: str = '<i><span style="font-size: 12px;"> (15-Minuten-Werte)</span></i>'
+    h_line: str = "hline"
+
+
+DATE_COLUMNS: list[str] = [SpecialCols.index, SpecialCols.original_index, "Datum"]
+
+
+@dataclass
+class TimeDaysIn:
+    """How many Days in a ..."""
+
+    leap_year: int = 366
+    year: int = 365
+    month_31: int = 31
+    month_30: int = 30
+    month_29: int = 29
+    month_28: int = 28
+    week: int = 7
+
+
+@dataclass
+class TimeHoursIn:
+    """How many Hours in a ..."""
+
+    leap_year: int = 366 * 24
+    year: int = 365 * 24
+    month_31: int = 31 * 24
+    month_30: int = 30 * 24
+    month_29: int = 29 * 24
+    month_28: int = 28 * 24
+    week: int = 7 * 24
+    day: int = 24
+    half_day: int = 12
+
+
+@dataclass
+class TimeMinutesIn:
+    """How many Minutes in a ..."""
+
+    leap_year: int = 366 * 24 * 60
+    year: int = 365 * 24 * 60
+    month_31: int = 31 * 24 * 60
+    month_30: int = 30 * 24 * 60
+    month_29: int = 29 * 24 * 60
+    month_28: int = 28 * 24 * 60
+    week: int = 7 * 24 * 60
+    day: int = 24 * 60
+    half_day: int = 12 * 60
+    hour: int = 60
+    half_hour: int = 30
+    quarter_hour: int = 15
+
+
+@dataclass
+class TimeSecondsIn:
+    """How many Seconds in a ..."""
+
+    leap_year: int = 366 * 24 * 60 * 60
+    year: int = 365 * 24 * 60 * 60
+    month_31: int = 31 * 24 * 60 * 60
+    month_30: int = 30 * 24 * 60 * 60
+    month_29: int = 29 * 24 * 60 * 60
+    month_28: int = 28 * 24 * 60 * 60
+    week: int = 7 * 24 * 60 * 60
+    day: int = 24 * 60 * 60
+    half_day: int = 12 * 60 * 60
+    hour: int = 60 * 60
+    half_hour: int = 30 * 60
+    quarter_hour: int = 15 * 60
+    minute: int = 60
+
+
+@dataclass
+class TimeMillisecondsIn:
+    """How many Milliseconds in a ..."""
+
+    leap_year: int = 366 * 24 * 60 * 60 * 1000
+    year: int = 365 * 24 * 60 * 60 * 1000
+    month_31: int = 31 * 24 * 60 * 60 * 1000
+    month_30: int = 30 * 24 * 60 * 60 * 1000
+    month_29: int = 29 * 24 * 60 * 60 * 1000
+    month_28: int = 28 * 24 * 60 * 60 * 1000
+    week: int = 7 * 24 * 60 * 60 * 1000
+    day: int = 24 * 60 * 60 * 1000
+    half_day: int = 12 * 60 * 60 * 1000
+    hour: int = 60 * 60 * 1000
+    half_hour: int = 30 * 60 * 1000
+    quarter_hour: int = 15 * 60 * 1000
+    minute: int = 60 * 1000
+    second: int = 1000
+
+
+@dataclass
+class TimeMicrosecondsIn:
+    """How many Microseconds in a ..."""
+
+    leap_year: int = 366 * 24 * 60 * 60 * 1000 * 1000
+    year: int = 365 * 24 * 60 * 60 * 1000 * 1000
+    month_31: int = 31 * 24 * 60 * 60 * 1000 * 1000
+    month_30: int = 30 * 24 * 60 * 60 * 1000 * 1000
+    month_29: int = 29 * 24 * 60 * 60 * 1000 * 1000
+    month_28: int = 28 * 24 * 60 * 60 * 1000 * 1000
+    week: int = 7 * 24 * 60 * 60 * 1000 * 1000
+    day: int = 24 * 60 * 60 * 1000 * 1000
+    half_day: int = 12 * 60 * 60 * 1000 * 1000
+    hour: int = 60 * 60 * 1000 * 1000
+    half_hour: int = 30 * 60 * 1000 * 1000
+    quarter_hour: int = 15 * 60 * 1000 * 1000
+    minute: int = 60 * 1000 * 1000
+    second: int = 1000 * 1000
+    millisecond: int = 1000
+
+
+@dataclass
+class TimeNanosecondsIn:
+    """How many Nanoseconds in a ..."""
+
+    leap_year: int = 366 * 24 * 60 * 60 * 1000 * 1000 * 1000
+    year: int = 365 * 24 * 60 * 60 * 1000 * 1000 * 1000
+    month_31: int = 31 * 24 * 60 * 60 * 1000 * 1000 * 1000
+    month_30: int = 30 * 24 * 60 * 60 * 1000 * 1000 * 1000
+    month_29: int = 29 * 24 * 60 * 60 * 1000 * 1000 * 1000
+    month_28: int = 28 * 24 * 60 * 60 * 1000 * 1000 * 1000
+    week: int = 7 * 24 * 60 * 60 * 1000 * 1000 * 1000
+    day: int = 24 * 60 * 60 * 1000 * 1000 * 1000
+    half_day: int = 12 * 60 * 60 * 1000 * 1000 * 1000
+    hour: int = 60 * 60 * 1000 * 1000 * 1000
+    half_hour: int = 30 * 60 * 1000 * 1000 * 1000
+    quarter_hour: int = 15 * 60 * 1000 * 1000 * 1000
+    minute: int = 60 * 1000 * 1000 * 1000
+    second: int = 1000 * 1000 * 1000
+    millisecond: int = 1000 * 1000
+    microsecond: int = 1000
+
 
 TIME_RESOLUTIONS: dict[Literal["15m", "1h", "1d", "1mo"], clc.TimeResolution] = {
     "15m": clc.TimeResolution(
@@ -417,31 +520,34 @@ FIG_KEYS: clc.FigIDs = clc.FigIDs(
 )
 
 ARBEIT_LEISTUNG: clc.ArbeitLeistung = clc.ArbeitLeistung(
-    arbeit=clc.SuffixUnit(SUFFIXES.col_arbeit, ["GWh", "MWh", "kWh", "Wh"]),
-    leistung=clc.SuffixUnit(SUFFIXES.col_leistung, ["GW", "MW", "kW", "W"]),
-    all_suffixes=[SUFFIXES.col_arbeit, SUFFIXES.col_leistung],
+    arbeit=clc.SuffixUnit(Suffixes.col_arbeit, ["GWh", "MWh", "kWh", "Wh"]),
+    leistung=clc.SuffixUnit(Suffixes.col_leistung, ["GW", "MW", "kW", "W"]),
+    all_suffixes=[Suffixes.col_arbeit, Suffixes.col_leistung],
 )
 
-# Linien, die bei gewissen Operationen übersprungen werden
-EXCLUDE: clc.Exclude = clc.Exclude(
-    base=[
-        SUFFIXES.h_line,
-        SUFFIXES.col_smooth,
-        SPECIAL_COLS.original_index,
-    ],
-    index=[
-        SUFFIXES.h_line,
-        SUFFIXES.col_smooth,
-        SPECIAL_COLS.original_index,
-        EXCEL_MARKERS.index,
-    ],
-    suff_arbeit=[
-        SUFFIXES.h_line,
-        SUFFIXES.col_smooth,
-        SPECIAL_COLS.original_index,
+
+@dataclass
+class Exclude:
+    """Linien, die bei gewissen Operationen übersprungen werden"""
+
+    base: tuple[str, str, str] = (
+        Suffixes.h_line,
+        Suffixes.col_smooth,
+        SpecialCols.original_index,
+    )
+    index: tuple[str, str, str, str] = (
+        Suffixes.h_line,
+        Suffixes.col_smooth,
+        SpecialCols.original_index,
+        ExcelMarkers.index,
+    )
+    suff_arbeit: tuple[str, str, str, str] = (
+        Suffixes.h_line,
+        Suffixes.col_smooth,
+        SpecialCols.original_index,
         ARBEIT_LEISTUNG.arbeit.suffix,
-    ],
-)
+    )
+
 
 ST_PAGES: clc.StPages = clc.StPages(
     login=clc.StPageProps("login", "UTEC Online Tools"),

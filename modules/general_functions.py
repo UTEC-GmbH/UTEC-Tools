@@ -94,7 +94,7 @@ def func_timer(func: TCallable) -> TCallable:
 def reset_button() -> None:
     """Reset-Knöpfle"""
     st.markdown("###")
-    st.button(**cont.BUTTONS.reset.func_args())
+    st.button(**cont.Buttons.reset.func_args())
     st.markdown("###")
 
 
@@ -326,7 +326,7 @@ def check_if_not_exclude(
     Returns:
         - bool: True if line is not in exclude list
     """
-    return all(excl not in line for excl in getattr(cont.EXCLUDE, exclude))
+    return all(excl not in line for excl in getattr(cont.Exclude, exclude))
 
 
 def sort_from_selection_to_front_then_to_back(

@@ -618,8 +618,8 @@ class MetaData:
 
         new_line = MetaLine(
             new_line_name,
-            f"{new_line_name}{cont.SUFFIXES.col_original_index}"
-            if cont.SUFFIXES.col_original_index not in new_line_name
+            f"{new_line_name}{cont.Suffixes.col_original_index}"
+            if cont.Suffixes.col_original_index not in new_line_name
             else new_line_name,
             new_line_name,
             new_line_name,

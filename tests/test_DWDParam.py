@@ -175,7 +175,7 @@ class TestDWDParamHumidity:
 
         par.fill_all_resolutions()
 
-        assert len(par.resolutions.res_with_data()) == 4
+        assert len(par.resolutions.res_with_data()) == 3
         assert [res.name_en for res in par.resolutions.res_with_data()] == [
             "minute_10",
             "hourly",

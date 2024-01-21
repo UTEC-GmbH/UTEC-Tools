@@ -392,7 +392,7 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
     gl_deg: int = sf.s_get("gl_deg") or 3
 
     for trace in traces:
-        smooth_name: str = f"{trace['name']}{cont.SUFFIXES.col_smooth}"
+        smooth_name: str = f"{trace['name']}{cont.Suffixes.col_smooth}"
         smooth_visible: bool = bool(sf.s_get(f"cb_vis_{smooth_name}"))
 
         if smooth_visible:

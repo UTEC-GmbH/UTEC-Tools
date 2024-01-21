@@ -188,7 +188,7 @@ def parameter_selection() -> None:
             "but_param",
             "but_dwd_query_limits",
             "but_addr_dates",
-            cont.BUTTONS.download_weather.key,
+            cont.Buttons.download_weather.key,
         ]
     ) or (
         len(selected) == len(cont.DWD_DEFAULT_PARAMS)
@@ -357,7 +357,9 @@ def download_polysun(df_ex: pl.DataFrame, file_suffix: str) -> None:
     """Wenn 'Datei erzeugen'-Knopf gedrückt wurde"""
 
     df_ex = (
-        pl.DataFrame({"Time [s]": range(0, cont.TIME_SEC.year, cont.TIME_SEC.hour)})
+        pl.DataFrame(
+            {"Time [s]": range(0, cont.TimeSecondsIn.year, cont.TimeSecondsIn.hour)}
+        )
         .join(
             df_ex.with_columns(
                 (
@@ -383,7 +385,7 @@ def download_polysun(df_ex: pl.DataFrame, file_suffix: str) -> None:
     )
 
     st.download_button(
-        **cont.BUTTONS.download_weather.func_args(),
+        **cont.Buttons.download_weather.func_args(),
         data=f"# {df_ex.write_csv()}",
         file_name=f"Polysun Wetterdaten{file_suffix}.csv",
         mime="text/csv",
@@ -409,7 +411,7 @@ def download_excel(
     )
 
     st.download_button(
-        **cont.BUTTONS.download_weather.func_args(),
+        **cont.Buttons.download_weather.func_args(),
         data=ex.excel_download({cont.ST_PAGES.meteo.excel_ws_name: df_ex}, meta),
         file_name=f"Wetterdaten{file_suffix}.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

@@ -65,8 +65,8 @@ def excel_download(df_dic: dict[str, pl.DataFrame], meta: cld.MetaData) -> bytes
                 column_formats=col_format,  # type: ignore
                 column_widths={
                     "Datum": 120,
-                    cont.SPECIAL_COLS.index: 120,
-                    cont.SPECIAL_COLS.original_index: 120,
+                    cont.SpecialCols.index: 120,
+                    cont.SpecialCols.original_index: 120,
                 },
                 dtype_formats={
                     pl.Datetime: "DD.MM.YYYY hh:mm",

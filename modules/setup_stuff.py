@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Any
 
 import dotenv
-
 import plotly.io as pio
 import sentry_sdk
 import streamlit as st

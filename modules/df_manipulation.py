@@ -21,8 +21,8 @@ from modules import streamlit_functions as sf
 if TYPE_CHECKING:
     import pandas as pd
 
-COL_IND: str = cont.SPECIAL_COLS.index
-COL_ORG: str = cont.SPECIAL_COLS.original_index
+COL_IND: str = cont.SpecialCols.index
+COL_ORG: str = cont.SpecialCols.original_index
 
 
 def get_df_to_test_am_pm(file_path: str | None = None) -> pl.DataFrame:
@@ -120,7 +120,7 @@ def upsample_hourly_to_15min(
 ) -> pl.DataFrame:
     """Stundenwerte in 15-Minuten-Werte umwandeln"""
 
-    col_index: str = index_column or cont.SPECIAL_COLS.index
+    col_index: str = index_column or cont.SpecialCols.index
     if col_index not in df.columns:
         raise cle.NotFoundError(entry=col_index, where="data frame columns")
     if not df[col_index].is_temporal():
@@ -159,7 +159,7 @@ def interpolate_missing_data_akima(
 ) -> pl.DataFrame:
     """Interpolate missing data"""
 
-    col_index: str = index_column or cont.SPECIAL_COLS.index
+    col_index: str = index_column or cont.SpecialCols.index
     if col_index not in df.columns:
         raise cle.NotFoundError(entry=col_index, where="data frame columns")
     if not df[col_index].is_temporal():
@@ -220,11 +220,11 @@ def add_temperature_data(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             continue
         mdf.df = (
             mdf.df.join(
-                mdf.df.select(cont.SPECIAL_COLS.index)
-                .join(df_parameter, on=cont.SPECIAL_COLS.index, how="outer")
-                .sort(cont.SPECIAL_COLS.index)
+                mdf.df.select(cont.SpecialCols.index)
+                .join(df_parameter, on=cont.SpecialCols.index, how="outer")
+                .sort(cont.SpecialCols.index)
                 .interpolate(),
-                on=cont.SPECIAL_COLS.index,
+                on=cont.SpecialCols.index,
             )
             .fill_null(strategy="forward")
             .fill_null(strategy="backward")
@@ -232,7 +232,7 @@ def add_temperature_data(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         par_nam: str = param.name_de
         mdf.meta.lines[par_nam] = cld.MetaLine(
             name=par_nam,
-            name_orgidx=f"{par_nam}{cont.SUFFIXES.col_original_index}",
+            name_orgidx=f"{par_nam} - {cont.Suffixes.col_original_index}",
             orig_tit=par_nam,
             tit=par_nam,
             unit=param.unit,
@@ -459,7 +459,7 @@ def df_h_mdf(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         pl.DataFrame(
             [
                 mdf.df.get_column(col).alias(
-                    col.replace(cont.SUFFIXES.col_leistung, "").strip()
+                    col.replace(cont.Suffixes.col_leistung, "").strip()
                 )
                 for col in [*cols, COL_ORG]
             ]
@@ -468,7 +468,7 @@ def df_h_mdf(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         .groupby_dynamic(COL_IND, every="1h")
         .agg(
             [
-                pl.col(col.replace(cont.SUFFIXES.col_leistung, "").strip()).mean()
+                pl.col(col.replace(cont.Suffixes.col_leistung, "").strip()).mean()
                 for col in [co for co in cols if co != COL_IND]
             ]
         )
@@ -521,11 +521,11 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             if gf.check_if_not_exclude(col)
         ]
         for df in jdl_separate_df:
-            if df.height < cont.TIME_HOURS.leap_year:
+            if df.height < cont.TimeHoursIn.leap_year:
                 df.extend(
                     pl.DataFrame(
                         {
-                            col: [None] * (cont.TIME_HOURS.leap_year - df.height)
+                            col: [None] * (cont.TimeHoursIn.leap_year - df.height)
                             for col in df.columns
                         }
                     ).cast(dict(df.schema))
@@ -541,9 +541,7 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             for col in cols_without_index
         ]
 
-    mdf.jdl = pl.DataFrame(sum(jdl_separate, [])).with_row_count(
-        cont.SPECIAL_COLS.index
-    )
+    mdf.jdl = pl.DataFrame(sum(jdl_separate, [])).with_row_count(cont.SpecialCols.index)
 
     logger.success("DataFrame für Jahresdauerlinie erstellt.")
     slog.log_df(mdf.jdl)

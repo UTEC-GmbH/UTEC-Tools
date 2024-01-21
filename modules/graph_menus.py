@@ -40,7 +40,7 @@ def sidebar_file_upload() -> Any:
 
         with open(f"example_files/{sb_example}.xlsx", "rb") as exfile:
             st.download_button(
-                **cont.BUTTONS.download_example.func_args(),
+                **cont.Buttons.download_example.func_args(),
                 data=exfile,
                 file_name=f"{sb_example}.xlsx",
             )
@@ -72,10 +72,10 @@ def base_settings(mdf: cld.MetaAndDfs) -> None:
     if not mdf.meta.td_mnts:
         return
 
-    if mdf.meta.td_mnts == cont.TIME_MIN.hour:
+    if mdf.meta.td_mnts == cont.TimeMinutesIn.hour:
         sf.s_set("cb_h", value=True)
 
-    if mdf.meta.td_mnts < cont.TIME_MIN.hour or mdf.meta.multi_years:
+    if mdf.meta.td_mnts < cont.TimeMinutesIn.hour or mdf.meta.multi_years:
         with st.sidebar, st.form("Grundeinstellungen"):
             cb_hourly_multiyear(mdf)
 
@@ -87,7 +87,7 @@ def cb_hourly_multiyear(mdf: cld.MetaAndDfs) -> None:
     if not mdf.meta.td_mnts:
         return
 
-    if mdf.meta.td_mnts < cont.TIME_MIN.hour:
+    if mdf.meta.td_mnts < cont.TimeMinutesIn.hour:
         st.checkbox(
             label="Umrechnung in Stundenwerte",
             help=(
@@ -188,7 +188,7 @@ def select_graphs(mdf: cld.MetaAndDfs) -> None:
         )
 
         input_days: int = sf.s_get("ni_days") or 0
-        idx: pl.Series = mdf.df.get_column(cont.SPECIAL_COLS.original_index)
+        idx: pl.Series = mdf.df.get_column(cont.SpecialCols.original_index)
         if idx.is_temporal():
             maxi: dt.date | dt.datetime | dt.timedelta | None = idx.dt.max()
             mini: dt.date | dt.datetime | dt.timedelta | None = idx.dt.min()
@@ -503,8 +503,8 @@ def display_options_main() -> bool:
                         value=all(
                             part not in line_name
                             for part in [
-                                cont.SUFFIXES.col_smooth,
-                                cont.SUFFIXES.col_arbeit,
+                                cont.Suffixes.col_smooth,
+                                cont.Suffixes.col_arbeit,
                             ]
                         ),
                         key=f"cb_vis_{line_name}",
@@ -632,7 +632,7 @@ def display_smooth_main() -> bool:
 
         for count, line in enumerate(lines):
             cols: list = st.columns([col["width"] for col in columns.values()])
-            line_name: str = f'{line["name"]}{cont.SUFFIXES.col_smooth}'
+            line_name: str = f'{line["name"]}{cont.Suffixes.col_smooth}'
             line_color: str = colorway[count + len(lines)]
             if (
                 len(line["x"]) > 0
@@ -682,7 +682,7 @@ def display_smooth_main() -> bool:
 def downloads(mdf: cld.MetaAndDfs) -> None:
     """Dateidownloads"""
 
-    st.download_button(**cont.BUTTONS.download_html.func_args(), data=ex.html_graph())
+    st.download_button(**cont.Buttons.download_html.func_args(), data=ex.html_graph())
 
     dic_df_ex: dict[str, pl.DataFrame] = {"Daten": mdf.df}
     if mdf.df_h is not None:
@@ -693,6 +693,6 @@ def downloads(mdf: cld.MetaAndDfs) -> None:
         dic_df_ex["Monatswerte"] = mdf.mon
 
     st.download_button(
-        **cont.BUTTONS.download_excel.func_args(),
+        **cont.Buttons.download_excel.func_args(),
         data=ex.excel_download(dic_df_ex, mdf.meta),
     )

@@ -65,7 +65,7 @@ def line_plot(
             cusd: pl.Series = df.get_column(line_meta.name_orgidx)
             logger.debug("original index column found in df")
         else:
-            cusd: pl.Series = df.get_column(cont.SPECIAL_COLS.original_index)
+            cusd: pl.Series = df.get_column(cont.SpecialCols.original_index)
             logger.debug("original index column NOT found in df")
 
         trace_unit: str | None = (
@@ -80,7 +80,7 @@ def line_plot(
 
         fig = fig.add_trace(
             go.Scatter(
-                x=df.get_column(cont.SPECIAL_COLS.index),
+                x=df.get_column(cont.SpecialCols.index),
                 y=line_data * manip,
                 customdata=cusd,
                 name=line_meta.tit,
@@ -191,11 +191,11 @@ def line_plot_y_overlay(
         cusd: pl.Series = (
             dic_df[year].get_column(line_meta.name_orgidx)
             if line_meta.name_orgidx in list(dic_df[year].columns)
-            else dic_df[year].get_column(cont.SPECIAL_COLS.original_index)
+            else dic_df[year].get_column(cont.SpecialCols.original_index)
         )
         fig = fig.add_trace(
             go.Scatter(
-                x=dic_df[year].get_column(cont.SPECIAL_COLS.index),
+                x=dic_df[year].get_column(cont.SpecialCols.index),
                 y=line_data * manip,
                 customdata=cusd,
                 legendgroup=year,

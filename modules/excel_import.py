@@ -356,7 +356,7 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
             .sort(mark_index)
         )
 
-        if df.get_column(mark_index).is_temporal():
+        if df.get_column(mark_index).dtype.is_temporal():
             logger.success(
                 "Date column was converted "
                 "from excel serial numbers to datetime values."
@@ -364,8 +364,8 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
 
     if all(
         [
-            df.get_column(mark_index).is_temporal(),
-            *[col.is_float() for col in df.select(pl.exclude(mark_index))],
+            df.get_column(mark_index).dtype.is_temporal(),
+            *[col.dtype.is_float() for col in df.select(pl.exclude(mark_index))],
         ]
     ):
         logger.success("Data types set → index: datetime, all others: float.")
@@ -438,7 +438,7 @@ def clean_up_daylight_savings(df: pl.DataFrame, mark_index: str) -> CleanUpDLS:
 def temporal_metadata(mdf: cld.MetaAndDfs, mark_index: str) -> cld.MetaAndDfs:
     """Get information about the time index."""
 
-    if not mdf.df.get_column(mark_index).is_temporal():
+    if not mdf.df.get_column(mark_index).dtype.is_temporal():
         logger.error("Kein Zeitindex gefunden!!!")
         return mdf
 
@@ -447,7 +447,9 @@ def temporal_metadata(mdf: cld.MetaAndDfs, mark_index: str) -> cld.MetaAndDfs:
     mdf.meta.multi_years = len(mdf.meta.years) > 1
 
     mdf.meta.td_mnts = int(
-        mdf.df.select(pl.col(mark_index).diff().dt.minutes().drop_nulls().mean()).item()
+        mdf.df.select(
+            pl.col(mark_index).diff().dt.total_minutes().drop_nulls().mean()
+        ).item()
     )
 
     if mdf.meta.td_mnts == cont.TimeMinutesIn.quarter_hour:

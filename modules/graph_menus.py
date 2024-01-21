@@ -189,7 +189,7 @@ def select_graphs(mdf: cld.MetaAndDfs) -> None:
 
         input_days: int = sf.s_get("ni_days") or 0
         idx: pl.Series = mdf.df.get_column(cont.SpecialCols.original_index)
-        if idx.is_temporal():
+        if idx.dtype.is_temporal():
             maxi: dt.date | dt.datetime | dt.timedelta | None = idx.dt.max()
             mini: dt.date | dt.datetime | dt.timedelta | None = idx.dt.min()
             if isinstance(maxi, dt.timedelta | None) or isinstance(

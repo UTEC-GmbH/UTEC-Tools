@@ -3,9 +3,8 @@
 
 
 import datetime as dt
-from typing import TYPE_CHECKING, Any, Literal
+from typing import Any, Literal
 
-import numpy as np
 import polars as pl
 from loguru import logger
 from scipy import interpolate
@@ -17,9 +16,6 @@ from modules import general_functions as gf
 from modules import meteorolog as met
 from modules import setup_logger as slog
 from modules import streamlit_functions as sf
-
-if TYPE_CHECKING:
-    import pandas as pd
 
 COL_IND: str = cont.SpecialCols.index
 COL_ORG: str = cont.SpecialCols.original_index
@@ -63,7 +59,7 @@ def fix_am_pm(df: pl.DataFrame, time_column: str = "Zeitstempel") -> pl.DataFram
     """
 
     col: pl.DataFrame = df.select(
-        pl.when(pl.col(time_column).dt.hour() == 12)
+        pl.when(pl.col(time_column).dt.hour() == cont.TimeHoursIn.half_day)
         .then(pl.col(time_column).dt.offset_by("-12h"))
         .otherwise(pl.col(time_column))
     )
@@ -123,7 +119,7 @@ def upsample_hourly_to_15min(
     col_index: str = index_column or cont.SpecialCols.index
     if col_index not in df.columns:
         raise cle.NotFoundError(entry=col_index, where="data frame columns")
-    if not df[col_index].is_temporal():
+    if not df[col_index].dtype.is_temporal():
         raise TypeError
 
     df_up: pl.DataFrame = (
@@ -162,13 +158,13 @@ def interpolate_missing_data_akima(
     col_index: str = index_column or cont.SpecialCols.index
     if col_index not in df.columns:
         raise cle.NotFoundError(entry=col_index, where="data frame columns")
-    if not df[col_index].is_temporal():
+    if not df[col_index].dtype.is_temporal():
         raise TypeError
 
     cols: list[str] = [
         col
         for col in df.columns
-        if col_index not in col and any(df[col].is_null()) and df[col].is_numeric()
+        if col_index not in col and any(df[col].is_null()) and df[col].dtype.is_numeric()
     ]
 
     no_nulls: pl.DataFrame = df.drop_nulls()
@@ -180,28 +176,6 @@ def interpolate_missing_data_akima(
         )
         for col in cols
     )
-
-
-@gf.func_timer
-def interpolate_missing_data_pd(
-    df: pl.DataFrame, method: str = "akima"
-) -> pl.DataFrame:
-    """Findet stellen an denen sich von einer Zeile zur nächsten
-    die Daten nicht ändern, löscht die Daten und interpoliert die Lücken
-
-    Args:
-        - df (pd.DataFrame): DataFrame to edit
-        - method (str): method of interpolation. Defaults to "akima".
-
-    Returns:
-        - pd.DataFrame: edited DataFrame
-    """
-    df_pd: pd.DataFrame = df.to_pandas().set_index(COL_IND)
-    df_pd[df_pd.diff() == 0] = np.nan
-
-    df_pd = df_pd.interpolate(method=method) or df_pd  # type: ignore
-    df_pl: pl.DataFrame = pl.from_pandas(df_pd)
-    return df_pl
 
 
 @gf.func_timer
@@ -388,11 +362,11 @@ def change_temporal_resolution(
 
     cols: list[str] = df.columns
     value_cols: list[str] = [
-        col for col in cols if not df.get_column(col).is_temporal()
+        col for col in cols if not df.get_column(col).dtype.is_temporal()
     ]
-    time_col: str = next(iter(col for col in cols if df.get_column(col).is_temporal()))
+    time_col: str = next(iter(col for col in cols if df.get_column(col).dtype.is_temporal()))
     time_col_dat: pl.Series = df.get_column(time_col)
-    if not time_col_dat.is_temporal():
+    if not time_col_dat.dtype.is_temporal():
         raise TypeError
 
     max_date: dt.datetime = time_col_dat.max()  # type: ignore

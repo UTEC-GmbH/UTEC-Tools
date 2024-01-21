@@ -7,8 +7,6 @@ loguru
 mypy
 numpy
 openpyxl
-pandas
-pandas-stubs
 plotly
 polars
 pytest

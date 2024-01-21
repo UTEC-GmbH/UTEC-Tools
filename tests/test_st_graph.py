@@ -84,9 +84,9 @@ def general_mdf(at: AppTest) -> None:
 
         # check if the date column is imported correctly
         if name == "jdl":
-            assert df[cont.ExcelMarkers.index].is_numeric()
+            assert df[cont.ExcelMarkers.index].dtype.is_numeric()
         else:
-            assert df[cont.ExcelMarkers.index].is_temporal()
+            assert df[cont.ExcelMarkers.index].dtype.is_temporal()
 
 
 def general_figs(at: AppTest) -> None:

@@ -10,7 +10,7 @@ from modules import constants as cont
 def run_app_and_login(user: str = "", pw: str = "") -> AppTest:
     """Run the app and login if user and password are given"""
     at: AppTest = AppTest.from_file(
-        script_path="00_🔑_login.py", default_timeout=cont.InSec.minute
+        script_path="00_🔑_login.py", default_timeout=cont.TimeSecondsIn.minute
     )
     at.run()
 

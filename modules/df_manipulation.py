@@ -119,7 +119,7 @@ def upsample_hourly_to_15min(
     col_index: str = index_column or cont.SpecialCols.index
     if col_index not in df.columns:
         raise cle.NotFoundError(entry=col_index, where="data frame columns")
-    if not df[col_index].is_temporal():
+    if not df[col_index].dtype.is_temporal():
         raise TypeError
 
     df_up: pl.DataFrame = (
@@ -158,13 +158,13 @@ def interpolate_missing_data_akima(
     col_index: str = index_column or cont.SpecialCols.index
     if col_index not in df.columns:
         raise cle.NotFoundError(entry=col_index, where="data frame columns")
-    if not df[col_index].is_temporal():
+    if not df[col_index].dtype.is_temporal():
         raise TypeError
 
     cols: list[str] = [
         col
         for col in df.columns
-        if col_index not in col and any(df[col].is_null()) and df[col].is_numeric()
+        if col_index not in col and any(df[col].is_null()) and df[col].dtype.is_numeric()
     ]
 
     no_nulls: pl.DataFrame = df.drop_nulls()
@@ -362,11 +362,11 @@ def change_temporal_resolution(
 
     cols: list[str] = df.columns
     value_cols: list[str] = [
-        col for col in cols if not df.get_column(col).is_temporal()
+        col for col in cols if not df.get_column(col).dtype.is_temporal()
     ]
-    time_col: str = next(iter(col for col in cols if df.get_column(col).is_temporal()))
+    time_col: str = next(iter(col for col in cols if df.get_column(col).dtype.is_temporal()))
     time_col_dat: pl.Series = df.get_column(time_col)
-    if not time_col_dat.is_temporal():
+    if not time_col_dat.dtype.is_temporal():
         raise TypeError
 
     max_date: dt.datetime = time_col_dat.max()  # type: ignore

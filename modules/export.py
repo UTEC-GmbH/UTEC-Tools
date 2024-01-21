@@ -52,7 +52,7 @@ def excel_download(df_dic: dict[str, pl.DataFrame], meta: cld.MetaData) -> bytes
                 position=(row_offset, column_offset),
                 hide_gridlines=True,
                 autofit=True,
-                has_header=True,
+                include_header=True,
                 header_format={"align": "right", "bottom": 1},
                 column_formats=col_format,  # type: ignore
                 column_widths={

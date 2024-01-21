@@ -177,6 +177,7 @@ def get_df_from_excel(file: BytesIO | str) -> pl.DataFrame:
     xlsx_options: dict[str, str | bool | list[str]] = {"skip_empty_lines": True}
     csv_options: dict[str, bool] = {"has_header": False, "try_parse_dates": False}
 
+    # the following might raise an exception
     try:
         xl_options: dict[str, str | bool | list[str]] = xlsx_options | {
             "dateformat": "%d.%m.%Y %H:%M"
@@ -187,6 +188,8 @@ def get_df_from_excel(file: BytesIO | str) -> pl.DataFrame:
             xlsx2csv_options=xl_options,
             read_csv_options=csv_options,
         )
+
+    # if the following (specific) exception is raised
     except xlsx2csv.XlsxValueError as xle:
         logger.error(f"Problem with date format: \n{xle}")
         xl_options = xlsx_options | {"ignore_formats": ["date"]}
@@ -196,13 +199,20 @@ def get_df_from_excel(file: BytesIO | str) -> pl.DataFrame:
             xlsx2csv_options=xl_options,
             read_csv_options=csv_options,
         )
-        logger.success(
-            "Import successful\n"
+        logger.warning(
             "Date formats were ignored!\n"
             "Dates might have been imported as strings of excel serial numbers.\n"
             "(Excel stores dates as number of days since 1900 "
             "e.g. '42370' → 01.01.2016 00:00, '42370.041667' → 01.01.2016 00:15)"
         )
+
+    # if the code under "try:" runs without an exception
+    else:
+        logger.info("Date formats identified successfully.")
+
+    # the following always runs (weather an exception was cought or not)
+    finally:
+        logger.success("Excel file converted to DataFrame successfully.")
 
     return df
 

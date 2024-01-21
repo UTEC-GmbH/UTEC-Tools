@@ -108,7 +108,7 @@ def log_df(df: pl.DataFrame) -> None:
     """Put the head of the DataFrame in the log"""
     logger.log(
         LVLS.data_frame.name,
-        f"DataFrame: \n{df} \n\n" f"DataFrame properties: \n{df.describe()}",
+        f"DataFrame: \n{df} \n\nDataFrame properties: \n{df.describe()}",
     )
 
 
@@ -122,7 +122,7 @@ def logger_setup() -> None:
     for lvl in custom_levels:
         try:
             logger.level(lvl)
-        except ValueError:
+        except ValueError:  # noqa: PERF203
             logger.level(lvl, no=1)
 
     def format_of_lvl(record: dict) -> str:

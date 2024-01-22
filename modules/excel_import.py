@@ -269,7 +269,7 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cld.MetaDa
     )
 
     # leerzeichen vor Einheit
-    units = {line: f" {unit.strip()}" for line, unit in units.items()}
+    units = {line: f" {unit.strip()}" if unit else unit for line, unit in units.items()}
 
     meta: cld.MetaData = cld.MetaData(
         lines={
@@ -283,7 +283,7 @@ def meta_units(df: pl.DataFrame, mark_index: str, mark_units: str) -> cld.MetaDa
                 orig_tit=line,
                 tit=line,
                 unit=unit,
-                unit_h=unit.strip("h"),
+                unit_h=unit.strip("h") if unit else unit,
             )
             for line, unit in units.items()
         },

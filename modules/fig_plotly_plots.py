@@ -175,50 +175,52 @@ def line_plot_y_overlay(
     for line in lines:
         year: int = next(year for year in mdf.meta.years if str(year) in line)
         line_data: pl.Series = dic_df[year].get_column(line)
-        line_meta: cld.MetaLine = mdf.meta.lines[line]
-        manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
-        trace_unit: str | None = (
-            line_meta.unit if data_frame == "df_multi" else line_meta.unit_h
-        )
-        if (
-            data_frame == "mon_multi"
-            and trace_unit is not None
-            and cont.GROUP_MEAN.check(trace_unit, "sum_month")
-        ):
-            trace_unit += "h"
-        hovtemp: str = f"{trace_unit} {cusd_format}"
 
-        cusd: pl.Series = (
-            dic_df[year].get_column(line_meta.name_orgidx)
-            if line_meta.name_orgidx in list(dic_df[year].columns)
-            else dic_df[year].get_column(cont.SpecialCols.original_index)
-        )
-        fig = fig.add_trace(
-            go.Scatter(
-                x=dic_df[year].get_column(cont.SpecialCols.index),
-                y=line_data * manip,
-                customdata=cusd,
-                legendgroup=year,
-                legendgrouptitle_text=year,
-                name=line_meta.tit,
-                mode="lines",
-                hovertemplate=(
-                    np.select(
-                        [abs(line_data) < 10, abs(line_data) < 100],
-                        ["%{y:,.2f}" + hovtemp, "%{y:,.1f}" + hovtemp],
-                        "%{y:,.0f}" + hovtemp,
-                    )
-                ),
-                visible=True,
-                # yaxis=line_meta.y_axis_h if df_h else line_meta.y_axis,
-                meta={
-                    "unit": trace_unit,
-                    "negativ": manip < 0,
-                    "df_col": line,
-                    "year": year,
-                },
+        if line_data.dtype.is_numeric() and line_data.drop_nulls().len() > 1:
+            line_meta: cld.MetaLine = mdf.meta.lines[line]
+            manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
+            trace_unit: str | None = (
+                line_meta.unit if data_frame == "df_multi" else line_meta.unit_h
             )
-        )
+            if (
+                data_frame == "mon_multi"
+                and trace_unit is not None
+                and cont.GROUP_MEAN.check(trace_unit, "sum_month")
+            ):
+                trace_unit += "h"
+            hovtemp: str = f"{trace_unit} {cusd_format}"
+
+            cusd: pl.Series = (
+                dic_df[year].get_column(line_meta.name_orgidx)
+                if line_meta.name_orgidx in list(dic_df[year].columns)
+                else dic_df[year].get_column(cont.SpecialCols.original_index)
+            )
+            fig = fig.add_trace(
+                go.Scatter(
+                    x=dic_df[year].get_column(cont.SpecialCols.index),
+                    y=line_data * manip,
+                    customdata=cusd,
+                    legendgroup=year,
+                    legendgrouptitle_text=year,
+                    name=line_meta.tit,
+                    mode="lines",
+                    hovertemplate=(
+                        np.select(
+                            [abs(line_data) < 10, abs(line_data) < 100],
+                            ["%{y:,.2f}" + hovtemp, "%{y:,.1f}" + hovtemp],
+                            "%{y:,.0f}" + hovtemp,
+                        )
+                    ),
+                    visible=True,
+                    # yaxis=line_meta.y_axis_h if df_h else line_meta.y_axis,
+                    meta={
+                        "unit": trace_unit,
+                        "negativ": manip < 0,
+                        "df_col": line,
+                        "year": year,
+                    },
+                )
+            )
 
     return fig
 

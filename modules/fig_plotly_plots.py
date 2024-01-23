@@ -55,42 +55,45 @@ def line_plot(
 
     for line in [lin for lin in lines if gf.check_if_not_exclude(lin)]:
         line_data: pl.Series = df.get_column(line)
-        line_meta: cld.MetaLine = mdf.meta.lines[line]
-        manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
 
-        logger.info(f"Adding line '{line_meta.tit}' to Figure '{title.split('<')[0]}'.")
-        logger.debug(f"original index column in line_meta: '{line_meta.name_orgidx}'")
+        if line_data.dtype.is_numeric() and line_data.drop_nulls().len() > 1:
+            line_meta: cld.MetaLine = mdf.meta.lines[line]
+            manip: int = -1 if any(neg in line for neg in cont.NEGATIVE_VALUES) else 1
 
-        if line_meta.name_orgidx in df.columns:
-            cusd: pl.Series = df.get_column(line_meta.name_orgidx)
-            logger.debug("original index column found in df")
-        else:
-            cusd: pl.Series = df.get_column(cont.SpecialCols.original_index)
-            logger.debug("original index column NOT found in df")
-
-        trace_unit: str | None = (
-            line_meta.unit if data_frame == "df" else line_meta.unit_h
-        )
-        if (
-            data_frame == "mon"
-            and trace_unit is not None
-            and cont.GROUP_MEAN.check(trace_unit, "sum_month")
-        ):
-            trace_unit += "h"
-
-        fig = fig.add_trace(
-            go.Scatter(
-                x=df.get_column(cont.SpecialCols.index),
-                y=line_data * manip,
-                customdata=cusd,
-                name=line_meta.tit,
-                hovertemplate=hover_template(title, trace_unit, line_data),
-                mode="lines",
-                visible=True,
-                # yaxis=line_meta.y_axis_h if df_h else line_meta.y_axis,
-                meta={"unit": trace_unit, "negativ": manip < 0, "df_col": line},
+            logger.info(
+                f"Adding line '{line_meta.tit}' to Figure '{title.split('<')[0]}'."
             )
-        )
+
+            if line_meta.name_orgidx in df.columns:
+                cusd: pl.Series = df.get_column(line_meta.name_orgidx)
+                logger.debug("original index column found in df")
+            else:
+                cusd: pl.Series = df.get_column(cont.SpecialCols.original_index)
+                logger.debug("original index column NOT found in df")
+
+            trace_unit: str | None = (
+                line_meta.unit if data_frame == "df" else line_meta.unit_h
+            )
+            if (
+                data_frame == "mon"
+                and trace_unit is not None
+                and cont.GROUP_MEAN.check(trace_unit, "sum_month")
+            ):
+                trace_unit += "h"
+
+            fig = fig.add_trace(
+                go.Scatter(
+                    x=df.get_column(cont.SpecialCols.index),
+                    y=line_data * manip,
+                    customdata=cusd,
+                    name=line_meta.tit,
+                    hovertemplate=hover_template(title, trace_unit, line_data),
+                    mode="lines",
+                    visible=True,
+                    # yaxis=line_meta.y_axis_h if df_h else line_meta.y_axis,
+                    meta={"unit": trace_unit, "negativ": manip < 0, "df_col": line},
+                )
+            )
 
     logger.info(
         f"Figure '{title.split('<')[0]}' has the following lines:\n"

@@ -115,9 +115,10 @@ def import_prefab_excel(file: BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
     mdf = import_prefab_excel(file)
     """
 
+    logger.info(f"File to import: '{file if isinstance(file, str) else file.name}'")
+
     mark_index: str = cont.ExcelMarkers.index
     mark_units: str = cont.ExcelMarkers.units
-
     df: pl.DataFrame = get_df_from_excel(file)
 
     # remove empty rows and columns and rename columns

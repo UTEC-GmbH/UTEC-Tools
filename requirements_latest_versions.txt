@@ -13,7 +13,6 @@ pytest
 pytest-sugar
 python-dotenv
 scipy
-sentry-sdk
 streamlit
 streamlit-authenticator
 streamlit-lottie

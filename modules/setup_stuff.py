@@ -1,13 +1,11 @@
 """general and page header setup"""
 
 import locale
-import os
 import sys
 from typing import Any
 
 import dotenv
 import plotly.io as pio
-import sentry_sdk
 import streamlit as st
 from loguru import logger
 
@@ -36,7 +34,6 @@ def general_setup() -> None:
     locale.setlocale(locale.LC_ALL, "")
     dotenv.load_dotenv(".streamlit/secrets.toml")
     pio.templates.default = "plotly"
-    sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), traces_sample_rate=0.1)
 
     sf.s_add_once("UTEC_logo", gf.render_svg())
 

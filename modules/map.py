@@ -129,6 +129,7 @@ def build_hover_template() -> str:
 
     Returns:
         - str: The hover template string.
+
     """
 
     ref_size: str = sf.s_get("ti_ref_size") or ""
@@ -243,6 +244,7 @@ def marker_layout(locations: list[cld.Location]) -> dict:
     Returns:
         - dict: A dictionary containing the properties for the markers,
             including size, color, opacity, and other settings.
+
     """
     # sourcery skip: move-assign
     min_size: float = 4

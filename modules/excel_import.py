@@ -56,6 +56,7 @@ def general_excel_import(
 
     csv_option:
         see "read_csv" function of polars
+
     """
 
     xlsx_options: dict[str, Any] = {
@@ -74,7 +75,8 @@ def general_excel_import(
     df: pl.DataFrame = pl.read_excel(
         source=file,
         sheet_name=worksheet,
-        xlsx2csv_options=xlsx_options,
+        engine="xlsx2csv",
+        engine_options=xlsx_options,
         read_csv_options=csv_options,
     )
 
@@ -113,6 +115,7 @@ def import_prefab_excel(file: BytesIO | str = TEST_FILE) -> cld.MetaAndDfs:
     mdf = import_prefab_excel()
     or
     mdf = import_prefab_excel(file)
+
     """
 
     logger.info(f"File to import: '{file if isinstance(file, str) else file.name}'")
@@ -186,7 +189,8 @@ def get_df_from_excel(file: BytesIO | str) -> pl.DataFrame:
         df: pl.DataFrame = pl.read_excel(
             source=file,
             sheet_name=sheet,
-            xlsx2csv_options=xl_options,
+            engine="xlsx2csv",
+            engine_options=xl_options,
             read_csv_options=csv_options,
         )
 
@@ -197,7 +201,8 @@ def get_df_from_excel(file: BytesIO | str) -> pl.DataFrame:
         df: pl.DataFrame = pl.read_excel(
             source=file,
             sheet_name=sheet,
-            xlsx2csv_options=xl_options,
+            engine="xlsx2csv",
+            engine_options=xl_options,
             read_csv_options=csv_options,
         )
         logger.warning(
@@ -230,6 +235,7 @@ def remove_empty(df: pl.DataFrame, **kwargs) -> pl.DataFrame:
 
     Returns:
         - pl.DataFrame: DataFrame without empty rows / columns
+
     """
 
     row: bool = kwargs.get("row") or True
@@ -403,6 +409,7 @@ def clean_up_daylight_savings(df: pl.DataFrame, mark_index: str) -> CleanUpDLS:
         - CleanUpDLS:
             - df_clean (DataFrame): edited DataFrame
             - df_deleted (DateFrame): deleted data
+
     """
 
     # Sommerzeitumstellung: letzter Sonntag im Maerz - von 2h auf 3h
@@ -480,6 +487,7 @@ def meta_from_obis(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 
     Returns:
         - mdf (MetaAndDfs): Metadaten und DataFrames
+
     """
     names_to_change: dict[str, str] = {}
     for line in mdf.meta.lines.values():
@@ -518,6 +526,7 @@ def convert_15min_kwh_to_kw(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 
     Args:
         - mdf (MetaAndDfs): Metadaten und DataFrames
+
     """
 
     if mdf.meta.td_interval not in ["15min"]:
@@ -564,6 +573,7 @@ def rename_column_arbeit_leistung(
             Sind die Daten "Arbeit" oder "Leistung"
         - mdf (MetaAndDfs): Metadaten und DataFrames
         - col (str): Name der (Original-) Spalte
+
     """
     new_name: str = f"{col}{cont.ARBEIT_LEISTUNG.get_suffix(original_data_type)}"
     mdf.df = mdf.df.rename({col: new_name})
@@ -588,6 +598,7 @@ def insert_column_arbeit_leistung(
             Sind die Daten "Arbeit" oder "Leistung"
         - mdf (MetaAndDfs): Metadaten und DataFrames
         - col (str): Name der (Original-) Spalte
+
     """
 
     new_type: str = "Arbeit" if original_data == "Leistung" else "Leistung"

@@ -1,6 +1,5 @@
 """Einstellungen und Anmerkungen für plots"""
 
-
 import datetime as dt
 from typing import Any, Literal, TypeVar
 
@@ -29,6 +28,7 @@ def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> dt.datetime | float:
     Returns:
         - dt.datetime | float: je nach Index entweder die Zeit
             oder die Zahl in der Mitte der x-Achse
+
     """
 
     data_x: list = [val["x"] for val in fig_data.values()]
@@ -72,6 +72,7 @@ def add_arrow(
 
     Returns:
         - go.Figure: Grafik mit Pfeilen
+
     """
 
     # find the y-value for the given x-value, if no y-value is given
@@ -132,6 +133,7 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
 
     Args:
         - fig (go.Figure): Grafik, die Pfeile erhalten soll
+
     """
 
     fig_data: dict[str, dict[str, Any]] = kwargs.get("data") or fgf.fig_data_as_dic(fig)
@@ -190,6 +192,7 @@ def hovertext_from_x_val(
 
     Returns:
         str: Hovertext
+
     """
     jdl: bool = cont.FIG_TITLES.jdl in title
     if jdl and line_data:
@@ -367,6 +370,7 @@ def calculate_smooth_values(trace: dict[str, Any]) -> np.ndarray:
 
     Returns:
         - np.ndarray: geglättete Y-Werte
+
     """
 
     logger.info(f"Geglättete y-Werte für '{trace['name']}' werden neu berechnet.")

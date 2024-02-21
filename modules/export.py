@@ -27,6 +27,7 @@ def excel_download(df_dic: dict[str, pl.DataFrame], meta: cld.MetaData) -> bytes
 
     Returns:
         - bytes: The Excel file as a bytes object.
+
     """
 
     column_offset: int = 2

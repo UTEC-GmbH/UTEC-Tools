@@ -64,6 +64,7 @@ class Location:
 
         get_data(location: tuple[float, float] | str) -> None:
             Fetches the location data using the geopy library. (used internally)
+
     """
 
     address: str | None = None
@@ -89,6 +90,7 @@ class Location:
         Example:
             loc = Location("Bremen").fill_using_geopy()
             loc = Location(latitude: 53.075819, longitude: 8.807164).fill_using_geopy()
+
         """
 
         if all(
@@ -124,6 +126,7 @@ class Location:
         Example:
             loc = Location().from_address("Bremen")
             loc = Location("Bremen").from_address()
+
         """
         if isinstance(address, str):
             self.address = address
@@ -143,6 +146,7 @@ class Location:
         Example:
             loc = Location().from_coordinates(53.075819, 8.807164)
             loc = Location(latitude: 53.075819, longitude: 8.807164).from_coordinates()
+
         """
         if isinstance(latitude, float) and isinstance(longitude, float):
             self.latitude = latitude
@@ -411,7 +415,7 @@ class DWDParam:
             if no_data:
                 break
 
-            values = (
+            values: pl.DataFrame = (
                 request.filter_by_station_id(station_id).values.all().df  # noqa: PD011
             )
 
@@ -442,7 +446,7 @@ class DWDParam:
                     )
                 )
                 break
-
+        logger.debug(data_frame)
         return {
             "all_stations": all_stations,
             "closest_station": closest_station,
@@ -563,9 +567,11 @@ class MetaLine:
     def as_dic(self) -> dict:
         """Dictionary representation"""
         return {
-            attr: getattr(self, attr).as_dic()
-            if isinstance(getattr(self, attr), clc.ObisElectrical)
-            else getattr(self, attr)
+            attr: (
+                getattr(self, attr).as_dic()
+                if isinstance(getattr(self, attr), clc.ObisElectrical)
+                else getattr(self, attr)
+            )
             for attr in self.__dataclass_fields__
         }
 
@@ -599,9 +605,11 @@ class MetaData:
     def as_dic(self) -> dict:
         """Dictionary representation"""
         return {
-            attr: {name: line.as_dic() for name, line in self.lines.items()}
-            if attr == "lines"
-            else getattr(self, attr)
+            attr: (
+                {name: line.as_dic() for name, line in self.lines.items()}
+                if attr == "lines"
+                else getattr(self, attr)
+            )
             for attr in self.__dataclass_fields__
         }
 
@@ -618,9 +626,11 @@ class MetaData:
 
         new_line = MetaLine(
             new_line_name,
-            f"{new_line_name}{cont.Suffixes.col_original_index}"
-            if cont.Suffixes.col_original_index not in new_line_name
-            else new_line_name,
+            (
+                f"{new_line_name}{cont.Suffixes.col_original_index}"
+                if cont.Suffixes.col_original_index not in new_line_name
+                else new_line_name
+            ),
             new_line_name,
             new_line_name,
         )

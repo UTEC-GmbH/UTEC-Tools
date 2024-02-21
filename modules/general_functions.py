@@ -37,6 +37,7 @@ def lottie_spinner(func: TCallable) -> TCallable:
 
     Returns:
         - Callable: Function to spin around
+
     """
 
     def wrapper(*args, **kwargs) -> Any:
@@ -57,6 +58,7 @@ def func_timer(func: TCallable) -> TCallable:
 
     Returns:
         - Callable: Function to be measured
+
     """
 
     def wrapper(*args, **kwargs) -> Any:
@@ -115,6 +117,7 @@ def string_new_line_per_item(
 
     Returns:
         - str: String with elements separated by "backslash n"
+
     """
 
     if isinstance(list_or_dic, list):
@@ -149,6 +152,7 @@ def load_lottie_file(path: str) -> dict:
 
     Returns:
         - dict: animation
+
     """
     with open(path) as file:
         return json.load(file)
@@ -197,6 +201,7 @@ def sort_list_by_occurance(list_of_stuff: list[Any]) -> list[Any]:
 
     Returns:
         - list: Set in list form, sorted by number of occurances
+
     """
 
     return [elem for elem, count in Counter(list_of_stuff).most_common()]
@@ -211,6 +216,7 @@ def render_svg(svg_path: str = "logo/UTEC_logo_text.svg") -> str:
 
     Returns:
         - str: Bild in string-format
+
     """
 
     with open(svg_path) as lines:
@@ -231,6 +237,7 @@ def text_with_hover(text: str, hovtxt: str) -> str:
 
     Returns:
         - str: Text und Hovertext in html-Format
+
     """
 
     return f"""
@@ -261,6 +268,7 @@ def number_as_string(value: float) -> str:
 
     Returns:
         - str: Zahl als Text mit Nachkommastellen je nach Anzahl Ziffern
+
     """
     locale.setlocale(locale.LC_ALL, "")
     four_digits = 1000
@@ -298,6 +306,7 @@ def end_of_month(dt_obj: dt.datetime | np.datetime64) -> dt.datetime:
 
     Returns:
         - dt.datetime: datetime value where the day is the last day of that month
+
     """
 
     if isinstance(dt_obj, np.datetime64):
@@ -325,6 +334,7 @@ def check_if_not_exclude(
 
     Returns:
         - bool: True if line is not in exclude list
+
     """
     return all(excl not in line for excl in getattr(cont.Exclude, exclude))
 
@@ -373,6 +383,7 @@ def sort_from_selection_to_front_then_to_back(
             'monthly',
             'annual'
         ]
+
     """
 
     if selection not in options:

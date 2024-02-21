@@ -428,6 +428,7 @@ def display_options_main_col_settings() -> dict[str, dict]:
                 - "type" -> line type (e.g. solid, dashed, etc.)
                 - "fill" -> fill the line to y=0 and transparency of the fill
                 - "anno" -> show an arrow pointing to the maximim value of the line
+
     """
     return {
         # "name": {

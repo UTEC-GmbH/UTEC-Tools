@@ -62,7 +62,7 @@ def login_section() -> None:
         cookie_expiry_days=30,
     )
 
-    authenticator.login("Login", "main")
+    authenticator.login()
 
     if sf.s_get("authentication_status"):
         access_granted()

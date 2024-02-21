@@ -1,4 +1,5 @@
 """Meteorologische Daten"""
+
 # ruff: noqa: E722, PD011, PERF203, BLE001
 # pylint: disable=W0702,W0718
 # sourcery skip: do-not-use-bare-except
@@ -200,6 +201,7 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
         if par.closest_available_res is not None
         and not par.closest_available_res.no_data
     }
+
     longest_param: str = next(
         par.name_de
         for par in param_list
@@ -208,6 +210,7 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
     )
 
     df: pl.DataFrame = dic[longest_param]
+
     other_dfs: list[pl.DataFrame] = [
         value for key, value in dic.items() if key != longest_param
     ]
@@ -238,6 +241,7 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
             ]
         )
 
+    logger.debug(f"df_from_param_list: \n{df}")
     return df
 
 
@@ -250,6 +254,7 @@ def match_resolution(df_resolution: int) -> str:
 
     Returns:
         - str: resolution as string for the 'resolution' arg in DwdObservationRequest
+
     """
     res_options: dict[int, str] = {
         5: next(iter(cont.DWD_RESOLUTION_OPTIONS.values())),

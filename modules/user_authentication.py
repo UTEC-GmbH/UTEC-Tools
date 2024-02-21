@@ -123,6 +123,7 @@ def connect_database(database: str = "UTEC_users") -> Any:
 
     Returns:
         - _Base: Database connection
+
     """
     load_dotenv(".streamlit/secrets.toml")
     deta_key: str | None = os.getenv("DETA_KEY")
@@ -149,6 +150,7 @@ def get_all_user_data() -> dict[str, dict[str, str]]:
                 - "access_until" -> Datum des Endes der Zugangsberechtigung
             }
         }
+
     """
 
     deta_db: Any = connect_database()
@@ -178,6 +180,7 @@ def format_user_credentials() -> dict[str, dict[str, Any]]:
                     - "name": Klartext Name
                     - "email": E-Mail
                     - "password": verschlüsseltes Passwort
+
     """
     return {
         "usernames": {

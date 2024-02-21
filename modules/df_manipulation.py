@@ -3,6 +3,8 @@
 
 
 import datetime as dt
+import functools
+import operator
 from typing import Any, Literal
 
 import polars as pl
@@ -56,6 +58,7 @@ def fix_am_pm(df: pl.DataFrame, time_column: str = "Zeitstempel") -> pl.DataFram
 
     Returns:
         - DataFrame: DataFrame mit korrigierter Zeitspalte
+
     """
 
     col: pl.DataFrame = df.select(
@@ -164,7 +167,9 @@ def interpolate_missing_data_akima(
     cols: list[str] = [
         col
         for col in df.columns
-        if col_index not in col and any(df[col].is_null()) and df[col].dtype.is_numeric()
+        if col_index not in col
+        and any(df[col].is_null())
+        and df[col].dtype.is_numeric()
     ]
 
     no_nulls: pl.DataFrame = df.drop_nulls()
@@ -245,6 +250,7 @@ def split_multi_years(
     Raises:
         - ValueError: If frame_to_split parameter is not one of the specified options.
         - cle.NotFoundError: If the list of years is not present in the meta data.
+
     """
 
     if frame_to_split not in ["df", "df_h", "mon"]:
@@ -296,6 +302,7 @@ def multi_year_column_rename(df: pl.DataFrame, year: int) -> dict[str, str]:
 
     Returns:
         - A dictionary mapping the original column names to the renamed column names.
+
     """
     col_rename: dict[str, str] = {}
     for col in [col for col in df.columns if gf.check_if_not_exclude(col)]:
@@ -358,13 +365,16 @@ def change_temporal_resolution(
         │ 2020-02-07 10:00:00 ┆ 3.25 │
         │ 2020-02-07 11:00:00 ┆ 1.0  │
         └─────────────────────┴──────┘
+
     """
 
     cols: list[str] = df.columns
     value_cols: list[str] = [
         col for col in cols if not df.get_column(col).dtype.is_temporal()
     ]
-    time_col: str = next(iter(col for col in cols if df.get_column(col).dtype.is_temporal()))
+    time_col: str = next(
+        iter(col for col in cols if df.get_column(col).dtype.is_temporal())
+    )
     time_col_dat: pl.Series = df.get_column(time_col)
     if not time_col_dat.dtype.is_temporal():
         raise TypeError
@@ -372,9 +382,11 @@ def change_temporal_resolution(
     max_date: dt.datetime = time_col_dat.max()  # type: ignore
     min_date: dt.datetime = time_col_dat.min()  # type: ignore
 
-    original_resolution: dt.timedelta = dt.timedelta(
-        microseconds=time_col_dat.diff().mean() or 0
-    )
+    timedelta_mean: Any = time_col_dat.diff().mean()
+    if not isinstance(timedelta_mean, float):
+        raise TypeError
+
+    original_resolution: dt.timedelta = dt.timedelta(microseconds=timedelta_mean)
     if original_resolution == dt.timedelta(0):
         raise ValueError
 
@@ -384,11 +396,14 @@ def change_temporal_resolution(
 
     # Downsample data if the original resolution is higher than the requested
     if original_resolution < requested_timedelta:
+        logger.info("Downsampling data to requested resolution...")
         return df.group_by_dynamic(time_col, every=requested_resolution).agg(
             [
-                pl.col(col).mean()
-                if cont.GROUP_MEAN.check(units[col], "mean_all")
-                else pl.col(col).sum()
+                (
+                    pl.col(col).mean()
+                    if cont.GROUP_MEAN.check(units[col], "mean_all")
+                    else pl.col(col).sum()
+                )
                 for col in value_cols
             ]
         )
@@ -415,6 +430,9 @@ def change_temporal_resolution(
             for col in value_cols
         )
     )
+    logger.debug(f"df: \n{df}")
+    logger.debug(f"df_res: \n{df_res}")
+    logger.debug(f"df_join: \n{df_res.join(df, on=time_col, how='outer')}")
 
     # interpolate the missing data using the "Akima"-method
     # !!! this step may lead to inaccuracies !!!
@@ -515,7 +533,9 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
             for col in cols_without_index
         ]
 
-    mdf.jdl = pl.DataFrame(sum(jdl_separate, [])).with_row_count(cont.SpecialCols.index)
+    mdf.jdl = pl.DataFrame(
+        functools.reduce(operator.iadd, jdl_separate, [])
+    ).with_row_count(cont.SpecialCols.index)
 
     logger.success("DataFrame für Jahresdauerlinie erstellt.")
     slog.log_df(mdf.jdl)
@@ -552,9 +572,11 @@ def calculate_monthly_values(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         mdf.df_h.group_by_dynamic(COL_IND, every="1mo")
         .agg(
             [
-                pl.col(col).mean()
-                if (cont.GROUP_MEAN.check(mdf.meta.lines[col].unit, "mean_always"))
-                else pl.col(col).sum()
+                (
+                    pl.col(col).mean()
+                    if (cont.GROUP_MEAN.check(mdf.meta.lines[col].unit, "mean_always"))
+                    else pl.col(col).sum()
+                )
                 for col in cols_without_index
             ]
         )
@@ -586,7 +608,7 @@ def dic_days(mdf: cld.MetaAndDfs) -> None:
     """Create Dictionary for Days"""
 
     sf.s_set("dic_days", {})
-    for num in range(int(sf.s_get("ni_days"))):
+    for num in range(int(sf.s_get("ni_days") or 0)):
         date: dt.date = sf.s_get(f"day_{num}")
         item: pl.DataFrame = mdf.df.filter(f"{date:%Y-%m-%d}").with_columns(
             pl.col(COL_IND).dt.strftime("2020-1-1 %H:%M:%S").str.strptime(pl.Datetime),

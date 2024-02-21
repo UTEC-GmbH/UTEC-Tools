@@ -415,7 +415,11 @@ def change_temporal_resolution(
             for col in value_cols
         )
     )
-
+    
+    logger.debug(f"df: \n{df}")
+    logger.debug(f"df_res: \n{df_res}")
+    logger.debug(f"df_join: \n{df_join}")
+    
     # interpolate the missing data using the "Akima"-method
     # !!! this step may lead to inaccuracies !!!
     return interpolate_missing_data_akima(df_join, time_col)

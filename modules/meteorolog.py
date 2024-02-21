@@ -215,7 +215,7 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
         value for key, value in dic.items() if key != longest_param
     ]
     for df_add in other_dfs:
-        df = df.join(df_add, on="Datum", how="outer")
+        df = df.join(df_add, on="Datum", how="outer_coalesce")
 
     if sf.s_get("tog_polysun"):
         df = df.rename(

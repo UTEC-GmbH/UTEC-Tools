@@ -367,6 +367,7 @@ def download_polysun(df_ex: pl.DataFrame, file_suffix: str) -> None:
             ),
             "Time [s]",
             "left",
+            join_nulls=True
         )
         .fill_null(0)
     ).select(

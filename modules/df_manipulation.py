@@ -200,10 +200,11 @@ def add_temperature_data(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
         mdf.df = (
             mdf.df.join(
                 mdf.df.select(cont.SpecialCols.index)
-                .join(df_parameter, on=cont.SpecialCols.index, how="outer")
+                .join(df_parameter, on=cont.SpecialCols.index, how="outer_coalesce")
                 .sort(cont.SpecialCols.index)
                 .interpolate(),
                 on=cont.SpecialCols.index,
+                join_nulls=True,
             )
             .fill_null(strategy="forward")
             .fill_null(strategy="backward")
@@ -420,7 +421,7 @@ def change_temporal_resolution(
 
     # Join the original DataFrame with df_res to get a DataFrame with missing data
     df_join: pl.DataFrame = (
-        df_res.join(df, on=time_col, how="outer")
+        df_res.join(df, on=time_col, how="outer_coalesce")
         .sort(by=time_col)
         .with_columns(
             pl.when(None or cont.GROUP_MEAN.check(units[col], "mean_all"))
@@ -430,9 +431,6 @@ def change_temporal_resolution(
             for col in value_cols
         )
     )
-    logger.debug(f"df: \n{df}")
-    logger.debug(f"df_res: \n{df_res}")
-    logger.debug(f"df_join: \n{df_res.join(df, on=time_col, how='outer')}")
 
     # interpolate the missing data using the "Akima"-method
     # !!! this step may lead to inaccuracies !!!
@@ -535,7 +533,7 @@ def jdl(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
 
     mdf.jdl = pl.DataFrame(
         functools.reduce(operator.iadd, jdl_separate, [])
-    ).with_row_count(cont.SpecialCols.index)
+    ).with_row_index(cont.SpecialCols.index)
 
     logger.success("DataFrame für Jahresdauerlinie erstellt.")
     slog.log_df(mdf.jdl)

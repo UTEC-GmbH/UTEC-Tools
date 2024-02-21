@@ -339,7 +339,7 @@ def clean_up_df(df: pl.DataFrame, mark_index: str) -> pl.DataFrame:
     """
 
     ind_row: int = (
-        df.with_row_count().filter(pl.col(mark_index) == mark_index).row(0)[0]
+        df.with_row_index().filter(pl.col(mark_index) == mark_index).row(0)[0]
     )
     df = df.slice(ind_row + 1)
 

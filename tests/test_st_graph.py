@@ -1,12 +1,10 @@
 """Test the login page with the Streamlit testing framework"""
 
-
 import pathlib
 import random
 from dataclasses import dataclass
 
 import polars as pl
-from loguru import logger
 from plotly import graph_objects as go
 from streamlit.testing.v1 import AppTest
 

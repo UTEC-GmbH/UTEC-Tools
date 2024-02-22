@@ -7,6 +7,7 @@ import polars as pl
 
 from modules import classes_constants as clc
 from modules import classes_data as cld
+from modules import constants as cont
 from modules import excel_import as ex_in
 
 
@@ -19,10 +20,12 @@ class Asserts:
     df_width: int
     df_columns: list[str]
     meta_lines: dict[str, cld.MetaLine]
+    meta_datetime: bool
     meta_years: list[int]
     meta_multi_years: bool
-    meta_temp_res: int
-    meta_units: dict[str, str]
+    meta_td_mnts: int
+    meta_interval: str
+    meta_all_units_as_dict: dict[str, str]
     df_type_index_dt: bool = True
     df_type_data: str = r"{Float32}"
     df_orgidx: bool = True
@@ -523,10 +526,12 @@ class TestImportPrefabExcel:
             df_width=17,
             df_columns=LongExpectedResults.strom_einzel_df_columns,
             meta_lines=LongExpectedResults.strom_einzel_meta_lines,
+            meta_datetime=True,
             meta_years=[2021],
             meta_multi_years=False,
-            meta_temp_res=15,
-            meta_units=LongExpectedResults.strom_einzel_meta_units,
+            meta_td_mnts=15,
+            meta_interval="15min",
+            meta_all_units_as_dict=LongExpectedResults.strom_einzel_meta_units,
         ),
         strom_multi=Asserts(
             file_path="example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
@@ -534,10 +539,12 @@ class TestImportPrefabExcel:
             df_width=11,
             df_columns=LongExpectedResults.strom_multi_df_columns,
             meta_lines=LongExpectedResults.strom_multi_meta_lines,
+            meta_datetime=True,
             meta_years=[2017, 2018],
             meta_multi_years=True,
-            meta_temp_res=15,
-            meta_units=LongExpectedResults.strom_multi_meta_units,
+            meta_td_mnts=15,
+            meta_interval="15min",
+            meta_all_units_as_dict=LongExpectedResults.strom_multi_meta_units,
         ),
         heiz_multi=Asserts(
             file_path="example_files/Wärmelastgang - 1h - 3 Jahre.xlsx",
@@ -545,10 +552,12 @@ class TestImportPrefabExcel:
             df_width=5,
             df_columns=LongExpectedResults.heiz_multi_df_columns,
             meta_lines=LongExpectedResults.heiz_multi_meta_lines,
+            meta_datetime=True,
             meta_years=[2016, 2017, 2018],
             meta_multi_years=True,
-            meta_temp_res=60,
-            meta_units=LongExpectedResults.heiz_multi_meta_units,
+            meta_td_mnts=60,
+            meta_interval="1h",
+            meta_all_units_as_dict=LongExpectedResults.heiz_multi_meta_units,
         ),
     )
 
@@ -575,11 +584,13 @@ class TestImportPrefabExcel:
                     }.values()
                 )
             ),
-            meta_years=mdf.meta.years or [0],
-            meta_multi_years=mdf.meta.multi_years,
-            meta_temp_res=mdf.meta.td_mnts or 0,
-            meta_units=mdf.meta.all_units_as_dict(),
             meta_lines=mdf.meta.lines,
+            meta_datetime=mdf.meta.datetime,
+            meta_years=mdf.meta.years or [0],
+            meta_multi_years=mdf.meta.multi_years or False,
+            meta_td_mnts=mdf.meta.td_mnts or 0,
+            meta_interval=mdf.meta.td_interval or "Error",
+            meta_all_units_as_dict=mdf.meta.all_units_as_dict(),
         )
 
         assert results == expected
@@ -595,3 +606,67 @@ class TestImportPrefabExcel:
     def test_import_multi_year_heizung_data(self) -> None:
         """Test importing the default example file for multi-year heizung data."""
         self.import_and_assert(self.expected.heiz_multi)
+
+
+"""
+    df_is_df: bool = True
+    df_type_index_dt: bool = True
+    df_orgidx: bool = True
+    df_type_data: str = r"{Float32}"
+    df_height: int
+    df_width: int
+    df_columns: list[str]
+    meta_lines: dict[str, cld.MetaLine]
+    meta_datetime: bool
+    meta_years: list[int]
+    meta_multi_years: bool
+    meta_td_mnts: int
+    meta_interval: str
+    meta_all_units_as_dict: dict[str, str]
+"""
+
+
+class TestMainDataFrame:
+    """Tests for the main data frame"""
+
+    def test_df_is_df(self, mdf: cld.MetaAndDfs) -> None:
+        """Check if the main data frame is a polars DataFrame."""
+        assert isinstance(mdf.df, pl.DataFrame)
+
+    def test_df_type_index_dt(self, mdf: cld.MetaAndDfs) -> None:
+        """Check if the index of the main data frame is datetime."""
+        assert mdf.df.schema[cont.SpecialCols.index] == pl.Datetime()
+
+    def test_df_orgidx(self, mdf: cld.MetaAndDfs) -> None:
+        """Check if the index of the main data was copied and renamed."""
+        assert cont.SpecialCols.original_index in mdf.df.columns
+
+    def test_df_type_data(
+        self, mdf: cld.MetaAndDfs, expected_type: str = r"{Float32}"
+    ) -> None:
+        """Check if the data of the main data frame is of the correct type."""
+        assert (
+            str(
+                set(
+                    {
+                        key: value
+                        for key, value in mdf.df.schema.items()
+                        if key
+                        not in [cont.SpecialCols.index, cont.SpecialCols.original_index]
+                    }.values()
+                )
+            )
+            == expected_type
+        )
+
+    def test_df_height(self, mdf: cld.MetaAndDfs, expected_height: int) -> None:
+        """Check if the height of the main data frame is correct."""
+        assert mdf.df.height == expected_height
+
+    def test_df_width(self, mdf: cld.MetaAndDfs, expected_width: int) -> None:
+        """Check if the width of the main data frame is correct."""
+        assert mdf.df.width == expected_width
+
+    def test_df_columns(self, mdf: cld.MetaAndDfs, expected_columns: list[str]) -> None:
+        """Check if the columns of the main data frame are correct."""
+        assert mdf.df.columns == expected_columns

@@ -52,6 +52,7 @@ def format_tickstops(fig: go.Figure) -> list[dict[str, Any]]:
 
     Returns:
         list[dict[str, Any]]: formating parameters
+
     """
 
     multi_y: bool | None = fig.layout.meta.get("multi_y")  # type: ignore
@@ -90,6 +91,7 @@ def add_range_slider(fig: go.Figure) -> go.Figure:
 
     Returns:
         go.Figure: Grafik mit Range Slider
+
     """
 
     return fig.update_xaxes(
@@ -138,6 +140,7 @@ def standard_axes_and_layout(
 
     Returns:
         - go.Figure: Bearbeitete Grafik
+
     """
 
     data: dict[str, dict[str, Any]] = fgf.fig_data_as_dic(fig)
@@ -168,6 +171,7 @@ def standard_xaxis(
 
     Returns:
         - go.Figure: Bearbeitete Grafik
+
     """
 
     x_max: Any = max(max(p["x"]) for p in data.values())
@@ -284,6 +288,7 @@ def show_traces(fig: go.Figure) -> go.Figure:
 
     Args:
         - fig (go.Figure): Figure to edit
+
     """
 
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
@@ -350,6 +355,7 @@ def format_traces(
 
     Args:
         - fig (go.Figure): Figure in question
+
     """
     fig_type: str = fgf.fig_type_by_title(fig)
     switch: bool = fig_type == "fig_days"
@@ -423,6 +429,7 @@ def show_y_axes(fig: go.Figure, visible_units: list[str]) -> go.Figure:
 
     Args:
         - fig (go.Figure): Figure in question
+
     """
 
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)
@@ -469,6 +476,7 @@ def show_annos(fig: go.Figure, visible_traces: list[dict]) -> go.Figure:
 
     Returns:
         - go.Figure: Grafik mit bearbeiteter Anzeigt
+
     """
     visible_lines: list[str] = [trace["name"] for trace in visible_traces]
     layout: dict[str, Any] = fgf.fig_layout_as_dic(fig)

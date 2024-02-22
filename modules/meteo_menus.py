@@ -227,7 +227,7 @@ def explanation_of_results(params: list[cld.DWDParam]) -> Any:
 
     logger.debug(
         gf.string_new_line_per_item(
-            [f"{par.name_de}: {par.requested_res_name_en}" for par in params],
+            [f"'{par.name_de}': {par.requested_res_name_en}" for par in params],
             "Requested Resolutions:",
             1,
             1,
@@ -237,7 +237,7 @@ def explanation_of_results(params: list[cld.DWDParam]) -> Any:
     logger.debug(
         gf.string_new_line_per_item(
             [
-                f"{par.name_de}: {par.closest_available_res.name_en}"
+                f"'{par.name_de}': {par.closest_available_res.name_en}"
                 for par in params
                 if par.closest_available_res is not None
             ],
@@ -250,7 +250,7 @@ def explanation_of_results(params: list[cld.DWDParam]) -> Any:
     logger.debug(
         gf.string_new_line_per_item(
             [
-                f"{par.name_de}: {par.closest_available_res.no_data}"
+                f"'{par.name_de}': {par.closest_available_res.no_data}"
                 for par in params
                 if par.closest_available_res is not None
             ],
@@ -267,20 +267,16 @@ def explanation_of_results(params: list[cld.DWDParam]) -> Any:
         )
         for par in params
     ):
+        warning_string: str = (
+            "⚡ **Es konnten nicht für alle Parameter Daten gefunden werden!** ⚡"
+        )
         all_no_data_strings: list[str] = [
             par.closest_available_res.no_data
             for par in params
             if par.closest_available_res is not None
             and isinstance(par.closest_available_res.no_data, str)
         ]
-        return st.warning(
-            "\n\n".join(
-                [
-                    "⚡ **Es konnten nicht für alle Parameter Daten gefunden werden!** ⚡",
-                    *all_no_data_strings,
-                ]
-            )
-        )
+        return st.warning("\n\n".join([warning_string, *all_no_data_strings]))
 
     if any(
         (
@@ -371,6 +367,7 @@ def download_polysun(df_ex: pl.DataFrame, file_suffix: str) -> None:
             ),
             "Time [s]",
             "left",
+            join_nulls=True
         )
         .fill_null(0)
     ).select(

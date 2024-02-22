@@ -31,6 +31,7 @@ def line_plot(
 
     Returns:
         - go.Figure: Liniengrafik eines einzelnen Jahres
+
     """
     logger.info(f"Creating line plot from DataFrame 'mdf.{data_frame}'")
 
@@ -145,6 +146,7 @@ def line_plot_y_overlay(
 
     Returns:
         - go.Figure: Liniengrafik mit mehreren Jahren übereinander
+
     """
     if mdf.meta.years is None:
         raise cle.NotFoundError(entry="list of years", where="mdf.meta.years")
@@ -244,6 +246,7 @@ def line_plot_day_overlay(
 
     Returns:
         - go.Figure: _description_
+
     """
 
     fig: go.Figure = go.Figure()

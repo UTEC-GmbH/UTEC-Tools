@@ -51,6 +51,7 @@ class ArbeitLeistung:
 
     Methods:
         - get_suffix: Get the suffix by providing the type (Arbeit / Leistung)
+
     """
 
     arbeit: SuffixUnit
@@ -146,9 +147,11 @@ class ObisDic(TypedDict):
 @dataclass()
 class ObisElectrical:
     """OBIS-Codes für elektrische Zähler.
+    
     Raises
         - ValueError: Falls der Code nicht mit '1' anfängt,
             ist es kein Code für eletrische Zähler.
+    
     """
 
     code_or_name: str

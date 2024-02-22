@@ -32,6 +32,7 @@ def fig_layout_as_dic(fig: go.Figure) -> dict[str, Any]:
 
     Returns:
         - layout (dict[str, Any]): layout as dictionary
+
     """
     return {item: fig.layout[item] for item in fig.layout}
 
@@ -46,6 +47,7 @@ def get_colorway(fig: go.Figure, **kwargs) -> list[str]:
 
     Returns:
         - list[str]: list of available colors in the theme
+
     """
     data: dict[str, dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
     layout: dict[str, Any] = kwargs.get("layout") or fig_layout_as_dic(fig)
@@ -67,6 +69,7 @@ def fig_type_by_title(fig: go.Figure, **kwargs) -> str:
         - str: Figure type as key in FIG_TITLES (e.g. 'lastgang', 'jdl', 'mon' etc.)
 
         (if type cannot be determined from the title, returns 'type unknown')
+
     """
     layout: dict[str, Any] = kwargs.get("layout") or fig_layout_as_dic(fig)
     title: str = (
@@ -105,6 +108,7 @@ def get_units_for_all_axes(fig: go.Figure, **kwargs) -> dict[str, str]:
 
     Returns:
         - dict[str, str]: dictionary -> key = axis, value = unit
+
     """
 
     data: dict[str, dict[str, Any]] = kwargs.get("data") or fig_data_as_dic(fig)
@@ -132,6 +136,7 @@ def fill_colour_with_opacity(sel_trans: str, line_colour: str) -> str:
 
     Returns:
         str: "rgba(r,g,b,a)"
+
     """
     fill_transp: int = (
         100

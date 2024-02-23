@@ -464,7 +464,7 @@ def temporal_metadata(mdf: cld.MetaAndDfs, mark_index: str) -> cld.MetaAndDfs:
         mdf.meta.td_interval = "15min"
         logger.info("Index mit zeitlicher Auflösung von 15 Minuten erkannt.")
     elif mdf.meta.td_mnts == cont.TimeMinutesIn.hour:
-        mdf.meta.td_interval = "h"
+        mdf.meta.td_interval = "1h"
         mdf.df_h = mdf.df
         logger.info("Index mit zeitlicher Auflösung von 1 Stunde erkannt.")
     else:

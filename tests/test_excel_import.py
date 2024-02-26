@@ -1,6 +1,6 @@
 """Tests for the import_pl-module"""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import polars as pl
 import pytest
@@ -11,8 +11,20 @@ from modules import constants as cont
 from modules import excel_import as ex_in
 
 
+def mdf_from_file(file: str) -> cld.MetaAndDfs:
+    """Import the file and return the MetaAndDfs-object"""
+    return ex_in.import_prefab_excel(file)
+
+
+FILES: list[str] = [
+    "example_files/Stromlastgang - 15min - 1 Jahr.xlsx",
+    "example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
+    "example_files/Wärmelastgang - 1h - 3 Jahre.xlsx",
+]
+
+
 @dataclass
-class Structure:
+class StructureDF:
     """Elements to test from the results of importing the Excel-File"""
 
     file: str
@@ -23,6 +35,13 @@ class Structure:
     df_width: int
     df_orgidx_in_cols: bool
     df_columns: list[str]
+
+
+@dataclass
+class StructureMeta:
+    """Elements to test from the results of importing the Excel-File"""
+
+    file: str
     meta_lines: dict[str, cld.MetaLine]
     meta_all_units_as_dict: dict[str, str]
     meta_datetime: bool
@@ -30,29 +49,10 @@ class Structure:
     meta_multi_years: bool
     meta_td_mnts: int
     meta_interval: str
-    mdf: cld.MetaAndDfs = field(init=False)
-
-    def __post_init__(self) -> None:
-        """Import the file
-
-        Examples for testing:
-        from modules import excel_import as ex_in
-        mdf = ex_in.import_prefab_excel(
-            "example_files/Stromlastgang - 15min - 1 Jahr.xlsx"
-        )
-        mdf = ex_in.import_prefab_excel(
-            "example_files/Stromlastgang - 15min - 2 Jahre.xlsx"
-        )
-        mdf = ex_in.import_prefab_excel(
-            "example_files/Wärmelastgang - 1h - 3 Jahre.xlsx"
-        )
-
-        """
-        self.mdf = ex_in.import_prefab_excel(self.file)
 
 
-RESULTS: list[Structure] = [
-    Structure(
+EXPEDTED_DFs: list[StructureDF] = [
+    StructureDF(
         file="example_files/Stromlastgang - 15min - 1 Jahr.xlsx",
         df_is_df=True,
         df_index_type=pl.Datetime,
@@ -79,6 +79,50 @@ RESULTS: list[Structure] = [
             "PV in kW → Arbeit",
             "Bezug (1-1:1.29) → Leistung",
         ],
+    ),
+    StructureDF(
+        file="example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
+        df_is_df=True,
+        df_index_type=pl.Datetime,
+        df_data_type={pl.Float32},
+        df_height=70071,
+        df_width=11,
+        df_orgidx_in_cols=True,
+        df_columns=[
+            "↓ Index ↓",
+            "Bezug (1-1:1.29) → Leistung",
+            "Lieferung (1-1:2.29) → Leistung",
+            "PV-Anlage → Arbeit",
+            "Bedarf → Arbeit",
+            "Temperatur",
+            "orgidx",
+            "PV-Anlage → Leistung",
+            "Bedarf → Leistung",
+            "Bezug (1-1:1.29) → Arbeit",
+            "Lieferung (1-1:2.29) → Arbeit",
+        ],
+    ),
+    StructureDF(
+        file="example_files/Wärmelastgang - 1h - 3 Jahre.xlsx",
+        df_is_df=True,
+        df_index_type=pl.Datetime,
+        df_data_type={pl.Float32},
+        df_height=26277,
+        df_width=5,
+        df_orgidx_in_cols=True,
+        df_columns=[
+            "↓ Index ↓",
+            "Wärmebedarf",
+            "BHKW",
+            "Temperatur",
+            "orgidx",
+        ],
+    ),
+]
+
+EXPECTED_META: list[StructureMeta] = [
+    StructureMeta(
+        file="example_files/Stromlastgang - 15min - 1 Jahr.xlsx",
         meta_lines={
             "Strombedarf": cld.MetaLine(
                 name="Strombedarf",
@@ -331,27 +375,8 @@ RESULTS: list[Structure] = [
         meta_td_mnts=15,
         meta_interval="15min",
     ),
-    Structure(
+    StructureMeta(
         file="example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
-        df_is_df=True,
-        df_index_type=pl.Datetime,
-        df_data_type={pl.Float32},
-        df_height=70071,
-        df_width=11,
-        df_orgidx_in_cols=True,
-        df_columns=[
-            "↓ Index ↓",
-            "Bezug (1-1:1.29) → Leistung",
-            "Lieferung (1-1:2.29) → Leistung",
-            "PV-Anlage → Arbeit",
-            "Bedarf → Arbeit",
-            "Temperatur",
-            "orgidx",
-            "PV-Anlage → Leistung",
-            "Bedarf → Leistung",
-            "Bezug (1-1:1.29) → Arbeit",
-            "Lieferung (1-1:2.29) → Arbeit",
-        ],
         meta_lines={
             "PV-Anlage": cld.MetaLine(
                 name="PV-Anlage",
@@ -505,21 +530,8 @@ RESULTS: list[Structure] = [
         meta_td_mnts=15,
         meta_interval="15min",
     ),
-    Structure(
+    StructureMeta(
         file="example_files/Wärmelastgang - 1h - 3 Jahre.xlsx",
-        df_is_df=True,
-        df_index_type=pl.Datetime,
-        df_data_type={pl.Float32},
-        df_height=26277,
-        df_width=5,
-        df_orgidx_in_cols=True,
-        df_columns=[
-            "↓ Index ↓",
-            "Wärmebedarf",
-            "BHKW",
-            "Temperatur",
-            "orgidx",
-        ],
         meta_lines={
             "Wärmebedarf": cld.MetaLine(
                 name="Wärmebedarf",
@@ -565,22 +577,26 @@ RESULTS: list[Structure] = [
     ),
 ]
 
-TEST = pl.DataFrame
 
-
-@pytest.mark.parametrize("actual,expected", [(res.mdf.df, res) for res in RESULTS])
+@pytest.mark.parametrize(
+    "actual,expected",
+    [
+        (mdf_from_file(file).df, next(df for df in EXPEDTED_DFs if df.file == file))
+        for file in FILES
+    ],
+)
 class TestDataFrames:
     """Class for all the tests for the data frames"""
 
-    def test_df_is_df(self, actual: pl.DataFrame, expected: Structure) -> None:
+    def test_df_is_df(self, actual: pl.DataFrame, expected: StructureDF) -> None:
         """Check if the main data frame is a polars DataFrame."""
         assert isinstance(actual, pl.DataFrame) == expected.df_is_df
 
-    def test_df_index_type(self, actual: pl.DataFrame, expected: Structure) -> None:
+    def test_df_index_type(self, actual: pl.DataFrame, expected: StructureDF) -> None:
         """Check if the index of the main data frame is datetime."""
         assert actual.schema[cont.SpecialCols.index] == expected.df_index_type
 
-    def test_df_data_type(self, actual: pl.DataFrame, expected: Structure) -> None:
+    def test_df_data_type(self, actual: pl.DataFrame, expected: StructureDF) -> None:
         """Check if the data of the main data frame is of the correct type."""
         assert (
             set(
@@ -597,53 +613,68 @@ class TestDataFrames:
             == expected.df_data_type
         )
 
-    def test_df_height(self, actual: pl.DataFrame, expected: Structure) -> None:
+    def test_df_height(self, actual: pl.DataFrame, expected: StructureDF) -> None:
         """Check if the height of the main data frame is correct."""
         assert actual.height == expected.df_height
 
-    def test_df_width(self, actual: pl.DataFrame, expected: Structure) -> None:
+    def test_df_width(self, actual: pl.DataFrame, expected: StructureDF) -> None:
         """Check if the width of the main data frame is correct."""
         assert actual.width == expected.df_width
 
-    def test_df_orgidx(self, actual: pl.DataFrame, expected: Structure) -> None:
+    def test_df_orgidx(self, actual: pl.DataFrame, expected: StructureDF) -> None:
         """Check if the index of the main data was copied and renamed."""
         assert (
             cont.SpecialCols.original_index in actual.columns
         ) == expected.df_orgidx_in_cols
 
-    def test_df_columns(self, actual: pl.DataFrame, expected: Structure) -> None:
+    def test_df_columns(self, actual: pl.DataFrame, expected: StructureDF) -> None:
         """Check if the columns of the main data frame are correct."""
         assert actual.columns == expected.df_columns
 
 
-@pytest.mark.parametrize("actual,expected", [(res.mdf.meta, res) for res in RESULTS])
+@pytest.mark.parametrize(
+    "actual,expected",
+    [
+        (
+            mdf_from_file(file).meta,
+            next(meta for meta in EXPECTED_META if meta.file == file),
+        )
+        for file in FILES
+    ],
+)
 class TestMetaData:
     """Class for all the tests for the meta data"""
 
-    def test_meta_lines(self, actual: cld.MetaData, expected: Structure) -> None:
+    def test_meta_lines(self, actual: cld.MetaData, expected: StructureMeta) -> None:
         """Check if meta data for each line are filled in correctly."""
         assert actual.lines == expected.meta_lines
 
-    def test_meta_all_units(self, actual: cld.MetaData, expected: Structure) -> None:
+    def test_meta_all_units(
+        self, actual: cld.MetaData, expected: StructureMeta
+    ) -> None:
         """Check if all units are in the meta data."""
         assert actual.all_units_as_dict() == expected.meta_all_units_as_dict
 
-    def test_meta_datetime(self, actual: cld.MetaData, expected: Structure) -> None:
+    def test_meta_datetime(self, actual: cld.MetaData, expected: StructureMeta) -> None:
         """Check if the date column is a datetime in the meta data."""
         assert actual.datetime == expected.meta_datetime
 
-    def test_meta_years(self, actual: cld.MetaData, expected: Structure) -> None:
+    def test_meta_years(self, actual: cld.MetaData, expected: StructureMeta) -> None:
         """Check if the years are found in the meta data."""
         assert actual.years == expected.meta_years
 
-    def test_meta_multi_years(self, actual: cld.MetaData, expected: Structure) -> None:
+    def test_meta_multi_years(
+        self, actual: cld.MetaData, expected: StructureMeta
+    ) -> None:
         """Check if multi year is correct in the meta data."""
         assert actual.multi_years == expected.meta_multi_years
 
-    def test_meta_td_mnts(self, actual: cld.MetaData, expected: Structure) -> None:
+    def test_meta_td_mnts(self, actual: cld.MetaData, expected: StructureMeta) -> None:
         """Check if the interval in the meta data is correct."""
         assert actual.td_mnts == expected.meta_td_mnts
 
-    def test_meta_td_interval(self, actual: cld.MetaData, expected: Structure) -> None:
+    def test_meta_td_interval(
+        self, actual: cld.MetaData, expected: StructureMeta
+    ) -> None:
         """Check if the interval in the meta data is correct."""
         assert actual.td_interval == expected.meta_interval

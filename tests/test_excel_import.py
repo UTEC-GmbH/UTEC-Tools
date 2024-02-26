@@ -11,16 +11,16 @@ from modules import constants as cont
 from modules import excel_import as ex_in
 
 
-def mdf_from_file(file: str) -> cld.MetaAndDfs:
-    """Import the file and return the MetaAndDfs-object"""
-    return ex_in.import_prefab_excel(file)
-
-
 FILES: list[str] = [
     "example_files/Stromlastgang - 15min - 1 Jahr.xlsx",
     "example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
     "example_files/Wärmelastgang - 1h - 3 Jahre.xlsx",
 ]
+
+
+def mdf_from_file(file: str) -> cld.MetaAndDfs:
+    """Import the file and return the MetaAndDfs-object"""
+    return ex_in.import_prefab_excel(file)
 
 
 @dataclass

@@ -1,14 +1,12 @@
 """Test the login page with the Streamlit testing framework"""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Literal
 
-import polars as pl
 import pytest
-from loguru import logger
 from plotly import graph_objects as go
 from streamlit.testing.v1 import AppTest
 
-from modules import classes_data as cld
 from modules import classes_figs as clf
 from modules import constants as cont
 from modules import general_functions as gf
@@ -44,50 +42,119 @@ def run_app_from_file(file: str) -> AppTest:
     return at.run()
 
 
-def get_fig_class(at: AppTest, fig: str) -> clf.FigProp:
+def get_fig_from_session_state(at: AppTest, fig: str) -> clf.FigProp:
     """Get the fig class for a given fig"""
     figs: clf.Figs = at.session_state["figs"]
     return getattr(figs, fig)
 
 
 @dataclass
-class StructureFig:
+class FigElements:
     """Elements to test"""
 
     file: str
+    fig_type: Literal["base", "jdl", "mon"]
     st_key: str
-    data_available: bool
-    layout_available: bool
 
 
-EXPECTED_BASE_FIGS: list[StructureFig] = [
-    StructureFig(
+EXPECTED: list[FigElements] = [
+    FigElements(
         file="example_files/Stromlastgang - 15min - 1 Jahr.xlsx",
+        fig_type="base",
         st_key=cont.FIG_KEYS.lastgang,
-        data_available=True,
-        layout_available=True,
-    )
+    ),
+    FigElements(
+        file="example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
+        fig_type="base",
+        st_key=cont.FIG_KEYS.lastgang,
+    ),
+    FigElements(
+        file="example_files/Wärmelastgang - 1h - 3 Jahre.xlsx",
+        fig_type="base",
+        st_key=cont.FIG_KEYS.lastgang,
+    ),
+    FigElements(
+        file="example_files/Stromlastgang - 15min - 1 Jahr.xlsx",
+        fig_type="jdl",
+        st_key=cont.FIG_KEYS.jdl,
+    ),
+    FigElements(
+        file="example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
+        fig_type="jdl",
+        st_key=cont.FIG_KEYS.jdl,
+    ),
+    FigElements(
+        file="example_files/Wärmelastgang - 1h - 3 Jahre.xlsx",
+        fig_type="jdl",
+        st_key=cont.FIG_KEYS.jdl,
+    ),
+    FigElements(
+        file="example_files/Stromlastgang - 15min - 1 Jahr.xlsx",
+        fig_type="mon",
+        st_key=cont.FIG_KEYS.mon,
+    ),
+    FigElements(
+        file="example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
+        fig_type="mon",
+        st_key=cont.FIG_KEYS.mon,
+    ),
+    FigElements(
+        file="example_files/Wärmelastgang - 1h - 3 Jahre.xlsx",
+        fig_type="mon",
+        st_key=cont.FIG_KEYS.mon,
+    ),
 ]
 
 
-@pytest.mark.parametrize(
-    "fig,expected",
-    [
-        (
-            get_fig_class(run_app_from_file(file), "base"),
-            next(res for res in EXPECTED_BASE_FIGS if res.file == file),
+@dataclass
+class Results:
+    """File and App"""
+
+    file: str
+    at: AppTest = field(init=False)
+    base: clf.FigProp = field(init=False)
+    jdl: clf.FigProp = field(init=False)
+    mon: clf.FigProp = field(init=False)
+    expected_base: FigElements = field(init=False)
+    expected_jdl: FigElements = field(init=False)
+    expected_mon: FigElements = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Fill in fields"""
+        self.at = run_app_from_file(self.file)
+        self.base = get_fig_from_session_state(self.at, "base")
+        self.jdl = get_fig_from_session_state(self.at, "jdl")
+        self.mon = get_fig_from_session_state(self.at, "mon")
+        self.expected_base = next(
+            elem
+            for elem in EXPECTED
+            if elem.file == self.file and elem.fig_type == "base"
         )
-        for file in FILES
-    ],
-)
+        self.expected_jdl = next(
+            elem
+            for elem in EXPECTED
+            if elem.file == self.file and elem.fig_type == "jdl"
+        )
+        self.expected_mon = next(
+            elem
+            for elem in EXPECTED
+            if elem.file == self.file and elem.fig_type == "mon"
+        )
+
+
+@pytest.mark.parametrize("results", [Results(file) for file in FILES])
+@pytest.mark.parametrize("fig", ["base", "jdl", "mon"])
 class TestBaseFigs:
     """Class of tests"""
 
-    def test_base(self, fig: clf.FigProp, expected: StructureFig) -> None:
+    def test_fig_exists(self, results: Results, fig: str) -> None:
         """Check if the base fig is available"""
-        logger.info(f"Checking file '{expected.file}'")
-        assert fig is not None
 
-    def test_st_key(self, fig: clf.FigProp, expected: StructureFig) -> None:
+        assert getattr(results, fig) is not None
+
+    def test_st_key(self, results: Results, fig: str) -> None:
         """Check if the main data frame is a polars DataFrame."""
-        assert fig.st_key == expected.st_key
+        fig_in_st: clf.FigProp = getattr(results, fig)
+        expected_results: FigElements = getattr(results, f"expected_{fig}")
+
+        assert fig_in_st.st_key == expected_results.st_key

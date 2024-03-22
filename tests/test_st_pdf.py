@@ -1,3 +1,5 @@
+"""Tests for the pdf editing section of the app"""
+
 """PDFs bearbeiten"""
 
 from typing import Literal
@@ -6,9 +8,16 @@ import fitz as pymupdf
 import streamlit as st
 from loguru import logger
 
+from modules import classes_data as cld
+from modules import classes_figs as clf
 from modules import constants as cont
+from modules import df_manipulation as df_man
+from modules import excel_import as ex_in
+from modules import fig_annotations as fig_anno
+from modules import fig_creation as fig_cr
+from modules import fig_formatting as fig_format
 from modules import general_functions as gf
-from modules import pdf_menus as menu_pdf
+from modules import graph_menus as menu_g
 from modules import setup_stuff as set_stuff
 from modules import streamlit_functions as sf
 from modules import user_authentication as uauth
@@ -16,11 +25,25 @@ from modules import user_authentication as uauth
 # setup stuff
 gf.log_new_run()
 MANUAL_DEBUG = True
-set_stuff.page_header_setup(page=cont.ST_PAGES.pdf.short)
+set_stuff.page_header_setup(page=cont.ST_PAGES.graph.short)
+
+EX_FILES: list[str] = [
+    r"experiments/pdf_Deckblatt.pdf",
+    r"experiments/pdf_Normale_Seite.pdf",
+    r"experiments/pdf_Report.pdf",
+]
+
+"""
+Jupyter
+
+pdf = pymupdf.open(EX_FILES[0])
+page = pdf[0]
+
+"""
 
 
 def remove_rexel_from_file(
-    file: str, save_type: Literal["overwrite", "new"] = "new"
+    file: str = EX_FILES[0], save_type: Literal["overwrite", "new"] = "new"
 ) -> None:
     """Remove Rexel and the pvXpert logo from a PDF file"""
 
@@ -52,26 +75,3 @@ def remove_rexel_from_file(
         pdf.save(pdf.name, incremental=True)
 
     pdf.close()
-
-
-if uauth.authentication(sf.s_get("page")):
-    if sf.s_get("but_complete_reset"):
-        sf.s_reset_app()
-
-    if sf.s_get("but_example_direct"):
-        st.session_state["f_up"] = f"example_files/{sf.s_get('sb_example_file')}.xlsx"
-
-    if all(sf.s_get(key) is None for key in ["f_up", "mdf"]):
-        logger.warning("No file provided yet.")
-
-        menu_pdf.sidebar_file_upload()
-
-        st.warning("Bitte Datei hochladen oder Beispiel auswählen")
-
-        st.markdown("###")
-        st.markdown("---")
-    else:
-        with st.sidebar:
-            reset_download_container = st.container()
-        with reset_download_container:
-            gf.reset_button()

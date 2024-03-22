@@ -1,6 +1,5 @@
 """Konstanten"""
 
-
 import datetime as dt
 import pathlib
 from dataclasses import dataclass, field
@@ -552,6 +551,7 @@ ST_PAGES: clc.StPages = clc.StPages(
     graph=clc.StPageProps("graph", "Grafische Datenauswertung", "Daten"),
     meteo=clc.StPageProps("meteo", "Meteorologische Daten", "Wetterdaten"),
     maps=clc.StPageProps("maps", "Kartografische Datenauswertung"),
+    pdf=clc.StPageProps("pdf", "PDFs bearbeiten"),
 )
 
 # Umkreis für Meteostat-Stationen in Kilometern

@@ -7,9 +7,9 @@ loguru
 mypy
 numpy
 openpyxl
-pikepdf
 plotly
 polars
+pymupdf
 pytest
 pytest-sugar
 python-dotenv

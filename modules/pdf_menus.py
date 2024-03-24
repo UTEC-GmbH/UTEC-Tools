@@ -1,42 +1,73 @@
 """UI - Menus"""
 
-import datetime as dt
-import pathlib
-from typing import TYPE_CHECKING, Any
-
-import plotly.graph_objects as go
 import streamlit as st
+from loguru import logger
 
-from modules import classes_data as cld
-from modules import classes_errors as cle
 from modules import constants as cont
-from modules import export as ex
-from modules import fig_creation as fig_cr
-from modules import fig_general_functions as fgf
-from modules import general_functions as gf
 from modules import streamlit_functions as sf
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 
-def sidebar_file_upload() -> Any:
-    """Hochgeladene PDF-Datei"""
+def file_upload() -> None:  # sourcery skip: use-named-expression
+    """Hochgeladene PDF-Dateien werden in temporärem ordner abgespeichert.
+    Die Dateipfade werden im Session State unter "f_up" gespeichert.
+    """
 
-    with st.sidebar:
+    files: list[UploadedFile] | None = st.file_uploader(
+        label="Datei hochladen",
+        type=["pdf", "xps", "epub", "mobi", "fb2", "cbz", "svg", "txt"],
+        accept_multiple_files=True,
+        help=(
+            """
+            Zu bearbeitende Datei(en) hochladen.
+            """
+        ),
+        # key="f_up",
+    )
+    sf.s_set("f_up", files)
 
-        # benutze ausgewählte Beispieldatei direkt für debugging
-        if sf.s_get("access_lvl") == "god":
-            st.button("Beispieldatei direkt verwenden", "but_example_direct")
+    if files:
+        st.rerun()
 
-        st.markdown("---")
-        st.file_uploader(
-            label="Datei hochladen",
-            type=["pdf", "xps", "epub", "mobi", "fb2", "cbz", "svg", "txt"],
-            accept_multiple_files=False,
-            help=(
-                """
-                Zu bearbeitende Datei hochladen.
-                """
-            ),
-            key="f_up",
-        )
 
-    return sf.s_get("f_up")
+def de_text_to_delete() -> None:
+    """Streamlit Data Editor for text to delete"""
+
+    df = st.data_editor(
+        cont.REXEL_TEXT_BLOCKS,
+        column_config={
+            "value": st.column_config.TextColumn(
+                label="Text-Elemente, die gelöscht werden sollen",
+                required=True,
+                help="""
+                Jeder Textbaustein wird in der pdf-Datei gesucht und gelöscht.
+                """,
+            )
+        },
+        num_rows="dynamic",
+        hide_index=True,
+        # key="de_text_to_delete",
+    )
+    sf.s_set("de_text_to_delete", df)
+
+    logger.debug(f"de_text_to_delete: \n{sf.s_get('de_text_to_delete')}")
+
+
+def to_delete_pvxpert_logo() -> None:
+    """Toggle for deleting the pvXpert logo from the PDF"""
+    st.toggle(label="pvXpert-Logo entfernen", value=True, key="to_delete_pvXpert_logo")
+
+
+def butt_edit_and_save() -> None:
+    """Button to save the modified PDF as a new file"""
+    st.button(
+        label="Datei(en) bearbeiten und auf dem Desktop speichern",
+        help="""
+        Die Dateien werden mit den oben ausgewählten Einstellngen bearbeitet und
+        auf dem Desktop im Ordner "bearbeitet" abgespeichert.
+        """,
+        key="but_edit_and_save",
+    )

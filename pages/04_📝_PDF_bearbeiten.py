@@ -1,14 +1,17 @@
+# sourcery skip: avoid-global-variables
 """PDFs bearbeiten"""
 
-from typing import Literal
+
+import pathlib
 
 import fitz as pymupdf
 import streamlit as st
 from loguru import logger
+from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 from modules import constants as cont
 from modules import general_functions as gf
-from modules import pdf_menus as menu_pdf
+from modules import pdf_edit, pdf_menus
 from modules import setup_stuff as set_stuff
 from modules import streamlit_functions as sf
 from modules import user_authentication as uauth
@@ -19,59 +22,48 @@ MANUAL_DEBUG = True
 set_stuff.page_header_setup(page=cont.ST_PAGES.pdf.short)
 
 
-def remove_rexel_from_file(
-    file: str, save_type: Literal["overwrite", "new"] = "new"
-) -> None:
-    """Remove Rexel and the pvXpert logo from a PDF file"""
-
-    pdf: pymupdf.Document = pymupdf.open(file)
-    for page in pdf:
-
-        # remove text
-        for rect in [
-            rec
-            for text in ["Rexel Germany GmbH & Co. KG", "www.rexel.de"]
-            for rec in page.search_for(text)
-        ]:
-            page.add_redact_annot(rect, fill=(1, 1, 1))
-
-        # remove logo
-        for rect in [
-            drawing.get("rect")
-            for drawing in page.get_drawings()
-            if drawing.get("fill") == (0.0, 0.26666998863220215, 0.549019992351532)
-        ]:
-            page.add_redact_annot(rect, fill=(1, 1, 1))
-
-        page.apply_redactions()
-
-    # save and close
-    if save_type == "new":
-        pdf.save(pdf.name.replace(".pdf", " - b.pdf"))
-    else:
-        pdf.save(pdf.name, incremental=True)
-
-    pdf.close()
-
-
+st.info(
+    """Hier können Texte aus pdfs entfernt werden.
+      \nAußerdem kann das pvXpert Logo aus pdf-Berichten entfernt werden."""
+)
+st.write("---")
 if uauth.authentication(sf.s_get("page")):
     if sf.s_get("but_complete_reset"):
         sf.s_reset_app()
+    with st.sidebar:
+        gf.reset_button()
 
-    if sf.s_get("but_example_direct"):
-        st.session_state["f_up"] = f"example_files/{sf.s_get('sb_example_file')}.xlsx"
+    f_up: list[UploadedFile] | None = sf.s_get("f_up")
 
-    if all(sf.s_get(key) is None for key in ["f_up", "mdf"]):
-        logger.warning("No file provided yet.")
+    if f_up is None or (isinstance(f_up, list) and len(f_up) == 0):
+        logger.warning(f"No file provided yet. (f_up = {f_up})")
+        st.warning("Bitte Datei(en) hochladen")
+        pdf_menus.file_upload()
 
-        menu_pdf.sidebar_file_upload()
-
-        st.warning("Bitte Datei hochladen oder Beispiel auswählen")
+    else:
+        logger.info(
+            gf.string_new_line_per_item(
+                [file.name for file in f_up], f"{len(f_up)} file(s) Uploaded:"
+            )
+        )
+        st.markdown("###")
+        pdf_menus.de_text_to_delete()
+        pdf_menus.to_delete_pvxpert_logo()
 
         st.markdown("###")
-        st.markdown("---")
-    else:
-        with st.sidebar:
-            reset_download_container = st.container()
-        with reset_download_container:
-            gf.reset_button()
+        pdf_menus.butt_edit_and_save()
+
+        if sf.s_get("but_edit_and_save"):
+            files: list[pathlib.WindowsPath] = pdf_edit.temporary_files(f_up)
+            for file in files:
+                pdf: pymupdf.Document = pdf_edit.open_file(str(file))
+
+                if sf.s_get("de_text_to_delete"):
+                    pdf = pdf_edit.remove_text_from_file(
+                        pdf, sf.s_get("de_text_to_delete")
+                    )
+
+                if sf.s_get("to_delete_pvXpert_logo"):
+                    pdf = pdf_edit.remove_drawing_by_color(pdf)
+
+                pdf_edit.save_and_close(pdf)

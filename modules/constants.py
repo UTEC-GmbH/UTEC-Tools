@@ -206,6 +206,8 @@ ALPHA: dict[str, str] = {
     "fill": ", 0.2)",  # fill von Linien etc.
 }
 
+REXEL_TEXT_BLOCKS: list[str] = ["Rexel Germany GmbH & Co. KG", "www.rexel.de"]
+
 
 @dataclass
 class ExcelMarkers:

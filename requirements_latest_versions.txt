@@ -9,6 +9,7 @@ numpy
 openpyxl
 plotly
 polars
+pymupdf
 pytest
 pytest-sugar
 python-dotenv

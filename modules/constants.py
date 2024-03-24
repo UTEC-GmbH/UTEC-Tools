@@ -1,6 +1,5 @@
 """Konstanten"""
 
-
 import datetime as dt
 import pathlib
 from dataclasses import dataclass, field
@@ -206,6 +205,8 @@ ALPHA: dict[str, str] = {
     "bg": ", 0.5)",  # Hintergrund Beschriftungen
     "fill": ", 0.2)",  # fill von Linien etc.
 }
+
+REXEL_TEXT_BLOCKS: list[str] = ["Rexel Germany GmbH & Co. KG", "www.rexel.de"]
 
 
 @dataclass
@@ -552,6 +553,7 @@ ST_PAGES: clc.StPages = clc.StPages(
     graph=clc.StPageProps("graph", "Grafische Datenauswertung", "Daten"),
     meteo=clc.StPageProps("meteo", "Meteorologische Daten", "Wetterdaten"),
     maps=clc.StPageProps("maps", "Kartografische Datenauswertung"),
+    pdf=clc.StPageProps("pdf", "PDFs bearbeiten"),
 )
 
 # Umkreis für Meteostat-Stationen in Kilometern

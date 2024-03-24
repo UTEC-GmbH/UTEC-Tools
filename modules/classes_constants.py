@@ -80,6 +80,7 @@ class StPages:
     graph: StPageProps
     meteo: StPageProps
     maps: StPageProps
+    pdf: StPageProps
 
     def get_all_short(self) -> list[str]:
         """Get a list of short page descriptors"""
@@ -147,11 +148,11 @@ class ObisDic(TypedDict):
 @dataclass()
 class ObisElectrical:
     """OBIS-Codes für elektrische Zähler.
-    
+
     Raises
         - ValueError: Falls der Code nicht mit '1' anfängt,
             ist es kein Code für eletrische Zähler.
-    
+
     """
 
     code_or_name: str

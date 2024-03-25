@@ -1,31 +1,32 @@
 """UI - Menus"""
 
+from typing import TYPE_CHECKING
+
+import fitz as pymupdf
 import streamlit as st
 from loguru import logger
 
 from modules import constants as cont
 from modules import streamlit_functions as sf
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 
-def file_upload() -> None:  # sourcery skip: use-named-expression
+def file_upload() -> None:
     """Hochgeladene PDF-Dateien werden in temporärem ordner abgespeichert.
     Die Dateipfade werden im Session State unter "f_up" gespeichert.
     """
 
-    files: list[UploadedFile] | None = st.file_uploader(
+    files: UploadedFile | None = st.file_uploader(
         label="Datei hochladen",
         type=["pdf", "xps", "epub", "mobi", "fb2", "cbz", "svg", "txt"],
-        accept_multiple_files=True,
+        accept_multiple_files=False,
         help=(
             """
             Zu bearbeitende Datei(en) hochladen.
             """
         ),
-        # key="f_up",
     )
     sf.s_set("f_up", files)
 
@@ -49,7 +50,6 @@ def de_text_to_delete() -> None:
         },
         num_rows="dynamic",
         hide_index=True,
-        # key="de_text_to_delete",
     )
     sf.s_set("de_text_to_delete", df)
 
@@ -61,13 +61,25 @@ def to_delete_pvxpert_logo() -> None:
     st.toggle(label="pvXpert-Logo entfernen", value=True, key="to_delete_pvXpert_logo")
 
 
-def butt_edit_and_save() -> None:
+def butt_edit_pdf() -> None:
     """Button to save the modified PDF as a new file"""
     st.button(
-        label="Datei(en) bearbeiten und auf dem Desktop speichern",
+        label="Datei bearbeiten",
         help="""
-        Die Dateien werden mit den oben ausgewählten Einstellngen bearbeitet und
-        auf dem Desktop im Ordner "bearbeitet" abgespeichert.
+        Die Datei wird mit den oben ausgewählten Einstellngen bearbeitet.
         """,
-        key="but_edit_and_save",
+        key="but_edit_pdf",
+    )
+
+
+def butt_download_pdf(pdf: pymupdf.Document, new_file_name: str) -> None:
+    """Download the modified PDF"""
+
+    st.download_button(
+        label="PDF herunterladen",
+        data=pdf.tobytes(),
+        mime="application/pdf",
+        file_name=new_file_name,
+        key="but_download_pdf",
+        type="primary",
     )

@@ -1,7 +1,6 @@
 """PDFs bearbeiten"""
 
 import pathlib
-import tempfile
 
 import fitz as pymupdf
 from loguru import logger
@@ -10,33 +9,10 @@ from streamlit.runtime.uploaded_file_manager import UploadedFile
 from modules import general_functions as gf
 
 
-def temporary_files(files: list[UploadedFile]) -> list[pathlib.WindowsPath]:
-    """Create temporary files"""
-
-    temp_dir: str = tempfile.mkdtemp()
-    for file in files:
-        path: str = pathlib.Path(temp_dir) / file.name
-        with open(path, "wb") as f:
-            f.write(file.getvalue())
-
-    file_paths: list[pathlib.WindowsPath] = [
-        pathlib.Path(temp_dir) / file.name for file in files
-    ]
-
-    logger.info(
-        gf.string_new_line_per_item(
-            [str(path) for path in file_paths], "Temporäre Dateien:"
-        )
-    )
-
-    return file_paths
-
-
-def open_file(file: str) -> pymupdf.Document:
+def open_file(file: UploadedFile) -> pymupdf.Document:
     """Open a file with PyMuPDF"""
 
-    pdf: pymupdf.Document = pymupdf.open(file)
-    logger.success(f"Successfully opened file: {pdf.name}")
+    pdf: pymupdf.Document = pymupdf.open(stream=file.getvalue())
 
     return pdf
 

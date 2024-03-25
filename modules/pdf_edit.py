@@ -90,18 +90,3 @@ def remove_drawing_by_color(
         page.apply_redactions()
 
     return pdf
-
-
-def save_and_close(pdf: pymupdf.Document) -> None:
-    """Save the PDF either as
-    a new file (with an extension in the file name) in the same folder or
-    overwrite the original file.
-    """
-    save_path: pathlib.Path = pathlib.Path.home() / "Desktop/bearbeitet"
-    save_path.mkdir(parents=True, exist_ok=True)
-    file_name: str = pathlib.Path(pdf.name).name
-    file_save: pathlib.Path = save_path / file_name
-    pdf.save(file_save)
-    logger.info(f"PDF saved as {file_save}")
-
-    pdf.close()

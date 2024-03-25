@@ -556,6 +556,8 @@ ST_PAGES: clc.StPages = clc.StPages(
     pdf=clc.StPageProps("pdf", "PDFs bearbeiten"),
 )
 
+PDF_PAGE_WIDGET_WIDTH = 300
+
 # Umkreis für Meteostat-Stationen in Kilometern
 WEATHERSTATIONS_MAX_DISTANCE = 700
 

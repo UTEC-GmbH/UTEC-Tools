@@ -14,9 +14,7 @@ if TYPE_CHECKING:
 
 
 def file_upload() -> None:
-    """Hochgeladene PDF-Dateien werden in temporärem ordner abgespeichert.
-    Die Dateipfade werden im Session State unter "f_up" gespeichert.
-    """
+    """Hochgeladene PDF-Dateien"""
 
     files: UploadedFile | None = st.file_uploader(
         label="Datei hochladen",
@@ -24,7 +22,7 @@ def file_upload() -> None:
         accept_multiple_files=False,
         help=(
             """
-            Zu bearbeitende Datei(en) hochladen.
+            Zu bearbeitende Datei hochladen.
             """
         ),
     )
@@ -37,7 +35,7 @@ def file_upload() -> None:
 def de_text_to_delete() -> None:
     """Streamlit Data Editor for text to delete"""
 
-    df = st.data_editor(
+    df: list[str] = st.data_editor(
         cont.REXEL_TEXT_BLOCKS,
         column_config={
             "value": st.column_config.TextColumn(
@@ -50,6 +48,7 @@ def de_text_to_delete() -> None:
         },
         num_rows="dynamic",
         hide_index=True,
+        width=600,
     )
     sf.s_set("de_text_to_delete", df)
 

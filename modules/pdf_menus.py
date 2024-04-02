@@ -2,7 +2,6 @@
 
 from typing import TYPE_CHECKING
 
-import fitz as pymupdf
 import streamlit as st
 from loguru import logger
 
@@ -71,12 +70,12 @@ def butt_edit_pdf() -> None:
     )
 
 
-def butt_download_pdf(pdf: pymupdf.Document, new_file_name: str) -> None:
+def butt_download_pdf(pdf: bytes, new_file_name: str) -> None:
     """Download the modified PDF"""
 
     st.download_button(
         label="PDF herunterladen",
-        data=pdf.tobytes(),
+        data=pdf,
         mime="application/pdf",
         file_name=new_file_name,
         key="but_download_pdf",

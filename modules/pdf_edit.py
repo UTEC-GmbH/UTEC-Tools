@@ -1,7 +1,5 @@
 """PDFs bearbeiten"""
 
-import pathlib
-
 import fitz as pymupdf
 from loguru import logger
 from streamlit.runtime.uploaded_file_manager import UploadedFile

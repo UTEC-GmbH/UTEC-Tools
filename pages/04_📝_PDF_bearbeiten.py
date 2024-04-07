@@ -74,12 +74,7 @@ def edit_file(f_up: UploadedFile) -> None:
 
     if sf.s_get("but_edit_pdf"):
         pdf: pymupdf.Document = pe.open_file(f_up)
-
-        if sf.s_get("de_text_to_delete"):
-            pdf = pe.remove_text_from_file(pdf, sf.s_get("de_text_to_delete"))
-
-        if sf.s_get("to_delete_pvXpert_logo"):
-            pdf = pe.remove_drawing_by_color(pdf)
+        pdf = pe.remove_text_and_logo(pdf)
 
         new_file_name: str = f_up.name.replace(".pdf", "_UTEC_.pdf")
         pm.butt_download_pdf(pdf, new_file_name)

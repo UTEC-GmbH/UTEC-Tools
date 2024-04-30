@@ -58,7 +58,7 @@ def login_section() -> None:
     authenticator: stauth.Authenticate = stauth.Authenticate(
         credentials=user_credentials,
         cookie_name="utec_tools",
-        key="uauth",
+        cookie_key="uauth",
         cookie_expiry_days=30,
     )
 

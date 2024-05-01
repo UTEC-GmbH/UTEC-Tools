@@ -1,6 +1,5 @@
 """plots erstellen und in session_state schreiben"""
 
-
 from typing import Any
 
 import plotly.graph_objects as go
@@ -192,9 +191,9 @@ def cr_fig_days(mdf: cld.MetaAndDfs) -> None:
 
     tit_res: str = ""
     if sf.s_get("cb_h"):
-        tit_res = cont.FIG_TITLES.suff_stunden
-    elif st.session_state["metadata"]["td_mean"] == 15:
-        tit_res = cont.FIG_TITLES.suff_15min
+        tit_res = cont.Suffixes.fig_tit_h
+    elif st.session_state["metadata"]["td_mean"] == cont.TimeMinutesIn.quarter_hour:
+        tit_res = cont.Suffixes.fig_tit_15
 
     tit: str = f"{cont.FIG_TITLES.days}{tit_res}"
 

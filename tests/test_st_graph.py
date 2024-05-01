@@ -4,7 +4,6 @@ from dataclasses import dataclass, field
 from typing import Literal
 
 import pytest
-from plotly import graph_objects as go
 from streamlit.testing.v1 import AppTest
 
 from modules import classes_figs as clf
@@ -44,6 +43,8 @@ def run_app_from_file(file: str) -> AppTest:
 
 def get_fig_from_session_state(at: AppTest, fig: str) -> clf.FigProp:
     """Get the fig class for a given fig"""
+    if "figs" not in at.session_state:
+        return getattr(clf.Figs(), fig)
     figs: clf.Figs = at.session_state["figs"]
     return getattr(figs, fig)
 
@@ -59,51 +60,61 @@ class FigElements:
 
 EXPECTED: list[FigElements] = [
     FigElements(
-        file="example_files/Stromlastgang - 15min - 1 Jahr.xlsx",
-        fig_type="base",
-        st_key=cont.FIG_KEYS.lastgang,
-    ),
-    FigElements(
-        file="example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
-        fig_type="base",
-        st_key=cont.FIG_KEYS.lastgang,
-    ),
-    FigElements(
-        file="example_files/Wärmelastgang - 1h - 3 Jahre.xlsx",
-        fig_type="base",
-        st_key=cont.FIG_KEYS.lastgang,
-    ),
-    FigElements(
-        file="example_files/Stromlastgang - 15min - 1 Jahr.xlsx",
-        fig_type="jdl",
-        st_key=cont.FIG_KEYS.jdl,
-    ),
-    FigElements(
-        file="example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
-        fig_type="jdl",
-        st_key=cont.FIG_KEYS.jdl,
-    ),
-    FigElements(
-        file="example_files/Wärmelastgang - 1h - 3 Jahre.xlsx",
-        fig_type="jdl",
-        st_key=cont.FIG_KEYS.jdl,
-    ),
-    FigElements(
-        file="example_files/Stromlastgang - 15min - 1 Jahr.xlsx",
-        fig_type="mon",
-        st_key=cont.FIG_KEYS.mon,
-    ),
-    FigElements(
-        file="example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
-        fig_type="mon",
-        st_key=cont.FIG_KEYS.mon,
-    ),
-    FigElements(
-        file="example_files/Wärmelastgang - 1h - 3 Jahre.xlsx",
-        fig_type="mon",
-        st_key=cont.FIG_KEYS.mon,
-    ),
+        file=file,
+        fig_type=fig_type,
+        st_key=getattr(cont.FIG_KEYS, "lastgang" if fig_type == "base" else fig_type),
+    )
+    for file in FILES
+    for fig_type in ["base", "jdl", "mon"]
 ]
+
+# EXPECTED: list[FigElements] = [
+#     FigElements(
+#         file="example_files/Stromlastgang - 15min - 1 Jahr.xlsx",
+#         fig_type="base",
+#         st_key=cont.FIG_KEYS.lastgang,
+#     ),
+#     FigElements(
+#         file="example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
+#         fig_type="base",
+#         st_key=cont.FIG_KEYS.lastgang,
+#     ),
+#     FigElements(
+#         file="example_files/Wärmelastgang - 1h - 3 Jahre.xlsx",
+#         fig_type="base",
+#         st_key=cont.FIG_KEYS.lastgang,
+#     ),
+#     FigElements(
+#         file="example_files/Stromlastgang - 15min - 1 Jahr.xlsx",
+#         fig_type="jdl",
+#         st_key=cont.FIG_KEYS.jdl,
+#     ),
+#     FigElements(
+#         file="example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
+#         fig_type="jdl",
+#         st_key=cont.FIG_KEYS.jdl,
+#     ),
+#     FigElements(
+#         file="example_files/Wärmelastgang - 1h - 3 Jahre.xlsx",
+#         fig_type="jdl",
+#         st_key=cont.FIG_KEYS.jdl,
+#     ),
+#     FigElements(
+#         file="example_files/Stromlastgang - 15min - 1 Jahr.xlsx",
+#         fig_type="mon",
+#         st_key=cont.FIG_KEYS.mon,
+#     ),
+#     FigElements(
+#         file="example_files/Stromlastgang - 15min - 2 Jahre.xlsx",
+#         fig_type="mon",
+#         st_key=cont.FIG_KEYS.mon,
+#     ),
+#     FigElements(
+#         file="example_files/Wärmelastgang - 1h - 3 Jahre.xlsx",
+#         fig_type="mon",
+#         st_key=cont.FIG_KEYS.mon,
+#     ),
+# ]
 
 
 @dataclass

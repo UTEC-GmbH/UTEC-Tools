@@ -77,7 +77,7 @@ def general_excel_import(
         sheet_name=worksheet,
         engine="xlsx2csv",
         engine_options=xlsx_options,
-        read_csv_options=csv_options,
+        read_options=csv_options,
     )
 
     for col in ["Datum", cont.SpecialCols.index]:
@@ -191,7 +191,7 @@ def get_df_from_excel(file: BytesIO | str) -> pl.DataFrame:
             sheet_name=sheet,
             engine="xlsx2csv",
             engine_options=xl_options,
-            read_csv_options=csv_options,
+            read_options=csv_options,
         )
 
     # if the following (specific) exception is raised
@@ -203,7 +203,7 @@ def get_df_from_excel(file: BytesIO | str) -> pl.DataFrame:
             sheet_name=sheet,
             engine="xlsx2csv",
             engine_options=xl_options,
-            read_csv_options=csv_options,
+            read_options=csv_options,
         )
         logger.warning(
             "Date formats were ignored!\n"

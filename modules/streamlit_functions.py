@@ -1,12 +1,14 @@
 """Streamlit functions so I don't have to write 'st.session_state' all the time"""
 
-from typing import Any
+from typing import Any, TypeVar
 
 import streamlit as st
 from loguru import logger
 
+AnyNone = TypeVar("AnyNone", Any, None)
 
-def s_get(key: str, default: Any | None = None) -> Any | None:
+
+def s_get(key: str, default: AnyNone = None) -> AnyNone:
     """Shorter version of st.session_state.get(key)"""
     return st.session_state.get(key, default)
 

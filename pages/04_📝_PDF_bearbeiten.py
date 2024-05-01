@@ -65,7 +65,7 @@ def edit_section() -> None:
 
 def edit_file(f_up: UploadedFile) -> None:
     """Edit file"""
-    logger.info(f"File '{f_up.name}' Uploaded")
+
     st.markdown("###")
     pm.de_text_to_delete()
     pm.to_delete_pvxpert_logo()

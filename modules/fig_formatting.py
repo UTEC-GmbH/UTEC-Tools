@@ -538,7 +538,7 @@ def legend_groups_for_multi_year(fig: go.Figure) -> go.Figure:
                 for trace in data.values()
                 if (
                     str(trace["meta"].get("year")) == group
-                    or group in trace.get("name")
+                    or group in trace.get("name", "")
                 )
                 and trace.get("visible")
             ]

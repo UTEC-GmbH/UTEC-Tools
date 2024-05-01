@@ -5,7 +5,7 @@
 import datetime as dt
 import functools
 import operator
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 import polars as pl
 from loguru import logger
@@ -353,7 +353,7 @@ def change_temporal_resolution(
         )
         units = {"Vals": "kW"}
         requested_resolution = "1h"
-        df_h = change_temporal_resolution(df, units, requested_resolution)
+        df_h = change_temporal_resolution(df_15, units, requested_resolution)
         print(df_h)
 
     Output:
@@ -380,14 +380,11 @@ def change_temporal_resolution(
     if not time_col_dat.dtype.is_temporal():
         raise TypeError
 
-    max_date: dt.datetime = time_col_dat.max()  # type: ignore
-    min_date: dt.datetime = time_col_dat.min()  # type: ignore
+    max_date: dt.datetime = cast(dt.datetime, time_col_dat.max())
+    min_date: dt.datetime = cast(dt.datetime, time_col_dat.min())
 
-    timedelta_mean: Any = time_col_dat.diff().mean()
-    if not isinstance(timedelta_mean, float):
-        raise TypeError
+    original_resolution: dt.timedelta = cast(dt.timedelta, time_col_dat.diff().mean())
 
-    original_resolution: dt.timedelta = dt.timedelta(microseconds=timedelta_mean)
     if original_resolution == dt.timedelta(0):
         raise ValueError
 
@@ -431,11 +428,11 @@ def change_temporal_resolution(
             for col in value_cols
         )
     )
-    
+
     logger.debug(f"df: \n{df}")
     logger.debug(f"df_res: \n{df_res}")
     logger.debug(f"df_join: \n{df_join}")
-    
+
     # interpolate the missing data using the "Akima"-method
     # !!! this step may lead to inaccuracies !!!
     return interpolate_missing_data_akima(df_join, time_col)

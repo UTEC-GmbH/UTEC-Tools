@@ -90,8 +90,10 @@ def access_granted() -> None:
     # log used username and access level
     if sf.s_not_in("logged_username") or sf.s_get("logged_username") != user_key:
         logger.success(
-            f"logged in as: '{user_key}' (name:'{sf.s_get('name')}'), "
-            f"access level: '{access_lvl_user}'"
+            f"""
+            logged in as: '{user_key}' (name:'{sf.s_get("name")}')
+            access level: '{access_lvl_user}'
+            """
         )
         sf.s_set("logged_username", user_key)
 

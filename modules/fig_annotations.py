@@ -15,11 +15,11 @@ from modules import fig_general_functions as fgf
 from modules import general_functions as gf
 from modules import streamlit_functions as sf
 
-DATE_OR_FLOAT = TypeVar("DATE_OR_FLOAT", dt.datetime, float, np.datetime64)
+DateOrFloat = TypeVar("DateOrFloat", dt.datetime, float, np.datetime64)
 
 
 @gf.func_timer
-def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> dt.datetime | float:
+def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> DateOrFloat:
     """Mitte der x-Achse finden
 
     Args:
@@ -32,10 +32,10 @@ def middle_xaxis(fig_data: dict[str, dict[str, Any]]) -> dt.datetime | float:
     """
 
     data_x: list = [val["x"] for val in fig_data.values()]
-    x_max = max(max(dat) for dat in data_x if len(dat) > 0)
-    x_min = min(min(dat) for dat in data_x if len(dat) > 0)
+    x_max: DateOrFloat = max(max(dat) for dat in data_x if len(dat) > 0)
+    x_min: DateOrFloat = min(min(dat) for dat in data_x if len(dat) > 0)
 
-    middle: dt.datetime | float = x_min + (x_max - x_min) / 2
+    middle: DateOrFloat = x_min + (x_max - x_min) / 2
 
     logger.info(f"middle of x-axis: {middle}")
 
@@ -46,7 +46,7 @@ def add_arrow(
     fig: go.Figure,
     fig_data: dict[str, dict[str, Any]],
     fig_layout: dict[str, Any],
-    x_val: dt.datetime | float,
+    x_val: DateOrFloat,
     y_or_line: float | str,
     **kwargs,
 ) -> go.Figure:
@@ -92,9 +92,7 @@ def add_arrow(
     )
 
     # Textausrichtung
-    mid: dt.datetime | np.datetime64 | int = kwargs.get("middle_xaxis") or middle_xaxis(
-        fig_data
-    )
+    mid: DateOrFloat = kwargs.get("middle_xaxis") or middle_xaxis(fig_data)
     anc: bool = x_val > mid
     anchor: Literal["right", "left"] = (
         kwargs.get("anchor") or "right" if anc else "left"
@@ -142,7 +140,7 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
 
     # alle Linien in Grafik
     for line in fig_data.values():
-        if gf.check_if_not_exclude(line):
+        if gf.check_if_not_exclude(str(line)):
             y_val: float = (
                 np.nanmin(line["y"])
                 if line["meta"]["negativ"]
@@ -156,7 +154,7 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
                 )
                 continue
 
-            x_val: dt.datetime | float = line["x"][np.where(line["y"] == y_val)[0][0]]
+            x_val: DateOrFloat = line["x"][np.where(line["y"] == y_val)[0][0]]
             unit: str = line["meta"]["unit"]
             tit: str = line["name"]
 
@@ -181,7 +179,7 @@ def add_arrows_min_max(fig: go.Figure, **kwargs) -> go.Figure:
 
 
 def hovertext_from_x_val(
-    title: str, x_val: dt.datetime | float, line_data: dict[str, Any] | None
+    title: str, x_val: DateOrFloat, line_data: dict[str, Any] | None
 ) -> str:
     """Falls kein Hovertext gegeben wird, erstellt diese Funktion einen aus dem x-Wert
 
@@ -215,7 +213,7 @@ def hovertext_from_x_val(
 
 # @st.experimental_memo(suppress_st_warning=True, show_spinner=False)
 @gf.func_timer
-def vline(fig: go.Figure, x_val: float or dt.datetime, txt: str, pos: str) -> None:
+def vline(fig: go.Figure, x_val: DateOrFloat, txt: str, pos: str) -> None:
     """Vertikale Linie einfügen"""
 
     fig.add_vline(
@@ -378,8 +376,8 @@ def calculate_smooth_values(trace: dict[str, Any]) -> np.ndarray:
     return signal.savgol_filter(
         x=pl.Series(trace["y"]),
         mode="mirror",
-        window_length=int(sf.s_get("gl_win") or sf.s_get("smooth_start_val")),
-        polyorder=int(sf.s_get("gl_deg") or 3),
+        window_length=int(sf.s_get("gl_win") or sf.s_get("smooth_start_val", 3)),
+        polyorder=int(sf.s_get("gl_deg", 3)),
     )
 
 
@@ -392,7 +390,7 @@ def smooth(fig: go.Figure, **kwargs) -> go.Figure:
     traces: list[dict] = kwargs.get("traces") or [
         trace for trace in fig_data.values() if gf.check_if_not_exclude(trace["name"])
     ]
-    gl_win: int = sf.s_get("gl_win")
+    gl_win: int = sf.s_get("gl_win", 3)
     gl_deg: int = sf.s_get("gl_deg") or 3
 
     for trace in traces:

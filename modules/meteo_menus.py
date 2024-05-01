@@ -51,7 +51,7 @@ def sidebar_address_dates() -> None:
             st.date_input(
                 label="Enddatum",
                 format="DD.MM.YYYY",
-                value=dt.date(now.year, now.month, now.day - 1),
+                value=dt.date(now.year, now.month, now.day - 1 if now.day > 1 else 1),
                 key="di_end",
             )
         with cols[1]:
@@ -367,7 +367,7 @@ def download_polysun(df_ex: pl.DataFrame, file_suffix: str) -> None:
             ),
             "Time [s]",
             "left",
-            join_nulls=True
+            join_nulls=True,
         )
         .fill_null(0)
     ).select(

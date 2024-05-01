@@ -7,8 +7,7 @@ import locale
 import time
 from collections import Counter
 
-# from collections.abc import Callable
-from typing import Any, Callable, Literal, TypeVar, cast
+from typing import Any, Callable, Literal
 
 import numpy as np
 import streamlit as st
@@ -21,8 +20,6 @@ from modules import general_functions as gf
 from modules import setup_logger as slog
 from modules import streamlit_functions as sf
 
-TCallable = TypeVar("TCallable", bound=Callable)
-
 
 def log_new_run() -> None:
     """Log new run"""
@@ -32,7 +29,7 @@ def log_new_run() -> None:
     logger.log(slog.LVLS.new_run.name, f"NEW RUN ( # {sf.s_get('number of runs')} )")
 
 
-def lottie_spinner(func: TCallable) -> TCallable:
+def lottie_spinner(func: Callable) -> Callable:
     """Decorator fancy animated spinners while a function runs.
 
     Returns:
@@ -40,17 +37,17 @@ def lottie_spinner(func: TCallable) -> TCallable:
 
     """
 
-    def wrapper(*args, **kwargs) -> Any:
+    def wrapper(*args, **kwargs) -> Callable:
         with stlot.st_lottie_spinner(
             gf.load_lottie_file("animations/bored.json"), height=400
         ):
             result: Any = func(*args, **kwargs)
         return result
 
-    return cast(TCallable, wrapper)
+    return wrapper
 
 
-def func_timer(func: TCallable) -> TCallable:
+def func_timer(func: Callable) -> Callable:
     """Decorator for measuring the execution time of a function.
 
     The execution time is writen in the streamlit session state
@@ -61,7 +58,7 @@ def func_timer(func: TCallable) -> TCallable:
 
     """
 
-    def wrapper(*args, **kwargs) -> Any:
+    def wrapper(*args, **kwargs) -> Callable:
         start_time: float = time.monotonic()
         try:
             logger.level(slog.LVLS.func_start.name)
@@ -90,7 +87,7 @@ def func_timer(func: TCallable) -> TCallable:
 
         return result
 
-    return cast(TCallable, wrapper)
+    return wrapper
 
 
 def reset_button() -> None:

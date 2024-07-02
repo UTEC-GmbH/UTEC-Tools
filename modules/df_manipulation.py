@@ -35,6 +35,7 @@ def get_df_to_test_am_pm(file_path: str | None = None) -> pl.DataFrame:
     csv_options: dict[str, bool] = {"has_header": True, "try_parse_dates": False}
     df: pl.DataFrame = pl.read_excel(
         source=file_path,
+        engine="xlsx2csv",
         xlsx2csv_options=xlsx_options,
         read_csv_options=csv_options,
     )  # type: ignore

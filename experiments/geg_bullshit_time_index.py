@@ -24,9 +24,11 @@ def import_files_in_folder(folder: str = FOLDER) -> dict[str, pd.DataFrame]:
 
     cols = ["Zeitstempel", "momentane Wärmeleistung kW"]
 
-    dic = {file: pd.read_excel(f"{folder}\\{file}") for file in files}
+    dic = {
+        file: pd.read_excel(f"{folder}\\{file}", engine="xlsx2csv") for file in files
+    }
 
-    for file_name,df in dic.items():
+    for file_name, df in dic.items():
         for col_head in df.columns:
             if all(col not in col_head for col in cols):
                 dic[file_name] = df.drop(col_head, axis=1)

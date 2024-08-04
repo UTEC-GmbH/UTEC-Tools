@@ -46,7 +46,7 @@ def sidebar_file_upload() -> Any:
             )
 
         # benutze ausgewählte Beispieldatei direkt für debugging
-        if sf.s_get("access_lvl") == "god":
+        if sf.s_get("access_lvl") == ["god"]:
             st.button("Beispieldatei direkt verwenden", "but_example_direct")
 
         st.markdown("---")

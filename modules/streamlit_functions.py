@@ -6,6 +6,7 @@ import streamlit as st
 from loguru import logger
 
 AnyNone = TypeVar("AnyNone", Any, None)
+AnyType = TypeVar("AnyType")
 
 
 def s_get(key: str, default: AnyNone = None) -> AnyNone:
@@ -25,10 +26,15 @@ def s_not_in(key: str) -> bool:
     return key not in st.session_state
 
 
-def s_add_once(key: str, value: Any) -> None:
+def s_add_once(key: str, value: AnyType) -> AnyType:
     """Add something to streamlit's session_state if it doesn't exist yet."""
     if key not in st.session_state:
         st.session_state[key] = value
+        logger.info(f"st.session_state Eintrag '{key}' hinzugefügt")
+        return value
+
+    logger.warning(f"st.session_state Eintrag '{key}' bereits vorhanden")
+    return st.session_state[key]
 
 
 def s_set(key: str, value: Any) -> None:
@@ -72,6 +78,7 @@ def s_reset_app() -> None:
         "butt_sub_del_user",
         "access_pages",
         "authentication_status",
+        "authenticator",
         "butt_sub_new_user",
         "UTEC_logo",
         "initial_setup",

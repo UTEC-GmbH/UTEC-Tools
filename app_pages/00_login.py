@@ -10,28 +10,12 @@ from loguru import logger
 
 from modules import constants as cont
 from modules import general_functions as gf
-from modules import setup_logger as slog
 from modules import setup_stuff
 from modules import streamlit_functions as sf
 from modules import user_authentication as uauth
 from modules import user_authentication_menus as uauth_m
 
-st.set_page_config(
-    page_title="UTEC Online Tools",
-    page_icon="logo/UTEC_logo.png",
-    layout="wide",
-)
-
-# logger setup and logging run
-if sf.s_not_in("logger_setup"):
-    slog.logger_setup()
-gf.log_new_run()
-
-# general page config (Favicon, etc.)
-if sf.s_not_in("initial_setup"):
-    setup_stuff.general_setup()
-
-setup_stuff.page_header_setup(page="login")
+setup_stuff.page_header_setup(page=cont.ST_PAGES.login.short)
 
 
 @gf.func_timer
@@ -54,15 +38,23 @@ def display_login_page() -> None:
 def login_section() -> None:
     """User authentication part of the login page"""
 
-    user_credentials: dict[str, dict[str, Any]] = uauth.format_user_credentials()
-    authenticator: stauth.Authenticate = stauth.Authenticate(
-        credentials=user_credentials,
-        cookie_name="utec_tools",
-        cookie_key="uauth",
-        cookie_expiry_days=30,
+    authenticator: stauth.Authenticate = sf.s_add_once(
+        "authenticator",
+        stauth.Authenticate(
+            credentials=uauth.format_user_credentials(),
+            cookie_name="utec_tools",
+            cookie_key="uauth",
+            cookie_expiry_days=30.0,
+        ),
     )
 
-    authenticator.login()
+    name, auth, user = authenticator.login(
+        fields={"Username": "Benutzername", "Password": "Passwort"}
+    )
+    logger.debug(f"\nAuthenticator: \nname: '{name}'\nstatus: '{auth}'\nuser: '{user}'")
+    logger.debug(
+        f"authentication_status in Session State: {sf.s_get('authentication_status')}"
+    )
 
     if sf.s_get("authentication_status"):
         access_granted()
@@ -84,7 +76,7 @@ def access_granted() -> None:
     # determine the access level
     user_key: str = sf.s_get("username") or "Unknown"
     all_users: dict[str, dict[str, Any]] = sf.s_get("all_user_data") or {}
-    access_lvl_user: str | list = all_users[user_key]["access_lvl"]
+    access_lvl_user: list = all_users[user_key]["access_lvl"]
     sf.s_set("access_lvl", access_lvl_user)
 
     # log used username and access level
@@ -97,7 +89,7 @@ def access_granted() -> None:
         )
         sf.s_set("logged_username", user_key)
 
-    if access_lvl_user in ("god", "full"):
+    if any(lvl in access_lvl_user for lvl in ("god", "full")):
         sf.s_set("access_pages", cont.ST_PAGES.get_all_short())
         sf.s_set("access_until", dt.date.max)
     else:
@@ -155,4 +147,4 @@ def god_mode() -> None:
 
 display_login_page()
 
-logger.success("Login Page Loaded")
+logger.success("Login Page loaded")

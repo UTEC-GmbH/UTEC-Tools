@@ -83,5 +83,5 @@ def edit_file(f_up: UploadedFile) -> None:
         pm.butt_edit_pdf()
 
 
-if uauth.authentication(sf.s_get("page")):
+if uauth.authentication(sf.s_get("page", default="unknown")):
     display_login_page()

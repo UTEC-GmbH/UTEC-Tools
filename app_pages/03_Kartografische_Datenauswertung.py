@@ -94,7 +94,7 @@ def df_from_file(uploaded_file: BytesIO | str) -> pl.DataFrame:
     return df
 
 
-if uauth.authentication(sf.s_get("page")):
+if uauth.authentication(sf.s_get("page", default="unknown")):
     if sf.s_get("but_complete_reset"):
         sf.s_reset_app()
 

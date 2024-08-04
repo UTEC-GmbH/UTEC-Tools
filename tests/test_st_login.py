@@ -30,7 +30,7 @@ class User:
     user: str
     pw: str
     expected_authentication_status: bool
-    expected_access_lvl: str | None
+    expected_access_lvl: list | None
     expected_access_until: dt.date | None
 
 
@@ -39,14 +39,14 @@ USERS: list[User] = [
         user="utec",
         pw=os.getenv("PW_UTEC", "wrong_password"),
         expected_authentication_status=True,
-        expected_access_lvl="full",
+        expected_access_lvl=["full"],
         expected_access_until=dt.date.max,
     ),
     User(
         user="fl",
         pw=os.getenv("PW_FL", "wrong_password"),
         expected_authentication_status=True,
-        expected_access_lvl="god",
+        expected_access_lvl=["god"],
         expected_access_until=dt.date.max,
     ),
     User(
@@ -62,7 +62,7 @@ USERS: list[User] = [
 def run_app_and_login(user: str = "", pw: str = "") -> AppTest:
     """Run the app and login if user and password are given"""
     at: AppTest = AppTest.from_file(
-        script_path="00_🔑_login.py",
+        script_path="streamlit_app.py",
         default_timeout=cont.TimeSecondsIn.minute,
     )
     at.run()

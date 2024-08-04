@@ -28,7 +28,7 @@ def run_app_from_file(file: str) -> AppTest:
     setup_stuff.general_setup()
 
     at: AppTest = AppTest.from_file(
-        script_path="pages/01_📈_Grafische_Datenauswertung.py",
+        script_path="app_pages/01_Grafische_Datenauswertung.py",
         default_timeout=cont.TimeSecondsIn.minute,
     )
 

@@ -7,6 +7,7 @@ from typing import Any
 import dotenv
 import plotly.io as pio
 import streamlit as st
+import streamlit_authenticator as stauth
 from loguru import logger
 
 from modules import classes_errors as cle
@@ -20,25 +21,21 @@ from modules import user_authentication as uauth
 @gf.func_timer
 def general_setup() -> None:
     """Setup general things (only done once)
-    - streamlit page config
-    - UTEC logo
-    - logger setup (loguru)
     - language (locale)
     - secrets
     - plotly template (because streamlit overwrites it)
+    - UTEC logo
     - CSS hacks for section / widget labels
-    - latest changes from GitHub
     - get user data from database
     """
+
+    logger.log(slog.LVLS.once_per_session.name, "Initial Setup Started")
 
     locale.setlocale(locale.LC_ALL, "")
     dotenv.load_dotenv(".streamlit/secrets.toml")
     pio.templates.default = "plotly"
-
     sf.s_add_once("UTEC_logo", gf.render_svg())
-
     st.markdown(cont.CSS_LABELS, unsafe_allow_html=True)
-
     sf.s_add_once("all_user_data", uauth.get_all_user_data())
 
     st.session_state["initial_setup"] = True
@@ -47,6 +44,13 @@ def general_setup() -> None:
 
 def page_header_setup(page: str) -> None:
     """Seitenkopf mit Logo, Titel (je nach Seite) und letzten Änderungen"""
+
+    if page != cont.ST_PAGES.login.short:
+        authenticator = sf.s_get("authenticator")
+        if not isinstance(authenticator, stauth.Authenticate):
+            raise ValueError
+        authenticator.login(location="unrendered")
+        logger.debug("unrendered authenticator.login created")
 
     sf.s_set("page", page)
     sf.s_set("title_container", st.container())
@@ -62,10 +66,7 @@ def page_header_setup(page: str) -> None:
 
         # Version info (Python version)
         with columns[1]:
-            access_lvl_user: str | list | None = (
-                None if sf.s_not_in("access_lvl") else sf.s_get("access_lvl")
-            )
-            if isinstance(access_lvl_user, str) and access_lvl_user in ("god"):
+            if sf.s_get("access_lvl") == ["god"]:
                 st.write(
                     (
                         '<span style="line-height: 110%; font-size: 12px; '

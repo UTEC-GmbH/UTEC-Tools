@@ -11,8 +11,12 @@ from loguru import logger
 from streamlit.testing.v1 import AppTest
 
 from modules import constants as cont
+from modules import general_functions as gf
+from modules import setup_logger as slog
+from modules import setup_stuff
 
 load_dotenv(".streamlit/secrets.toml")
+slog.logger_setup()
 
 
 def st_get(at: AppTest, key: str) -> Any:
@@ -61,8 +65,13 @@ USERS: list[User] = [
 
 def run_app_and_login(user: str = "", pw: str = "") -> AppTest:
     """Run the app and login if user and password are given"""
+
+    # logger setup and general page config (Favicon, etc.)
+    gf.log_new_run()
+    setup_stuff.general_setup()
+
     at: AppTest = AppTest.from_file(
-        script_path="streamlit_app.py",
+        script_path="app_pages/00_login.py",
         default_timeout=cont.TimeSecondsIn.minute,
     )
     at.run()

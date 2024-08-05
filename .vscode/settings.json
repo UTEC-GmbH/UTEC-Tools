@@ -6,13 +6,10 @@
     "python.testing.pytestEnabled": true,
     "autoDocstring.customTemplatePath": ".vscode\\autoDocstring_google_modified.mustache",
     "ruff.organizeImports": false,
-    "ruff.logLevel": "warn",
+    "ruff.logLevel": "warning",
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
+        "editor.defaultFormatter": "charliermarsh.ruff"
     },
-    "docify.commentService.programmingLanguage": "python",
-    "docify.commentService.docstringFormat": "Google",
-    "docify.commentService.sidePanelReviewMode": true,
     "files.exclude": {
         "**/.git": false
     }

@@ -13,9 +13,9 @@ pymupdf==1.24.7
 pytest==8.2.2
 python-dotenv==1.0.1
 scipy==1.14.0
-streamlit-authenticator==0.3.2
+streamlit-authenticator==0.3.3
 streamlit-lottie==0.0.5
-streamlit==1.36.0
-wetterdienst==0.88.0
+streamlit==1.37.0
+wetterdienst==0.92.0
 xlsx2csv==0.8.2
 XlsxWriter==3.2.0

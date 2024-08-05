@@ -67,24 +67,68 @@ class ArbeitLeistung:
 class StPageProps:
     """Streamlit Page Properties"""
 
+    file: str
+    icon: str
     short: str
     title: str
     excel_ws_name: str = "Tabelle1"
+    nav_section: str = "Tools"
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(kw_only=True)
 class StPages:
     """Streamlit Pages"""
 
-    login: StPageProps
-    graph: StPageProps
-    meteo: StPageProps
-    maps: StPageProps
-    pdf: StPageProps
+    login: StPageProps = field(init=False)
+    graph: StPageProps = field(init=False)
+    meteo: StPageProps = field(init=False)
+    maps: StPageProps = field(init=False)
+    pdf: StPageProps = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Fill in fields"""
+        self.login = StPageProps(
+            file="app_pages/00_login.py",
+            icon="🔐",
+            short="login",
+            title="UTEC Online Tools - login",
+            nav_section="Login",
+        )
+        self.graph = StPageProps(
+            file="app_pages/01_Grafische_Datenauswertung.py",
+            icon="📈",
+            short="graph",
+            title="Grafische Datenauswertung",
+            excel_ws_name="Daten",
+        )
+        self.meteo = StPageProps(
+            file="app_pages/02_Meteorologische_Daten.py",
+            icon="🌤️",
+            short="meteo",
+            title="Meteorologische Daten",
+            excel_ws_name="Wetterdaten",
+        )
+        self.maps = StPageProps(
+            file="app_pages/03_Kartografische_Datenauswertung.py",
+            icon="🗺️",
+            short="maps",
+            title="Kartografische Datenauswertung",
+        )
+        self.pdf = StPageProps(
+            file="app_pages/04_PDF_bearbeiten.py",
+            icon="📝",
+            short="pdf",
+            title="PDFs bearbeiten",
+            nav_section="Experimente",
+        )
 
     def get_all_short(self) -> list[str]:
         """Get a list of short page descriptors"""
         return [getattr(self, attr).short for attr in self.__dataclass_fields__]
+
+    def get_all_nav_sections(self) -> list[str]:
+        """Get a list of nav sections"""
+        return [getattr(self, attr).nav_section for attr in self.__dataclass_fields__]
 
     def get_title(self, short: str) -> str:
         """Get the title by providing the short page descriptor"""

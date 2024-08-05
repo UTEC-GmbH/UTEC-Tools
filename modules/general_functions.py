@@ -6,7 +6,6 @@ import json
 import locale
 import time
 from collections import Counter
-
 from typing import Any, Callable, Literal
 
 import numpy as np
@@ -23,8 +22,9 @@ from modules import streamlit_functions as sf
 
 def log_new_run() -> None:
     """Log new run"""
-    sf.s_add_once("number of runs", 0)
-    run_number: int = sf.s_get("number of runs") or 0
+    if "number of runs" not in st.session_state:
+        st.session_state["number of runs"] = 0
+    run_number: int = sf.s_get("number of runs", 0)
     sf.s_set("number of runs", run_number + 1)
     logger.log(slog.LVLS.new_run.name, f"NEW RUN ( # {sf.s_get('number of runs')} )")
 

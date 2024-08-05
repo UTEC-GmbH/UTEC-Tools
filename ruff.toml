@@ -1,6 +1,5 @@
-[tool.ruff]
+[tool.ruff.lint]
 select = ["ALL"]
-fix = true
 ignore = [
     "ANN002",
     "ANN003",
@@ -18,6 +17,7 @@ ignore = [
     "D208",
     "D209",
     "D210",
+    "D213",
     "D400",
     "D401",
     "D406",
@@ -41,5 +41,5 @@ ignore = [
     "W293",
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "test*.py" = ["S101"]

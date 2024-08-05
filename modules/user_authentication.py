@@ -6,10 +6,10 @@ from dataclasses import dataclass
 from typing import Any
 
 import streamlit as st
-import streamlit_authenticator as stauth
 from deta import Deta
 from dotenv import load_dotenv
 from loguru import logger
+from streamlit_authenticator.utilities.hasher import Hasher
 
 from modules import general_functions as gf
 from modules import streamlit_functions as sf
@@ -87,18 +87,20 @@ class MessageLog:
     )
 
 
-def authentication(page: Any | None) -> bool:
-    """Authentication object"""
+def authentication(page: str) -> bool:
+    """Authentication check"""
+
+    # Prüfung ob Benutzer Zugirff auf die aktuelle Seite hat
+    access_pages: Any = sf.s_get("access_pages")
+    if not isinstance(access_pages, list):
+        logger.error("Problem with list of access pages")
+        return False
+
     if not sf.s_get("authentication_status"):
         MessageLog.no_login.show_message()
         return False
 
-    # Prüfung ob Benutzer Zugirff auf Seite hat
-    if not isinstance(page, str):
-        logger.error("page not defined correctly")
-        return False
-    access_pages: Any | None = sf.s_get("access_pages")
-    if isinstance(access_pages, list) and page not in access_pages:
+    if page not in access_pages:
         MessageLog.no_access.show_message()
         return False
 
@@ -128,8 +130,6 @@ def connect_database(database: str = "UTEC_users") -> Any:
     load_dotenv(".streamlit/secrets.toml")
     deta_key: str | None = os.getenv("DETA_KEY")
     deta: Deta = Deta(str(deta_key))
-
-    logger.success("Deta-Database connection established")
 
     return deta.Base(database)
 
@@ -164,7 +164,11 @@ def get_all_user_data() -> dict[str, dict[str, str]]:
         list_entry["key"]: list_entry for list_entry in deta_db.fetch().items
     }
 
-    logger.success("Collected all user data from Database")
+    if not users:
+        logger.warning("No user data found in database")
+        raise ValueError
+
+    logger.success("User data collected from Database")
 
     return users
 
@@ -195,9 +199,7 @@ def format_user_credentials() -> dict[str, dict[str, Any]]:
 
 
 @gf.func_timer
-def insert_new_user(
-    username: str, password: str, access_lvl: str | list, **kwargs
-) -> None:
+def insert_new_user(username: str, password: str, access_lvl: list, **kwargs) -> None:
     """Neuen Benutzer hinzufügen.
 
     Bei Aufrufen der Funktion, Passwort als Klartext angeben -> wird in hash umgewandelt
@@ -215,7 +217,7 @@ def insert_new_user(
 
     # password muss eine liste sein,
     # deshalb wird hier für einezelnen user das pw in eine liste geschrieben
-    hashed_pw: list = stauth.Hasher([password]).generate()
+    hashed_pw: list = Hasher([password]).generate()
     deta_db: Any = connect_database()
     deta_db.put(
         {
@@ -223,7 +225,8 @@ def insert_new_user(
             "name": name,  # Klartext name
             "email": email,  # e-Mail-Adresse
             "password": hashed_pw[0],  # erstes Element aus der Passwort-"liste"
-            "access_lvl": access_lvl,  # "god" or "full" or list of allowed pages
+            "access_lvl": access_lvl,  # list of allowed pages
+            # (["god"] for fl (includes debugging), ["full"] for all pages)
             # e.g. ["graph", "meteo"] ...page options: dics.pages.keys()
             "access_until": access_until,
         }
@@ -244,7 +247,9 @@ def insert_new_user(
 
 @gf.func_timer
 def update_user(username: str, updates: dict) -> Any:
-    """Existierendes Benutzerkonto ändern"""
+    """Existierendes Benutzerkonto ändern
+    - username: str
+    """
     deta_db: Any = connect_database()
     return deta_db.update(updates, username)
 

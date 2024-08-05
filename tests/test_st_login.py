@@ -11,8 +11,12 @@ from loguru import logger
 from streamlit.testing.v1 import AppTest
 
 from modules import constants as cont
+from modules import general_functions as gf
+from modules import setup_logger as slog
+from modules import setup_stuff
 
 load_dotenv(".streamlit/secrets.toml")
+slog.logger_setup()
 
 
 def st_get(at: AppTest, key: str) -> Any:
@@ -30,7 +34,7 @@ class User:
     user: str
     pw: str
     expected_authentication_status: bool
-    expected_access_lvl: str | None
+    expected_access_lvl: list | None
     expected_access_until: dt.date | None
 
 
@@ -39,14 +43,14 @@ USERS: list[User] = [
         user="utec",
         pw=os.getenv("PW_UTEC", "wrong_password"),
         expected_authentication_status=True,
-        expected_access_lvl="full",
+        expected_access_lvl=["full"],
         expected_access_until=dt.date.max,
     ),
     User(
         user="fl",
         pw=os.getenv("PW_FL", "wrong_password"),
         expected_authentication_status=True,
-        expected_access_lvl="god",
+        expected_access_lvl=["god"],
         expected_access_until=dt.date.max,
     ),
     User(
@@ -61,8 +65,13 @@ USERS: list[User] = [
 
 def run_app_and_login(user: str = "", pw: str = "") -> AppTest:
     """Run the app and login if user and password are given"""
+
+    # logger setup and general page config (Favicon, etc.)
+    gf.log_new_run()
+    setup_stuff.general_setup()
+
     at: AppTest = AppTest.from_file(
-        script_path="00_🔑_login.py",
+        script_path="app_pages/00_login.py",
         default_timeout=cont.TimeSecondsIn.minute,
     )
     at.run()

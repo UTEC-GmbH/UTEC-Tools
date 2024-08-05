@@ -548,13 +548,8 @@ class Exclude:
     )
 
 
-ST_PAGES: clc.StPages = clc.StPages(
-    login=clc.StPageProps("login", "UTEC Online Tools"),
-    graph=clc.StPageProps("graph", "Grafische Datenauswertung", "Daten"),
-    meteo=clc.StPageProps("meteo", "Meteorologische Daten", "Wetterdaten"),
-    maps=clc.StPageProps("maps", "Kartografische Datenauswertung"),
-    pdf=clc.StPageProps("pdf", "PDFs bearbeiten"),
-)
+ST_PAGES: clc.StPages = clc.StPages()
+
 
 PDF_PAGE_WIDGET_WIDTH = 300
 

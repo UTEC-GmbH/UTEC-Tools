@@ -33,7 +33,7 @@ def s_add_once(key: str, value: AnyType) -> AnyType:
         logger.info(f"st.session_state Eintrag '{key}' hinzugefügt")
         return value
 
-    logger.warning(f"st.session_state Eintrag '{key}' bereits vorhanden")
+    logger.info(f"st.session_state Eintrag '{key}' bereits vorhanden")
     return st.session_state[key]
 
 

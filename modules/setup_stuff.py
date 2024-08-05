@@ -46,8 +46,9 @@ def page_header_setup(page: str) -> None:
     """Seitenkopf mit Logo, Titel (je nach Seite) und letzten Änderungen"""
 
     if page != cont.ST_PAGES.login.short:
-        authenticator = sf.s_get("authenticator")
+        authenticator: Any = sf.s_get("authenticator")
         if not isinstance(authenticator, stauth.Authenticate):
+            logger.critical("authenticator not initiated correctly")
             raise ValueError
         authenticator.login(location="unrendered")
         logger.debug("unrendered authenticator.login created")

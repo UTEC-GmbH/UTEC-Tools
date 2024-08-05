@@ -8,18 +8,19 @@ from modules import setup_logger as slog
 from modules import setup_stuff
 from modules import streamlit_functions as sf
 
+# logger setup and logging run
+if sf.s_not_in("logger_setup"):
+    slog.logger_setup()
+gf.log_new_run()
+
+
+# general page config (Favicon, etc.)
 st.set_page_config(
     page_title="UTEC Online Tools",
     page_icon="logo/UTEC_logo.png",
     layout="wide",
 )
 
-# logger setup and logging run
-if sf.s_not_in("logger_setup"):
-    slog.logger_setup()
-gf.log_new_run()
-
-# general page config (Favicon, etc.)
 if sf.s_not_in("initial_setup"):
     setup_stuff.general_setup()
 

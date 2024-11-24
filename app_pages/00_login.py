@@ -13,7 +13,6 @@ from modules import general_functions as gf
 from modules import setup_stuff
 from modules import streamlit_functions as sf
 from modules import user_authentication as uauth
-from modules import user_authentication_menus as uauth_m
 
 setup_stuff.page_header_setup(page=cont.ST_PAGES.login.short)
 
@@ -41,17 +40,15 @@ def login_section() -> None:
     authenticator: stauth.Authenticate = sf.s_add_once(
         "authenticator",
         stauth.Authenticate(
-            credentials=uauth.format_user_credentials(),
+            credentials={"usernames": cont.USERS},
             cookie_name="utec_tools",
             cookie_key="uauth",
             cookie_expiry_days=30.0,
         ),
     )
 
-    name, auth, user = authenticator.login(
-        fields={"Username": "Benutzername", "Password": "Passwort"}
-    )
-    logger.debug(f"\nAuthenticator: \nname: '{name}'\nstatus: '{auth}'\nuser: '{user}'")
+    authenticator.login(fields={"Username": "Benutzername", "Password": "Passwort"})
+
     logger.debug(
         f"authentication_status in Session State: {sf.s_get('authentication_status')}"
     )
@@ -118,31 +115,6 @@ def access_granted() -> None:
         for page in st.session_state["access_pages"]:
             if page != "login":
                 st.markdown(f"- {cont.ST_PAGES.get_title(page)}")
-
-    if access_lvl_user == "god":
-        god_mode()
-
-
-@gf.func_timer
-def god_mode() -> None:
-    """Define special stuff for users with access level 'god'"""
-
-    uauth_m.user_accounts()
-    # neuen Benutzer eintragen
-    if sf.s_get("butt_sub_new_user"):
-        with st.spinner("Momentle bitte, Benutzer wird hinzugefügt..."):
-            uauth.insert_new_user(
-                username=st.session_state["new_user_user"],
-                name=st.session_state["new_user_name"],
-                email=st.session_state["new_user_email"],
-                password=st.session_state["new_user_pw"],
-                access_lvl=st.session_state["new_user_access"],
-                access_until=str(st.session_state["new_user_until"]),
-            )
-
-    # Benutzer löschen
-    if sf.s_get("butt_sub_del_user"):
-        uauth.delete_user()
 
 
 display_login_page()

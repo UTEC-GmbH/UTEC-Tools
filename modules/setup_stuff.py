@@ -15,12 +15,11 @@ from modules import constants as cont
 from modules import general_functions as gf
 from modules import setup_logger as slog
 from modules import streamlit_functions as sf
-from modules import user_authentication as uauth
 
 
 @gf.func_timer
 def general_setup() -> None:
-    """Setup general things (only done once)
+    """Set up general things (only done once)
     - language (locale)
     - secrets
     - plotly template (because streamlit overwrites it)
@@ -36,7 +35,7 @@ def general_setup() -> None:
     pio.templates.default = "plotly"
     sf.s_add_once("UTEC_logo", gf.render_svg())
     st.markdown(cont.CSS_LABELS, unsafe_allow_html=True)
-    sf.s_add_once("all_user_data", uauth.get_all_user_data())
+    sf.s_add_once("all_user_data", cont.USERS)
 
     st.session_state["initial_setup"] = True
     logger.log(slog.LVLS.once_per_session.name, "Initial Setup Complete")

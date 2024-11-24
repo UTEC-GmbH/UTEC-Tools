@@ -2,6 +2,8 @@
 
 import datetime as dt
 import pathlib
+import os
+import dotenv
 from dataclasses import dataclass, field
 from typing import Any, Callable, Literal
 
@@ -15,6 +17,24 @@ REPO_NAME: str = "UTEC-Tools"
 
 # Current Working Directory
 CWD: str = str(pathlib.Path.cwd())
+
+dotenv.load_dotenv(".streamlit/secrets.toml")
+USERS: dict[str, dict[str, Any]] = {
+    "fl": {
+        "name": "Florian",
+        "email": "no@email.com",
+        "password": os.getenv("PW_FL"),
+        "access_lvl": ["god"],
+        "access_until": dt.date.max,
+    },
+    "utec": {
+        "name": "UTEC",
+        "email": "no@email.com",
+        "password": os.getenv("PW_UTEC"),
+        "access_lvl": ["full"],
+        "access_until": dt.date.max,
+    },
+}
 
 
 @dataclass
@@ -34,7 +54,7 @@ class ButtonProps:
     mime: str | None = None
 
     def func_args(self) -> dict:
-        """Dictionary without missing data"""
+        """Return a dictionary without missing data"""
         return {
             key.strip("_"): val for key, val in self.__dict__.items() if val is not None
         }

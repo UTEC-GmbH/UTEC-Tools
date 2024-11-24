@@ -32,7 +32,7 @@ class FigIDs:
         return [getattr(self, attr) for attr in self.__dataclass_fields__]
 
     def as_dic(self) -> dict:
-        """Dictionary representation"""
+        """Return a dictionary representation"""
         return {attr: getattr(self, attr) for attr in self.__dataclass_fields__}
 
 

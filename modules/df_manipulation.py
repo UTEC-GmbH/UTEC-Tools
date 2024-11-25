@@ -1,7 +1,6 @@
 # sourcery skip: no-complex-if-expressions
 """Bearbeitung der Daten"""
 
-
 import datetime as dt
 import functools
 import operator
@@ -188,7 +187,7 @@ def interpolate_missing_data_akima(
 def add_temperature_data(mdf: cld.MetaAndDfs) -> cld.MetaAndDfs:
     """Add air temperature for given address to the base data frame"""
 
-    sf.s_set("selected_params", ["temperature_air_mean_200"])
+    sf.s_set("selected_params", ["temperature_air_mean_2m"])
     parameters: list[cld.DWDParam] = met.meteo_df_for_temp_in_graph(mdf)
 
     for param in parameters:
@@ -425,7 +424,7 @@ def change_temporal_resolution(
             pl.when(None or cont.GROUP_MEAN.check(units[col], "mean_all"))
             .then(pl.col(col))
             .otherwise(pl.col(col) * (requested_timedelta / original_resolution))
-            .keep_name()
+            .name.keep()
             for col in value_cols
         )
     )

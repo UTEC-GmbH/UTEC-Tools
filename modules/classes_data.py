@@ -298,14 +298,14 @@ class DWDParam:
     Test:
         loc = Location("Bremen", 53.0758196, 8.8071646)
         tim = TimeSpan(dt.datetime(2017, 1, 1, 0, 0), dt.datetime(2019, 12, 31, 23, 59))
-        par = DWDParam("temperature_air_mean_200", loc, tim)
+        par = DWDParam("temperature_air_mean_2m", loc, tim)
         par.fill_all_resolutions()
 
     pars for Polysun weather data (hourly resolution):
         par = DWDParam("radiation_global", loc, tim)
         par = DWDParam("radiation_sky_short_wave_diffuse", loc, tim)
         par = DWDParam("radiation_sky_long_wave", loc, tim)
-        par = DWDParam("temperature_air_mean_200", loc, tim)
+        par = DWDParam("temperature_air_mean_2m", loc, tim)
         par = DWDParam("wind_speed", loc, tim)
         par = DWDParam("humidity", loc, tim)
 

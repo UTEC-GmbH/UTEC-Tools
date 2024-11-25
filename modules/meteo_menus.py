@@ -410,13 +410,7 @@ def download_excel(
     st.download_button(
         **cont.Buttons.download_weather.func_args(),
         data=ex.excel_download(
-            {
-                next(
-                    page.excel_ws_name
-                    for page in cont.ST_PAGES
-                    if page.short == "meteo"
-                ): df_ex
-            },
+            {cont.ST_PAGES.meteo.excel_ws_name: df_ex},
             meta,
         ),
         file_name=f"Wetterdaten{file_suffix}.xlsx",

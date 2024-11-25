@@ -447,7 +447,7 @@ DWD_ALL_PAR_DIC: dict = dict(
 # Params that raise errors
 DWD_PROBLEMATIC_PARAMS: list[str] = [
     "cloud_cover_total_index",
-    "temperature_soil_mean_100",
+    "temperature_soil_mean_1m",
     "visibility_range_index",
     "water_equivalent_snow_depth",
     "water_equivalent_snow_depth_excelled",
@@ -460,12 +460,12 @@ DWD_PROBLEMATIC_PARAMS: list[str] = [
 ]
 DWD_GOOD_PARAMS: set[str] = set(DWD_ALL_PAR_DIC) - set(DWD_PROBLEMATIC_PARAMS)
 
-DWD_DEFAULT_PARAMS: list[str] = ["temperature_air_mean_200"]
+DWD_DEFAULT_PARAMS: list[str] = ["temperature_air_mean_2m"]
 
 DWD_PARAMS_POLYSUN: dict[str, str] = {
     "radiation_global": "Gh [W/m²]",
     "radiation_sky_short_wave_diffuse": "Dh [W/m²]",
-    "temperature_air_mean_200": "Tamb [°C]",
+    "temperature_air_mean_2m": "Tamb [°C]",
     "radiation_sky_long_wave": "Lh [W/m²]",
     "wind_speed": "Vwndh [m/s]",
     "humidity": "Hrel [%]",
@@ -502,18 +502,18 @@ DWD_PARAM_TRANSLATION: dict[str, str] = {
     "radiation_sky_short_wave_diffuse": "Diffuse Stahlung",
     "snow_depth": "Schneehöhe",
     "snow_depth_new": "Schneehöhe Neu",
-    "temperature_air_max_200": "Lufttemperatur (Max)",
-    "temperature_air_max_200_mean": "Lufttemperatur (Max-Ø)",
-    "temperature_air_mean_200": "Lufttemperatur",
-    "temperature_air_min_200": "Lufttemperatur (Min)",
-    "temperature_air_min_200_mean": "Lufttemperatur (Min-Ø)",
-    "temperature_dew_point_mean_200": "Taupunkttemperatur (Ø)",
-    "temperature_soil_mean_005": "Bodentemperatur in 5 cm Tiefe",
-    "temperature_soil_mean_010": "Bodentemperatur in 10 cm Tiefe",
-    "temperature_soil_mean_020": "Bodentemperatur in 20 cm Tiefe",
-    "temperature_soil_mean_050": "Bodentemperatur in 50 cm Tiefe",
-    "temperature_soil_mean_100": "Bodentemperatur in 1 m Tiefe",
-    "temperature_wet_mean_200": "Bodentemperatur in 2 m Tiefe",
+    "temperature_air_max_2m": "Lufttemperatur (Max)",
+    "temperature_air_max_2m_mean": "Lufttemperatur (Max-Ø)",
+    "temperature_air_mean_2m": "Lufttemperatur",
+    "temperature_air_min_2m": "Lufttemperatur (Min)",
+    "temperature_air_min_2m_mean": "Lufttemperatur (Min-Ø)",
+    "temperature_dew_point_mean_2m": "Taupunkttemperatur (Ø)",
+    "temperature_soil_mean_0_05m": "Bodentemperatur in 5 cm Tiefe",
+    "temperature_soil_mean_0_1m": "Bodentemperatur in 10 cm Tiefe",
+    "temperature_soil_mean_0_2m": "Bodentemperatur in 20 cm Tiefe",
+    "temperature_soil_mean_0_5m": "Bodentemperatur in 50 cm Tiefe",
+    "temperature_soil_mean_1m": "Bodentemperatur in 1 m Tiefe",
+    "temperature_wet_mean_2m": "Bodentemperatur in 2 m Tiefe",
     "visibility_range": "Sichtweite",
     "weather": "Wetter",
     "wind_direction": "Windrichtung",

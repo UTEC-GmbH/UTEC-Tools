@@ -1,6 +1,6 @@
 """Testing DWDParam"""
 
-# ruff: noqa: PLR2004
+# ruff: noqa: PLR2004, S101
 
 import datetime as dt
 
@@ -81,7 +81,7 @@ class TestDWDParamAirTemp:
     location: cld.Location = LOCATION
     time_span: cld.TimeSpan = TIME_SPAN
 
-    par = cld.DWDParam("temperature_air_mean_200", location, time_span)
+    par = cld.DWDParam("temperature_air_mean_2m", location, time_span)
 
     def test_init_with_valid_parameters(self) -> None:
         """Initialize DWDParam object with valid parameters"""
@@ -89,7 +89,7 @@ class TestDWDParamAirTemp:
         if par.name_en in cont.DWD_PROBLEMATIC_PARAMS:
             return
 
-        assert par.name_en == "temperature_air_mean_200"
+        assert par.name_en == "temperature_air_mean_2m"
         assert par.name_de == "Lufttemperatur"
         assert par.location == self.location
         assert par.time_span == self.time_span

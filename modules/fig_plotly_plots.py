@@ -178,6 +178,7 @@ def line_plot_y_overlay(
         logger.debug(gf.string_new_line_per_item(mdf.meta.lines[line].as_dic()))
 
     for line in lines:
+        logger.debug(f"Processing line '{line}'")
         year: int = next(year for year in mdf.meta.years if str(year) in line)
         line_data: pl.Series = dic_df[year].get_column(line)
 

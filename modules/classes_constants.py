@@ -171,13 +171,13 @@ class MeteoCodes:
     tsun: MeteoParameter
 
     def list_utec_categories(self) -> list[str]:
-        """Returns a list (set) of all used UTEC categories"""
+        """Return a list (set) of all used UTEC categories"""
         return list(
             {getattr(self, field).category_utec for field in self.__dataclass_fields__}
         )
 
     def list_all_params(self) -> list[str]:
-        """Returns a list of available parameters"""
+        """Return a list of available parameters"""
         return list(self.__dataclass_fields__)
 
 

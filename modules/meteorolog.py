@@ -64,7 +64,12 @@ def collect_meteo_data_for_list_of_parameters(
     parameter_names: list[str],
     temporal_resolution: str | None = None,
 ) -> list[cld.DWDParam]:
-    """Meteorologische Daten für die ausgewählten Parameter"""
+    """Meteorologische Daten für die ausgewählten Parameter
+
+    test:
+    collect_meteo_data_for_list_of_parameters(["temperature_air_mean_2m"], "hourly")
+    """
+
     time_span: cld.TimeSpan = start_end_time(page=sf.s_get("page"))
 
     address: str = sf.s_get("ta_adr") or "Bremen"
@@ -246,7 +251,7 @@ def df_from_param_list(param_list: list[cld.DWDParam]) -> pl.DataFrame:
 
 
 def match_resolution(df_resolution: int) -> str:
-    """Matches a temporal resolution of a data frame given as an integer
+    """Match a temporal resolution of a data frame given as an integer
     to the resolution as string needed for the weather data.
 
     Args:
